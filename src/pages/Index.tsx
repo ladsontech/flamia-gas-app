@@ -8,23 +8,75 @@ const Index = () => {
 
   const brands = [
     {
-      name: "Premium Gas",
-      price: "$49.99",
-      image: "/placeholder.svg",
-      description: "High-quality gas cylinder for all your needs",
+      name: "Stabex Gas",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,400",
+        "12kg": "5,900",
+        "45kg": "19,500"
+      }
     },
     {
-      name: "Standard Gas",
-      price: "$39.99",
-      image: "/placeholder.svg",
-      description: "Reliable gas cylinder for everyday use",
+      name: "Total Gas",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,500",
+        "12kg": "6,000",
+        "45kg": "20,000"
+      }
     },
     {
-      name: "Economy Gas",
-      price: "$29.99",
-      image: "/placeholder.svg",
-      description: "Affordable gas cylinder solution",
+      name: "Orynx Gas",
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,450",
+        "12kg": "5,950",
+        "45kg": "19,800"
+      }
     },
+    {
+      name: "Meru Gas",
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,300",
+        "12kg": "5,800",
+        "45kg": "19,000"
+      }
+    },
+    {
+      name: "Shell Gas",
+      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,600",
+        "12kg": "6,100",
+        "45kg": "20,500"
+      }
+    },
+    {
+      name: "Hass Gas",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,350",
+        "12kg": "5,850",
+        "45kg": "19,200"
+      }
+    },
+    {
+      name: "Hashi Gas",
+      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      sizes: ["6kg", "12kg", "45kg"],
+      prices: {
+        "6kg": "3,250",
+        "12kg": "5,750",
+        "45kg": "18,500"
+      }
+    }
   ];
 
   return (
@@ -42,15 +94,21 @@ const Index = () => {
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
             Gas Delivery Made Simple
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Order your gas cylinders online and get them delivered to your doorstep
-          </p>
-          <Button
-            onClick={() => navigate("/order")}
-            className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90"
-          >
-            Order Now
-          </Button>
+          <div className="flex justify-center gap-4">
+            <Button
+              onClick={() => navigate("/order?type=new")}
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              Buy New Cylinder
+            </Button>
+            <Button
+              onClick={() => navigate("/order?type=refill")}
+              variant="outline"
+              className="hover:bg-accent hover:text-accent-foreground"
+            >
+              Refill Cylinder
+            </Button>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
@@ -68,19 +126,21 @@ const Index = () => {
                   className="w-full h-48 object-cover rounded-md mb-4"
                 />
                 <h3 className="text-xl font-semibold mb-2">{brand.name}</h3>
-                <p className="text-muted-foreground mb-4">{brand.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-accent">
-                    {brand.price}
-                  </span>
-                  <Button
-                    onClick={() => navigate(`/order?brand=${brand.name}`)}
-                    variant="outline"
-                    className="hover:bg-accent hover:text-accent-foreground"
-                  >
-                    Select
-                  </Button>
+                <div className="space-y-2">
+                  {Object.entries(brand.prices).map(([size, price]) => (
+                    <div key={size} className="flex justify-between items-center">
+                      <span>{size}</span>
+                      <span className="font-bold">KES {price}</span>
+                    </div>
+                  ))}
                 </div>
+                <Button
+                  onClick={() => navigate(`/order?brand=${brand.name}`)}
+                  variant="outline"
+                  className="w-full mt-4 hover:bg-accent hover:text-accent-foreground"
+                >
+                  Order Now
+                </Button>
               </Card>
             </motion.div>
           ))}
