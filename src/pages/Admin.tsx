@@ -15,10 +15,15 @@ import { useState } from "react";
 interface Order {
   id: string;
   customer: string;
+  phone: string;
   address: string;
   brand: string;
+  size: string;
+  quantity: number;
+  type: "new" | "refill";
   status: "pending" | "assigned" | "delivered";
   deliveryPerson?: string;
+  orderDate: string;
 }
 
 const Admin = () => {
@@ -27,17 +32,27 @@ const Admin = () => {
     {
       id: "1",
       customer: "John Doe",
-      address: "123 Main St",
-      brand: "Premium Gas",
+      phone: "+254 123 456 789",
+      address: "123 Main St, Nairobi",
+      brand: "Total Gas",
+      size: "6kg",
+      quantity: 1,
+      type: "new",
       status: "pending",
+      orderDate: "2024-02-20"
     },
     {
       id: "2",
       customer: "Jane Smith",
-      address: "456 Oak Ave",
-      brand: "Standard Gas",
+      phone: "+254 987 654 321",
+      address: "456 Oak Ave, Mombasa",
+      brand: "Shell Gas",
+      size: "12kg",
+      quantity: 2,
+      type: "refill",
       status: "assigned",
       deliveryPerson: "Mike Wilson",
+      orderDate: "2024-02-19"
     },
   ]);
 
@@ -57,6 +72,19 @@ const Admin = () => {
     toast({
       title: "Delivery Assigned",
       description: `Order assigned to ${deliveryPerson}`,
+    });
+  };
+
+  const markAsDelivered = (orderId: string) => {
+    setOrders(orders.map(order => 
+      order.id === orderId
+        ? { ...order, status: "delivered" }
+        : order
+    ));
+
+    toast({
+      title: "Order Delivered",
+      description: "Order has been marked as delivered",
     });
   };
 
@@ -81,9 +109,10 @@ const Admin = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Order ID</TableHead>
+                  <TableHead>Date</TableHead>
                   <TableHead>Customer</TableHead>
-                  <TableHead>Address</TableHead>
-                  <TableHead>Brand</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Details</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
@@ -92,9 +121,22 @@ const Admin = () => {
                 {orders.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell>{order.id}</TableCell>
-                    <TableCell>{order.customer}</TableCell>
-                    <TableCell>{order.address}</TableCell>
-                    <TableCell>{order.brand}</TableCell>
+                    <TableCell>{order.orderDate}</TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{order.customer}</div>
+                        <div className="text-sm text-muted-foreground">{order.address}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{order.phone}</TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{order.brand}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {order.size} x {order.quantity} ({order.type})
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <span
                         className={`px-2 py-1 rounded-full text-sm ${
@@ -125,8 +167,22 @@ const Admin = () => {
                         </div>
                       )}
                       {order.status === "assigned" && (
-                        <span className="text-sm text-muted-foreground">
-                          Assigned to {order.deliveryPerson}
+                        <div className="space-y-2">
+                          <div className="text-sm text-muted-foreground">
+                            Assigned to {order.deliveryPerson}
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => markAsDelivered(order.id)}
+                            className="bg-green-500 text-white hover:bg-green-600"
+                          >
+                            Mark Delivered
+                          </Button>
+                        </div>
+                      )}
+                      {order.status === "delivered" && (
+                        <span className="text-sm text-green-600 font-medium">
+                          Completed
                         </span>
                       )}
                     </TableCell>
