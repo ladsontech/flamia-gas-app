@@ -13,16 +13,7 @@ const Order = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const selectedBrand = searchParams.get("brand") || "";
-  const orderType = searchParams.get("type") || "new";
-
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    address: "",
-    size: "6kg",
-    quantity: 1
-  });
+  const selectedBrand = searchParams.get("brand") || "Premium Gas";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,11 +31,6 @@ const Order = () => {
     navigate("/");
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
       <motion.div
@@ -56,28 +42,33 @@ const Order = () => {
         <Card className="glass-card p-6">
           <div className="text-center mb-6">
             <span className="px-4 py-1 bg-accent text-accent-foreground rounded-full text-sm mb-4 inline-block">
-              {orderType === "new" ? "New Cylinder" : "Refill Order"}
+              New Order
             </span>
             <h1 className="text-2xl font-bold">Order Gas Cylinder</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {selectedBrand && (
-              <div className="space-y-2">
-                <Label>Selected Brand</Label>
-                <Input value={selectedBrand} readOnly className="bg-muted" />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="brand">Selected Brand</Label>
+              <Input
+                id="brand"
+                value={selectedBrand}
+                readOnly
+                className="bg-muted"
+              />
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
+              <Input id="name" required placeholder="John Doe" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address">Delivery Address</Label>
               <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
+                id="address"
                 required
-                placeholder="John Doe"
+                placeholder="123 Main St, City"
               />
             </div>
 
@@ -85,51 +76,9 @@ const Order = () => {
               <Label htmlFor="phone">Phone Number</Label>
               <Input
                 id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
+                type="tel"
                 required
-                placeholder="+254 123 456 789"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="address">Delivery Address</Label>
-              <Input
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your delivery address"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="size">Cylinder Size</Label>
-              <select
-                id="size"
-                name="size"
-                value={formData.size}
-                onChange={handleInputChange}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="6kg">6 KG</option>
-                <option value="12kg">12 KG</option>
-                <option value="45kg">45 KG</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity</Label>
-              <Input
-                id="quantity"
-                name="quantity"
-                type="number"
-                min="1"
-                value={formData.quantity}
-                onChange={handleInputChange}
-                required
+                placeholder="+1 234 567 8900"
               />
             </div>
 
