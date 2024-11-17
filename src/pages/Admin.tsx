@@ -1,34 +1,13 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
-
-interface Order {
-  id: string;
-  customer: string;
-  phone: string;
-  address: string;
-  brand: string;
-  size: string;
-  quantity: number;
-  type: "new" | "refill";
-  status: "pending" | "assigned" | "delivered";
-  delivery_person?: string;
-  order_date: string;
-}
+import { LoginForm } from "@/components/admin/LoginForm";
+import { OrdersTable } from "@/components/admin/OrdersTable";
+import { Order } from "@/types/order";
 
 const Admin = () => {
   const { toast } = useToast();
@@ -61,8 +40,9 @@ const Admin = () => {
         description: "Failed to fetch orders",
         variant: "destructive",
       });
-    } else {
-      setOrders(data || []);
+    } else if (data) {
+      // Type assertion to ensure the data matches our Order type
+      setOrders(data as Order[]);
     }
     setLoading(false);
   };
@@ -152,37 +132,12 @@ const Admin = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
-        <div className="container max-w-md">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card className="p-6">
-              <h1 className="text-2xl font-bold text-center mb-6">Admin Login</h1>
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <Input
-                    type="password"
-                    placeholder="Enter admin password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={authLoading}
-                >
-                  {authLoading ? "Authenticating..." : "Login"}
-                </Button>
-              </form>
-            </Card>
-          </motion.div>
-        </div>
-      </div>
+      <LoginForm
+        password={password}
+        setPassword={setPassword}
+        handleLogin={handleLogin}
+        authLoading={authLoading}
+      />
     );
   }
 
@@ -213,91 +168,12 @@ const Admin = () => {
           </div>
 
           <Card className="glass-card p-6">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Details</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell>{order.id}</TableCell>
-                    <TableCell>{new Date(order.order_date).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{order.customer}</div>
-                        <div className="text-sm text-muted-foreground">{order.address}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{order.phone}</TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{order.brand}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {order.size} x {order.quantity} ({order.type})
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-2 py-1 rounded-full text-sm ${
-                          order.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : order.status === "assigned"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {order.status === "pending" && (
-                        <div className="flex gap-2">
-                          {deliveryPersonnel.map((person) => (
-                            <Button
-                              key={person}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => assignDelivery(order.id, person)}
-                              className="hover:bg-accent hover:text-accent-foreground"
-                            >
-                              Assign to {person}
-                            </Button>
-                          ))}
-                        </div>
-                      )}
-                      {order.status === "assigned" && (
-                        <div className="space-y-2">
-                          <div className="text-sm text-muted-foreground">
-                            Assigned to {order.delivery_person}
-                          </div>
-                          <Button
-                            size="sm"
-                            onClick={() => markAsDelivered(order.id)}
-                            className="bg-green-500 text-white hover:bg-green-600"
-                          >
-                            Mark Delivered
-                          </Button>
-                        </div>
-                      )}
-                      {order.status === "delivered" && (
-                        <span className="text-sm text-green-600 font-medium">
-                          Completed
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <OrdersTable
+              orders={orders}
+              deliveryPersonnel={deliveryPersonnel}
+              assignDelivery={assignDelivery}
+              markAsDelivered={markAsDelivered}
+            />
           </Card>
         </motion.div>
       </div>
