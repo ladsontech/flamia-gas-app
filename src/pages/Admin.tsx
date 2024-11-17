@@ -1,17 +1,13 @@
-import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import bcrypt from "bcryptjs";
+import { useToast } from "@/components/ui/use-toast";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { Order } from "@/types/order";
+import { verifyAdminPassword, fetchOrders, updateOrderStatus } from "@/services/database";
+import { motion } from "framer-motion";
 
 const Admin = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,26 +21,24 @@ const Admin = () => {
   ];
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (isAuthenticated) {
+      loadOrders();
+    }
+  }, [isAuthenticated]);
 
-  const fetchOrders = async () => {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
+  const loadOrders = async () => {
+    try {
+      const data = await fetchOrders();
+      setOrders(data);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to fetch orders",
         variant: "destructive",
       });
-    } else if (data) {
-      // Type assertion to ensure the data matches our Order type
-      setOrders(data as Order[]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -52,14 +46,7 @@ const Admin = () => {
     setAuthLoading(true);
 
     try {
-      const { data, error } = await supabase
-        .from('admin_credentials')
-        .select('password_hash')
-        .single();
-
-      if (error) throw error;
-
-      const isValid = await bcrypt.compare(password, data.password_hash);
+      const isValid = await verifyAdminPassword(password);
       
       if (isValid) {
         setIsAuthenticated(true);
@@ -80,53 +67,42 @@ const Admin = () => {
         description: "Authentication failed",
         variant: "destructive",
       });
+    } finally {
+      setAuthLoading(false);
     }
-
-    setAuthLoading(false);
   };
 
   const assignDelivery = async (orderId: string, deliveryPerson: string) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ 
-        status: 'assigned',
-        delivery_person: deliveryPerson 
-      })
-      .eq('id', orderId);
-
-    if (error) {
+    try {
+      await updateOrderStatus(orderId, 'assigned', deliveryPerson);
+      toast({
+        title: "Success",
+        description: `Order assigned to ${deliveryPerson}`,
+      });
+      loadOrders();
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to assign delivery",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Success",
-        description: `Order assigned to ${deliveryPerson}`,
-      });
-      fetchOrders();
     }
   };
 
   const markAsDelivered = async (orderId: string) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: 'delivered' })
-      .eq('id', orderId);
-
-    if (error) {
+    try {
+      await updateOrderStatus(orderId, 'delivered');
+      toast({
+        title: "Success",
+        description: "Order marked as delivered",
+      });
+      loadOrders();
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to mark as delivered",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Success",
-        description: "Order marked as delivered",
-      });
-      fetchOrders();
     }
   };
 
@@ -167,14 +143,12 @@ const Admin = () => {
             <h1 className="text-3xl font-bold">Order Management</h1>
           </div>
 
-          <Card className="glass-card p-6">
-            <OrdersTable
-              orders={orders}
-              deliveryPersonnel={deliveryPersonnel}
-              assignDelivery={assignDelivery}
-              markAsDelivered={markAsDelivered}
-            />
-          </Card>
+          <OrdersTable
+            orders={orders}
+            deliveryPersonnel={deliveryPersonnel}
+            assignDelivery={assignDelivery}
+            markAsDelivered={markAsDelivered}
+          />
         </motion.div>
       </div>
     </div>
