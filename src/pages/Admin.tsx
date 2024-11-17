@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -9,8 +10,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
 
 interface Order {
   id: string;
@@ -22,39 +26,18 @@ interface Order {
   quantity: number;
   type: "new" | "refill";
   status: "pending" | "assigned" | "delivered";
-  deliveryPerson?: string;
-  orderDate: string;
+  delivery_person?: string;
+  order_date: string;
 }
 
 const Admin = () => {
   const { toast } = useToast();
-  const [orders, setOrders] = useState<Order[]>([
-    {
-      id: "1",
-      customer: "John Doe",
-      phone: "+254 123 456 789",
-      address: "123 Main St, Nairobi",
-      brand: "Total Gas",
-      size: "6kg",
-      quantity: 1,
-      type: "new",
-      status: "pending",
-      orderDate: "2024-02-20"
-    },
-    {
-      id: "2",
-      customer: "Jane Smith",
-      phone: "+254 987 654 321",
-      address: "456 Oak Ave, Mombasa",
-      brand: "Shell Gas",
-      size: "12kg",
-      quantity: 2,
-      type: "refill",
-      status: "assigned",
-      deliveryPerson: "Mike Wilson",
-      orderDate: "2024-02-19"
-    },
-  ]);
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
 
   const deliveryPersonnel = [
     "Mike Wilson",
@@ -62,31 +45,156 @@ const Admin = () => {
     "Tom Brown",
   ];
 
-  const assignDelivery = (orderId: string, deliveryPerson: string) => {
-    setOrders(orders.map(order => 
-      order.id === orderId
-        ? { ...order, status: "assigned", deliveryPerson }
-        : order
-    ));
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-    toast({
-      title: "Delivery Assigned",
-      description: `Order assigned to ${deliveryPerson}`,
-    });
+  const fetchOrders = async () => {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch orders",
+        variant: "destructive",
+      });
+    } else {
+      setOrders(data || []);
+    }
+    setLoading(false);
   };
 
-  const markAsDelivered = (orderId: string) => {
-    setOrders(orders.map(order => 
-      order.id === orderId
-        ? { ...order, status: "delivered" }
-        : order
-    ));
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
 
-    toast({
-      title: "Order Delivered",
-      description: "Order has been marked as delivered",
-    });
+    try {
+      const { data, error } = await supabase
+        .from('admin_credentials')
+        .select('password_hash')
+        .single();
+
+      if (error) throw error;
+
+      const isValid = await bcrypt.compare(password, data.password_hash);
+      
+      if (isValid) {
+        setIsAuthenticated(true);
+        toast({
+          title: "Success",
+          description: "Logged in successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Invalid password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Authentication failed",
+        variant: "destructive",
+      });
+    }
+
+    setAuthLoading(false);
   };
+
+  const assignDelivery = async (orderId: string, deliveryPerson: string) => {
+    const { error } = await supabase
+      .from('orders')
+      .update({ 
+        status: 'assigned',
+        delivery_person: deliveryPerson 
+      })
+      .eq('id', orderId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign delivery",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: `Order assigned to ${deliveryPerson}`,
+      });
+      fetchOrders();
+    }
+  };
+
+  const markAsDelivered = async (orderId: string) => {
+    const { error } = await supabase
+      .from('orders')
+      .update({ status: 'delivered' })
+      .eq('id', orderId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to mark as delivered",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Order marked as delivered",
+      });
+      fetchOrders();
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
+        <div className="container max-w-md">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <Card className="p-6">
+              <h1 className="text-2xl font-bold text-center mb-6">Admin Login</h1>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <Input
+                    type="password"
+                    placeholder="Enter admin password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={authLoading}
+                >
+                  {authLoading ? "Authenticating..." : "Login"}
+                </Button>
+              </form>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
+        <div className="container">
+          <div className="text-center">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
@@ -121,7 +229,7 @@ const Admin = () => {
                 {orders.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell>{order.id}</TableCell>
-                    <TableCell>{order.orderDate}</TableCell>
+                    <TableCell>{new Date(order.order_date).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div>
                         <div className="font-medium">{order.customer}</div>
@@ -169,7 +277,7 @@ const Admin = () => {
                       {order.status === "assigned" && (
                         <div className="space-y-2">
                           <div className="text-sm text-muted-foreground">
-                            Assigned to {order.deliveryPerson}
+                            Assigned to {order.delivery_person}
                           </div>
                           <Button
                             size="sm"

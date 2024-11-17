@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -28,16 +29,38 @@ const Order = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    toast({
-      title: "Order Placed Successfully",
-      description: "We'll deliver your gas cylinder soon!",
-    });
-    
-    setLoading(false);
-    navigate("/");
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .insert([
+          {
+            customer: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            brand: selectedBrand,
+            size: formData.size,
+            quantity: formData.quantity,
+            type: orderType
+          }
+        ]);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Order Placed Successfully",
+        description: "We'll deliver your gas cylinder soon!",
+      });
+      
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to place order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
