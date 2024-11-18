@@ -19,15 +19,15 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data: { user }, error: authError } = await supabase.auth.signUp({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (signInError) throw signInError;
 
-      if (user) {
-        // Check if user is admin
+      if (signInData.user) {
+        // Check user role
         const { data: userData } = await supabase
           .from('users')
           .select('role')

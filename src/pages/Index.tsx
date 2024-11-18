@@ -29,22 +29,13 @@ const Index = () => {
       <div className="container px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">Gas Delivery Service</h1>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/login")}
-              className="hover:bg-accent hover:text-accent-foreground"
-            >
-              Login
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/admin")}
-              className="hover:bg-accent hover:text-accent-foreground"
-            >
-              Admin
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/login")}
+            className="hover:bg-accent hover:text-accent-foreground"
+          >
+            Login
+          </Button>
         </div>
 
         <motion.div
