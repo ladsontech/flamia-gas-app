@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Admin from "./pages/Admin";
 import Refill from "./pages/Refill";
+import Login from "./pages/Login";
 import { motion, AnimatePresence } from "framer-motion";
 import React from 'react';
 
@@ -26,6 +27,7 @@ const App = () => {
               <Route path="/order" element={<Order />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/refill" element={<Refill />} />
+              <Route path="/login" element={<Login />} />
             </Routes>
           </AnimatePresence>
         </BrowserRouter>
