@@ -6,7 +6,7 @@ export interface Order {
   brand: string;
   size: string;
   quantity: number;
-  type: "new" | "refill";
+  type: string; // Changed from "new" | "refill" to string to match database type
   status: "pending" | "assigned" | "delivered";
   delivery_person?: string | null;
   order_date: string;
