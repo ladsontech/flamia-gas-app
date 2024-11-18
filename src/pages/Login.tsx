@@ -19,12 +19,46 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // First try to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) throw signInError;
+      // If sign in fails due to no user, create one
+      if (signInError?.message === "Invalid login credentials") {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+        if (signUpError) throw signUpError;
+
+        if (signUpData.user) {
+          // Create user record in users table
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([
+              { 
+                email,
+                role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
+              }
+            ]);
+
+          if (insertError) throw insertError;
+
+          // Try signing in again after creating the account
+          const { data: newSignInData, error: newSignInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (newSignInError) throw newSignInError;
+          signInData = newSignInData;
+        }
+      } else if (signInError) {
+        throw signInError;
+      }
 
       if (signInData.user) {
         // Check user role
