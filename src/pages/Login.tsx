@@ -23,7 +23,7 @@ const Login = () => {
       let userData = null;
 
       if (isLogin) {
-        let { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -39,15 +39,29 @@ const Login = () => {
         if (signUpError) throw signUpError;
 
         if (signUpData.user) {
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert([{ 
-              email,
-              role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
-            }]);
+          try {
+            const { error: insertError } = await supabase
+              .from('users')
+              .insert([{ 
+                email,
+                role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
+              }]);
 
-          if (insertError) throw insertError;
-          userData = signUpData;
+            if (insertError) {
+              // If the user already exists in the users table, we can ignore this error
+              if (!insertError.message.includes('duplicate key value')) {
+                throw insertError;
+              }
+            }
+            userData = signUpData;
+          } catch (error: any) {
+            toast({
+              title: "Error",
+              description: error.message,
+              variant: "destructive",
+            });
+            return;
+          }
         }
       }
 
@@ -69,10 +83,14 @@ const Login = () => {
           description: isLogin ? "Logged in successfully" : "Account created successfully",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      let errorMessage = error.message;
+      if (error.message.includes('email_not_confirmed')) {
+        errorMessage = "Please check your email to confirm your account. For development, you can disable email confirmation in the Supabase dashboard.";
+      }
       toast({
         title: "Error",
-        description: "Authentication failed. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
