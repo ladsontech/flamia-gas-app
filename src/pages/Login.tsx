@@ -19,8 +19,10 @@ const Login = () => {
     setLoading(true);
 
     try {
+      let userData = null;
+
       // First try to sign in
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      let { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -48,27 +50,27 @@ const Login = () => {
           if (insertError) throw insertError;
 
           // Try signing in again after creating the account
-          const { data: newSignInData, error: newSignInError } = await supabase.auth.signInWithPassword({
+          const { data, error: newSignInError } = await supabase.auth.signInWithPassword({
             email,
             password,
           });
 
           if (newSignInError) throw newSignInError;
-          signInData = newSignInData;
+          signInData = data;
         }
       } else if (signInError) {
         throw signInError;
       }
 
-      if (signInData.user) {
+      if (signInData?.user) {
         // Check user role
-        const { data: userData } = await supabase
+        const { data: userRoleData } = await supabase
           .from('users')
           .select('role')
           .eq('email', email)
           .single();
 
-        if (userData?.role === 'admin') {
+        if (userRoleData?.role === 'admin') {
           navigate('/admin');
         } else {
           navigate('/');
