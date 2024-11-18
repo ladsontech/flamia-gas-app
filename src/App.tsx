@@ -9,6 +9,7 @@ import Order from "./pages/Order";
 import Admin from "./pages/Admin";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 import { motion, AnimatePresence } from "framer-motion";
 import React from 'react';
 
@@ -28,6 +29,7 @@ const App = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/refill" element={<Refill />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Routes>
           </AnimatePresence>
         </BrowserRouter>
