@@ -39,7 +39,14 @@ const Login = () => {
         if (signUpError) throw signUpError;
 
         if (signUpData.user) {
-          try {
+          // First check if user already exists in users table
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('email')
+            .eq('email', email)
+            .single();
+
+          if (!existingUser) {
             const { error: insertError } = await supabase
               .from('users')
               .insert([{ 
@@ -47,21 +54,11 @@ const Login = () => {
                 role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
               }]);
 
-            if (insertError) {
-              // If the user already exists in the users table, we can ignore this error
-              if (!insertError.message.includes('duplicate key value')) {
-                throw insertError;
-              }
+            if (insertError && !insertError.message.includes('duplicate key value')) {
+              throw insertError;
             }
-            userData = signUpData;
-          } catch (error: any) {
-            toast({
-              title: "Error",
-              description: error.message,
-              variant: "destructive",
-            });
-            return;
           }
+          userData = signUpData;
         }
       }
 
