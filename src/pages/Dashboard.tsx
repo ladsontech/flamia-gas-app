@@ -1,47 +1,61 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Order } from "@/types/order";
-import { LogOut } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Order } from "@/types/order";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-        return;
-      }
-      fetchOrders(session.user.email!);
-    };
-
     checkAuth();
-  }, [navigate]);
+    fetchOrders();
+  }, []);
 
-  const fetchOrders = async (email: string) => {
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    setUserEmail(session.user.email);
+  };
+
+  const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('customer', email)
-        .order('created_at', { ascending: false });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Check if user is admin
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('email', session.user.email)
+        .single();
+
+      let query = supabase.from('orders').select('*');
+      
+      // If not admin, only show user's orders
+      if (!userData || userData.role !== 'admin') {
+        query = query.eq('customer', session.user.email);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
-      console.error('Error fetching orders:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch orders. Please try again.",
-        variant: "destructive"
+        description: "Failed to fetch orders",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -49,55 +63,87 @@ const Dashboard = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/login');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive"
-      });
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'assigned':
+        return 'bg-blue-100 text-blue-800';
+      case 'delivered':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
+        <div className="container">
+          <div className="text-center">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
-      <div className="container max-w-sm mx-auto px-4">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">My Orders</h1>
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="h-5 w-5" />
-          </Button>
+    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
+      <div className="container max-w-4xl mx-auto px-4">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold mb-2">My Orders</h1>
+            <p className="text-muted-foreground">Welcome back, {userEmail}</p>
+          </div>
+          <div className="flex gap-4">
+            <Button onClick={() => navigate('/')} variant="outline">
+              Home
+            </Button>
+            <Button onClick={handleLogout} variant="ghost">
+              <LogOut className="h-5 w-5 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
 
-        {loading ? (
-          <p className="text-center">Loading orders...</p>
-        ) : orders.length === 0 ? (
+        {orders.length === 0 ? (
           <Card className="p-6 text-center">
             <p className="text-muted-foreground mb-4">No orders yet</p>
-            <Button onClick={() => navigate('/')}>Place an Order</Button>
+            <Button onClick={() => navigate('/order')}>Place an Order</Button>
           </Card>
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Card key={order.id} className="p-4">
-                <div className="flex justify-between items-start mb-2">
+              <Card key={order.id} className="p-6">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-semibold">{order.brand}</h3>
+                    <h3 className="font-semibold text-lg">{order.brand}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(order.created_at!).toLocaleDateString()}
+                      Ordered on {new Date(order.created_at!).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className="px-2 py-1 text-xs rounded-full bg-muted">
+                  <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
                 </div>
-                <div className="text-sm">
-                  <p>Size: {order.size}</p>
-                  <p>Quantity: {order.quantity}</p>
-                  <p>Type: {order.type}</p>
-                  <p className="mt-2 text-muted-foreground">{order.address}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Details</p>
+                    <p>Size: {order.size}</p>
+                    <p>Quantity: {order.quantity}</p>
+                    <p>Type: {order.type}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Delivery Information</p>
+                    <p>Address: {order.address}</p>
+                    <p>Phone: {order.phone}</p>
+                    {order.delivery_person && (
+                      <p>Delivery Person: {order.delivery_person}</p>
+                    )}
+                  </div>
                 </div>
               </Card>
             ))}

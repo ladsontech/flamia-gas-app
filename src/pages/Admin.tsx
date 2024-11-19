@@ -5,9 +5,12 @@ import { OrdersTable } from "@/components/admin/OrdersTable";
 import { Order } from "@/types/order";
 import { verifyAdminPassword, fetchOrders, updateOrderStatus } from "@/services/database";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,15 +24,41 @@ const Admin = () => {
   ];
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadOrders();
+    checkAdminAuth();
+  }, []);
+
+  const checkAdminAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/login');
+      return;
     }
-  }, [isAuthenticated]);
+
+    // Check if user is admin
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('email', session.user.email)
+      .single();
+
+    if (userData?.role !== 'admin') {
+      navigate('/dashboard');
+      return;
+    }
+
+    setIsAuthenticated(true);
+    loadOrders();
+  };
 
   const loadOrders = async () => {
     try {
-      const data = await fetchOrders();
-      setOrders(data);
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
     } catch (error) {
       toast({
         title: "Error",
