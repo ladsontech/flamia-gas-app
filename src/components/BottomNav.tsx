@@ -27,13 +27,11 @@ export const BottomNav = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login');
+    navigate('/');
   };
 
-  const handleAccountClick = () => {
-    if (!userEmail) {
-      navigate('/login');
-    }
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   return (
@@ -74,23 +72,28 @@ export const BottomNav = () => {
         <ShoppingBag className="h-5 w-5" />
         <span className="text-xs">Accessories</span>
       </Link>
-      {userEmail ? (
-        <button
-          onClick={handleLogout}
-          className="flex flex-col items-center space-y-1 text-muted-foreground"
-        >
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex flex-col items-center space-y-1 text-muted-foreground">
           <Settings className="h-5 w-5" />
-          <span className="text-xs">Logout</span>
-        </button>
-      ) : (
-        <button
-          onClick={handleAccountClick}
-          className="flex flex-col items-center space-y-1 text-muted-foreground"
-        >
-          <Settings className="h-5 w-5" />
-          <span className="text-xs">Login</span>
-        </button>
-      )}
+          <span className="text-xs">Settings</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {userEmail ? (
+            <>
+              <DropdownMenuItem className="text-sm text-muted-foreground">
+                {userEmail}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                Logout
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <DropdownMenuItem onClick={handleLogin}>
+              Login
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </nav>
   );
 };

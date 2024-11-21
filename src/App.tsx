@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Admin from "./pages/Admin";
@@ -12,12 +12,27 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
+import { supabase } from "@/integrations/supabase/client";
 
 const AppContent = () => {
   const location = useLocation();
-  const showBottomNav = !['/login', '/admin', '/order'].includes(location.pathname);
+  const navigate = useNavigate();
+  const showBottomNav = !['/login', '/admin'].includes(location.pathname);
+
+  useEffect(() => {
+    const checkAuthForProtectedRoutes = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const protectedRoutes = ['/dashboard', '/order'];
+      
+      if (protectedRoutes.includes(location.pathname) && !session) {
+        navigate('/login');
+      }
+    };
+
+    checkAuthForProtectedRoutes();
+  }, [location.pathname, navigate]);
 
   return (
     <>
