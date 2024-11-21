@@ -17,23 +17,25 @@ import { BottomNav } from "./components/BottomNav";
 
 const AppContent = () => {
   const location = useLocation();
-  const showBottomNav = !['/login', '/admin'].includes(location.pathname);
+  const showBottomNav = !['/login', '/admin', '/order'].includes(location.pathname);
 
   return (
-    <div className={`min-h-screen ${showBottomNav ? 'pb-20' : ''}`}>
-      <AnimatePresence mode="wait">
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/order" element={<Order />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/refill" element={<Refill />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/accessories" element={<Accessories />} />
-        </Routes>
-      </AnimatePresence>
+    <>
+      <div className="min-h-screen pb-16">
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/order" element={<Order />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/refill" element={<Refill />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/accessories" element={<Accessories />} />
+          </Routes>
+        </AnimatePresence>
+      </div>
       {showBottomNav && <BottomNav />}
-    </div>
+    </>
   );
 };
 
