@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
 import React from 'react';
 import { BottomNav } from "./components/BottomNav";
@@ -28,6 +29,7 @@ const AppContent = () => {
           <Route path="/refill" element={<Refill />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/accessories" element={<Accessories />} />
         </Routes>
       </AnimatePresence>
       {showBottomNav && <BottomNav />}
