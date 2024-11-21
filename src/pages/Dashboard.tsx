@@ -3,9 +3,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Order } from "@/types/order";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -16,7 +14,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     checkAuth();
-    fetchOrders();
   }, []);
 
   const checkAuth = async () => {
@@ -26,25 +23,23 @@ const Dashboard = () => {
       return;
     }
     setUserEmail(session.user.email);
+    fetchOrders(session.user.email);
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (email: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
       // Check if user is admin
       const { data: userData } = await supabase
         .from('users')
         .select('role')
-        .eq('email', session.user.email)
+        .eq('email', email)
         .single();
 
       let query = supabase.from('orders').select('*');
       
       // If not admin, only show user's orders
       if (!userData || userData.role !== 'admin') {
-        query = query.eq('customer', session.user.email);
+        query = query.eq('customer', email);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -60,11 +55,6 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
   };
 
   const getStatusColor = (status: string) => {
@@ -93,26 +83,17 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
       <div className="container max-w-4xl mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">My Orders</h1>
-            <p className="text-muted-foreground">Welcome back, {userEmail}</p>
-          </div>
-          <div className="flex gap-4">
-            <Button onClick={() => navigate('/')} variant="outline">
-              Home
-            </Button>
-            <Button onClick={handleLogout} variant="ghost">
-              <LogOut className="h-5 w-5 mr-2" />
-              Logout
-            </Button>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold mb-2">My Orders</h1>
+          <p className="text-muted-foreground">Welcome back, {userEmail}</p>
         </div>
 
         {orders.length === 0 ? (
           <Card className="p-6 text-center">
             <p className="text-muted-foreground mb-4">No orders yet</p>
-            <Button onClick={() => navigate('/order')}>Place an Order</Button>
+            <button onClick={() => navigate('/order')} className="bg-primary text-white px-4 py-2 rounded-md">
+              Place an Order
+            </button>
           </Card>
         ) : (
           <div className="space-y-4">

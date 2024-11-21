@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 
@@ -14,10 +14,24 @@ const Order = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const selectedBrand = searchParams.get("brand") || "";
   const orderType = searchParams.get("type") || "refill";
   const selectedSize = searchParams.get("size") || "";
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    setUserEmail(session.user.email);
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -36,7 +50,7 @@ const Order = () => {
         .from('orders')
         .insert([
           {
-            customer: formData.name,
+            customer: userEmail,
             phone: formData.phone,
             address: formData.address,
             brand: selectedBrand,
@@ -53,7 +67,7 @@ const Order = () => {
         description: "We'll deliver your gas cylinder soon!",
       });
       
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
@@ -97,15 +111,8 @@ const Order = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="John Doe"
-                />
+                <Label>Email</Label>
+                <Input value={userEmail || ''} readOnly className="bg-muted" />
               </div>
 
               <div className="space-y-2">
