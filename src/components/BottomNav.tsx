@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, RefreshCw, Package, Settings } from "lucide-react";
+import { Home, RefreshCw, Package, Settings, ShoppingBag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -28,6 +28,12 @@ export const BottomNav = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
+  };
+
+  const handleAccountClick = () => {
+    if (!userEmail) {
+      navigate('/login');
+    }
   };
 
   return (
@@ -59,22 +65,32 @@ export const BottomNav = () => {
         <Package className="h-5 w-5" />
         <span className="text-xs">My Orders</span>
       </Link>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex flex-col items-center space-y-1">
+      <Link
+        to="/accessories"
+        className={`flex flex-col items-center space-y-1 ${
+          location.pathname === "/accessories" ? "text-primary" : "text-muted-foreground"
+        }`}
+      >
+        <ShoppingBag className="h-5 w-5" />
+        <span className="text-xs">Accessories</span>
+      </Link>
+      {userEmail ? (
+        <button
+          onClick={handleLogout}
+          className="flex flex-col items-center space-y-1 text-muted-foreground"
+        >
           <Settings className="h-5 w-5" />
-          <span className="text-xs">Account</span>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {userEmail && (
-            <DropdownMenuItem className="text-sm text-muted-foreground">
-              {userEmail}
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem onClick={handleLogout}>
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <span className="text-xs">Logout</span>
+        </button>
+      ) : (
+        <button
+          onClick={handleAccountClick}
+          className="flex flex-col items-center space-y-1 text-muted-foreground"
+        >
+          <Settings className="h-5 w-5" />
+          <span className="text-xs">Login</span>
+        </button>
+      )}
     </nav>
   );
 };
