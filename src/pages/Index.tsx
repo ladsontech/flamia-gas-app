@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LogIn, UserCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,10 +46,10 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white">
-      <div className="container px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-primary/10 to-white">
+      <div className="container px-4 py-4">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl font-bold text-primary">
             Gas Delivery Service
           </h1>
         </div>
@@ -59,20 +58,20 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12 max-w-2xl mx-auto"
+          className="text-center mb-8 max-w-2xl mx-auto"
         >
-          <span className="px-4 py-1 bg-accent text-accent-foreground rounded-full text-sm mb-4 inline-block shadow-sm">
-            Premium Gas Cylinders
+          <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-xs mb-3 inline-block">
+            Fast Gas Delivery
           </span>
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
             Quality Gas Cylinders
           </h2>
-          <p className="text-muted-foreground mb-8 text-lg">
+          <p className="text-muted-foreground mb-6 text-base">
             Choose from our selection of trusted gas brands
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           {brands.map((brand, index) => (
             <motion.div
               key={brand.name}
@@ -80,17 +79,17 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="glass-card p-6 hover-scale overflow-hidden">
-                <div className="relative h-48 mb-4 rounded-md overflow-hidden">
+              <Card className="glass-card p-4 hover-scale overflow-hidden">
+                <div className="relative h-40 mb-3 rounded-md overflow-hidden">
                   <img
                     src={brand.image}
                     alt={brand.name}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                   />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{brand.name}</h3>
-                <p className="text-muted-foreground mb-2 line-clamp-2">{brand.description}</p>
-                <p className="text-lg font-semibold text-primary mb-4">{brand.price}</p>
+                <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
+                <p className="text-muted-foreground mb-2 text-sm line-clamp-2">{brand.description}</p>
+                <p className="text-base font-semibold text-primary mb-3">{brand.price}</p>
                 <Button
                   onClick={() => navigate(`/order?brand=${brand.name}`)}
                   variant="outline"
