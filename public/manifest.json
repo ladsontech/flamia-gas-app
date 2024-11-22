@@ -1,0 +1,24 @@
+{
+  "name": "Gasify Quick",
+  "short_name": "Gasify",
+  "description": "Your Gas Delivery Solution",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#22C55E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
