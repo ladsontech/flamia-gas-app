@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      accessories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          price: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          price: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
       admin_credentials: {
         Row: {
           created_at: string | null
@@ -29,10 +53,12 @@ export type Database = {
       }
       orders: {
         Row: {
+          accessory_id: string | null
           address: string
           brand: string
           created_at: string | null
           customer: string
+          customer_name: string | null
           delivery_person: string | null
           id: string
           order_date: string | null
@@ -43,10 +69,12 @@ export type Database = {
           type: string
         }
         Insert: {
+          accessory_id?: string | null
           address: string
           brand: string
           created_at?: string | null
           customer: string
+          customer_name?: string | null
           delivery_person?: string | null
           id?: string
           order_date?: string | null
@@ -57,10 +85,12 @@ export type Database = {
           type: string
         }
         Update: {
+          accessory_id?: string | null
           address?: string
           brand?: string
           created_at?: string | null
           customer?: string
+          customer_name?: string | null
           delivery_person?: string | null
           id?: string
           order_date?: string | null
@@ -70,25 +100,39 @@ export type Database = {
           status?: string
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_accessory_id_fkey"
+            columns: ["accessory_id"]
+            isOneToOne: false
+            referencedRelation: "accessories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
           created_at: string
           email: string
+          first_name: string | null
           id: string
+          last_name: string | null
           role: string
         }
         Insert: {
           created_at?: string
           email: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           role?: string
         }
         Update: {
           created_at?: string
           email?: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           role?: string
         }
         Relationships: []

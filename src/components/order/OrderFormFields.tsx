@@ -1,6 +1,15 @@
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+
+interface Accessory {
+  id: string;
+  name: string;
+  price: number;
+}
 
 interface OrderFormFieldsProps {
   formData: {
@@ -9,12 +18,38 @@ interface OrderFormFieldsProps {
     type: string;
     size: string;
     quantity: number;
+    accessory_id?: string;
   };
   setFormData: (data: any) => void;
   selectedBrand: string;
 }
 
 export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderFormFieldsProps) => {
+  const [accessories, setAccessories] = useState<Accessory[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchAccessories();
+  }, []);
+
+  const fetchAccessories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('accessories')
+        .select('id, name, price')
+        .order('name');
+
+      if (error) throw error;
+      setAccessories(data || []);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load accessories",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -97,6 +132,26 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="accessory">Add Accessory (Optional)</Label>
+        <Select 
+          value={formData.accessory_id || ""} 
+          onValueChange={(value) => setFormData(prev => ({ ...prev, accessory_id: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select an accessory" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">None</SelectItem>
+            {accessories.map((accessory) => (
+              <SelectItem key={accessory.id} value={accessory.id}>
+                {accessory.name} - KES {accessory.price}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </>
   );

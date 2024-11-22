@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -39,24 +41,17 @@ const Login = () => {
         if (signUpError) throw signUpError;
 
         if (signUpData.user) {
-          // First check if user already exists in users table
-          const { data: existingUser } = await supabase
+          const { error: insertError } = await supabase
             .from('users')
-            .select('email')
-            .eq('email', email)
-            .single();
+            .insert([{ 
+              email,
+              first_name: firstName,
+              last_name: lastName,
+              role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
+            }]);
 
-          if (!existingUser) {
-            const { error: insertError } = await supabase
-              .from('users')
-              .insert([{ 
-                email,
-                role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
-              }]);
-
-            if (insertError && !insertError.message.includes('duplicate key value')) {
-              throw insertError;
-            }
+          if (insertError && !insertError.message.includes('duplicate key value')) {
+            throw insertError;
           }
           userData = signUpData;
         }
@@ -146,6 +141,24 @@ const Login = () => {
                       placeholder="Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                       required
                     />
                   </div>
