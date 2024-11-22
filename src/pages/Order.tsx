@@ -17,7 +17,7 @@ const Order = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const selectedBrand = searchParams.get("brand") || "";
-  const orderType = searchParams.get("type") || "refill";
+  const orderType = searchParams.get("type") === "fullset" ? "fullset" : "refill"; // Ensure type is either 'fullset' or 'refill'
   const selectedSize = searchParams.get("size") || "";
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Order = () => {
             brand: selectedBrand,
             size: formData.size,
             quantity: formData.quantity,
-            type: orderType
+            type: orderType // This will now always be either 'fullset' or 'refill'
           }
         ]);
 
