@@ -1,132 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Extract OrderForm component to reduce file size
-const OrderForm = ({ 
-  formData, 
-  setFormData, 
-  handleSubmit, 
-  loading, 
-  selectedBrand, 
-  userEmail 
-}: {
-  formData: any;
-  setFormData: (data: any) => void;
-  handleSubmit: (e: React.FormEvent) => void;
-  loading: boolean;
-  selectedBrand: string;
-  userEmail: string | null;
-}) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {selectedBrand && (
-        <div className="space-y-2">
-          <Label>Selected Brand</Label>
-          <Input value={selectedBrand} readOnly className="bg-muted" />
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <Label>Email</Label>
-        <Input value={userEmail || ''} readOnly className="bg-muted" />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="phone">Phone Number</Label>
-        <Input
-          id="phone"
-          name="phone"
-          value={formData.phone}
-          onChange={handleInputChange}
-          required
-          placeholder="+256 123 456 789"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="address">Delivery Address</Label>
-        <Input
-          id="address"
-          name="address"
-          value={formData.address}
-          onChange={handleInputChange}
-          required
-          placeholder="Enter your delivery address"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="type">Order Type</Label>
-        <Select 
-          value={formData.type} 
-          onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select order type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="fullset">New Cylinder (Full Set)</SelectItem>
-            <SelectItem value="refill">Refill Only</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="size">Cylinder Size</Label>
-        <Select 
-          value={formData.size} 
-          onValueChange={(value) => setFormData(prev => ({ ...prev, size: value }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select cylinder size" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="3kg">3 KG</SelectItem>
-            <SelectItem value="6kg">6 KG</SelectItem>
-            <SelectItem value="12kg">12 KG</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="quantity">Quantity</Label>
-        <Input
-          id="quantity"
-          name="quantity"
-          type="number"
-          min="1"
-          value={formData.quantity}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-
-      <div className="pt-4">
-        <Button
-          type="submit"
-          className="w-full bg-accent text-white hover:bg-accent/90"
-          disabled={loading}
-        >
-          {loading ? "Processing..." : "Place Order"}
-        </Button>
-      </div>
-    </form>
-  );
-};
+import { OrderHeader } from "@/components/order/OrderHeader";
+import { OrderFormFields } from "@/components/order/OrderFormFields";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -209,21 +90,25 @@ const Order = () => {
           exit={{ opacity: 0, y: -20 }}
         >
           <Card className="p-6">
-            <div className="text-center mb-6">
-              <span className="px-4 py-1 bg-accent text-white rounded-full text-sm mb-4 inline-block">
-                {formData.type === "refill" ? "Refill Order" : "New Cylinder Order"}
-              </span>
-              <h1 className="text-2xl font-bold">Order Gas Cylinder</h1>
-            </div>
+            <OrderHeader orderType={formData.type} />
 
-            <OrderForm 
-              formData={formData}
-              setFormData={setFormData}
-              handleSubmit={handleSubmit}
-              loading={loading}
-              selectedBrand={selectedBrand}
-              userEmail={userEmail}
-            />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <OrderFormFields 
+                formData={formData}
+                setFormData={setFormData}
+                selectedBrand={selectedBrand}
+              />
+
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  className="w-full bg-accent text-white hover:bg-accent/90"
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Place Order"}
+                </Button>
+              </div>
+            </form>
           </Card>
         </motion.div>
       </div>
