@@ -91,7 +91,7 @@ const Index = () => {
                 <p className="text-muted-foreground mb-2 text-sm line-clamp-2">{brand.description}</p>
                 <p className="text-base font-semibold text-accent mb-3">{brand.price}</p>
                 <Button
-                  onClick={() => navigate(`/order?brand=${brand.name}`)}
+                  onClick={() => navigate(`/order?brand=${brand.name}&type=fullset`)}
                   variant="outline"
                   className="w-full bg-accent text-white hover:bg-accent/90"
                 >

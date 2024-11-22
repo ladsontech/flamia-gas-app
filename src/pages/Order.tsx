@@ -85,7 +85,7 @@ const Order = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="container max-w-md px-4">
         <BackButton />
         
@@ -96,8 +96,8 @@ const Order = () => {
         >
           <Card className="p-6">
             <div className="text-center mb-6">
-              <span className="px-4 py-1 bg-accent text-accent-foreground rounded-full text-sm mb-4 inline-block">
-                {orderType === "refill" ? "Refill Order" : "New Order"}
+              <span className="px-4 py-1 bg-accent text-white rounded-full text-sm mb-4 inline-block">
+                {orderType === "refill" ? "Refill Order" : "New Cylinder Order"}
               </span>
               <h1 className="text-2xl font-bold">Order Gas Cylinder</h1>
             </div>
@@ -170,7 +170,7 @@ const Order = () => {
               <div className="pt-4">
                 <Button
                   type="submit"
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="w-full bg-accent text-white hover:bg-accent/90"
                   disabled={loading}
                 >
                   {loading ? "Processing..." : "Place Order"}
