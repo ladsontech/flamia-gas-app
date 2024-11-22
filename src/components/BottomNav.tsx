@@ -39,7 +39,7 @@ export const BottomNav = () => {
       <Link
         to="/"
         className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/" ? "text-primary" : "text-muted-foreground"
+          location.pathname === "/" ? "text-accent font-medium" : "text-muted-foreground"
         }`}
       >
         <Home className="h-5 w-5" />
@@ -48,7 +48,7 @@ export const BottomNav = () => {
       <Link
         to="/refill"
         className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/refill" ? "text-primary" : "text-muted-foreground"
+          location.pathname === "/refill" ? "text-accent font-medium" : "text-muted-foreground"
         }`}
       >
         <RefreshCw className="h-5 w-5" />
@@ -57,7 +57,7 @@ export const BottomNav = () => {
       <Link
         to="/dashboard"
         className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"
+          location.pathname === "/dashboard" ? "text-accent font-medium" : "text-muted-foreground"
         }`}
       >
         <Package className="h-5 w-5" />
@@ -66,14 +66,16 @@ export const BottomNav = () => {
       <Link
         to="/accessories"
         className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/accessories" ? "text-primary" : "text-muted-foreground"
+          location.pathname === "/accessories" ? "text-accent font-medium" : "text-muted-foreground"
         }`}
       >
         <ShoppingBag className="h-5 w-5" />
         <span className="text-xs">Accessories</span>
       </Link>
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex flex-col items-center space-y-1 text-muted-foreground">
+        <DropdownMenuTrigger className={`flex flex-col items-center space-y-1 ${
+          location.pathname === "/settings" ? "text-accent font-medium" : "text-muted-foreground"
+        }`}>
           <Settings className="h-5 w-5" />
           <span className="text-xs">Settings</span>
         </DropdownMenuTrigger>
