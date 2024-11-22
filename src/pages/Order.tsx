@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,8 @@ const Order = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const selectedBrand = searchParams.get("brand") || "";
-  const orderType = searchParams.get("type") === "fullset" ? "fullset" : "refill"; // Ensure type is either 'refill' or 'fullset'
+  // Get the type from URL params, defaulting to "fullset" if not specified
+  const defaultOrderType = searchParams.get("type") || "fullset";
   const selectedSize = searchParams.get("size") || "";
 
   useEffect(() => {
@@ -38,7 +40,8 @@ const Order = () => {
     phone: "",
     address: "",
     size: selectedSize || "6kg",
-    quantity: 1
+    quantity: 1,
+    type: defaultOrderType // Initialize with the default type
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,7 +59,7 @@ const Order = () => {
             brand: selectedBrand,
             size: formData.size,
             quantity: formData.quantity,
-            type: orderType // Using the validated orderType
+            type: formData.type
           }
         ]);
 
@@ -97,7 +100,7 @@ const Order = () => {
           <Card className="p-6">
             <div className="text-center mb-6">
               <span className="px-4 py-1 bg-accent text-white rounded-full text-sm mb-4 inline-block">
-                {orderType === "refill" ? "Refill Order" : "New Cylinder Order"}
+                {formData.type === "refill" ? "Refill Order" : "New Cylinder Order"}
               </span>
               <h1 className="text-2xl font-bold">Order Gas Cylinder</h1>
             </div>
@@ -137,6 +140,22 @@ const Order = () => {
                   required
                   placeholder="Enter your delivery address"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="type">Order Type</Label>
+                <Select 
+                  value={formData.type} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select order type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fullset">New Cylinder (Full Set)</SelectItem>
+                    <SelectItem value="refill">Refill Only</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
