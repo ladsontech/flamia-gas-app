@@ -83,11 +83,10 @@ export const OrdersTable = ({
                   </TableCell>
                   <TableCell>{order.phone}</TableCell>
                   <TableCell>
-                    <div>
-                      <div className="font-medium">{order.brand}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {order.size} x {order.quantity} ({order.type})
-                      </div>
+                    <div className="space-y-1">
+                      <div className="font-medium">{order.size} x {order.quantity}</div>
+                      <div className="text-sm text-muted-foreground">{order.type}</div>
+                      <div className="text-xs font-medium text-primary">{order.brand}</div>
                     </div>
                   </TableCell>
                   <TableCell>
