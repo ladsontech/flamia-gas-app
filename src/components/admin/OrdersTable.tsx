@@ -27,7 +27,7 @@ export const OrdersTable = ({
   assignDelivery, 
   markAsDelivered 
 }: OrdersTableProps) => {
-  // Group orders by date
+  // Group orders by date and sort within each group by time
   const groupedOrders = orders.reduce((groups: GroupedOrders, order) => {
     const date = format(new Date(order.order_date), 'yyyy-MM-dd');
     if (!groups[date]) {
@@ -36,6 +36,13 @@ export const OrdersTable = ({
     groups[date].push(order);
     return groups;
   }, {});
+
+  // Sort orders within each date group by time (ascending)
+  Object.keys(groupedOrders).forEach(date => {
+    groupedOrders[date].sort((a, b) => 
+      new Date(a.order_date).getTime() - new Date(b.order_date).getTime()
+    );
+  });
 
   // Sort dates in descending order
   const sortedDates = Object.keys(groupedOrders).sort((a, b) => 
