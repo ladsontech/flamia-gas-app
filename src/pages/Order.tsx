@@ -10,6 +10,124 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Extract OrderForm component to reduce file size
+const OrderForm = ({ 
+  formData, 
+  setFormData, 
+  handleSubmit, 
+  loading, 
+  selectedBrand, 
+  userEmail 
+}: {
+  formData: any;
+  setFormData: (data: any) => void;
+  handleSubmit: (e: React.FormEvent) => void;
+  loading: boolean;
+  selectedBrand: string;
+  userEmail: string | null;
+}) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {selectedBrand && (
+        <div className="space-y-2">
+          <Label>Selected Brand</Label>
+          <Input value={selectedBrand} readOnly className="bg-muted" />
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label>Email</Label>
+        <Input value={userEmail || ''} readOnly className="bg-muted" />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone Number</Label>
+        <Input
+          id="phone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+          required
+          placeholder="+256 123 456 789"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="address">Delivery Address</Label>
+        <Input
+          id="address"
+          name="address"
+          value={formData.address}
+          onChange={handleInputChange}
+          required
+          placeholder="Enter your delivery address"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="type">Order Type</Label>
+        <Select 
+          value={formData.type} 
+          onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select order type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="fullset">New Cylinder (Full Set)</SelectItem>
+            <SelectItem value="refill">Refill Only</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="size">Cylinder Size</Label>
+        <Select 
+          value={formData.size} 
+          onValueChange={(value) => setFormData(prev => ({ ...prev, size: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select cylinder size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="3kg">3 KG</SelectItem>
+            <SelectItem value="6kg">6 KG</SelectItem>
+            <SelectItem value="12kg">12 KG</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="quantity">Quantity</Label>
+        <Input
+          id="quantity"
+          name="quantity"
+          type="number"
+          min="1"
+          value={formData.quantity}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      <div className="pt-4">
+        <Button
+          type="submit"
+          className="w-full bg-accent text-white hover:bg-accent/90"
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Place Order"}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
 const Order = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -18,9 +136,16 @@ const Order = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const selectedBrand = searchParams.get("brand") || "";
-  // Get the type from URL params, defaulting to "fullset" if not specified
   const defaultOrderType = searchParams.get("type") || "fullset";
   const selectedSize = searchParams.get("size") || "";
+
+  const [formData, setFormData] = useState({
+    phone: "",
+    address: "",
+    size: selectedSize || "6kg",
+    quantity: 1,
+    type: defaultOrderType
+  });
 
   useEffect(() => {
     checkAuth();
@@ -34,15 +159,6 @@ const Order = () => {
     }
     setUserEmail(session.user.email);
   };
-
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    address: "",
-    size: selectedSize || "6kg",
-    quantity: 1,
-    type: defaultOrderType // Initialize with the default type
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,11 +198,6 @@ const Order = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
   return (
     <div className="min-h-screen bg-white py-12">
       <div className="container max-w-md px-4">
@@ -105,97 +216,14 @@ const Order = () => {
               <h1 className="text-2xl font-bold">Order Gas Cylinder</h1>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {selectedBrand && (
-                <div className="space-y-2">
-                  <Label>Selected Brand</Label>
-                  <Input value={selectedBrand} readOnly className="bg-muted" />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input value={userEmail || ''} readOnly className="bg-muted" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="+256 123 456 789"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Delivery Address</Label>
-                <Input
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Enter your delivery address"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="type">Order Type</Label>
-                <Select 
-                  value={formData.type} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select order type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fullset">New Cylinder (Full Set)</SelectItem>
-                    <SelectItem value="refill">Refill Only</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="size">Cylinder Size</Label>
-                <select
-                  id="size"
-                  name="size"
-                  value={formData.size}
-                  onChange={handleInputChange}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="3kg">3 KG</option>
-                  <option value="6kg">6 KG</option>
-                  <option value="12kg">12 KG</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="quantity">Quantity</Label>
-                <Input
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  min="1"
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  className="w-full bg-accent text-white hover:bg-accent/90"
-                  disabled={loading}
-                >
-                  {loading ? "Processing..." : "Place Order"}
-                </Button>
-              </div>
-            </form>
+            <OrderForm 
+              formData={formData}
+              setFormData={setFormData}
+              handleSubmit={handleSubmit}
+              loading={loading}
+              selectedBrand={selectedBrand}
+              userEmail={userEmail}
+            />
           </Card>
         </motion.div>
       </div>
