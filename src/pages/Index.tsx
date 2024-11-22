@@ -46,10 +46,10 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/10 to-white">
+    <div className="min-h-screen bg-white">
       <div className="container px-4 py-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-bold text-primary">
+          <h1 className="text-xl font-bold text-accent">
             Gas Delivery Service
           </h1>
         </div>
@@ -60,7 +60,7 @@ const Index = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 max-w-2xl mx-auto"
         >
-          <span className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-xs mb-3 inline-block">
+          <span className="px-3 py-1 bg-accent text-white rounded-full text-xs mb-3 inline-block">
             Fast Gas Delivery
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
@@ -79,7 +79,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="glass-card p-4 hover-scale overflow-hidden">
+              <Card className="bg-white shadow-lg p-4 hover-scale overflow-hidden">
                 <div className="relative h-40 mb-3 rounded-md overflow-hidden">
                   <img
                     src={brand.image}
@@ -89,11 +89,11 @@ const Index = () => {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
                 <p className="text-muted-foreground mb-2 text-sm line-clamp-2">{brand.description}</p>
-                <p className="text-base font-semibold text-primary mb-3">{brand.price}</p>
+                <p className="text-base font-semibold text-accent mb-3">{brand.price}</p>
                 <Button
                   onClick={() => navigate(`/order?brand=${brand.name}`)}
                   variant="outline"
-                  className="w-full hover:bg-accent hover:text-accent-foreground"
+                  className="w-full bg-accent text-white hover:bg-accent/90"
                 >
                   Order Now
                 </Button>
