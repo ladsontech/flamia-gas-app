@@ -17,7 +17,7 @@ const Order = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const selectedBrand = searchParams.get("brand") || "";
-  const orderType = searchParams.get("type") === "fullset" ? "fullset" : "refill"; // Ensure type is either 'fullset' or 'refill'
+  const orderType = searchParams.get("type") || "refill"; // Default to "refill" if not specified
   const selectedSize = searchParams.get("size") || "";
 
   useEffect(() => {
@@ -46,6 +46,9 @@ const Order = () => {
     setLoading(true);
     
     try {
+      // Ensure type is either "refill" or "fullset"
+      const validatedType = orderType === "fullset" ? "fullset" : "refill";
+      
       const { error } = await supabase
         .from('orders')
         .insert([
@@ -56,7 +59,7 @@ const Order = () => {
             brand: selectedBrand,
             size: formData.size,
             quantity: formData.quantity,
-            type: orderType // This will now always be either 'fullset' or 'refill'
+            type: validatedType
           }
         ]);
 
