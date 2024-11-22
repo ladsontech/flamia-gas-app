@@ -18,9 +18,11 @@ const Admin = () => {
   const [authLoading, setAuthLoading] = useState(false);
 
   const deliveryPersonnel = [
-    "Mike Wilson",
-    "Sarah Johnson",
-    "Tom Brown",
+    "Osinya",
+    "Fahad",
+    "Anold",
+    "Steven",
+    "Boda"
   ];
 
   useEffect(() => {
