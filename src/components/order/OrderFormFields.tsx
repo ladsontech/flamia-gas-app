@@ -137,14 +137,14 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       <div className="space-y-2">
         <Label htmlFor="accessory">Add Accessory (Optional)</Label>
         <Select 
-          value={formData.accessory_id || ""} 
-          onValueChange={(value) => setFormData(prev => ({ ...prev, accessory_id: value }))}
+          value={formData.accessory_id || "none"} 
+          onValueChange={(value) => setFormData(prev => ({ ...prev, accessory_id: value === "none" ? undefined : value }))}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select an accessory" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">None</SelectItem>
+            <SelectItem value="none">No Accessory</SelectItem>
             {accessories.map((accessory) => (
               <SelectItem key={accessory.id} value={accessory.id}>
                 {accessory.name} - KES {accessory.price}
