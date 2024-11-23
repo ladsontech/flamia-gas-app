@@ -29,19 +29,19 @@ const Index = () => {
       name: "Stabex Gas",
       image: "/lovable-uploads/08bea304-44a4-4501-824e-4aff78518d8d.png",
       description: "High-quality gas cylinders for your home and business needs.",
-      price: "U 2,300"
+      price: "USH 2,300"
     },
     {
       name: "Total Gas",
       image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
       description: "Reliable gas solutions with nationwide coverage.",
-      price: "U 2,500"
+      price: "USH 2,500"
     },
     {
       name: "Shell Gas",
       image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
       description: "Premium gas cylinders with safety guarantee.",
-      price: "U 2,400"
+      price: "USH 2,400"
     }
   ];
 
