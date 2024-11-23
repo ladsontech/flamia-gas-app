@@ -27,21 +27,21 @@ const Index = () => {
   const brands = [
     {
       name: "Stabex Gas",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+      image: "/lovable-uploads/08bea304-44a4-4501-824e-4aff78518d8d.png",
       description: "High-quality gas cylinders for your home and business needs.",
-      price: "KES 2,300"
+      price: "U 2,300"
     },
     {
       name: "Total Gas",
       image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
       description: "Reliable gas solutions with nationwide coverage.",
-      price: "KES 2,500"
+      price: "U 2,500"
     },
     {
       name: "Shell Gas",
       image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
       description: "Premium gas cylinders with safety guarantee.",
-      price: "KES 2,400"
+      price: "U 2,400"
     }
   ];
 
@@ -84,7 +84,7 @@ const Index = () => {
                   <img
                     src={brand.image}
                     alt={brand.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                    className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
                   />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
