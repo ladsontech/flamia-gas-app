@@ -33,13 +33,13 @@ const Index = () => {
     },
     {
       name: "Total Gas",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      image: "/lovable-uploads/total-gas-cylinder.jpg",
       description: "Reliable gas solutions with nationwide coverage.",
       price: "USH 2,500"
     },
     {
       name: "Shell Gas",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+      image: "/lovable-uploads/shell-gas-cylinder.jpg",
       description: "Premium gas cylinders with safety guarantee.",
       price: "USH 2,400"
     }
@@ -71,36 +71,35 @@ const Index = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          {brands.map((brand, index) => (
-            <motion.div
-              key={brand.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="bg-white shadow-lg p-4 hover-scale overflow-hidden">
-                <div className="relative h-40 mb-3 rounded-md overflow-hidden">
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
-                  />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
-                <p className="text-muted-foreground mb-2 text-sm line-clamp-2">{brand.description}</p>
-                <p className="text-base font-semibold text-accent mb-3">{brand.price}</p>
-                <Button
-                  onClick={() => navigate(`/order?brand=${brand.name}&type=fullset`)}
-                  variant="outline"
-                  className="w-full bg-accent text-white hover:bg-accent/90"
-                >
-                  Order Now
-                </Button>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        {brands.map((brand, index) => (
+          <motion.div
+            key={brand.name}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card className="bg-white shadow-lg p-4 hover-scale overflow-hidden">
+              <div className="relative h-40 mb-3 rounded-md overflow-hidden">
+                <img
+                  src={brand.image}
+                  alt={brand.name}
+                  className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
+                />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
+              <p className="text-muted-foreground mb-2 text-sm line-clamp-2">{brand.description}</p>
+              <p className="text-base font-semibold text-accent mb-3">{brand.price}</p>
+              <Button
+                onClick={() => navigate(`/order?brand=${brand.name}&type=fullset`)}
+                variant="outline"
+                className="w-full bg-accent text-white hover:bg-accent/90"
+              >
+                Order Now
+              </Button>
+            </Card>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
