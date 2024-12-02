@@ -51,6 +51,33 @@ export type Database = {
         }
         Relationships: []
       }
+      hot_deals: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          price: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          price?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          price?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           accessory_id: string | null

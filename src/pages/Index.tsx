@@ -4,10 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+
+interface HotDeal {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string | null;
+  price: string | null;
+}
 
 const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hotDeals, setHotDeals] = useState<HotDeal[]>([]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -15,7 +25,19 @@ const Index = () => {
       setIsLoggedIn(!!session);
     };
 
+    const fetchHotDeals = async () => {
+      const { data, error } = await supabase
+        .from('hot_deals')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) {
+        setHotDeals(data);
+      }
+    };
+
     checkAuth();
+    fetchHotDeals();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsLoggedIn(!!session);
@@ -88,7 +110,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="bg-white shadow-lg p-4 hover-scale overflow-hidden">
+              <Card className="bg-white shadow-lg p-4 hover:scale-105 transition-transform duration-300 overflow-hidden">
                 <div className="relative h-48 mb-3 rounded-md overflow-hidden">
                   <img
                     src={brand.image}
@@ -122,6 +144,63 @@ const Index = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Hot Deals Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mt-16"
+        >
+          <div className="text-center mb-8">
+            <Badge variant="destructive" className="mb-2">Hot Deals</Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Special Offers</h2>
+            <p className="text-muted-foreground mt-2">Limited time deals on gas cylinders and accessories</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {hotDeals.map((deal, index) => (
+              <motion.div
+                key={deal.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="bg-white shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                  {deal.image_url && (
+                    <div className="relative h-48">
+                      <img
+                        src={deal.image_url}
+                        alt={deal.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="destructive" className="animate-pulse">
+                          Hot Deal!
+                        </Badge>
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-2">{deal.title}</h3>
+                    {deal.description && (
+                      <p className="text-muted-foreground text-sm mb-3">{deal.description}</p>
+                    )}
+                    {deal.price && (
+                      <p className="text-destructive font-bold text-xl">{deal.price}</p>
+                    )}
+                    <Button
+                      onClick={() => navigate('/order')}
+                      className="w-full mt-4 bg-destructive hover:bg-destructive/90 text-white"
+                    >
+                      Claim Deal
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </div>
   );
