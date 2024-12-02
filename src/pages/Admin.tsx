@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { OrdersTable } from "@/components/admin/OrdersTable";
+import { HotDealsManager } from "@/components/admin/HotDealsManager";
 import { Order } from "@/types/order";
 import { verifyAdminPassword, fetchOrders, updateOrderStatus } from "@/services/database";
 import { motion } from "framer-motion";
@@ -171,15 +172,25 @@ const Admin = () => {
             <span className="px-4 py-1 bg-accent text-accent-foreground rounded-full text-sm mb-4 inline-block">
               Admin Dashboard
             </span>
-            <h1 className="text-3xl font-bold">Order Management</h1>
+            <h1 className="text-3xl font-bold">Admin Panel</h1>
           </div>
 
-          <OrdersTable
-            orders={orders}
-            deliveryPersonnel={deliveryPersonnel}
-            assignDelivery={assignDelivery}
-            markAsDelivered={markAsDelivered}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Hot Deals Management</h2>
+              <HotDealsManager />
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Order Management</h2>
+              <OrdersTable
+                orders={orders}
+                deliveryPersonnel={deliveryPersonnel}
+                assignDelivery={assignDelivery}
+                markAsDelivered={markAsDelivered}
+              />
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
