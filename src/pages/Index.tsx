@@ -27,21 +27,30 @@ const Index = () => {
   const brands = [
     {
       name: "Stabex Gas",
-      image: "/lovable-uploads/08bea304-44a4-4501-824e-4aff78518d8d.png",
-      description: "High-quality gas cylinders for your home and business needs.",
-      price: "USH 2,300"
+      image: "/lovable-uploads/e9f58b5e-1991-4b14-b472-186d3ae2104c.png",
+      description: "High-quality gas cylinders with complete accessories included.",
+      sizes: [
+        { size: "6KG", price: "UGX 140,000" },
+        { size: "12KG", price: "UGX 350,000" }
+      ]
     },
     {
       name: "Total Gas",
-      image: "/lovable-uploads/total-gas-cylinder.jpg",
-      description: "Reliable gas solutions with nationwide coverage.",
-      price: "USH 2,500"
+      image: "/lovable-uploads/de1ceb4f-f2dc-48e0-840d-abc0c4c37e53.png",
+      description: "Reliable gas solutions with nationwide coverage and full accessories.",
+      sizes: [
+        { size: "6KG", price: "UGX 180,000" },
+        { size: "12KG", price: "UGX 400,000" }
+      ]
     },
     {
       name: "Shell Gas",
-      image: "/lovable-uploads/shell-gas-cylinder.jpg",
-      description: "Premium gas cylinders with safety guarantee.",
-      price: "USH 2,400"
+      image: "/lovable-uploads/6d78b534-027a-4754-8770-24f2c82b4b71.png",
+      description: "Premium gas cylinders with safety guarantee and complete accessories.",
+      sizes: [
+        { size: "6KG", price: "UGX 160,000" },
+        { size: "12KG", price: "UGX 380,000" }
+      ]
     }
   ];
 
@@ -71,35 +80,48 @@ const Index = () => {
           </p>
         </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        {brands.map((brand, index) => (
-          <motion.div
-            key={brand.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <Card className="bg-white shadow-lg p-4 hover-scale overflow-hidden">
-              <div className="relative h-40 mb-3 rounded-md overflow-hidden">
-                <img
-                  src={brand.image}
-                  alt={brand.name}
-                  className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
-                />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
-              <p className="text-muted-foreground mb-2 text-sm line-clamp-2">{brand.description}</p>
-              <p className="text-base font-semibold text-accent mb-3">{brand.price}</p>
-              <Button
-                onClick={() => navigate(`/order?brand=${brand.name}&type=fullset`)}
-                variant="outline"
-                className="w-full bg-accent text-white hover:bg-accent/90"
-              >
-                Order Now
-              </Button>
-            </Card>
-          </motion.div>
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          {brands.map((brand, index) => (
+            <motion.div
+              key={brand.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="bg-white shadow-lg p-4 hover-scale overflow-hidden">
+                <div className="relative h-48 mb-3 rounded-md overflow-hidden">
+                  <img
+                    src={brand.image}
+                    alt={brand.name}
+                    className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">{brand.name}</h3>
+                <p className="text-muted-foreground mb-3 text-sm line-clamp-2">{brand.description}</p>
+                <div className="space-y-2 mb-4">
+                  {brand.sizes.map((size) => (
+                    <div key={size.size} className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{size.size}</span>
+                      <span className="text-base font-semibold text-accent">{size.price}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {brand.sizes.map((size) => (
+                    <Button
+                      key={size.size}
+                      onClick={() => navigate(`/order?brand=${brand.name}&type=fullset&size=${size.size}`)}
+                      variant="outline"
+                      className="bg-accent text-white hover:bg-accent/90"
+                    >
+                      Order {size.size}
+                    </Button>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
