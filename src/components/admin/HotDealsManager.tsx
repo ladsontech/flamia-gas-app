@@ -11,14 +11,38 @@ export const HotDealsManager = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      let imageUrl = '';
+      
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('hot_deals')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('hot_deals')
+          .getPublicUrl(fileName);
+          
+        imageUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('hot_deals')
         .insert([
@@ -41,7 +65,10 @@ export const HotDealsManager = () => {
       setTitle("");
       setDescription("");
       setPrice("");
-      setImageUrl("");
+      setFile(null);
+      if (document.getElementById('imageInput')) {
+        (document.getElementById('imageInput') as HTMLInputElement).value = '';
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -91,12 +118,13 @@ export const HotDealsManager = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
+            <Label htmlFor="imageInput">Image</Label>
             <Input
-              id="imageUrl"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Enter image URL"
+              id="imageInput"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="cursor-pointer"
             />
           </div>
 

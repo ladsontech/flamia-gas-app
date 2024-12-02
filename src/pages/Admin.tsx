@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { HotDealsManager } from "@/components/admin/HotDealsManager";
+import { AdminNav } from "@/components/admin/AdminNav";
 import { Order } from "@/types/order";
 import { verifyAdminPassword, fetchOrders, updateOrderStatus } from "@/services/database";
 import { motion } from "framer-motion";
@@ -17,6 +18,7 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [activeSection, setActiveSection] = useState<'orders' | 'hotdeals'>('orders');
 
   const deliveryPersonnel = [
     "Osinya",
@@ -37,7 +39,6 @@ const Admin = () => {
       return;
     }
 
-    // Check if user is admin
     const { data: userData } = await supabase
       .from('users')
       .select('role')
@@ -175,12 +176,9 @@ const Admin = () => {
             <h1 className="text-3xl font-bold">Admin Panel</h1>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Hot Deals Management</h2>
-              <HotDealsManager />
-            </div>
-            
+          <AdminNav activeSection={activeSection} onSectionChange={setActiveSection} />
+
+          {activeSection === 'orders' ? (
             <div>
               <h2 className="text-2xl font-semibold mb-4">Order Management</h2>
               <OrdersTable
@@ -190,7 +188,12 @@ const Admin = () => {
                 markAsDelivered={markAsDelivered}
               />
             </div>
-          </div>
+          ) : (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Hot Deals Management</h2>
+              <HotDealsManager />
+            </div>
+          )}
         </motion.div>
       </div>
     </div>
