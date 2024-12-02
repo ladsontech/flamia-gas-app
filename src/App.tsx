@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
 
 const AppContent = () => {
   const location = useLocation();
@@ -31,7 +32,18 @@ const AppContent = () => {
       }
     };
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const protectedRoutes = ['/dashboard', '/order'];
+      if (protectedRoutes.includes(location.pathname) && !session) {
+        navigate('/login');
+      }
+    });
+
     checkAuthForProtectedRoutes();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [location.pathname, navigate]);
 
   return (
@@ -59,13 +71,15 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
+      <SessionContextProvider supabaseClient={supabase}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </TooltipProvider>
+      </SessionContextProvider>
     </QueryClientProvider>
   );
 };
