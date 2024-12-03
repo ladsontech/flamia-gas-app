@@ -2,7 +2,7 @@ import { Flame, Truck } from "lucide-react";
 
 const Header = () => {
   return (
-    <div className="flex flex-col items-center justify-center mb-8">
+    <div className="flex flex-col items-start mb-8">
       <div className="flex items-center gap-2 mb-4">
         <h1 className="text-2xl md:text-3xl font-bold text-accent">Flamia</h1>
         <Flame className="w-6 h-6 text-accent animate-pulse" />
