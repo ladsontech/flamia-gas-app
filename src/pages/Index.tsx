@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import Header from "@/components/Header";
 
 interface HotDeal {
   id: string;
@@ -79,11 +80,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="container px-4 py-4">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-bold text-accent">
-            Gas Delivery Service
-          </h1>
-        </div>
+        <Header />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -92,7 +89,7 @@ const Index = () => {
           className="text-center mb-8 max-w-2xl mx-auto"
         >
           <span className="px-3 py-1 bg-accent text-white rounded-full text-xs mb-3 inline-block">
-            Fast Gas Delivery
+            Premium Gas Solutions
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
             Quality Gas Cylinders
@@ -145,7 +142,6 @@ const Index = () => {
           ))}
         </div>
 
-        {/* Hot Deals Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
