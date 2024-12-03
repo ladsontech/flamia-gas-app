@@ -48,7 +48,7 @@ const AppContent = () => {
 
   return (
     <>
-      <div className="min-h-screen pb-16">
+      <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />

@@ -35,7 +35,7 @@ export const BottomNav = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border h-16 px-4 flex items-center justify-around">
+    <nav className="fixed md:top-1/2 md:-translate-y-1/2 bottom-0 left-0 md:h-auto h-16 bg-background border-t md:border-t-0 md:border-r border-border md:w-16 w-full px-4 flex md:flex-col items-center justify-around md:py-8 md:space-y-8 z-50">
       <Link
         to="/"
         className={`flex flex-col items-center space-y-1 ${

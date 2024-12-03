@@ -88,8 +88,8 @@ const Index = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 max-w-2xl mx-auto"
         >
-          <div className="bg-accent text-white px-6 py-3 rounded-lg inline-block mb-4">
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+          <div className="bg-accent text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg inline-block mb-4 transform transition-all duration-300 hover:scale-105">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">
               Quality Gas Cylinders
             </h2>
           </div>
