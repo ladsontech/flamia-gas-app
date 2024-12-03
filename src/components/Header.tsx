@@ -1,4 +1,4 @@
-import { Flame, Scooter } from "lucide-react";
+import { Flame, Truck } from "lucide-react";
 
 const Header = () => {
   return (
@@ -8,7 +8,7 @@ const Header = () => {
         <Flame className="w-6 h-6 text-accent animate-pulse" />
       </div>
       <div className="flex items-center gap-2">
-        <Scooter className="w-5 h-5 text-muted-foreground" />
+        <Truck className="w-5 h-5 text-muted-foreground" />
         <span className="text-sm text-muted-foreground">Fast & Free Delivery</span>
       </div>
     </div>
