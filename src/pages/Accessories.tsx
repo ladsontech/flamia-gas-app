@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Accessory {
   id: string;
@@ -14,6 +17,7 @@ const Accessories = () => {
   const [accessories, setAccessories] = useState<Accessory[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAccessories();
@@ -39,6 +43,10 @@ const Accessories = () => {
     }
   };
 
+  const handleOrder = (accessoryId: string) => {
+    navigate(`/order?accessory=${accessoryId}`);
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -55,16 +63,27 @@ const Accessories = () => {
       className="container mx-auto px-4 py-8"
     >
       <h1 className="text-2xl font-bold mb-6">Gas Accessories</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {accessories.map((accessory) => (
-          <div
-            key={accessory.id}
-            className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h3 className="text-lg font-semibold">{accessory.name}</h3>
-            <p className="text-gray-600 mt-2">{accessory.description}</p>
-            <p className="text-accent font-bold mt-2">KES {accessory.price}</p>
-          </div>
+          <Card key={accessory.id} className="flex flex-col">
+            <CardHeader>
+              <CardTitle className="text-lg">{accessory.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <p className="text-gray-600 mb-4">{accessory.description}</p>
+              <p className="text-accent font-bold text-xl">
+                UGX {accessory.price.toLocaleString()}
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={() => handleOrder(accessory.id)}
+                className="w-full bg-accent hover:bg-accent/90"
+              >
+                Order Now
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </motion.div>
