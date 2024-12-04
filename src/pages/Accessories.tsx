@@ -11,6 +11,7 @@ interface Accessory {
   name: string;
   description: string;
   price: number;
+  image_url: string;
 }
 
 const Accessories = () => {
@@ -65,8 +66,15 @@ const Accessories = () => {
       <h1 className="text-2xl font-bold mb-6">Gas Accessories</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {accessories.map((accessory) => (
-          <Card key={accessory.id} className="flex flex-col">
+          <Card key={accessory.id} className="flex flex-col hover:shadow-lg transition-shadow">
             <CardHeader>
+              <div className="aspect-square w-full overflow-hidden rounded-lg mb-4">
+                <img
+                  src={accessory.image_url}
+                  alt={accessory.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <CardTitle className="text-lg">{accessory.name}</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow">
