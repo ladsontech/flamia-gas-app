@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +48,10 @@ const Accessories = () => {
     navigate(`/order?accessory=${accessoryId}`);
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = "/placeholder.svg"; // Fallback to placeholder image
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -70,9 +74,10 @@ const Accessories = () => {
             <CardHeader>
               <div className="aspect-square w-full overflow-hidden rounded-lg mb-4">
                 <img
-                  src={accessory.image_url}
+                  src={accessory.image_url || "/placeholder.svg"}
                   alt={accessory.name}
                   className="w-full h-full object-cover"
+                  onError={handleImageError}
                 />
               </div>
               <CardTitle className="text-lg">{accessory.name}</CardTitle>
