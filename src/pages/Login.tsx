@@ -22,63 +22,77 @@ const Login = () => {
     setLoading(true);
 
     try {
-      let userData = null;
-
       if (isLogin) {
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password,
         });
 
-        if (signInError) throw signInError;
-        userData = signInData;
+        if (error) throw error;
+
+        if (data?.user) {
+          const { data: userRoleData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('email', email.trim())
+            .single();
+
+          toast({
+            title: "Success",
+            description: "Logged in successfully",
+          });
+
+          if (userRoleData?.role === 'admin') {
+            navigate('/admin');
+          } else {
+            navigate('/dashboard');
+          }
+        }
       } else {
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
+        // For sign up
+        if (password.length < 6) {
+          throw new Error("Password must be at least 6 characters long");
+        }
+
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password,
+          options: {
+            data: {
+              first_name: firstName,
+              last_name: lastName,
+            }
+          }
         });
 
-        if (signUpError) throw signUpError;
+        if (error) throw error;
 
-        if (signUpData.user) {
+        if (data?.user) {
           const { error: insertError } = await supabase
             .from('users')
             .insert([{ 
-              email,
+              email: email.trim(),
               first_name: firstName,
               last_name: lastName,
-              role: email === 'laddave84@gmail.com' ? 'admin' : 'user'
+              role: email.trim() === 'laddave84@gmail.com' ? 'admin' : 'user'
             }]);
 
           if (insertError && !insertError.message.includes('duplicate key value')) {
             throw insertError;
           }
-          userData = signUpData;
+
+          toast({
+            title: "Success",
+            description: "Account created successfully! Please check your email for verification.",
+          });
         }
-      }
-
-      if (userData?.user) {
-        const { data: userRoleData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('email', email)
-          .single();
-
-        if (userRoleData?.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
-        }
-
-        toast({
-          title: "Success",
-          description: isLogin ? "Logged in successfully" : "Account created successfully",
-        });
       }
     } catch (error: any) {
       let errorMessage = error.message;
-      if (error.message.includes('email_not_confirmed')) {
-        errorMessage = "Please check your email to confirm your account. For development, you can disable email confirmation in the Supabase dashboard.";
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = "Invalid email or password. Please try again.";
+      } else if (error.message.includes('email_not_confirmed')) {
+        errorMessage = "Please check your email to confirm your account before logging in.";
       }
       toast({
         title: "Error",
@@ -165,10 +179,11 @@ const Login = () => {
                   <div>
                     <Input
                       type="password"
-                      placeholder="Password"
+                      placeholder="Password (min. 6 characters)"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      minLength={6}
                     />
                   </div>
                   <Button 
