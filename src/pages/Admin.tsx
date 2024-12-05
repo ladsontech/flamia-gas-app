@@ -7,6 +7,8 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const Admin = () => {
   const { toast } = useToast();
@@ -91,6 +93,15 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
       <div className="container">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
+
         <div className="text-center mb-8">
           <span className="px-4 py-1 bg-accent text-accent-foreground rounded-full text-sm mb-4 inline-block">
             Admin Dashboard

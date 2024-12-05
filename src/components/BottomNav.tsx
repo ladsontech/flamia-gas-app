@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, RefreshCw, Package, Settings, ShoppingBag } from "lucide-react";
+import { Home, RefreshCw, Package, User, ShoppingBag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -12,7 +12,7 @@ import {
 export const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -21,13 +21,22 @@ export const BottomNav = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
-      setUserEmail(session.user.email);
+      const { data: userData } = await supabase
+        .from('users')
+        .select('first_name')
+        .eq('email', session.user.email)
+        .single();
+      
+      setUserName(userData?.first_name || session.user.email);
     }
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      navigate('/');
+      window.location.reload(); // Force reload to clear any cached states
+    }
   };
 
   const handleLogin = () => {
@@ -74,16 +83,16 @@ export const BottomNav = () => {
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/settings" ? "text-accent font-medium" : "text-muted-foreground"
+          location.pathname === "/account" ? "text-accent font-medium" : "text-muted-foreground"
         }`}>
-          <Settings className="h-5 w-5" />
-          <span className="text-xs">Settings</span>
+          <User className="h-5 w-5" />
+          <span className="text-xs">Account</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {userEmail ? (
+          {userName ? (
             <>
               <DropdownMenuItem className="text-sm text-muted-foreground">
-                {userEmail}
+                {userName}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 Logout

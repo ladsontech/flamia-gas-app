@@ -37,9 +37,26 @@ const Login = () => {
           <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
           <Auth
             supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
+            appearance={{ 
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#000',
+                    brandAccent: '#666',
+                  },
+                },
+              },
+            }}
             providers={[]}
             redirectTo={window.location.origin}
+            options={{
+              emailRedirectTo: `${window.location.origin}`,
+              metadata: {
+                first_name: undefined, // Will be filled by the form
+                last_name: undefined, // Will be filled by the form
+              },
+            }}
           />
         </div>
       </div>
