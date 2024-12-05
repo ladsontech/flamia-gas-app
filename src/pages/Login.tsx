@@ -49,13 +49,12 @@ const Login = () => {
               },
             }}
             providers={[]}
+            view="sign_up"
+            showLinks={true}
             redirectTo={window.location.origin}
-            options={{
-              emailRedirectTo: `${window.location.origin}`,
-              metadata: {
-                first_name: undefined, // Will be filled by the form
-                last_name: undefined, // Will be filled by the form
-              },
+            additionalData={{
+              first_name: undefined,
+              last_name: undefined,
             }}
           />
         </div>
