@@ -1,203 +1,47 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect } from "react";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleAuth = async (e: React.FormEvent, isLogin: boolean) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        // Check if user is admin
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('email', session.user.email)
+          .single();
 
-    try {
-      if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: password,
-        });
-
-        if (error) throw error;
-
-        if (data?.user) {
-          const { data: userRoleData } = await supabase
-            .from('users')
-            .select('role')
-            .eq('email', email.trim())
-            .single();
-
-          toast({
-            title: "Success",
-            description: "Logged in successfully",
-          });
-
-          if (userRoleData?.role === 'admin') {
-            navigate('/admin');
-          } else {
-            navigate('/dashboard');
-          }
-        }
-      } else {
-        // For sign up
-        if (password.length < 6) {
-          throw new Error("Password must be at least 6 characters long");
-        }
-
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password: password,
-          options: {
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-            }
-          }
-        });
-
-        if (error) throw error;
-
-        if (data?.user) {
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert([{ 
-              email: email.trim(),
-              first_name: firstName,
-              last_name: lastName,
-              role: email.trim() === 'laddave84@gmail.com' ? 'admin' : 'user'
-            }]);
-
-          if (insertError && !insertError.message.includes('duplicate key value')) {
-            throw insertError;
-          }
-
-          toast({
-            title: "Success",
-            description: "Account created successfully! Please check your email for verification.",
-          });
+        if (userData?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
         }
       }
-    } catch (error: any) {
-      let errorMessage = error.message;
-      if (error.message.includes('Invalid login credentials')) {
-        errorMessage = "Invalid email or password. Please try again.";
-      } else if (error.message.includes('email_not_confirmed')) {
-        errorMessage = "Please check your email to confirm your account before logging in.";
-      }
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
-      <div className="container max-w-sm mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-        >
-          <Card className="p-6">
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-              <TabsContent value="login">
-                <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
-                  <div>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? "Processing..." : "Login"}
-                  </Button>
-                </form>
-              </TabsContent>
-              <TabsContent value="signup">
-                <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
-                  <div>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="text"
-                      placeholder="First Name"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="text"
-                      placeholder="Last Name"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="password"
-                      placeholder="Password (min. 6 characters)"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? "Processing..." : "Sign Up"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </Card>
-        </motion.div>
+      <div className="container max-w-md mx-auto">
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            providers={[]}
+            redirectTo={window.location.origin}
+          />
+        </div>
       </div>
     </div>
   );
