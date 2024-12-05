@@ -1,11 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import Header from "@/components/Header";
+import HomeHeader from "@/components/home/Header";
+import BrandCard from "@/components/home/BrandCard";
+import HotDealCard from "@/components/home/HotDealCard";
 
 interface HotDeal {
   id: string;
@@ -77,67 +76,38 @@ const Index = () => {
     }
   ];
 
+  const handleOrder = (brand: string, size: string) => {
+    navigate(`/order?brand=${brand}&type=fullset&size=${size}`);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container px-2 sm:px-4 py-2 sm:py-4">
-        <Header />
+        <HomeHeader />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-4 md:mb-8 max-w-2xl mx-auto"
+          className="text-center mb-3 md:mb-6 max-w-2xl mx-auto"
         >
-          <div className="bg-accent text-white px-3 sm:px-4 py-2 rounded-lg inline-block mb-3 transform transition-all duration-300 hover:scale-105">
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold leading-tight">
+          <div className="bg-accent text-white px-3 py-2 rounded-lg inline-block mb-2 transform transition-all duration-300 hover:scale-105">
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-tight">
               Quality Gas Cylinders
             </h2>
           </div>
-          <p className="text-muted-foreground mb-4 text-sm sm:text-base">
+          <p className="text-muted-foreground mb-3 text-xs sm:text-sm">
             Choose from our selection of trusted gas brands
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mt-4 md:mt-8">
-          {brands.map((brand, index) => (
-            <motion.div
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-6">
+          {brands.map((brand) => (
+            <BrandCard
               key={brand.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="bg-white shadow-lg p-2 sm:p-3 md:p-4 hover:scale-105 transition-transform duration-300 overflow-hidden">
-                <div className="relative h-32 sm:h-36 md:h-40 mb-2 sm:mb-3 rounded-md overflow-hidden">
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
-                  />
-                </div>
-                <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1 sm:mb-2">{brand.name}</h3>
-                <p className="text-muted-foreground mb-2 text-xs sm:text-sm line-clamp-2">{brand.description}</p>
-                <div className="space-y-1 sm:space-y-2 mb-2 sm:mb-3">
-                  {brand.sizes.map((size) => (
-                    <div key={size.size} className="flex justify-between items-center">
-                      <span className="text-xs sm:text-sm font-medium">{size.size}</span>
-                      <span className="text-sm sm:text-base font-semibold text-accent">{size.price}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-2 gap-1 sm:gap-2">
-                  {brand.sizes.map((size) => (
-                    <Button
-                      key={size.size}
-                      onClick={() => navigate(`/order?brand=${brand.name}&type=fullset&size=${size.size}`)}
-                      variant="outline"
-                      className="bg-accent text-white hover:bg-accent/90 text-xs sm:text-sm py-1 h-auto"
-                    >
-                      Order {size.size}
-                    </Button>
-                  ))}
-                </div>
-              </Card>
-            </motion.div>
+              {...brand}
+              onOrder={handleOrder}
+            />
           ))}
         </div>
 
@@ -145,54 +115,21 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mt-8 md:mt-16"
+          className="mt-6 md:mt-8"
         >
-          <div className="text-center mb-4 md:mb-8">
-            <Badge variant="destructive" className="mb-2">Hot Deals</Badge>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground">Special Offers</h2>
-            <p className="text-muted-foreground mt-2 text-sm sm:text-base">Limited time deals on gas cylinders and accessories</p>
+          <div className="text-center mb-3 md:mb-6">
+            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-foreground mb-1">Special Offers</h2>
+            <p className="text-muted-foreground text-xs sm:text-sm">Limited time deals on gas cylinders and accessories</p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-            {hotDeals.map((deal, index) => (
-              <motion.div
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+            {hotDeals.map((deal) => (
+              <HotDealCard
                 key={deal.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="bg-white shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  {deal.image_url && (
-                    <div className="relative h-32 sm:h-36 md:h-40">
-                      <img
-                        src={deal.image_url}
-                        alt={deal.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-2 right-2">
-                        <Badge variant="destructive" className="animate-pulse text-xs">
-                          Hot Deal!
-                        </Badge>
-                      </div>
-                    </div>
-                  )}
-                  <div className="p-2 sm:p-3 md:p-4">
-                    <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1 sm:mb-2">{deal.title}</h3>
-                    {deal.description && (
-                      <p className="text-muted-foreground text-xs sm:text-sm mb-2 sm:mb-3">{deal.description}</p>
-                    )}
-                    {deal.price && (
-                      <p className="text-destructive font-bold text-base sm:text-lg md:text-xl">{deal.price}</p>
-                    )}
-                    <Button
-                      onClick={() => navigate('/order')}
-                      className="w-full mt-2 sm:mt-3 md:mt-4 bg-destructive hover:bg-destructive/90 text-white text-xs sm:text-sm py-1 h-auto"
-                    >
-                      Claim Deal
-                    </Button>
-                  </div>
-                </Card>
-              </motion.div>
+                {...deal}
+                imageUrl={deal.image_url}
+                onOrder={() => navigate('/order')}
+              />
             ))}
           </div>
         </motion.div>
