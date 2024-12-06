@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import HomeHeader from "@/components/home/Header";
-import BrandCard from "@/components/home/BrandCard";
+import BrandCardNew from "@/components/home/BrandCardNew";
 import HotDealCard from "@/components/home/HotDealCard";
 
 interface HotDeal {
@@ -50,35 +50,28 @@ const Index = () => {
     {
       name: "Stabex Gas",
       image: "/lovable-uploads/e9f58b5e-1991-4b14-b472-186d3ae2104c.png",
-      description: "High-quality gas cylinders with complete accessories included.",
-      sizes: [
-        { size: "6KG", price: "UGX 140,000" },
-        { size: "12KG", price: "UGX 350,000" }
-      ]
+      prices: {
+        '6kg': "UGX 140,000",
+        '12kg': "UGX 350,000"
+      }
     },
     {
       name: "Total Gas",
       image: "/lovable-uploads/de1ceb4f-f2dc-48e0-840d-abc0c4c37e53.png",
-      description: "Reliable gas solutions with nationwide coverage and full accessories.",
-      sizes: [
-        { size: "6KG", price: "UGX 180,000" },
-        { size: "12KG", price: "UGX 400,000" }
-      ]
+      prices: {
+        '6kg': "UGX 180,000",
+        '12kg': "UGX 400,000"
+      }
     },
     {
       name: "Shell Gas",
       image: "/lovable-uploads/6d78b534-027a-4754-8770-24f2c82b4b71.png",
-      description: "Premium gas cylinders with safety guarantee and complete accessories.",
-      sizes: [
-        { size: "6KG", price: "UGX 160,000" },
-        { size: "12KG", price: "UGX 380,000" }
-      ]
+      prices: {
+        '6kg': "UGX 160,000",
+        '12kg': "UGX 380,000"
+      }
     }
   ];
-
-  const handleOrder = (brand: string, size: string) => {
-    navigate(`/order?brand=${brand}&type=fullset&size=${size}`);
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -103,10 +96,9 @@ const Index = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-6">
           {brands.map((brand) => (
-            <BrandCard
+            <BrandCardNew
               key={brand.name}
               {...brand}
-              onOrder={handleOrder}
             />
           ))}
         </div>
