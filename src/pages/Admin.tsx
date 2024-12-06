@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { HotDealsManager } from "@/components/admin/HotDealsManager";
+import { BrandsManager } from "@/components/admin/BrandsManager";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +17,7 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState<'orders' | 'hotdeals'>('orders');
+  const [activeSection, setActiveSection] = useState<'orders' | 'hotdeals' | 'brands' | 'accessories'>('orders');
 
   useEffect(() => {
     checkAdminAuth();
@@ -111,11 +112,10 @@ const Admin = () => {
 
         <AdminNav activeSection={activeSection} onSectionChange={setActiveSection} />
 
-        {activeSection === 'orders' ? (
-          <AdminOrdersView />
-        ) : (
-          <HotDealsManager />
-        )}
+        {activeSection === 'orders' && <AdminOrdersView />}
+        {activeSection === 'hotdeals' && <HotDealsManager />}
+        {activeSection === 'brands' && <BrandsManager />}
+        {activeSection === 'accessories' && <div>Accessories Manager Coming Soon</div>}
       </div>
     </div>
   );
