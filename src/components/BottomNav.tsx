@@ -19,15 +19,22 @@ export const BottomNav = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      const { data: userData } = await supabase
-        .from('users')
-        .select('display_name')  // Changed from first_name to display_name
-        .eq('email', session.user.email)
-        .single();
-      
-      setUserName(userData?.display_name || session.user.email);  // Changed from first_name to display_name
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('display_name')
+          .eq('email', session.user.email)
+          .maybeSingle(); // Changed from single() to maybeSingle()
+        
+        // If we got user data, use it, otherwise fallback to email
+        setUserName(userData?.display_name || session.user.email);
+      }
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      // Fallback to null if there's an error
+      setUserName(null);
     }
   };
 
