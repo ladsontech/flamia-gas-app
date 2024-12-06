@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Order } from "@/types/order";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -28,7 +31,6 @@ const Dashboard = () => {
 
   const fetchOrders = async (email: string) => {
     try {
-      // Check if user is admin
       const { data: userData } = await supabase
         .from('users')
         .select('role')
@@ -37,7 +39,6 @@ const Dashboard = () => {
 
       let query = supabase.from('orders').select('*');
       
-      // If not admin, only show user's orders
       if (!userData || userData.role !== 'admin') {
         query = query.eq('customer', email);
       }
@@ -72,7 +73,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
+      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
         <div className="container">
           <div className="text-center">Loading...</div>
         </div>
@@ -81,48 +82,56 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
-      <div className="container max-w-4xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">My Orders</h1>
-          <p className="text-muted-foreground">Welcome back, {userEmail}</p>
+    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
+      <div className="container max-w-lg mx-auto px-4">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold mb-1">My Orders</h1>
+          <p className="text-sm text-muted-foreground">Welcome back, {userEmail}</p>
         </div>
 
         {orders.length === 0 ? (
           <Card className="p-6 text-center">
-            <p className="text-muted-foreground mb-4">No orders yet</p>
-            <button onClick={() => navigate('/order')} className="bg-primary text-white px-4 py-2 rounded-md">
+            <p className="text-muted-foreground mb-4 text-sm">No orders yet</p>
+            <Button 
+              onClick={() => navigate('/order')}
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <PlusCircle className="w-4 h-4 mr-2" />
               Place an Order
-            </button>
+            </Button>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {orders.map((order) => (
-              <Card key={order.id} className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">{order.brand}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Ordered on {new Date(order.created_at!).toLocaleDateString()}
+              <Card key={order.id} className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-sm">{order.brand}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(order.created_at!), 'MMM d, yyyy HH:mm')}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.status)}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Details</p>
-                    <p>Size: {order.size}</p>
-                    <p>Quantity: {order.quantity}</p>
-                    <p>Type: {order.type}</p>
+                
+                <div className="mt-3 space-y-2 text-sm">
+                  <div className="grid grid-cols-2 gap-1 text-xs">
+                    <span className="text-muted-foreground">Size:</span>
+                    <span>{order.size}</span>
+                    <span className="text-muted-foreground">Quantity:</span>
+                    <span>{order.quantity}</span>
+                    <span className="text-muted-foreground">Type:</span>
+                    <span>{order.type}</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Delivery Information</p>
-                    <p>Address: {order.address}</p>
-                    <p>Phone: {order.phone}</p>
+                  
+                  <div className="border-t pt-2 mt-2">
+                    <p className="text-xs text-muted-foreground mb-1">Delivery Details</p>
+                    <p className="text-xs">{order.address}</p>
+                    <p className="text-xs">{order.phone}</p>
                     {order.delivery_person && (
-                      <p>Delivery Person: {order.delivery_person}</p>
+                      <p className="text-xs mt-1">Delivery Person: {order.delivery_person}</p>
                     )}
                   </div>
                 </div>
