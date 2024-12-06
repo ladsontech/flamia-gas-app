@@ -23,11 +23,11 @@ export const BottomNav = () => {
     if (session?.user) {
       const { data: userData } = await supabase
         .from('users')
-        .select('first_name')
+        .select('display_name')  // Changed from first_name to display_name
         .eq('email', session.user.email)
         .single();
       
-      setUserName(userData?.first_name || session.user.email);
+      setUserName(userData?.display_name || session.user.email);  // Changed from first_name to display_name
     }
   };
 
