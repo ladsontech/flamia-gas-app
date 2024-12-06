@@ -49,13 +49,9 @@ const Login = () => {
               },
             }}
             providers={[]}
-            view="sign_up"
+            view="sign_in"
             showLinks={true}
             redirectTo={window.location.origin}
-            additionalData={{
-              first_name: undefined,
-              last_name: undefined,
-            }}
           />
         </div>
       </div>
