@@ -31,14 +31,15 @@ const Dashboard = () => {
 
   const fetchOrders = async (email: string) => {
     try {
-      const { data: userData } = await supabase
+      const { data: userData, error: userError } = await supabase
         .from('users')
         .select('role')
         .eq('email', email)
-        .single();
+        .maybeSingle(); // Changed from single() to maybeSingle()
 
       let query = supabase.from('orders').select('*');
       
+      // If no user data or not admin, only show their own orders
       if (!userData || userData.role !== 'admin') {
         query = query.eq('customer', email);
       }
@@ -48,6 +49,7 @@ const Dashboard = () => {
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
+      console.error('Error fetching orders:', error);
       toast({
         title: "Error",
         description: "Failed to fetch orders",
