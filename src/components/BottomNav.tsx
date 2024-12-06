@@ -25,8 +25,10 @@ export const BottomNav = () => {
         const { data: userData, error } = await supabase
           .from('users')
           .select('display_name')
-          .eq('email', session.user.email)
-          .maybeSingle(); // Changed from single() to maybeSingle()
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        if (error) throw error;
         
         // If we got user data, use it, otherwise fallback to email
         setUserName(userData?.display_name || session.user.email);
@@ -98,7 +100,7 @@ export const BottomNav = () => {
         <DropdownMenuContent align="end">
           {userName ? (
             <>
-              <DropdownMenuItem className="text-sm text-muted-foreground">
+              <DropdownMenuItem className="text-sm font-medium">
                 {userName}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
