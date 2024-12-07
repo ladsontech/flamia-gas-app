@@ -55,70 +55,112 @@ export const OrdersList = ({
     );
   }
 
+  // Group orders by date
+  const groupedOrders = orders.reduce((groups: { [key: string]: Order[] }, order) => {
+    const date = format(new Date(order.created_at!), 'yyyy-MM-dd');
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(order);
+    return groups;
+  }, {});
+
+  // Sort dates in descending order
+  const sortedDates = Object.keys(groupedOrders).sort((a, b) => 
+    new Date(b).getTime() - new Date(a).getTime()
+  );
+
   return (
     <div className="space-y-3">
-      {orders.map((order) => (
-        <Card key={order.id} className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <div className="space-y-1">
-              <h3 className="font-medium text-sm">{order.brand}</h3>
-              <p className="text-xs text-muted-foreground">
-                {format(new Date(order.created_at!), 'MMM d, yyyy HH:mm')}
-              </p>
-            </div>
-            <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
-              {order.status}
-            </span>
+      {sortedDates.map((date) => (
+        <div key={date} className="space-y-2">
+          <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
+            <h2 className="text-sm font-medium text-muted-foreground py-2">
+              {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+            </h2>
           </div>
-          
-          <div className="mt-3 space-y-2 text-sm">
-            <div className="grid grid-cols-2 gap-1 text-xs">
-              <span className="text-muted-foreground">Size:</span>
-              <span>{order.size}</span>
-              <span className="text-muted-foreground">Quantity:</span>
-              <span>{order.quantity}</span>
-              <span className="text-muted-foreground">Type:</span>
-              <span>{order.type}</span>
-              <span className="text-muted-foreground">Customer:</span>
-              <span>{order.customer}</span>
-            </div>
-            
-            <div className="border-t pt-2 mt-2">
-              <p className="text-xs text-muted-foreground mb-1">Delivery Details</p>
-              <p className="text-xs">{order.address}</p>
-              <p className="text-xs">{order.phone}</p>
-              {order.delivery_person && (
-                <p className="text-xs mt-1">Delivery Person: {order.delivery_person}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            {groupedOrders[date].map((order, index) => (
+              <Card key={order.id} className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="space-y-1">
+                    <span className="text-xs font-medium">Order #{index + 1}</span>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(order.created_at!), 'HH:mm')}
+                    </p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
+                    {order.status}
+                  </span>
+                </div>
+                
+                <div className="mt-2 space-y-2 text-xs">
+                  <div className="grid grid-cols-2 gap-1">
+                    <span className="text-muted-foreground">Size:</span>
+                    <span>{order.size}</span>
+                    <span className="text-muted-foreground">Quantity:</span>
+                    <span>{order.quantity}</span>
+                    <span className="text-muted-foreground">Type:</span>
+                    <span>{order.type}</span>
+                    <span className="text-muted-foreground">Brand:</span>
+                    <span>{order.brand}</span>
+                  </div>
+                  
+                  <div className="border-t pt-2">
+                    <p className="text-muted-foreground mb-1">Customer Details</p>
+                    <p className="font-medium">{order.customer}</p>
+                    <p>{order.address}</p>
+                    <p>{order.phone}</p>
+                  </div>
 
-            {isAdmin && order.status === "pending" && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {deliveryPersonnel.map((person) => (
-                  <Button
-                    key={person}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onAssignDelivery(order.id, person)}
-                    className="text-xs py-1 h-auto"
-                  >
-                    Assign to {person}
-                  </Button>
-                ))}
-              </div>
-            )}
-
-            {isAdmin && order.status === "assigned" && (
-              <Button
-                size="sm"
-                onClick={() => onMarkDelivered(order.id)}
-                className="w-full bg-green-500 text-white hover:bg-green-600 mt-2"
-              >
-                Mark Delivered
-              </Button>
-            )}
+                  {isAdmin && (
+                    <div className="border-t pt-2">
+                      {order.status === "pending" && (
+                        <div className="space-y-2">
+                          <p className="text-muted-foreground">Assign Delivery</p>
+                          <div className="flex flex-wrap gap-2">
+                            {deliveryPersonnel.map((person) => (
+                              <Button
+                                key={person}
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onAssignDelivery(order.id, person)}
+                                className="text-xs py-1 h-auto"
+                              >
+                                {person}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {order.status === "assigned" && (
+                        <div className="space-y-2">
+                          <p className="text-muted-foreground">
+                            Assigned to: {order.delivery_person}
+                          </p>
+                          <Button
+                            size="sm"
+                            onClick={() => onMarkDelivered(order.id)}
+                            className="w-full bg-green-500 text-white hover:bg-green-600"
+                          >
+                            Mark as Delivered
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {order.status === "delivered" && (
+                        <p className="text-green-600 font-medium">
+                          Delivered by {order.delivery_person}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );
