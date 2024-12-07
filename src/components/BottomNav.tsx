@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, RefreshCw, Package, User, ShoppingBag } from "lucide-react";
+import { Home, RefreshCw, Package, User, ShoppingBag, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -7,12 +7,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 export const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [userName, setUserName] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -24,19 +26,19 @@ export const BottomNav = () => {
       if (session?.user) {
         const { data: userData, error } = await supabase
           .from('users')
-          .select('display_name')
+          .select('display_name, role')
           .eq('id', session.user.id)
           .maybeSingle();
         
         if (error) throw error;
         
-        // If we got user data, use it, otherwise fallback to email
         setUserName(userData?.display_name || session.user.email);
+        setIsAdmin(userData?.role === 'admin');
       }
     } catch (error) {
       console.error('Error checking auth:', error);
-      // Fallback to null if there's an error
       setUserName(null);
+      setIsAdmin(false);
     }
   };
 
@@ -44,7 +46,7 @@ export const BottomNav = () => {
     const { error } = await supabase.auth.signOut();
     if (!error) {
       navigate('/');
-      window.location.reload(); // Force reload to clear any cached states
+      window.location.reload();
     }
   };
 
@@ -103,6 +105,21 @@ export const BottomNav = () => {
               <DropdownMenuItem className="text-sm font-medium">
                 {userName}
               </DropdownMenuItem>
+              {isAdmin && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/admin/brands')}>
+                    Manage Brands
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/admin/hot-deals')}>
+                    Manage Hot Deals
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/admin/accessories')}>
+                    Manage Accessories
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
                 Logout
               </DropdownMenuItem>

@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -26,21 +27,27 @@ const Dashboard = () => {
       return;
     }
     setUserEmail(session.user.email);
-    fetchOrders(session.user.email);
+    
+    // Check if user is admin
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', session.user.id)
+      .maybeSingle();
+
+    if (!userError && userData?.role === 'admin') {
+      setIsAdmin(true);
+    }
+
+    fetchOrders(session.user.email, userData?.role === 'admin');
   };
 
-  const fetchOrders = async (email: string) => {
+  const fetchOrders = async (email: string, isAdmin: boolean) => {
     try {
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('email', email)
-        .maybeSingle(); // Changed from single() to maybeSingle()
-
       let query = supabase.from('orders').select('*');
       
-      // If no user data or not admin, only show their own orders
-      if (!userData || userData.role !== 'admin') {
+      // If not admin, only show their own orders
+      if (!isAdmin) {
         query = query.eq('customer', email);
       }
 
@@ -73,6 +80,59 @@ const Dashboard = () => {
     }
   };
 
+  const handleAssignDelivery = async (orderId: string, deliveryPerson: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          status: 'assigned',
+          delivery_person: deliveryPerson 
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Order assigned to ${deliveryPerson}`,
+      });
+      
+      // Refresh orders
+      fetchOrders(userEmail!, isAdmin);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign delivery",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMarkDelivered = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'delivered' })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order marked as delivered",
+      });
+      
+      // Refresh orders
+      fetchOrders(userEmail!, isAdmin);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to mark as delivered",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
@@ -83,11 +143,18 @@ const Dashboard = () => {
     );
   }
 
+  const deliveryPersonnel = [
+    "Fahad",
+    "Osingya",
+    "Peter",
+    "Steven"
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
       <div className="container max-w-lg mx-auto px-4">
         <div className="mb-6">
-          <h1 className="text-xl font-bold mb-1">My Orders</h1>
+          <h1 className="text-xl font-bold mb-1">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
           <p className="text-sm text-muted-foreground">Welcome back, {userEmail}</p>
         </div>
 
@@ -126,6 +193,8 @@ const Dashboard = () => {
                     <span>{order.quantity}</span>
                     <span className="text-muted-foreground">Type:</span>
                     <span>{order.type}</span>
+                    <span className="text-muted-foreground">Customer:</span>
+                    <span>{order.customer}</span>
                   </div>
                   
                   <div className="border-t pt-2 mt-2">
@@ -136,6 +205,32 @@ const Dashboard = () => {
                       <p className="text-xs mt-1">Delivery Person: {order.delivery_person}</p>
                     )}
                   </div>
+
+                  {isAdmin && order.status === "pending" && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {deliveryPersonnel.map((person) => (
+                        <Button
+                          key={person}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleAssignDelivery(order.id, person)}
+                          className="text-xs py-1 h-auto"
+                        >
+                          Assign to {person}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+
+                  {isAdmin && order.status === "assigned" && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleMarkDelivered(order.id)}
+                      className="w-full bg-green-500 text-white hover:bg-green-600 mt-2"
+                    >
+                      Mark Delivered
+                    </Button>
+                  )}
                 </div>
               </Card>
             ))}

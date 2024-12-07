@@ -6,7 +6,8 @@ import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
-import Admin from "./pages/Admin";
+import { BrandsManager } from "./components/admin/BrandsManager";
+import { HotDealsManager } from "./components/admin/HotDealsManager";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -20,23 +21,41 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const showBottomNav = !['/login', '/admin'].includes(location.pathname);
+  const showBottomNav = !['/login'].includes(location.pathname);
 
   useEffect(() => {
     const checkAuthForProtectedRoutes = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const protectedRoutes = ['/dashboard', '/order'];
+      const adminRoutes = ['/admin/brands', '/admin/hot-deals', '/admin/accessories'];
       
       if (protectedRoutes.includes(location.pathname) && !session) {
         navigate('/login');
+        return;
+      }
+
+      // Check admin access for admin routes
+      if (adminRoutes.some(route => location.pathname.startsWith(route))) {
+        if (!session) {
+          navigate('/login');
+          return;
+        }
+
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (!userData || userData.role !== 'admin') {
+          navigate('/dashboard');
+          return;
+        }
       }
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const protectedRoutes = ['/dashboard', '/order'];
-      if (protectedRoutes.includes(location.pathname) && !session) {
-        navigate('/login');
-      }
+      checkAuthForProtectedRoutes();
     });
 
     checkAuthForProtectedRoutes();
@@ -53,7 +72,8 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/order" element={<Order />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/brands" element={<BrandsManager />} />
+            <Route path="/admin/hot-deals" element={<HotDealsManager />} />
             <Route path="/refill" element={<Refill />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
