@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, RefreshCw, Package, User, ShoppingBag, Settings } from "lucide-react";
+import { Home, RefreshCw, Package, User, ShoppingBag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -54,48 +54,44 @@ export const BottomNav = () => {
     navigate('/login');
   };
 
+  const getNavItemClass = (isActive: boolean) => `
+    relative flex flex-col items-center space-y-1
+    ${isActive ? "text-accent font-medium" : "text-muted-foreground"}
+    ${isActive ? "after:content-[''] after:absolute after:w-12 after:h-12 after:rounded-full after:bg-transparent after:-z-10 after:animate-flame" : ""}
+  `;
+
   return (
     <nav className="fixed md:top-1/2 md:-translate-y-1/2 bottom-0 left-0 md:h-auto h-16 bg-background border-t md:border-t-0 md:border-r border-border md:w-16 w-full px-4 flex md:flex-col items-center justify-around md:py-8 md:space-y-8 z-50">
       <Link
         to="/"
-        className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/" ? "text-accent font-medium" : "text-muted-foreground"
-        }`}
+        className={getNavItemClass(location.pathname === "/")}
       >
         <Home className="h-5 w-5" />
         <span className="text-xs">Home</span>
       </Link>
       <Link
         to="/refill"
-        className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/refill" ? "text-accent font-medium" : "text-muted-foreground"
-        }`}
+        className={getNavItemClass(location.pathname === "/refill")}
       >
         <RefreshCw className="h-5 w-5" />
         <span className="text-xs">Refill</span>
       </Link>
       <Link
         to="/dashboard"
-        className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/dashboard" ? "text-accent font-medium" : "text-muted-foreground"
-        }`}
+        className={getNavItemClass(location.pathname === "/dashboard")}
       >
         <Package className="h-5 w-5" />
         <span className="text-xs">My Orders</span>
       </Link>
       <Link
         to="/accessories"
-        className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/accessories" ? "text-accent font-medium" : "text-muted-foreground"
-        }`}
+        className={getNavItemClass(location.pathname === "/accessories")}
       >
         <ShoppingBag className="h-5 w-5" />
         <span className="text-xs">Accessories</span>
       </Link>
       <DropdownMenu>
-        <DropdownMenuTrigger className={`flex flex-col items-center space-y-1 ${
-          location.pathname === "/account" ? "text-accent font-medium" : "text-muted-foreground"
-        }`}>
+        <DropdownMenuTrigger className={getNavItemClass(location.pathname === "/account")}>
           <User className="h-5 w-5" />
           <span className="text-xs">Account</span>
         </DropdownMenuTrigger>

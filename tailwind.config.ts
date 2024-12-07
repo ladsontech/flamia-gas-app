@@ -73,11 +73,22 @@ export default {
           "0%": { transform: "scale(0.95)" },
           "100%": { transform: "scale(1)" },
         },
+        "flame-pulse": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 15px #22C55E, 0 0 30px #22C55E, 0 0 45px #22C55E",
+          },
+          "50%": {
+            transform: "scale(1.05)",
+            boxShadow: "0 0 20px #22C55E, 0 0 40px #22C55E, 0 0 60px #22C55E",
+          }
+        }
       },
       animation: {
         "fade-up": "fade-up 0.5s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "scale-up": "scale-up 0.3s ease-out",
+        "flame": "flame-pulse 2s ease-in-out infinite",
       },
     },
   },
