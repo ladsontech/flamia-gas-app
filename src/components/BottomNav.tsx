@@ -56,8 +56,9 @@ export const BottomNav = () => {
 
   const getNavItemClass = (isActive: boolean) => `
     relative flex flex-col items-center space-y-1
-    ${isActive ? "text-accent font-medium" : "text-muted-foreground"}
+    ${isActive ? "text-flame-inner font-medium" : "text-muted-foreground"}
     ${isActive ? "after:content-[''] after:absolute after:w-12 after:h-12 after:rounded-full after:bg-transparent after:-z-10 after:animate-flame" : ""}
+    transition-colors duration-200 hover:text-flame-middle
   `;
 
   return (
