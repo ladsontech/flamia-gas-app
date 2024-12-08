@@ -49,9 +49,9 @@ export default {
           foreground: "#1A1F2C",
         },
         flame: {
-          inner: "#FFD700",    // Brighter yellow core
-          middle: "#FF4D00",   // Vibrant orange-red middle
-          outer: "#FF8C00",    // Rich dark orange outer
+          inner: "#007FFF",    // Bright blue core
+          middle: "#FFA500",   // Orange middle
+          outer: "#FFD700",    // Yellow outer
         }
       },
       borderRadius: {
@@ -81,12 +81,14 @@ export default {
         "flame-pulse": {
           "0%, 100%": {
             transform: "scale(1)",
-            boxShadow: "0 0 20px #FFD700, 0 0 40px #FF4D00, 0 0 60px #FF8C00",
+            background: "radial-gradient(circle at center, #007FFF 0%, #FFA500 60%, #FFD700 100%)",
+            boxShadow: "0 0 20px #007FFF, 0 0 40px #FFA500, 0 0 60px #FFD700",
             filter: "blur(1px)",
           },
           "50%": {
             transform: "scale(1.1)",
-            boxShadow: "0 0 30px #FFD700, 0 0 60px #FF4D00, 0 0 90px #FF8C00",
+            background: "radial-gradient(circle at center, #007FFF 0%, #FFA500 70%, #FFD700 100%)",
+            boxShadow: "0 0 30px #007FFF, 0 0 60px #FFA500, 0 0 90px #FFD700",
             filter: "blur(2px)",
           }
         }
