@@ -20,7 +20,7 @@ const Login = () => {
         if (userData?.role === 'admin') {
           navigate('/admin');
         } else {
-          navigate('/dashboard');
+          navigate('/'); // Redirect to home page instead of dashboard
         }
       }
     });
@@ -52,6 +52,9 @@ const Login = () => {
             view="sign_in"
             showLinks={true}
             redirectTo={window.location.origin}
+            additionalData={{
+              name: true // Enable name field in signup
+            }}
           />
         </div>
       </div>

@@ -117,9 +117,9 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
       <div className="container max-w-lg mx-auto px-4">
-        <div className="mb-6">
+        <div className="mb-4">
           <h1 className="text-xl font-bold mb-1">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
-          <p className="text-sm text-muted-foreground">Welcome back, {userEmail}</p>
+          <p className="text-sm text-muted-foreground">Welcome, {userEmail}</p>
         </div>
 
         <OrdersList 

@@ -42,8 +42,8 @@ export const OrdersList = ({
 
   if (orders.length === 0) {
     return (
-      <Card className="p-6 text-center">
-        <p className="text-muted-foreground mb-4 text-sm">No orders yet</p>
+      <Card className="p-4">
+        <p className="text-muted-foreground mb-3 text-sm">No orders yet</p>
         <Button 
           onClick={() => navigate('/order')}
           className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
@@ -71,92 +71,70 @@ export const OrdersList = ({
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {sortedDates.map((date) => (
         <div key={date} className="space-y-2">
           <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
-            <h2 className="text-sm font-medium text-muted-foreground py-2">
+            <h2 className="text-xs font-medium text-muted-foreground py-1">
               {format(new Date(date), 'EEEE, MMMM d, yyyy')}
             </h2>
           </div>
           <div className="space-y-2">
-            {groupedOrders[date].map((order, index) => (
-              <Card key={order.id} className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="space-y-1">
-                    <span className="text-xs font-medium">Order #{index + 1}</span>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(order.created_at!), 'HH:mm')}
-                    </p>
-                  </div>
-                  <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
-                </div>
-                
-                <div className="mt-2 space-y-2 text-xs">
-                  <div className="grid grid-cols-2 gap-1">
-                    <span className="text-muted-foreground">Size:</span>
-                    <span>{order.size}</span>
-                    <span className="text-muted-foreground">Quantity:</span>
-                    <span>{order.quantity}</span>
-                    <span className="text-muted-foreground">Type:</span>
-                    <span>{order.type}</span>
-                    <span className="text-muted-foreground">Brand:</span>
-                    <span>{order.brand}</span>
-                  </div>
-                  
-                  <div className="border-t pt-2">
-                    <p className="text-muted-foreground mb-1">Customer Details</p>
-                    <p className="font-medium">{order.customer}</p>
-                    <p>{order.address}</p>
-                    <p>{order.phone}</p>
-                  </div>
-
-                  {isAdmin && (
-                    <div className="border-t pt-2">
-                      {order.status === "pending" && (
-                        <div className="space-y-2">
-                          <p className="text-muted-foreground">Assign Delivery</p>
-                          <div className="flex flex-wrap gap-2">
-                            {deliveryPersonnel.map((person) => (
-                              <Button
-                                key={person}
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onAssignDelivery(order.id, person)}
-                                className="text-xs py-1 h-auto"
-                              >
-                                {person}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {order.status === "assigned" && (
-                        <div className="space-y-2">
-                          <p className="text-muted-foreground">
-                            Assigned to: {order.delivery_person}
-                          </p>
-                          <Button
-                            size="sm"
-                            onClick={() => onMarkDelivered(order.id)}
-                            className="w-full bg-green-500 text-white hover:bg-green-600"
-                          >
-                            Mark as Delivered
-                          </Button>
-                        </div>
-                      )}
-                      
-                      {order.status === "delivered" && (
-                        <p className="text-green-600 font-medium">
-                          Delivered by {order.delivery_person}
-                        </p>
-                      )}
+            {groupedOrders[date].map((order) => (
+              <Card key={order.id} className="p-3">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium">{order.customer_name || order.customer}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(order.status)}`}>
+                        {order.status}
+                      </span>
                     </div>
-                  )}
+                    
+                    <div className="text-xs text-muted-foreground">
+                      <div>{format(new Date(order.created_at!), 'HH:mm')}</div>
+                      <div className="truncate">{order.address}</div>
+                      <div>{order.phone}</div>
+                    </div>
+                    
+                    <div className="mt-1 text-xs">
+                      <span className="font-medium">{order.size} x {order.quantity}</span>
+                      <span className="text-muted-foreground ml-2">{order.type}</span>
+                      <span className="block font-medium">{order.brand}</span>
+                    </div>
+                  </div>
                 </div>
+
+                {isAdmin && order.status === "pending" && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {deliveryPersonnel.map((person) => (
+                      <Button
+                        key={person}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onAssignDelivery(order.id, person)}
+                        className="text-xs py-0.5 h-6"
+                      >
+                        {person}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                
+                {isAdmin && order.status === "assigned" && (
+                  <div className="mt-2 space-y-1">
+                    <div className="text-xs text-muted-foreground">
+                      Assigned to {order.delivery_person}
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => onMarkDelivered(order.id)}
+                      className="w-full bg-green-500 text-white hover:bg-green-600 h-7 text-xs"
+                    >
+                      Mark Delivered
+                    </Button>
+                  </div>
+                )}
               </Card>
             ))}
           </div>
