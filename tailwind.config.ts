@@ -41,7 +41,7 @@ export default {
           foreground: "#403E43",
         },
         accent: {
-          DEFAULT: "#FF4D00",
+          DEFAULT: "#FF4D00",  // Changed to orange-red for flame
           foreground: "#FFFFFF",
         },
         card: {
@@ -49,9 +49,9 @@ export default {
           foreground: "#1A1F2C",
         },
         flame: {
-          inner: "#007FFF",    // Bright blue core
-          middle: "#FFA500",   // Orange middle
-          outer: "#FFD700",    // Yellow outer
+          inner: "#FFD700",    // Yellow core
+          middle: "#FF4D00",   // Orange-red middle
+          outer: "#FF8C00",    // Dark orange outer
         }
       },
       borderRadius: {
@@ -79,17 +79,21 @@ export default {
           "100%": { transform: "scale(1)" },
         },
         "flame-pulse": {
-          "0%, 100%": {
+          "0%": {
             transform: "scale(1)",
-            background: "radial-gradient(circle at center, #007FFF 0%, #FFA500 60%, #FFD700 100%)",
-            boxShadow: "0 0 20px #007FFF, 0 0 40px #FFA500, 0 0 60px #FFD700",
-            filter: "blur(1px)",
+            boxShadow: "0 0 15px #FFD700, 0 0 30px #FF4D00, 0 0 45px #FF8C00",
           },
-          "50%": {
-            transform: "scale(1.1)",
-            background: "radial-gradient(circle at center, #007FFF 0%, #FFA500 70%, #FFD700 100%)",
-            boxShadow: "0 0 30px #007FFF, 0 0 60px #FFA500, 0 0 90px #FFD700",
-            filter: "blur(2px)",
+          "33%": {
+            transform: "scale(1.05)",
+            boxShadow: "0 0 20px #FFD700, 0 0 40px #FF4D00, 0 0 60px #FF8C00",
+          },
+          "66%": {
+            transform: "scale(0.98)",
+            boxShadow: "0 0 25px #FFD700, 0 0 50px #FF4D00, 0 0 75px #FF8C00",
+          },
+          "100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 15px #FFD700, 0 0 30px #FF4D00, 0 0 45px #FF8C00",
           }
         }
       },
@@ -97,7 +101,7 @@ export default {
         "fade-up": "fade-up 0.5s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "scale-up": "scale-up 0.3s ease-out",
-        "flame": "flame-pulse 2s ease-in-out infinite",
+        "flame": "flame-pulse 1.5s ease-in-out infinite",
       },
     },
   },

@@ -55,9 +55,9 @@ export const BottomNav = () => {
   };
 
   const getNavItemClass = (isActive: boolean) => `
-    relative flex flex-col items-center space-y-1 z-10 bg-white p-2 rounded-full
+    relative flex flex-col items-center space-y-1
     ${isActive ? "text-flame-inner font-medium" : "text-muted-foreground"}
-    ${isActive ? "before:content-[''] before:absolute before:w-[120%] before:h-[120%] before:rounded-full before:bg-transparent before:-z-10 before:animate-flame before:opacity-90 before:-inset-[10%]" : ""}
+    ${isActive ? "after:content-[''] after:absolute after:w-12 after:h-12 after:rounded-full after:bg-transparent after:-z-10 after:animate-flame" : ""}
     transition-colors duration-200 hover:text-flame-middle
   `;
 
@@ -122,7 +122,7 @@ export const BottomNav = () => {
               </DropdownMenuItem>
             </>
           ) : (
-            <DropdownMenuItem onClick={() => navigate('/login')}>
+            <DropdownMenuItem onClick={handleLogin}>
               Login
             </DropdownMenuItem>
           )}
