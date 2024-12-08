@@ -1,6 +1,7 @@
 export interface Order {
   id: string;
   customer: string;
+  customer_name?: string | null;
   phone: string;
   address: string;
   brand: string;

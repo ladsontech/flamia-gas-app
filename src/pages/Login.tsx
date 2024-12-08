@@ -8,27 +8,43 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        // Check if user is admin
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('email', session.user.email)
-          .single();
-
-        if (userData?.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/'); // Redirect to home page instead of dashboard
-        }
+    // Check current session on mount
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        handleAuthStateChange('SIGNED_IN', session);
       }
-    });
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     return () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
+
+  const handleAuthStateChange = async (event: string, session: any) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      try {
+        // Check if user is admin
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (userData?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/'); // Redirect to home page
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error);
+        navigate('/'); // Default to home page on error
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">

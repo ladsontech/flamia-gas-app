@@ -85,7 +85,9 @@ export const OrdersList = ({
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium">{order.customer_name || order.customer}</span>
+                      <span className="text-xs font-medium">
+                        {order.customer_name || order.customer}
+                      </span>
                       <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(order.status)}`}>
                         {order.status}
                       </span>
