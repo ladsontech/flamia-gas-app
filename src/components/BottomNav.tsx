@@ -55,9 +55,9 @@ export const BottomNav = () => {
   };
 
   const getNavItemClass = (isActive: boolean) => `
-    relative flex flex-col items-center space-y-1
+    relative flex flex-col items-center space-y-1 z-10 bg-background p-2 rounded-full
     ${isActive ? "text-flame-inner font-medium" : "text-muted-foreground"}
-    ${isActive ? "after:content-[''] after:absolute after:w-16 after:h-16 after:rounded-full after:bg-transparent after:-z-10 after:animate-flame after:opacity-90" : ""}
+    ${isActive ? "before:content-[''] before:absolute before:w-24 before:h-24 before:rounded-full before:bg-transparent before:-z-10 before:animate-flame before:opacity-90 before:-inset-6" : ""}
     transition-colors duration-200 hover:text-flame-middle
   `;
 
