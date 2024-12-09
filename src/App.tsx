@@ -25,32 +25,40 @@ const AppContent = () => {
 
   useEffect(() => {
     const checkAuthForProtectedRoutes = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const protectedRoutes = ['/dashboard', '/order'];
-      const adminRoutes = ['/admin/brands', '/admin/hot-deals', '/admin/accessories'];
-      
-      if (protectedRoutes.includes(location.pathname) && !session) {
-        navigate('/login');
-        return;
-      }
-
-      // Check admin access for admin routes
-      if (adminRoutes.some(route => location.pathname.startsWith(route))) {
-        if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const protectedRoutes = ['/dashboard', '/order'];
+        const adminRoutes = ['/admin/brands', '/admin/hot-deals', '/admin/accessories'];
+        
+        if (protectedRoutes.includes(location.pathname) && !session) {
           navigate('/login');
           return;
         }
 
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', session.user.id)
-          .maybeSingle();
+        // Check admin access for admin routes
+        if (adminRoutes.some(route => location.pathname.startsWith(route))) {
+          if (!session) {
+            navigate('/login');
+            return;
+          }
 
-        if (!userData || userData.role !== 'admin') {
-          navigate('/dashboard');
-          return;
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          console.log('User data:', userData, 'Error:', error);
+
+          if (!userData || userData.role !== 'admin') {
+            console.log('Not an admin, redirecting to dashboard');
+            navigate('/dashboard');
+            return;
+          }
         }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate('/login');
       }
     };
 
