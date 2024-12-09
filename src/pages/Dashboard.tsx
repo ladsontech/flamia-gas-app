@@ -5,6 +5,8 @@ import { Order } from "@/types/order";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { OrdersList } from "@/components/dashboard/OrdersList";
+import { motion } from "framer-motion";
+import { Flame } from "lucide-react";
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -32,7 +34,6 @@ const Dashboard = () => {
     try {
       let query = supabase.from('orders').select('*');
       
-      // If not admin, only show their own orders
       if (!isAdmin) {
         query = query.eq('customer', email);
       }
@@ -108,7 +109,12 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
         <div className="container">
-          <div className="text-center">Loading...</div>
+          <div className="flex items-center justify-center h-[60vh]">
+            <div className="animate-pulse flex flex-col items-center gap-4">
+              <Flame className="w-8 h-8 text-accent animate-bounce" />
+              <p className="text-muted-foreground">Loading orders...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -117,10 +123,18 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-6">
       <div className="container max-w-lg mx-auto px-4">
-        <div className="mb-4">
-          <h1 className="text-xl font-bold mb-1">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
-          <p className="text-sm text-muted-foreground">Welcome, {userEmail}</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mb-6"
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-xl font-bold">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
+            <Flame className="w-5 h-5 text-accent" />
+          </div>
+          <p className="text-sm text-muted-foreground">Welcome back, {userEmail}</p>
+        </motion.div>
 
         <OrdersList 
           orders={orders}
