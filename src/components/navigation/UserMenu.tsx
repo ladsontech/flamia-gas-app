@@ -50,45 +50,46 @@ export const UserMenu = ({ isActive }: { isActive: boolean }) => {
   };
 
   const navItemClass = `
-    relative flex flex-col items-center space-y-1 bg-white rounded-full p-2
+    relative flex flex-col items-center justify-center w-12 h-12
     ${isActive ? "text-flame-inner font-medium" : "text-muted-foreground"}
-    ${isActive ? "after:content-[''] after:absolute after:w-[120%] after:h-[120%] after:rounded-full after:bg-transparent after:-z-10 after:animate-flame" : ""}
-    transition-colors duration-200 hover:text-flame-middle
+    ${isActive ? "after:content-[''] after:absolute after:w-[140%] after:h-[140%] after:rounded-full after:bg-transparent after:-z-10 after:animate-flame" : ""}
+    transition-colors duration-200 hover:text-flame-middle group
   `;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={navItemClass}>
-        <User className="h-5 w-5" />
-        <span className="text-xs">Account</span>
+        <User className="h-4 w-4 mb-0.5" />
+        <span className="text-[10px] leading-none">Account</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-64 p-3 bg-white rounded-lg shadow-lg border border-gray-100">
         {userName ? (
           <>
-            <DropdownMenuItem className="text-sm font-medium">
-              {userName}
-            </DropdownMenuItem>
+            <div className="px-2 py-3 text-center border-b border-gray-100 mb-2">
+              <h3 className="font-medium text-lg text-foreground">{userName}</h3>
+              <p className="text-sm text-muted-foreground">Manage your account</p>
+            </div>
             {isAdmin && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/admin/brands')}>
+                <DropdownMenuItem onClick={() => navigate('/admin/brands')} className="py-2">
                   Manage Brands
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/admin/hot-deals')}>
+                <DropdownMenuItem onClick={() => navigate('/admin/hot-deals')} className="py-2">
                   Manage Hot Deals
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/admin/accessories')}>
+                <DropdownMenuItem onClick={() => navigate('/admin/accessories')} className="py-2">
                   Manage Accessories
                 </DropdownMenuItem>
               </>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout} className="py-2 text-red-500 hover:text-red-600 hover:bg-red-50">
               Logout
             </DropdownMenuItem>
           </>
         ) : (
-          <DropdownMenuItem onClick={() => navigate('/login')}>
+          <DropdownMenuItem onClick={() => navigate('/login')} className="py-2">
             Login
           </DropdownMenuItem>
         )}

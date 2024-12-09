@@ -10,7 +10,7 @@ export const BottomNav = () => {
   if (!showBottomNav) return null;
 
   return (
-    <nav className="fixed md:top-1/2 md:-translate-y-1/2 bottom-0 left-0 md:h-auto h-16 bg-background border-t md:border-t-0 md:border-r border-border md:w-16 w-full px-4 flex md:flex-col items-center justify-around md:py-8 md:space-y-8 z-50">
+    <nav className="fixed md:top-1/2 md:-translate-y-1/2 bottom-0 left-0 md:h-auto h-14 bg-background border-t md:border-t-0 md:border-r border-border md:w-14 w-full px-2 flex md:flex-col items-center justify-around md:py-8 md:space-y-6 z-50">
       <NavItem
         to="/"
         icon={Home}
@@ -32,7 +32,7 @@ export const BottomNav = () => {
       <NavItem
         to="/accessories"
         icon={ShoppingBag}
-        label="Accessories"
+        label="Shop"
         isActive={location.pathname === "/accessories"}
       />
       <UserMenu isActive={location.pathname === "/account"} />
