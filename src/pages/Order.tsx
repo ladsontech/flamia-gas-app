@@ -8,6 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
+import { Flame } from "lucide-react";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -80,7 +81,7 @@ const Order = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
       <div className="container max-w-md px-4">
         <BackButton />
         
@@ -88,26 +89,43 @@ const Order = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
+          className="space-y-6"
         >
-          <Card className="p-6">
+          <Card className="p-6 relative overflow-hidden border-none shadow-lg bg-white/80 backdrop-blur-sm">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-75" />
+            
             <OrderHeader orderType={formData.type} />
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 relative">
               <OrderFormFields 
                 formData={formData}
                 setFormData={setFormData}
                 selectedBrand={selectedBrand}
               />
 
-              <div className="pt-4">
+              <motion.div 
+                className="pt-4"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   type="submit"
-                  className="w-full bg-accent text-white hover:bg-accent/90"
+                  className="w-full bg-accent text-white hover:bg-accent/90 relative overflow-hidden group h-12"
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : "Place Order"}
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {loading ? (
+                      "Processing..."
+                    ) : (
+                      <>
+                        Place Order
+                        <Flame className="w-5 h-5 transition-transform group-hover:rotate-12" />
+                      </>
+                    )}
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-0 group-hover:opacity-20 transition-opacity" />
                 </Button>
-              </div>
+              </motion.div>
             </form>
           </Card>
         </motion.div>

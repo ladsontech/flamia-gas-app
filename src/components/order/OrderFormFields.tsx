@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { motion } from "framer-motion";
 
 interface Accessory {
   id: string;
@@ -55,16 +56,37 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-4"
+    >
       {selectedBrand && (
-        <div className="space-y-2">
+        <motion.div variants={itemVariants} className="space-y-2">
           <Label>Selected Brand</Label>
-          <Input value={selectedBrand} readOnly className="bg-muted" />
-        </div>
+          <Input value={selectedBrand} readOnly className="bg-muted/50 border-accent/20" />
+        </motion.div>
       )}
 
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="phone">Phone Number</Label>
         <Input
           id="phone"
@@ -73,10 +95,11 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
           placeholder="+256 123 456 789"
+          className="border-accent/20 focus:border-accent/40"
         />
-      </div>
+      </motion.div>
 
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="address">Delivery Address</Label>
         <Input
           id="address"
@@ -85,16 +108,17 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
           placeholder="Enter your delivery address"
+          className="border-accent/20 focus:border-accent/40"
         />
-      </div>
+      </motion.div>
 
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="type">Order Type</Label>
         <Select 
           value={formData.type} 
           onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
         >
-          <SelectTrigger>
+          <SelectTrigger className="border-accent/20">
             <SelectValue placeholder="Select order type" />
           </SelectTrigger>
           <SelectContent>
@@ -102,15 +126,15 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
             <SelectItem value="refill">Refill Only</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
 
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="size">Cylinder Size</Label>
         <Select 
           value={formData.size} 
           onValueChange={(value) => setFormData(prev => ({ ...prev, size: value }))}
         >
-          <SelectTrigger>
+          <SelectTrigger className="border-accent/20">
             <SelectValue placeholder="Select cylinder size" />
           </SelectTrigger>
           <SelectContent>
@@ -119,9 +143,9 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
             <SelectItem value="12kg">12 KG</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
 
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="quantity">Quantity</Label>
         <Input
           id="quantity"
@@ -131,16 +155,17 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           value={formData.quantity}
           onChange={handleInputChange}
           required
+          className="border-accent/20 focus:border-accent/40"
         />
-      </div>
+      </motion.div>
 
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="accessory">Add Accessory (Optional)</Label>
         <Select 
           value={formData.accessory_id || "none"} 
           onValueChange={(value) => setFormData(prev => ({ ...prev, accessory_id: value === "none" ? undefined : value }))}
         >
-          <SelectTrigger>
+          <SelectTrigger className="border-accent/20">
             <SelectValue placeholder="Select an accessory" />
           </SelectTrigger>
           <SelectContent>
@@ -152,7 +177,7 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
             ))}
           </SelectContent>
         </Select>
-      </div>
-    </>
+      </motion.div>
+    </motion.div>
   );
 };
