@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
+import Admin from "./pages/Admin";
 import { BrandsManager } from "./components/admin/BrandsManager";
 import { HotDealsManager } from "./components/admin/HotDealsManager";
 import Refill from "./pages/Refill";
@@ -21,14 +22,14 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const showBottomNav = !['/login'].includes(location.pathname);
+  const showBottomNav = !['/login', '/admin', '/admin/brands', '/admin/hot-deals'].includes(location.pathname);
 
   useEffect(() => {
     const checkAuthForProtectedRoutes = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         const protectedRoutes = ['/dashboard', '/order'];
-        const adminRoutes = ['/admin/brands', '/admin/hot-deals', '/admin/accessories'];
+        const adminRoutes = ['/admin', '/admin/brands', '/admin/hot-deals', '/admin/accessories'];
         
         // Check if it's an admin route
         if (adminRoutes.some(route => location.pathname.startsWith(route))) {
@@ -70,8 +71,9 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/order" element={<Order />} />
-            <Route path="/admin/brands" element={<BrandsManager />} />
-            <Route path="/admin/hot-deals" element={<HotDealsManager />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/brands" element={<Admin />} />
+            <Route path="/admin/hot-deals" element={<Admin />} />
             <Route path="/refill" element={<Refill />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
