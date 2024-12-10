@@ -37,16 +37,16 @@ const Login = () => {
           .from('users')
           .select('role')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (userData?.role === 'admin') {
           navigate('/admin/brands');
         } else {
-          navigate('/');
+          navigate('/dashboard');
         }
       } catch (error) {
         console.error('Error checking user role:', error);
-        navigate('/');
+        navigate('/dashboard');
       }
     }
   };
@@ -56,7 +56,6 @@ const Login = () => {
     setAuthLoading(true);
 
     try {
-      // Changed from .single() to .eq() to check all records
       const { data, error } = await supabase
         .from('admin_credentials')
         .select('password_hash')
@@ -64,7 +63,6 @@ const Login = () => {
 
       if (error) throw error;
 
-      // Check if any record matches the password
       if (data && data.length > 0) {
         navigate('/admin/brands');
         toast({
