@@ -28,7 +28,7 @@ const Login = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, []);
 
   const handleAuthStateChange = async (event: string, session: any) => {
     if (event === 'SIGNED_IN' && session?.user) {
@@ -56,14 +56,16 @@ const Login = () => {
     setAuthLoading(true);
 
     try {
+      // Changed from .single() to .eq() to check all records
       const { data, error } = await supabase
         .from('admin_credentials')
         .select('password_hash')
-        .single();
+        .eq('password_hash', adminPassword);
 
       if (error) throw error;
 
-      if (data.password_hash === adminPassword) {
+      // Check if any record matches the password
+      if (data && data.length > 0) {
         navigate('/admin/brands');
         toast({
           title: "Success",
@@ -77,6 +79,7 @@ const Login = () => {
         });
       }
     } catch (error) {
+      console.error('Admin login error:', error);
       toast({
         title: "Error",
         description: "Authentication failed",
