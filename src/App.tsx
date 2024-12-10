@@ -42,6 +42,7 @@ const AppContent = () => {
             return;
           }
 
+          console.log('Checking user role for:', session.user.id);
           const { data: userData, error } = await supabase
             .from('users')
             .select('role')
@@ -49,6 +50,12 @@ const AppContent = () => {
             .maybeSingle();
 
           console.log('User data:', userData, 'Error:', error);
+
+          if (error) {
+            console.error('Error fetching user role:', error);
+            navigate('/');
+            return;
+          }
 
           if (!userData || userData.role !== 'admin') {
             console.log('Not an admin, redirecting to dashboard');
