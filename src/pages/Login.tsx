@@ -2,13 +2,19 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { LoginForm } from "@/components/admin/LoginForm";
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
-    // Check current session on mount
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
@@ -27,7 +33,6 @@ const Login = () => {
   const handleAuthStateChange = async (event: string, session: any) => {
     if (event === 'SIGNED_IN' && session?.user) {
       try {
-        // Check if user is admin
         const { data: userData } = await supabase
           .from('users')
           .select('role')
@@ -35,22 +40,78 @@ const Login = () => {
           .single();
 
         if (userData?.role === 'admin') {
-          navigate('/admin');
+          navigate('/admin/brands');
         } else {
-          navigate('/'); // Redirect to home page
+          navigate('/');
         }
       } catch (error) {
         console.error('Error checking user role:', error);
-        navigate('/'); // Default to home page on error
+        navigate('/');
       }
     }
   };
+
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('admin_credentials')
+        .select('password_hash')
+        .single();
+
+      if (error) throw error;
+
+      if (data.password_hash === adminPassword) {
+        navigate('/admin/brands');
+        toast({
+          title: "Success",
+          description: "Logged in as admin successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Invalid admin password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Authentication failed",
+        variant: "destructive",
+      });
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  if (showAdminLogin) {
+    return (
+      <LoginForm
+        password={adminPassword}
+        setPassword={setAdminPassword}
+        handleLogin={handleAdminLogin}
+        authLoading={authLoading}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
       <div className="container max-w-md mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Login</h1>
+            <Button
+              variant="outline"
+              onClick={() => setShowAdminLogin(true)}
+              size="sm"
+            >
+              Admin Login
+            </Button>
+          </div>
           <Auth
             supabaseClient={supabase}
             appearance={{ 
@@ -68,9 +129,6 @@ const Login = () => {
             view="sign_in"
             showLinks={true}
             redirectTo={window.location.origin}
-            additionalData={{
-              name: true // Enable name field in signup
-            }}
           />
         </div>
       </div>
