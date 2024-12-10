@@ -47,7 +47,7 @@ const AppContent = () => {
             .from('users')
             .select('role')
             .eq('id', session.user.id)
-            .maybeSingle();
+            .maybeSingle(); // Changed from .single() to .maybeSingle()
 
           console.log('User data:', userData, 'Error:', error);
 
@@ -57,8 +57,9 @@ const AppContent = () => {
             return;
           }
 
+          // Check if user exists and is an admin
           if (!userData || userData.role !== 'admin') {
-            console.log('Not an admin, redirecting to dashboard');
+            console.log('Not an admin or user not found, redirecting to dashboard');
             navigate('/dashboard');
             return;
           }
