@@ -7,8 +7,6 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Admin from "./pages/Admin";
-import { BrandsManager } from "./components/admin/BrandsManager";
-import { HotDealsManager } from "./components/admin/HotDealsManager";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -22,17 +20,16 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const showBottomNav = !['/login', '/admin', '/admin/brands', '/admin/hot-deals'].includes(location.pathname);
+  const showBottomNav = !['/login', '/admin'].includes(location.pathname);
 
   useEffect(() => {
     const checkAuthForProtectedRoutes = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         const protectedRoutes = ['/dashboard', '/order'];
-        const adminRoutes = ['/admin', '/admin/brands', '/admin/hot-deals', '/admin/accessories'];
         
-        // Check if it's an admin route
-        if (adminRoutes.some(route => location.pathname.startsWith(route))) {
+        // Check if it's admin route
+        if (location.pathname === '/admin') {
           const isAdmin = localStorage.getItem('isAdmin') === 'true';
           if (!isAdmin) {
             console.log('Not an admin, redirecting to login');
@@ -72,8 +69,6 @@ const AppContent = () => {
             <Route path="/" element={<Index />} />
             <Route path="/order" element={<Order />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/brands" element={<Admin />} />
-            <Route path="/admin/hot-deals" element={<Admin />} />
             <Route path="/refill" element={<Refill />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
