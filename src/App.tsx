@@ -30,39 +30,21 @@ const AppContent = () => {
         const protectedRoutes = ['/dashboard', '/order'];
         const adminRoutes = ['/admin/brands', '/admin/hot-deals', '/admin/accessories'];
         
-        if (protectedRoutes.includes(location.pathname) && !session) {
-          navigate('/login');
-          return;
-        }
-
-        // Check admin access for admin routes
+        // Check if it's an admin route
         if (adminRoutes.some(route => location.pathname.startsWith(route))) {
-          if (!session) {
+          const isAdmin = localStorage.getItem('isAdmin') === 'true';
+          if (!isAdmin) {
+            console.log('Not an admin, redirecting to login');
             navigate('/login');
             return;
           }
+          return; // Allow access if admin
+        }
 
-          console.log('Checking user role for:', session.user.id);
-          const { data: userData, error } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', session.user.id)
-            .maybeSingle(); // Changed from .single() to .maybeSingle()
-
-          console.log('User data:', userData, 'Error:', error);
-
-          if (error) {
-            console.error('Error fetching user role:', error);
-            navigate('/');
-            return;
-          }
-
-          // Check if user exists and is an admin
-          if (!userData || userData.role !== 'admin') {
-            console.log('Not an admin or user not found, redirecting to dashboard');
-            navigate('/dashboard');
-            return;
-          }
+        // Check regular user routes
+        if (protectedRoutes.includes(location.pathname) && !session) {
+          navigate('/login');
+          return;
         }
       } catch (error) {
         console.error('Auth check error:', error);

@@ -64,6 +64,8 @@ const Login = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        // Set a flag in localStorage to indicate admin status
+        localStorage.setItem('isAdmin', 'true');
         navigate('/admin/brands');
         toast({
           title: "Success",
