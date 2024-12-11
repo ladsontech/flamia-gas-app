@@ -18,6 +18,27 @@ export const AdminOrdersView = () => {
 
   const loadOrders = async () => {
     try {
+      // First, check if the user has admin role
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (userError) throw userError;
+      if (userData?.role !== 'admin') {
+        toast({
+          title: "Access Denied",
+          description: "You need admin privileges to view all orders",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Fetch all orders
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -26,6 +47,7 @@ export const AdminOrdersView = () => {
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
+      console.error('Error loading orders:', error);
       toast({
         title: "Error",
         description: "Failed to fetch orders",
