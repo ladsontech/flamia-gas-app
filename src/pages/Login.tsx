@@ -1,139 +1,110 @@
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LoginForm } from "@/components/admin/LoginForm";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
-  const [authLoading, setAuthLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        handleAuthStateChange('SIGNED_IN', session);
-      }
-    };
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleAuthStateChange = async (event: string, session: any) => {
-    if (event === 'SIGNED_IN' && session?.user) {
-      try {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', session.user.id)
-          .maybeSingle();
-
-        if (userData?.role === 'admin') {
-          navigate('/admin/brands');
-        } else {
-          navigate('/dashboard');
-        }
-      } catch (error) {
-        console.error('Error checking user role:', error);
-        navigate('/dashboard');
-      }
-    }
-  };
-
-  const handleAdminLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAuthLoading(true);
+    setLoading(true);
 
     try {
-      const { data, error } = await supabase
-        .from('admin_credentials')
-        .select('password_hash')
-        .eq('password_hash', adminPassword);
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
-        // Set a flag in localStorage to indicate admin status
+      // Check if user is admin
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user?.id)
+        .single();
+
+      if (userError) throw userError;
+
+      if (userData?.role === 'admin') {
         localStorage.setItem('isAdmin', 'true');
-        navigate('/admin/brands');
-        toast({
-          title: "Success",
-          description: "Logged in as admin successfully",
-        });
+        navigate('/admin');
       } else {
-        toast({
-          title: "Error",
-          description: "Invalid admin password",
-          variant: "destructive",
-        });
+        localStorage.setItem('isAdmin', 'false');
+        navigate('/dashboard');
       }
-    } catch (error) {
-      console.error('Admin login error:', error);
+
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Authentication failed",
+        description: error.message,
         variant: "destructive",
       });
     } finally {
-      setAuthLoading(false);
+      setLoading(false);
     }
   };
 
-  if (showAdminLogin) {
-    return (
-      <LoginForm
-        password={adminPassword}
-        setPassword={setAdminPassword}
-        handleLogin={handleAdminLogin}
-        authLoading={authLoading}
-      />
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
-      <div className="container max-w-md mx-auto">
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Login</h1>
-            <Button
-              variant="outline"
-              onClick={() => setShowAdminLogin(true)}
-              size="sm"
-            >
-              Admin Login
-            </Button>
-          </div>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ 
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#000',
-                    brandAccent: '#666',
-                  },
-                },
-              },
-            }}
-            providers={[]}
-            view="sign_in"
-            showLinks={true}
-            redirectTo={window.location.origin}
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/20 to-background p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">Welcome Back</h2>
+          <p className="text-muted-foreground mt-2">Sign in to your account</p>
         </div>
+
+        <form onSubmit={handleLogin} className="mt-8 space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="mt-1"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-foreground">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="mt-1"
+                placeholder="Enter your password"
+              />
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </Button>
+        </form>
       </div>
     </div>
   );
