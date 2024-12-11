@@ -20,16 +20,22 @@ const Login = () => {
             supabaseClient={supabase}
             appearance={{
               theme: ThemeSupa,
+              style: {
+                button: { background: 'hsl(142, 70%, 45%)', color: 'white' },
+                anchor: { color: 'hsl(142, 70%, 45%)' },
+              },
               variables: {
                 default: {
                   colors: {
-                    brand: 'hsl(var(--primary))',
-                    brandAccent: 'hsl(var(--primary))',
+                    brand: 'hsl(142, 70%, 45%)',
+                    brandAccent: 'hsl(142, 70%, 40%)',
                   },
                 },
               },
             }}
             providers={[]}
+            view="sign_in"
+            showLinks={true}
           />
         </div>
       </div>
