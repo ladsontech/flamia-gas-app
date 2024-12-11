@@ -72,14 +72,8 @@ export const UserMenu = ({ isActive }: { isActive: boolean }) => {
             {isAdmin && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/admin/brands')} className="py-2">
-                  Manage Brands
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/admin/hot-deals')} className="py-2">
-                  Manage Hot Deals
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/admin/accessories')} className="py-2">
-                  Manage Accessories
+                <DropdownMenuItem onClick={() => navigate('/admin')} className="py-2">
+                  Manage Orders
                 </DropdownMenuItem>
               </>
             )}

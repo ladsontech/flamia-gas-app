@@ -29,14 +29,18 @@ const AppContent = () => {
         const protectedRoutes = ['/dashboard', '/order'];
         
         // Check if it's admin route
-        if (location.pathname === '/admin') {
+        if (location.pathname.startsWith('/admin')) {
           const isAdmin = localStorage.getItem('isAdmin') === 'true';
           if (!isAdmin) {
             console.log('Not an admin, redirecting to login');
             navigate('/login');
             return;
           }
-          return; // Allow access if admin
+          // If we're on any admin route other than the main one, redirect to /admin
+          if (location.pathname !== '/admin') {
+            navigate('/admin');
+          }
+          return;
         }
 
         // Check regular user routes
