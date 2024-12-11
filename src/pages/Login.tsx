@@ -51,22 +51,13 @@ const Login = () => {
             providers={[]}
             view="sign_in"
             showLinks={true}
-            onError={(error) => {
-              // Handle user already exists error
-              if (error.message.includes('User already registered')) {
-                toast({
-                  title: "Account exists",
-                  description: "This email is already registered. Please sign in instead.",
-                  variant: "destructive",
-                });
-              } else {
-                // Handle other errors
-                toast({
-                  title: "Error",
-                  description: error.message,
-                  variant: "destructive",
-                });
-              }
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                },
+              },
             }}
           />
         </div>
