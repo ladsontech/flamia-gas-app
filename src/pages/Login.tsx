@@ -1,26 +1,25 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Listen for auth state changes and error messages
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-      navigate('/');
-    }
-    if (event === 'USER_UPDATED') {
-      navigate('/');
-    }
-    if (event === 'SIGNED_OUT') {
-      navigate('/login');
-    }
-  });
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        navigate('/');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/20 to-background p-4">
@@ -51,9 +50,14 @@ const Login = () => {
             providers={[]}
             view="sign_in"
             showLinks={true}
+            redirectTo={window.location.origin}
             localization={{
               variables: {
                 sign_in: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                },
+                sign_up: {
                   email_label: 'Email',
                   password_label: 'Password',
                 },
