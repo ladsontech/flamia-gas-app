@@ -3,9 +3,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { OrdersTable } from "./OrdersTable";
 import { supabase } from "@/integrations/supabase/client";
 import { Order } from "@/types/order";
+import { useNavigate } from "react-router-dom";
 
 export const AdminOrdersView = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,10 +18,13 @@ export const AdminOrdersView = () => {
     "Steven"
   ];
 
-  const loadOrders = async () => {
+  const checkAdminStatus = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        navigate('/login');
+        return;
+      }
 
       const { data: userData, error: userError } = await supabase
         .from('users')
@@ -27,16 +32,22 @@ export const AdminOrdersView = () => {
         .eq('id', user.id)
         .single();
 
-      if (userError) throw userError;
-      if (userData?.admin !== 'admin') {
+      if (userError || userData?.admin !== 'admin') {
         toast({
           title: "Access Denied",
-          description: "You need admin privileges to view all orders",
+          description: "You need admin privileges to view this page",
           variant: "destructive",
         });
-        return;
+        navigate('/');
       }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      navigate('/');
+    }
+  };
 
+  const loadOrders = async () => {
+    try {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -57,6 +68,7 @@ export const AdminOrdersView = () => {
   };
 
   useEffect(() => {
+    checkAdminStatus();
     loadOrders();
   }, []);
 
