@@ -18,7 +18,6 @@ export const AdminOrdersView = () => {
 
   const loadOrders = async () => {
     try {
-      // First, check if the user has admin role
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -38,7 +37,6 @@ export const AdminOrdersView = () => {
         return;
       }
 
-      // Fetch all orders
       const { data, error } = await supabase
         .from('orders')
         .select('*')
