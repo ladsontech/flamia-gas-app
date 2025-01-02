@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 interface LoginFormProps {
   password: string;
@@ -13,9 +14,11 @@ interface LoginFormProps {
   authLoading: boolean;
 }
 
-export const LoginForm = ({ password, setPassword, handleLogin, authLoading }: LoginFormProps) => {
+export const LoginForm = ({ authLoading }: LoginFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +32,7 @@ export const LoginForm = ({ password, setPassword, handleLogin, authLoading }: L
 
       if (adminError) throw adminError;
 
-      if (adminData.password_hash !== password) {
+      if (adminData.password_hash !== password || username !== 'admin') {
         toast({
           title: "Error",
           description: "Invalid admin credentials",
@@ -75,8 +78,17 @@ export const LoginForm = ({ password, setPassword, handleLogin, authLoading }: L
             <form onSubmit={handleAdminLogin} className="space-y-4">
               <div>
                 <Input
+                  type="text"
+                  placeholder="Enter username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Input
                   type="password"
-                  placeholder="Enter admin password"
+                  placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
