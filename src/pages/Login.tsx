@@ -4,6 +4,8 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { LockKeyhole } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,6 +22,10 @@ const Login = () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
+
+  const handleAdminClick = () => {
+    navigate('/admin/login');
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/20 to-background p-4">
@@ -64,6 +70,17 @@ const Login = () => {
               },
             }}
           />
+          
+          <div className="mt-6 text-center">
+            <Button
+              variant="outline"
+              onClick={handleAdminClick}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <LockKeyhole className="w-4 h-4" />
+              Admin Login
+            </Button>
+          </div>
         </div>
       </div>
     </div>
