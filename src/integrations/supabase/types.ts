@@ -142,25 +142,25 @@ export type Database = {
       }
       users: {
         Row: {
+          admin: string
           created_at: string
           display_name: string
           email: string
           id: string
-          role: string
         }
         Insert: {
+          admin?: string
           created_at?: string
           display_name: string
           email: string
           id: string
-          role?: string
         }
         Update: {
+          admin?: string
           created_at?: string
           display_name?: string
           email?: string
           id?: string
-          role?: string
         }
         Relationships: []
       }
