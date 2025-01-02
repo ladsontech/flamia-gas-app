@@ -23,12 +23,12 @@ export const AdminOrdersView = () => {
 
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('role')
+        .select('admin')
         .eq('id', user.id)
         .single();
 
       if (userError) throw userError;
-      if (userData?.role !== 'admin') {
+      if (userData?.admin !== 'admin') {
         toast({
           title: "Access Denied",
           description: "You need admin privileges to view all orders",

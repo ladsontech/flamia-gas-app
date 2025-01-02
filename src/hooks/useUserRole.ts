@@ -17,11 +17,11 @@ export const useUserRole = () => {
 
         const { data: userData, error } = await supabase
           .from('users')
-          .select('role')
+          .select('admin')
           .eq('id', session.user.id)
           .maybeSingle();
 
-        if (!error && userData?.role === 'admin') {
+        if (!error && userData?.admin === 'admin') {
           setIsAdmin(true);
         }
       } catch (error) {

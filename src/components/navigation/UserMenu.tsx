@@ -25,14 +25,14 @@ export const UserMenu = ({ isActive }: { isActive: boolean }) => {
       if (session?.user) {
         const { data: userData, error } = await supabase
           .from('users')
-          .select('display_name, role')
+          .select('display_name, admin')
           .eq('id', session.user.id)
           .maybeSingle();
         
         if (error) throw error;
         
         setUserName(userData?.display_name || session.user.email);
-        setIsAdmin(userData?.role === 'admin');
+        setIsAdmin(userData?.admin === 'admin');
       }
     } catch (error) {
       console.error('Error checking auth:', error);
