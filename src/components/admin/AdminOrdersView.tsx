@@ -30,15 +30,16 @@ export const AdminOrdersView = () => {
         .from('users')
         .select('admin')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (userError || userData?.admin !== 'admin') {
+      if (userError || !userData || userData?.admin !== 'admin') {
         toast({
           title: "Access Denied",
           description: "You need admin privileges to view this page",
           variant: "destructive",
         });
         navigate('/');
+        return;
       }
     } catch (error) {
       console.error('Error checking admin status:', error);
