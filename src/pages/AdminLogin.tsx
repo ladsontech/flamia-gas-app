@@ -36,6 +36,7 @@ const AdminLogin = () => {
         description: "Logged in as admin",
       });
 
+      // Redirect directly to the orders page instead of /admin
       navigate('/admin');
     } catch (error) {
       console.error('Login error:', error);
@@ -63,7 +64,7 @@ const AdminLogin = () => {
                 <LockKeyhole className="w-12 h-12 text-primary" />
               </div>
               <h1 className="text-2xl font-bold">Admin Login</h1>
-              <p className="text-muted-foreground mt-2">Access admin dashboard</p>
+              <p className="text-muted-foreground mt-2">Access order management</p>
             </div>
             
             <form onSubmit={handleAdminLogin} className="space-y-4">
@@ -72,7 +73,7 @@ const AdminLogin = () => {
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Username"
+                    placeholder="Username (admin)"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="pl-9"
@@ -86,7 +87,7 @@ const AdminLogin = () => {
                   <LockKeyhole className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="password"
-                    placeholder="Password"
+                    placeholder="Password (admin)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-9"
