@@ -9,6 +9,7 @@ import Order from "./pages/Order";
 import Admin from "./pages/Admin";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,7 +21,7 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const showBottomNav = !['/login', '/admin'].includes(location.pathname);
+  const showBottomNav = !['/login', '/admin', '/admin/login'].includes(location.pathname);
 
   useEffect(() => {
     const checkAuthForProtectedRoutes = async () => {
@@ -29,11 +30,11 @@ const AppContent = () => {
         const protectedRoutes = ['/dashboard', '/order'];
         
         // Check if it's admin route
-        if (location.pathname.startsWith('/admin')) {
+        if (location.pathname.startsWith('/admin') && location.pathname !== '/admin/login') {
           const isAdmin = localStorage.getItem('isAdmin') === 'true';
           if (!isAdmin) {
-            console.log('Not an admin, redirecting to login');
-            navigate('/login');
+            console.log('Not an admin, redirecting to admin login');
+            navigate('/admin/login');
             return;
           }
           // If we're on any admin route other than the main one, redirect to /admin
@@ -73,6 +74,7 @@ const AppContent = () => {
             <Route path="/" element={<Index />} />
             <Route path="/order" element={<Order />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/refill" element={<Refill />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />

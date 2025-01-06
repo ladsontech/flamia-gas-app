@@ -31,8 +31,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/20 to-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold">Welcome Back</h2>
-          <p className="text-muted-foreground mt-2">Sign in to your account</p>
+          <h2 className="text-2xl font-bold">Customer Login</h2>
+          <p className="text-muted-foreground mt-2">Sign in to your account to place orders</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -57,18 +57,6 @@ const Login = () => {
             view="sign_in"
             showLinks={true}
             redirectTo={window.location.origin}
-            localization={{
-              variables: {
-                sign_in: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                },
-                sign_up: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                },
-              },
-            }}
           />
           
           <div className="mt-6 text-center">
