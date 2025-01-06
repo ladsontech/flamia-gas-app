@@ -37,7 +37,7 @@ const AppContent = () => {
             navigate('/admin/login');
             return;
           }
-          return; // Remove the redirect to /admin if we're already on an admin route
+          return;
         }
 
         // Check regular user routes

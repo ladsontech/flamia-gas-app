@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,6 @@ const AdminLogin = () => {
         description: "Logged in as admin",
       });
 
-      // Redirect directly to the orders page instead of /admin
       navigate('/admin');
     } catch (error) {
       console.error('Login error:', error);
