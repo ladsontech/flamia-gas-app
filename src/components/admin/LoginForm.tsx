@@ -7,21 +7,16 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-interface LoginFormProps {
-  password: string;
-  setPassword: (password: string) => void;
-  handleLogin: (e: React.FormEvent) => void;
-  authLoading: boolean;
-}
-
-export const LoginForm = ({ authLoading }: LoginFormProps) => {
+export const LoginForm = ({ authLoading }: { authLoading: boolean }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     try {
       // First check admin credentials
@@ -41,20 +36,32 @@ export const LoginForm = ({ authLoading }: LoginFormProps) => {
         return;
       }
 
-      // If admin credentials are valid, sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: 'admin',
-        password: 'admin'
+      // Create a session for the admin
+      const { data: { user }, error: signInError } = await supabase.auth.signUp({
+        email: `admin_${Date.now()}@example.com`,
+        password: password,
       });
 
       if (signInError) throw signInError;
 
-      toast({
-        title: "Success",
-        description: "Logged in as admin",
-      });
+      if (user) {
+        // Set admin role in users table
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({ admin: 'admin' })
+          .eq('id', user.id);
 
-      navigate('/admin');
+        if (updateError) throw updateError;
+
+        localStorage.setItem('isAdmin', 'true');
+
+        toast({
+          title: "Success",
+          description: "Logged in as admin",
+        });
+
+        navigate('/admin');
+      }
     } catch (error) {
       console.error('Login error:', error);
       toast({
@@ -62,6 +69,8 @@ export const LoginForm = ({ authLoading }: LoginFormProps) => {
         description: "Failed to login",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,9 +106,9 @@ export const LoginForm = ({ authLoading }: LoginFormProps) => {
               <Button 
                 type="submit" 
                 className="w-full"
-                disabled={authLoading}
+                disabled={isLoading || authLoading}
               >
-                {authLoading ? "Authenticating..." : "Login"}
+                {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
           </Card>
