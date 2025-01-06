@@ -37,11 +37,7 @@ const AppContent = () => {
             navigate('/admin/login');
             return;
           }
-          // If we're on any admin route other than the main one, redirect to /admin
-          if (location.pathname !== '/admin') {
-            navigate('/admin');
-          }
-          return;
+          return; // Remove the redirect to /admin if we're already on an admin route
         }
 
         // Check regular user routes
