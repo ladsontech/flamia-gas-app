@@ -6,7 +6,6 @@ import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
-import Admin from "./pages/Admin";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -28,21 +27,22 @@ const AppContent = () => {
         const { data: { session } } = await supabase.auth.getSession();
         const protectedRoutes = ['/dashboard', '/order'];
         
-        // Check if it's admin route
-        if (location.pathname.startsWith('/admin')) {
-          const isAdmin = localStorage.getItem('isAdmin') === 'true';
-          if (!isAdmin) {
-            console.log('Not an admin, redirecting to login');
-            navigate('/login');
-            return;
-          }
-          return;
-        }
-
-        // Check regular user routes
         if (protectedRoutes.includes(location.pathname) && !session) {
           navigate('/login');
           return;
+        }
+
+        // If user is admin and tries to access order page, redirect to dashboard
+        if (session) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('admin')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (userData?.admin === 'admin' && location.pathname === '/order') {
+            navigate('/dashboard');
+          }
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -68,7 +68,6 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/order" element={<Order />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/refill" element={<Refill />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />

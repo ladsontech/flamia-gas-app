@@ -33,6 +33,11 @@ export const UserMenu = ({ isActive }: { isActive: boolean }) => {
         
         setUserName(userData?.display_name || session.user.email);
         setIsAdmin(userData?.admin === 'admin');
+
+        // Redirect admin to dashboard if they're on a non-admin page
+        if (userData?.admin === 'admin' && window.location.pathname === '/') {
+          navigate('/dashboard');
+        }
       }
     } catch (error) {
       console.error('Error checking auth:', error);
@@ -67,16 +72,26 @@ export const UserMenu = ({ isActive }: { isActive: boolean }) => {
           <>
             <div className="px-2 py-3 text-center border-b border-gray-100 mb-2">
               <h3 className="font-medium text-lg text-foreground">{userName}</h3>
-              <p className="text-sm text-muted-foreground">Manage your account</p>
+              <p className="text-sm text-muted-foreground">
+                {isAdmin ? 'Admin Account' : 'User Account'}
+              </p>
             </div>
-            {isAdmin && (
+            
+            {isAdmin ? (
+              <DropdownMenuItem onClick={() => navigate('/dashboard')} className="py-2">
+                Manage Orders
+              </DropdownMenuItem>
+            ) : (
               <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/admin')} className="py-2">
-                  Manage Orders
+                <DropdownMenuItem onClick={() => navigate('/dashboard')} className="py-2">
+                  My Orders
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/order')} className="py-2">
+                  Place Order
                 </DropdownMenuItem>
               </>
             )}
+            
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="py-2 text-red-500 hover:text-red-600 hover:bg-red-50">
               Logout

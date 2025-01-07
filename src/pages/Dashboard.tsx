@@ -129,11 +129,15 @@ const Dashboard = () => {
           transition={{ duration: 0.3 }}
           className="mb-6"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-xl font-bold">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
-            <Flame className="w-5 h-5 text-accent" />
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
+              <Flame className="w-5 h-5 text-accent" />
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">Welcome back, {userEmail}</p>
+          <p className="text-sm text-muted-foreground">
+            {isAdmin ? 'Managing all customer orders' : `Welcome back, ${userEmail}`}
+          </p>
         </motion.div>
 
         <OrdersList 
