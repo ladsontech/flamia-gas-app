@@ -34,7 +34,6 @@ const Dashboard = () => {
     try {
       let query = supabase.from('orders').select('*');
       
-      // If not admin, only fetch user's orders
       if (!isAdmin) {
         query = query.eq('customer', email);
       }
@@ -72,8 +71,7 @@ const Dashboard = () => {
         description: `Order assigned to ${deliveryPerson}`,
       });
       
-      // Refresh orders after assignment
-      if (userEmail) fetchOrders(userEmail);
+      fetchOrders(userEmail!);
     } catch (error) {
       toast({
         title: "Error",
@@ -97,8 +95,7 @@ const Dashboard = () => {
         description: "Order marked as delivered",
       });
       
-      // Refresh orders after marking as delivered
-      if (userEmail) fetchOrders(userEmail);
+      fetchOrders(userEmail!);
     } catch (error) {
       toast({
         title: "Error",
@@ -134,21 +131,13 @@ const Dashboard = () => {
         >
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold">
-                {isAdmin ? 'Order Management' : 'My Orders'}
-              </h1>
+              <h1 className="text-xl font-bold">{isAdmin ? 'All Orders' : 'My Orders'}</h1>
               <Flame className="w-5 h-5 text-accent" />
             </div>
           </div>
-          {isAdmin ? (
-            <p className="text-sm text-muted-foreground">
-              Manage and track all customer orders
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Welcome back, {userEmail}
-            </p>
-          )}
+          <p className="text-sm text-muted-foreground">
+            {isAdmin ? 'Managing all customer orders' : `Welcome back, ${userEmail}`}
+          </p>
         </motion.div>
 
         <OrdersList 
