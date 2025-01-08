@@ -22,27 +22,37 @@ const AppContent = () => {
   const showBottomNav = !['/login'].includes(location.pathname);
 
   useEffect(() => {
-    const checkAuthForProtectedRoutes = async () => {
+    const checkAuthAndRole = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         const protectedRoutes = ['/dashboard', '/order'];
         
-        if (protectedRoutes.includes(location.pathname) && !session) {
-          navigate('/login');
+        if (!session) {
+          if (protectedRoutes.includes(location.pathname)) {
+            navigate('/login');
+          }
           return;
         }
 
-        // If user is admin and tries to access order page, redirect to dashboard
-        if (session) {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('admin')
-            .eq('id', session.user.id)
-            .maybeSingle();
+        // Check user role
+        const { data: userData } = await supabase
+          .from('users')
+          .select('admin')
+          .eq('id', session.user.id)
+          .maybeSingle();
 
-          if (userData?.admin === 'admin' && location.pathname === '/order') {
+        const isAdmin = userData?.admin === 'admin';
+
+        // Redirect admin to dashboard if trying to access non-admin routes
+        if (isAdmin) {
+          if (location.pathname !== '/dashboard' && location.pathname !== '/login') {
             navigate('/dashboard');
+            return;
           }
+        } else if (location.pathname === '/dashboard') {
+          // Non-admin users can still access their orders dashboard
+          // but will see a different view
+          return;
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -51,10 +61,10 @@ const AppContent = () => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      checkAuthForProtectedRoutes();
+      checkAuthAndRole();
     });
 
-    checkAuthForProtectedRoutes();
+    checkAuthAndRole();
 
     return () => {
       subscription.unsubscribe();
