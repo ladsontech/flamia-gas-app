@@ -2,30 +2,14 @@ import { useLocation } from "react-router-dom";
 import { Home, RefreshCw, Package, ShoppingBag } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
 import { UserMenu } from "./navigation/UserMenu";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
-export const BottomNav = () => {
+interface BottomNavProps {
+  isAdmin: boolean | null;
+}
+
+export const BottomNav = ({ isAdmin }: BottomNavProps) => {
   const location = useLocation();
-  const [isAdmin, setIsAdmin] = useState(false);
   const showBottomNav = !['/login'].includes(location.pathname);
-
-  useEffect(() => {
-    const checkUserRole = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('admin')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
-        setIsAdmin(userData?.admin === 'admin');
-      }
-    };
-
-    checkUserRole();
-  }, []);
 
   if (!showBottomNav) return null;
 
@@ -39,7 +23,7 @@ export const BottomNav = () => {
           label="Orders"
           isActive={location.pathname === "/dashboard"}
         />
-        <UserMenu isActive={location.pathname === "/account"} />
+        <UserMenu isActive={location.pathname === "/account"} isAdmin={isAdmin} />
       </nav>
     );
   }
@@ -70,7 +54,7 @@ export const BottomNav = () => {
         label="Shop"
         isActive={location.pathname === "/accessories"}
       />
-      <UserMenu isActive={location.pathname === "/account"} />
+      <UserMenu isActive={location.pathname === "/account"} isAdmin={isAdmin} />
     </nav>
   );
 };

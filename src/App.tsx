@@ -11,7 +11,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
@@ -20,9 +20,10 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const showBottomNav = !['/login'].includes(location.pathname);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkAuthAndRole = async () => {
+    const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         const protectedRoutes = ['/dashboard', '/order'];
@@ -31,40 +32,44 @@ const AppContent = () => {
           if (protectedRoutes.includes(location.pathname)) {
             navigate('/login');
           }
+          setIsAdmin(false);
           return;
         }
 
-        // Check user role
-        const { data: userData } = await supabase
+        // Get user role from users table
+        const { data: userData, error } = await supabase
           .from('users')
           .select('admin')
           .eq('id', session.user.id)
-          .maybeSingle();
+          .single();
 
-        const isAdmin = userData?.admin === 'admin';
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setIsAdmin(false);
+          return;
+        }
 
-        // Redirect admin to dashboard if trying to access non-admin routes
-        if (isAdmin) {
+        const adminStatus = userData?.admin === 'admin';
+        setIsAdmin(adminStatus);
+
+        // Handle routing based on admin status
+        if (adminStatus) {
           if (location.pathname !== '/dashboard' && location.pathname !== '/login') {
             navigate('/dashboard');
-            return;
           }
-        } else if (location.pathname === '/dashboard') {
-          // Non-admin users can still access their orders dashboard
-          // but will see a different view
-          return;
         }
       } catch (error) {
         console.error('Auth check error:', error);
+        setIsAdmin(false);
         navigate('/login');
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      checkAuthAndRole();
-    });
+    checkAuth();
 
-    checkAuthAndRole();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAuth();
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -85,7 +90,7 @@ const AppContent = () => {
           </Routes>
         </AnimatePresence>
       </div>
-      {showBottomNav && <BottomNav />}
+      {showBottomNav && <BottomNav isAdmin={isAdmin} />}
     </>
   );
 };

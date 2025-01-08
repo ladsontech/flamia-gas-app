@@ -10,41 +10,37 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-export const UserMenu = ({ isActive }: { isActive: boolean }) => {
+interface UserMenuProps {
+  isActive: boolean;
+  isAdmin: boolean | null;
+}
+
+export const UserMenu = ({ isActive, isAdmin }: UserMenuProps) => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('display_name')
+            .eq('id', session.user.id)
+            .single();
+        
+          if (error) throw error;
+          setUserName(userData?.display_name || session.user.email);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setUserName(null);
+      }
+    };
+
     checkAuth();
   }, []);
-
-  const checkAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: userData, error } = await supabase
-          .from('users')
-          .select('display_name, admin')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
-        if (error) throw error;
-        
-        setUserName(userData?.display_name || session.user.email);
-        setIsAdmin(userData?.admin === 'admin');
-
-        // Redirect admin to dashboard if they're on a non-admin page
-        if (userData?.admin === 'admin' && window.location.pathname === '/') {
-          navigate('/dashboard');
-        }
-      }
-    } catch (error) {
-      console.error('Error checking auth:', error);
-      setUserName(null);
-      setIsAdmin(false);
-    }
-  };
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
