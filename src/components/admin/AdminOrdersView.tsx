@@ -54,7 +54,11 @@ export const AdminOrdersView = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching orders:', error);
+        throw error;
+      }
+      
       setOrders(data || []);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -91,6 +95,7 @@ export const AdminOrdersView = () => {
       });
       loadOrders();
     } catch (error) {
+      console.error('Error assigning delivery:', error);
       toast({
         title: "Error",
         description: "Failed to assign delivery",
@@ -114,6 +119,7 @@ export const AdminOrdersView = () => {
       });
       loadOrders();
     } catch (error) {
+      console.error('Error marking as delivered:', error);
       toast({
         title: "Error",
         description: "Failed to mark as delivered",
