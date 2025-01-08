@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 interface UserMenuProps {
   isActive: boolean;
@@ -17,6 +18,7 @@ interface UserMenuProps {
 
 export const UserMenu = ({ isActive, isAdmin }: UserMenuProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,9 +30,18 @@ export const UserMenu = ({ isActive, isAdmin }: UserMenuProps) => {
             .from('users')
             .select('display_name')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
         
-          if (error) throw error;
+          if (error) {
+            console.error('Error fetching user data:', error);
+            toast({
+              title: "Error",
+              description: "Failed to fetch user data",
+              variant: "destructive",
+            });
+            return;
+          }
+
           setUserName(userData?.display_name || session.user.email);
         }
       } catch (error) {
@@ -40,7 +51,7 @@ export const UserMenu = ({ isActive, isAdmin }: UserMenuProps) => {
     };
 
     checkAuth();
-  }, []);
+  }, [toast]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();

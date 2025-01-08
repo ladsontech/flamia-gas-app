@@ -15,10 +15,12 @@ import React, { useEffect, useState } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { useToast } from "./components/ui/use-toast";
 
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const showBottomNav = !['/login'].includes(location.pathname);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
@@ -36,20 +38,32 @@ const AppContent = () => {
           return;
         }
 
-        // Get user role from users table
+        // Get user role from users table using maybeSingle()
         const { data: userData, error } = await supabase
           .from('users')
           .select('admin')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('Error fetching user role:', error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch user role. Please try again.",
+            variant: "destructive",
+          });
           setIsAdmin(false);
           return;
         }
 
-        const adminStatus = userData?.admin === 'admin';
+        // Handle case where user data might not exist
+        if (!userData) {
+          console.warn('No user data found');
+          setIsAdmin(false);
+          return;
+        }
+
+        const adminStatus = userData.admin === 'admin';
         setIsAdmin(adminStatus);
 
         // Handle routing based on admin status
@@ -60,6 +74,11 @@ const AppContent = () => {
         }
       } catch (error) {
         console.error('Auth check error:', error);
+        toast({
+          title: "Error",
+          description: "Authentication check failed. Please try again.",
+          variant: "destructive",
+        });
         setIsAdmin(false);
         navigate('/login');
       }
