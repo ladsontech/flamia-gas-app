@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import { AuthError } from "@supabase/supabase-js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,17 +14,21 @@ const Login = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        // Check if user is admin
         if (session) {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('admin')
-            .eq('id', session.user.id)
-            .single();
+          try {
+            const { data: userData } = await supabase
+              .from('users')
+              .select('admin')
+              .eq('id', session.user.id)
+              .single();
 
-          if (userData?.admin === 'admin') {
-            navigate('/dashboard');
-          } else {
+            if (userData?.admin === 'admin') {
+              navigate('/dashboard');
+            } else {
+              navigate('/');
+            }
+          } catch (error) {
+            console.error('Error checking user role:', error);
             navigate('/');
           }
         }
@@ -35,12 +40,30 @@ const Login = () => {
     };
   }, [navigate]);
 
+  const handleAuthError = (error: AuthError) => {
+    let message = error.message;
+    if (error.message.includes('weak_password')) {
+      message = 'Password should be at least 6 characters long';
+    }
+    toast({
+      title: "Authentication Error",
+      description: message,
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/20 to-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Welcome Back</h2>
           <p className="text-muted-foreground mt-2">Sign in to your account</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            For admin access, use admin25@gmail.com with password admin25#
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Password must be at least 6 characters long
+          </p>
         </div>
 
         <Card className="p-6">
@@ -69,13 +92,6 @@ const Login = () => {
                   password_input_placeholder: 'Enter a strong password (min. 6 characters)',
                 },
               },
-            }}
-            onError={(error) => {
-              toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive",
-              });
             }}
           />
         </Card>
