@@ -41,7 +41,7 @@ export const OrdersList = ({
     "Steven"
   ];
 
-  if (orders.length === 0) {
+  if (!orders || orders.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}

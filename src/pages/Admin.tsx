@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Order } from "@/types/order";
 import { Flame } from "lucide-react";
+import { OrdersList } from "@/components/dashboard/OrdersList";
 
 const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -38,6 +38,59 @@ const Admin = () => {
     }
   };
 
+  const handleAssignDelivery = async (orderId: string, deliveryPerson: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          status: 'assigned',
+          delivery_person: deliveryPerson 
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Order assigned to ${deliveryPerson}`,
+      });
+
+      fetchOrders();
+    } catch (error) {
+      console.error('Error assigning delivery:', error);
+      toast({
+        title: "Error",
+        description: "Failed to assign delivery person",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMarkDelivered = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'delivered' })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order marked as delivered",
+      });
+
+      fetchOrders();
+    } catch (error) {
+      console.error('Error marking order as delivered:', error);
+      toast({
+        title: "Error",
+        description: "Failed to mark order as delivered",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background">
@@ -54,7 +107,12 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background">
       <div className="container py-8">
-        <AdminOrdersView orders={orders} onOrdersUpdate={fetchOrders} />
+        <OrdersList 
+          orders={orders} 
+          isAdmin={true}
+          onAssignDelivery={handleAssignDelivery}
+          onMarkDelivered={handleMarkDelivered}
+        />
       </div>
     </div>
   );
