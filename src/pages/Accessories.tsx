@@ -32,8 +32,11 @@ const Accessories = () => {
         .order('name');
 
       if (error) throw error;
+      
+      console.log('Fetched accessories:', data); // Debug log
       setAccessories(data || []);
     } catch (error: any) {
+      console.error('Error fetching accessories:', error);
       toast({
         title: "Error",
         description: "Failed to load accessories",
@@ -51,7 +54,19 @@ const Accessories = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
-        <p className="text-center">Loading accessories...</p>
+        <div className="flex items-center justify-center min-h-[200px]">
+          <p className="text-center text-muted-foreground">Loading accessories...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!accessories.length) {
+    return (
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+        <div className="text-center">
+          <p className="text-muted-foreground">No accessories available at the moment.</p>
+        </div>
       </div>
     );
   }
@@ -63,7 +78,7 @@ const Accessories = () => {
       exit={{ opacity: 0 }}
       className="container mx-auto px-2 sm:px-4 py-4 sm:py-6"
     >
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Gas Accessories</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
         {accessories.map((accessory) => (
           <motion.div

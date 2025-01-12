@@ -34,13 +34,6 @@ export const OrdersList = ({
     }
   };
 
-  const deliveryPersonnel = [
-    "Fahad",
-    "Osingya",
-    "Peter",
-    "Steven"
-  ];
-
   if (!orders || orders.length === 0) {
     return (
       <motion.div
@@ -140,7 +133,7 @@ export const OrdersList = ({
 
                   {isAdmin && order.status === "pending" && (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {deliveryPersonnel.map((person) => (
+                      {["Fahad", "Osingya", "Peter", "Steven"].map((person) => (
                         <Button
                           key={person}
                           variant="outline"
