@@ -63,6 +63,7 @@ export type Database = {
           price_12kg: string | null
           price_6kg: string | null
           refill_price_12kg: string | null
+          refill_price_3kg: string | null
           refill_price_6kg: string | null
         }
         Insert: {
@@ -73,6 +74,7 @@ export type Database = {
           price_12kg?: string | null
           price_6kg?: string | null
           refill_price_12kg?: string | null
+          refill_price_3kg?: string | null
           refill_price_6kg?: string | null
         }
         Update: {
@@ -83,6 +85,7 @@ export type Database = {
           price_12kg?: string | null
           price_6kg?: string | null
           refill_price_12kg?: string | null
+          refill_price_3kg?: string | null
           refill_price_6kg?: string | null
         }
         Relationships: []

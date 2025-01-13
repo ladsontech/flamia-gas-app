@@ -10,8 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface Brand {
   name: string;
-  price_6kg: string;
-  price_12kg: string;
+  refill_price_3kg: string;
   refill_price_6kg: string;
   refill_price_12kg: string;
 }
@@ -20,7 +19,6 @@ const Refill = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<string>("");
 
   useEffect(() => {
     fetchBrands();
@@ -30,7 +28,7 @@ const Refill = () => {
     try {
       const { data, error } = await supabase
         .from('brands')
-        .select('name, price_6kg, price_12kg, refill_price_6kg, refill_price_12kg');
+        .select('name, refill_price_3kg, refill_price_6kg, refill_price_12kg');
       
       if (error) throw error;
       setBrands(data || []);
@@ -45,14 +43,22 @@ const Refill = () => {
 
   const sizes = [
     {
+      size: "3KG",
+      description: "Ideal for small households",
+      color: "from-green-400 to-green-600",
+      priceKey: "refill_price_3kg"
+    },
+    {
       size: "6KG",
-      description: "Perfect for small households",
-      color: "from-blue-400 to-blue-600"
+      description: "Perfect for medium households",
+      color: "from-blue-400 to-blue-600",
+      priceKey: "refill_price_6kg"
     },
     {
       size: "12KG",
       description: "Best for large families or businesses",
-      color: "from-purple-400 to-purple-600"
+      color: "from-purple-400 to-purple-600",
+      priceKey: "refill_price_12kg"
     }
   ];
 
@@ -66,13 +72,13 @@ const Refill = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 sm:mb-8"
         >
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Gas Prices</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Gas Refill Prices</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Choose between a new cylinder or refill
+            Choose your preferred gas size and brand
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
           {sizes.map((item) => (
             <motion.div
               key={item.size}
@@ -93,37 +99,16 @@ const Refill = () => {
                     {brands.map((brand) => (
                       <div key={brand.name} className="p-3 bg-accent/5 rounded-lg">
                         <h3 className="font-semibold mb-2">{brand.name}</h3>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <p className="text-sm text-muted-foreground">New Cylinder</p>
-                            <p className="font-bold text-accent">
-                              {item.size === "6KG" ? brand.price_6kg : brand.price_12kg}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-muted-foreground">Refill Only</p>
-                            <p className="font-bold text-accent">
-                              {item.size === "6KG" ? brand.refill_price_6kg : brand.refill_price_12kg}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 mt-3">
-                          <Button
-                            onClick={() => navigate(`/order?type=fullset&size=${item.size}&brand=${brand.name}`)}
-                            className="w-full group text-xs sm:text-sm py-1 h-auto"
-                            variant="secondary"
-                          >
-                            New Cylinder
-                            <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
-                          </Button>
-                          <Button
-                            onClick={() => navigate(`/order?type=refill&size=${item.size}&brand=${brand.name}`)}
-                            className="w-full group text-xs sm:text-sm py-1 h-auto"
-                          >
-                            Order Refill
-                            <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
-                          </Button>
-                        </div>
+                        <p className="font-bold text-accent mb-3">
+                          {brand[item.priceKey as keyof Brand]}
+                        </p>
+                        <Button
+                          onClick={() => navigate(`/order?type=refill&size=${item.size}&brand=${brand.name}`)}
+                          className="w-full group text-sm py-1"
+                        >
+                          Order Refill
+                          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </Button>
                       </div>
                     ))}
                   </div>
