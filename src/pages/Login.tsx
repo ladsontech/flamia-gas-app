@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { AuthError } from "@supabase/supabase-js";
+import { BackButton } from "@/components/BackButton";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -53,9 +54,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/20 to-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-primary/20 to-background p-4">
+      <div className="w-full max-w-md mx-auto">
+        <BackButton />
+        
+        <div className="text-center mb-6">
           <h2 className="text-2xl font-bold">Welcome Back</h2>
           <p className="text-muted-foreground mt-2">Sign in to your account</p>
           <p className="text-sm text-muted-foreground mt-1">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { motion } from "framer-motion";
 
 interface OrderFormFieldsProps {
@@ -8,6 +9,7 @@ interface OrderFormFieldsProps {
     phone: string;
     address: string;
     quantity: number;
+    size: string;
   };
   setFormData: (data: any) => void;
   selectedBrand?: string;
@@ -19,6 +21,13 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
     setFormData(prev => ({ 
       ...prev, 
       [name]: name === 'quantity' ? parseInt(value) || 1 : value 
+    }));
+  };
+
+  const handleSizeChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      size: value
     }));
   };
 
@@ -51,6 +60,23 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           <Input value={selectedBrand} readOnly className="bg-muted/50 border-accent/20" />
         </motion.div>
       )}
+
+      <motion.div variants={itemVariants} className="space-y-2">
+        <Label htmlFor="size">Weight</Label>
+        <Select
+          value={formData.size}
+          onValueChange={handleSizeChange}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select weight" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="3KG">3KG</SelectItem>
+            <SelectItem value="6KG">6KG</SelectItem>
+            <SelectItem value="12KG">12KG</SelectItem>
+          </SelectContent>
+        </Select>
+      </motion.div>
 
       <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="quantity">Quantity</Label>
