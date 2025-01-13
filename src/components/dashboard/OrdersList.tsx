@@ -130,13 +130,19 @@ export const OrdersList = ({
                           </span>
                         </div>
                       </div>
+
+                      {isAdmin && order.delivery_person && (
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          Assigned to: {order.delivery_person}
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {isAdmin && (
-                    <>
+                    <div className="mt-2">
                       {order.status === "pending" && (
-                        <div className="mt-2 flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1">
                           {["Fahad", "Osingya", "Peter", "Steven"].map((person) => (
                             <Button
                               key={person}
@@ -152,21 +158,16 @@ export const OrdersList = ({
                       )}
                       
                       {order.status === "assigned" && (
-                        <div className="mt-2 space-y-1">
-                          <div className="text-xs text-muted-foreground">
-                            Assigned to {order.delivery_person}
-                          </div>
-                          <Button
-                            size="sm"
-                            onClick={() => onMarkDelivered(order.id)}
-                            className="w-full bg-green-500 text-white hover:bg-green-600 h-7 text-xs relative overflow-hidden group"
-                          >
-                            <span className="relative z-10">Mark Delivered</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
-                          </Button>
-                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => onMarkDelivered(order.id)}
+                          className="w-full bg-green-500 text-white hover:bg-green-600 h-7 text-xs relative overflow-hidden group"
+                        >
+                          <span className="relative z-10">Mark Delivered</span>
+                          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
+                        </Button>
                       )}
-                    </>
+                    </div>
                   )}
                 </Card>
               </motion.div>
