@@ -17,16 +17,19 @@ const Order = () => {
   const [loading, setLoading] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  // Get all parameters from URL
   const selectedBrand = searchParams.get("brand") || "";
-  const defaultOrderType = searchParams.get("type") || "fullset";
-  const selectedSize = searchParams.get("size") || "";
+  const orderType = searchParams.get("type") || "fullset";
+  const size = searchParams.get("size") || "";
+  const accessoryId = searchParams.get("accessory");
 
   const [formData, setFormData] = useState({
     phone: "",
     address: "",
-    size: selectedSize || "6kg",
+    type: orderType,
+    size: size,
     quantity: 1,
-    type: defaultOrderType
+    accessory_id: accessoryId || undefined
   });
 
   useEffect(() => {
@@ -57,7 +60,8 @@ const Order = () => {
             brand: selectedBrand,
             size: formData.size,
             quantity: formData.quantity,
-            type: formData.type
+            type: formData.type,
+            accessory_id: formData.accessory_id
           }
         ]);
 
