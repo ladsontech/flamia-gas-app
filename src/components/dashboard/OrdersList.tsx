@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/order";
-import { PlusCircle, Flame, MapPin, Phone, Package2 } from "lucide-react";
+import { PlusCircle, Flame, MapPin, Package2, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -105,7 +105,7 @@ export const OrdersList = ({
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium flex items-center gap-2">
                           <Flame className="w-4 h-4 text-accent" />
-                          {order.customer_name || order.customer}
+                          Order #{order.id.slice(-6)}
                         </span>
                         <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
                           {order.status}
@@ -114,53 +114,59 @@ export const OrdersList = ({
                       
                       <div className="space-y-1.5 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>
+                            {format(new Date(order.created_at!), 'h:mm a')}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
                           <span className="truncate">{order.address}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
-                          <span>{order.phone}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
                           <Package2 className="w-4 h-4" />
                           <span>
-                            {order.size} x {order.quantity} • {order.type} • {order.brand}
+                            {order.size} x {order.quantity} • {order.brand}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {isAdmin && order.status === "pending" && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {["Fahad", "Osingya", "Peter", "Steven"].map((person) => (
-                        <Button
-                          key={person}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onAssignDelivery(order.id, person)}
-                          className="text-xs py-1 h-7 hover:bg-accent hover:text-white transition-colors"
-                        >
-                          {person}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {isAdmin && order.status === "assigned" && (
-                    <div className="mt-3 space-y-2">
-                      <div className="text-xs text-muted-foreground">
-                        Assigned to {order.delivery_person}
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => onMarkDelivered(order.id)}
-                        className="w-full bg-green-500 text-white hover:bg-green-600 h-8 text-xs relative overflow-hidden group"
-                      >
-                        <span className="relative z-10">Mark Delivered</span>
-                        <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
-                      </Button>
-                    </div>
+                  {isAdmin && (
+                    <>
+                      {order.status === "pending" && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {["Fahad", "Osingya", "Peter", "Steven"].map((person) => (
+                            <Button
+                              key={person}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onAssignDelivery(order.id, person)}
+                              className="text-xs py-1 h-7 hover:bg-accent hover:text-white transition-colors"
+                            >
+                              {person}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {order.status === "assigned" && (
+                        <div className="mt-3 space-y-2">
+                          <div className="text-xs text-muted-foreground">
+                            Assigned to {order.delivery_person}
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => onMarkDelivered(order.id)}
+                            className="w-full bg-green-500 text-white hover:bg-green-600 h-8 text-xs relative overflow-hidden group"
+                          >
+                            <span className="relative z-10">Mark Delivered</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
+                          </Button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </Card>
               </motion.div>

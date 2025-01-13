@@ -7,6 +7,7 @@ interface OrderFormFieldsProps {
   formData: {
     phone: string;
     address: string;
+    quantity: number;
   };
   setFormData: (data: any) => void;
   selectedBrand?: string;
@@ -15,7 +16,10 @@ interface OrderFormFieldsProps {
 export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderFormFieldsProps) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: name === 'quantity' ? parseInt(value) || 1 : value 
+    }));
   };
 
   const containerVariants = {
@@ -47,6 +51,21 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           <Input value={selectedBrand} readOnly className="bg-muted/50 border-accent/20" />
         </motion.div>
       )}
+
+      <motion.div variants={itemVariants} className="space-y-2">
+        <Label htmlFor="quantity">Quantity</Label>
+        <Input
+          id="quantity"
+          name="quantity"
+          type="number"
+          min="1"
+          value={formData.quantity}
+          onChange={handleInputChange}
+          required
+          placeholder="Enter quantity"
+          className="border-accent/20 focus:border-accent/40"
+        />
+      </motion.div>
 
       <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="phone">Phone Number</Label>
