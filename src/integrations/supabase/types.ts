@@ -56,6 +56,7 @@ export type Database = {
       }
       brands: {
         Row: {
+          brand: string
           created_at: string | null
           id: string
           image_url: string | null
@@ -67,6 +68,7 @@ export type Database = {
           refill_price_6kg: string | null
         }
         Insert: {
+          brand?: string
           created_at?: string | null
           id?: string
           image_url?: string | null
@@ -78,6 +80,7 @@ export type Database = {
           refill_price_6kg?: string | null
         }
         Update: {
+          brand?: string
           created_at?: string | null
           id?: string
           image_url?: string | null

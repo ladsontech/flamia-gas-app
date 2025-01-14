@@ -14,10 +14,23 @@ interface HotDeal {
   price: string | null;
 }
 
+interface Brand {
+  id: string;
+  name: string;
+  brand: string;
+  image_url: string | null;
+  price_6kg: string | null;
+  price_12kg: string | null;
+  refill_price_3kg: string | null;
+  refill_price_6kg: string | null;
+  refill_price_12kg: string | null;
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hotDeals, setHotDeals] = useState<HotDeal[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -36,8 +49,20 @@ const Index = () => {
       }
     };
 
+    const fetchBrands = async () => {
+      const { data, error } = await supabase
+        .from('brands')
+        .select('*')
+        .order('brand', { ascending: true });
+      
+      if (!error && data) {
+        setBrands(data);
+      }
+    };
+
     checkAuth();
     fetchHotDeals();
+    fetchBrands();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsLoggedIn(!!session);
@@ -46,32 +71,13 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const brands = [
-    {
-      name: "Stabex Gas",
-      image: "/lovable-uploads/e9f58b5e-1991-4b14-b472-186d3ae2104c.png",
-      prices: {
-        '6kg': "UGX 140,000",
-        '12kg': "UGX 350,000"
-      }
-    },
-    {
-      name: "Total Gas",
-      image: "/lovable-uploads/de1ceb4f-f2dc-48e0-840d-abc0c4c37e53.png",
-      prices: {
-        '6kg': "UGX 180,000",
-        '12kg': "UGX 400,000"
-      }
-    },
-    {
-      name: "Shell Gas",
-      image: "/lovable-uploads/6d78b534-027a-4754-8770-24f2c82b4b71.png",
-      prices: {
-        '6kg': "UGX 160,000",
-        '12kg': "UGX 380,000"
-      }
+  const groupedBrands = brands.reduce((acc, brand) => {
+    if (!acc[brand.brand]) {
+      acc[brand.brand] = [];
     }
-  ];
+    acc[brand.brand].push(brand);
+    return acc;
+  }, {} as Record<string, Brand[]>);
 
   return (
     <div className="min-h-screen bg-white">
@@ -94,14 +100,24 @@ const Index = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-6">
-          {brands.map((brand) => (
-            <BrandCardNew
-              key={brand.name}
-              {...brand}
-            />
-          ))}
-        </div>
+        {Object.entries(groupedBrands).map(([brandName, brandItems]) => (
+          <div key={brandName} className="mb-8">
+            <h3 className="text-lg md:text-xl font-semibold mb-4 text-accent">{brandName}</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+              {brandItems.map((item) => (
+                <BrandCardNew
+                  key={item.id}
+                  name={item.name}
+                  image={item.image_url || ''}
+                  prices={{
+                    '6kg': item.price_6kg || 'N/A',
+                    '12kg': item.price_12kg || 'N/A',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
