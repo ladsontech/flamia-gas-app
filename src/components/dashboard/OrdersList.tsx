@@ -99,7 +99,7 @@ export const OrdersList = ({
           <motion.div variants={container} className="space-y-2">
             {dateOrders.map((order) => (
               <motion.div key={order.id} variants={item}>
-                <Card className="p-3 glass-card hover:shadow-md transition-shadow duration-300">
+                <Card className="p-2 glass-card hover:shadow-md transition-shadow duration-300">
                   <div className="flex justify-between items-start gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between mb-1">
@@ -139,34 +139,16 @@ export const OrdersList = ({
                     </div>
                   </div>
 
-                  {isAdmin && (
+                  {isAdmin && order.status === "assigned" && (
                     <div className="mt-2">
-                      {order.status === "pending" && (
-                        <div className="flex flex-wrap gap-1">
-                          {["Fahad", "Osingya", "Peter", "Steven"].map((person) => (
-                            <Button
-                              key={person}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => onAssignDelivery(order.id, person)}
-                              className="text-xs py-0.5 h-6 hover:bg-accent hover:text-white transition-colors"
-                            >
-                              {person}
-                            </Button>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {order.status === "assigned" && (
-                        <Button
-                          size="sm"
-                          onClick={() => onMarkDelivered(order.id)}
-                          className="w-full bg-green-500 text-white hover:bg-green-600 h-7 text-xs relative overflow-hidden group"
-                        >
-                          <span className="relative z-10">Mark Delivered</span>
-                          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
-                        </Button>
-                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => onMarkDelivered(order.id)}
+                        className="w-full bg-green-500 text-white hover:bg-green-600 h-7 text-xs relative overflow-hidden group"
+                      >
+                        <span className="relative z-10">Mark Delivered</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
+                      </Button>
                     </div>
                   )}
                 </Card>

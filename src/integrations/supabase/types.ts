@@ -59,7 +59,9 @@ export type Database = {
           brand: string
           created_at: string | null
           id: string
-          image_url: string | null
+          image_url_12kg: string | null
+          image_url_3kg: string | null
+          image_url_6kg: string | null
           name: string
           price_12kg: string | null
           price_6kg: string | null
@@ -71,7 +73,9 @@ export type Database = {
           brand?: string
           created_at?: string | null
           id?: string
-          image_url?: string | null
+          image_url_12kg?: string | null
+          image_url_3kg?: string | null
+          image_url_6kg?: string | null
           name: string
           price_12kg?: string | null
           price_6kg?: string | null
@@ -83,7 +87,9 @@ export type Database = {
           brand?: string
           created_at?: string | null
           id?: string
-          image_url?: string | null
+          image_url_12kg?: string | null
+          image_url_3kg?: string | null
+          image_url_6kg?: string | null
           name?: string
           price_12kg?: string | null
           price_6kg?: string | null
