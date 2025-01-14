@@ -18,7 +18,9 @@ interface Brand {
   id: string;
   name: string;
   brand: string;
-  image_url: string | null;
+  image_url_3kg: string | null;
+  image_url_6kg: string | null;
+  image_url_12kg: string | null;
   price_6kg: string | null;
   price_12kg: string | null;
   refill_price_3kg: string | null;
@@ -111,7 +113,7 @@ const Index = () => {
                       key={`${item.id}-3kg`}
                       name={item.name}
                       brand={item.brand}
-                      image={item.image_url || ''}
+                      image={item.image_url_3kg || ''}
                       size="3kg"
                       price="Contact for Price"
                       refillPrice={item.refill_price_3kg}
@@ -122,7 +124,7 @@ const Index = () => {
                       key={`${item.id}-6kg`}
                       name={item.name}
                       brand={item.brand}
-                      image={item.image_url || ''}
+                      image={item.image_url_6kg || ''}
                       size="6kg"
                       price={item.price_6kg}
                       refillPrice={item.refill_price_6kg}
@@ -133,7 +135,7 @@ const Index = () => {
                       key={`${item.id}-12kg`}
                       name={item.name}
                       brand={item.brand}
-                      image={item.image_url || ''}
+                      image={item.image_url_12kg || ''}
                       size="12kg"
                       price={item.price_12kg}
                       refillPrice={item.refill_price_12kg}

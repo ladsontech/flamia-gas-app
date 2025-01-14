@@ -7,46 +7,25 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Brand {
+  id: string;
   name: string;
-  image: string;
-  prices: {
-    '6kg': string;
-    '12kg': string;
-  };
+  brand: string;
+  image_url_3kg: string | null;
+  image_url_6kg: string | null;
+  image_url_12kg: string | null;
+  price_6kg: string | null;
+  price_12kg: string | null;
+  refill_price_3kg: string | null;
+  refill_price_6kg: string | null;
+  refill_price_12kg: string | null;
 }
-
-const defaultBrands: Brand[] = [
-  {
-    name: "Stabex Gas",
-    image: "/lovable-uploads/e9f58b5e-1991-4b14-b472-186d3ae2104c.png",
-    prices: {
-      '6kg': "UGX 140,000",
-      '12kg': "UGX 350,000"
-    }
-  },
-  {
-    name: "Total Gas",
-    image: "/lovable-uploads/de1ceb4f-f2dc-48e0-840d-abc0c4c37e53.png",
-    prices: {
-      '6kg': "UGX 180,000",
-      '12kg': "UGX 400,000"
-    }
-  },
-  {
-    name: "Shell Gas",
-    image: "/lovable-uploads/6d78b534-027a-4754-8770-24f2c82b4b71.png",
-    prices: {
-      '6kg': "UGX 160,000",
-      '12kg': "UGX 380,000"
-    }
-  }
-];
 
 export const BrandsManager = () => {
   const { toast } = useToast();
-  const [brands, setBrands] = useState<Brand[]>(defaultBrands);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrandIndex, setSelectedBrandIndex] = useState<number | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [selectedSize, setSelectedSize] = useState<'3kg' | '6kg' | '12kg'>('6kg');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -56,7 +35,8 @@ export const BrandsManager = () => {
 
   const handleBrandUpdate = async (index: number) => {
     try {
-      let imageUrl = brands[index].image;
+      let imageUrl = null;
+      const brand = brands[index];
       
       if (file) {
         const fileExt = file.name.split('.').pop();
@@ -76,8 +56,8 @@ export const BrandsManager = () => {
 
       const updatedBrands = [...brands];
       updatedBrands[index] = {
-        ...updatedBrands[index],
-        image: imageUrl,
+        ...brand,
+        [`image_url_${selectedSize}`]: imageUrl || brand[`image_url_${selectedSize}`],
       };
 
       setBrands(updatedBrands);
@@ -129,39 +109,31 @@ export const BrandsManager = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`price6kg-${index}`}>6KG Price</Label>
-                <Input
-                  id={`price6kg-${index}`}
-                  value={brand.prices['6kg']}
-                  onChange={(e) => {
-                    const updatedBrands = [...brands];
-                    updatedBrands[index] = {
-                      ...brand,
-                      prices: { ...brand.prices, '6kg': e.target.value }
-                    };
-                    setBrands(updatedBrands);
-                  }}
-                />
+                <Label>Select Size for Image Upload</Label>
+                <div className="flex gap-2">
+                  <Button
+                    variant={selectedSize === '3kg' ? 'default' : 'outline'}
+                    onClick={() => setSelectedSize('3kg')}
+                  >
+                    3KG
+                  </Button>
+                  <Button
+                    variant={selectedSize === '6kg' ? 'default' : 'outline'}
+                    onClick={() => setSelectedSize('6kg')}
+                  >
+                    6KG
+                  </Button>
+                  <Button
+                    variant={selectedSize === '12kg' ? 'default' : 'outline'}
+                    onClick={() => setSelectedSize('12kg')}
+                  >
+                    12KG
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`price12kg-${index}`}>12KG Price</Label>
-                <Input
-                  id={`price12kg-${index}`}
-                  value={brand.prices['12kg']}
-                  onChange={(e) => {
-                    const updatedBrands = [...brands];
-                    updatedBrands[index] = {
-                      ...brand,
-                      prices: { ...brand.prices, '12kg': e.target.value }
-                    };
-                    setBrands(updatedBrands);
-                  }}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor={`image-${index}`}>Brand Image</Label>
+                <Label htmlFor={`image-${index}`}>Brand Image ({selectedSize})</Label>
                 <Input
                   id={`image-${index}`}
                   type="file"
