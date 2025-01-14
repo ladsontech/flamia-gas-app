@@ -105,15 +105,41 @@ const Index = () => {
             <h3 className="text-lg md:text-xl font-semibold mb-4 text-accent">{brandName}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
               {brandItems.map((item) => (
-                <BrandCardNew
-                  key={item.id}
-                  name={item.name}
-                  image={item.image_url || ''}
-                  prices={{
-                    '6kg': item.price_6kg || 'N/A',
-                    '12kg': item.price_12kg || 'N/A',
-                  }}
-                />
+                <>
+                  {item.refill_price_3kg && (
+                    <BrandCardNew
+                      key={`${item.id}-3kg`}
+                      name={item.name}
+                      brand={item.brand}
+                      image={item.image_url || ''}
+                      size="3kg"
+                      price="Contact for Price"
+                      refillPrice={item.refill_price_3kg}
+                    />
+                  )}
+                  {item.price_6kg && (
+                    <BrandCardNew
+                      key={`${item.id}-6kg`}
+                      name={item.name}
+                      brand={item.brand}
+                      image={item.image_url || ''}
+                      size="6kg"
+                      price={item.price_6kg}
+                      refillPrice={item.refill_price_6kg}
+                    />
+                  )}
+                  {item.price_12kg && (
+                    <BrandCardNew
+                      key={`${item.id}-12kg`}
+                      name={item.name}
+                      brand={item.brand}
+                      image={item.image_url || ''}
+                      size="12kg"
+                      price={item.price_12kg}
+                      refillPrice={item.refill_price_12kg}
+                    />
+                  )}
+                </>
               ))}
             </div>
           </div>
