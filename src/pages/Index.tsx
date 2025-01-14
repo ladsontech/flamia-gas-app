@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import HomeHeader from "@/components/home/Header";
 import BrandCardNew from "@/components/home/BrandCardNew";
 import HotDealCard from "@/components/home/HotDealCard";
+import { useToast } from "@/components/ui/use-toast";
 
 interface HotDeal {
   id: string;
@@ -30,9 +31,11 @@ interface Brand {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hotDeals, setHotDeals] = useState<HotDeal[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -40,38 +43,82 @@ const Index = () => {
       setIsLoggedIn(!!session);
     };
 
-    const fetchHotDeals = async () => {
-      const { data, error } = await supabase
-        .from('hot_deals')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (!error && data) {
-        setHotDeals(data);
-      }
-    };
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch hot deals
+        const { data: hotDealsData, error: hotDealsError } = await supabase
+          .from('hot_deals')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (hotDealsError) {
+          console.error('Error fetching hot deals:', hotDealsError);
+          toast({
+            title: "Error",
+            description: "Failed to load hot deals. Please try again.",
+            variant: "destructive",
+          });
+        } else if (hotDealsData) {
+          setHotDeals(hotDealsData);
+        }
 
-    const fetchBrands = async () => {
-      const { data, error } = await supabase
-        .from('brands')
-        .select('*')
-        .order('brand', { ascending: true });
-      
-      if (!error && data) {
-        setBrands(data);
+        // Fetch brands with retry logic
+        let retries = 3;
+        let brandsData = null;
+        let brandsError = null;
+
+        while (retries > 0 && !brandsData) {
+          const { data, error } = await supabase
+            .from('brands')
+            .select('*')
+            .order('brand', { ascending: true });
+
+          if (data) {
+            brandsData = data;
+            break;
+          }
+
+          brandsError = error;
+          retries--;
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          }
+        }
+
+        if (brandsError) {
+          console.error('Error fetching brands:', brandsError);
+          toast({
+            title: "Error",
+            description: "Failed to load brands. Please try again.",
+            variant: "destructive",
+          });
+        } else if (brandsData) {
+          setBrands(brandsData);
+        }
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
     checkAuth();
-    fetchHotDeals();
-    fetchBrands();
+    fetchData();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsLoggedIn(!!session);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [toast]);
 
   const groupedBrands = brands.reduce((acc, brand) => {
     if (!acc[brand.brand]) {
@@ -80,6 +127,14 @@ const Index = () => {
     acc[brand.brand].push(brand);
     return acc;
   }, {} as Record<string, Brand[]>);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -107,7 +162,7 @@ const Index = () => {
             <h3 className="text-lg md:text-xl font-semibold mb-4 text-accent">{brandName}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
               {brandItems.map((item) => (
-                <>
+                <React.Fragment key={`${item.id}`}>
                   {item.refill_price_3kg && (
                     <BrandCardNew
                       key={`${item.id}-3kg`}
@@ -141,7 +196,7 @@ const Index = () => {
                       refillPrice={item.refill_price_12kg}
                     />
                   )}
-                </>
+                </React.Fragment>
               ))}
             </div>
           </div>
