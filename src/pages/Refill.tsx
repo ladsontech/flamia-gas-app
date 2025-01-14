@@ -1,66 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { Flame, ArrowRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-
-interface Brand {
-  name: string;
-  refill_price_3kg: string;
-  refill_price_6kg: string;
-  refill_price_12kg: string;
-}
 
 const Refill = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [brands, setBrands] = useState<Brand[]>([]);
-
-  useEffect(() => {
-    fetchBrands();
-  }, []);
-
-  const fetchBrands = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('brands')
-        .select('name, refill_price_3kg, refill_price_6kg, refill_price_12kg');
-      
-      if (error) throw error;
-      setBrands(data || []);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load brands data",
-        variant: "destructive",
-      });
-    }
-  };
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const sizes = [
     {
       size: "3KG",
-      description: "Ideal for small households",
+      description: "Perfect for small households or portable use",
       color: "from-green-400 to-green-600",
-      priceKey: "refill_price_3kg"
+      price: "UGX 25,000"
     },
     {
       size: "6KG",
-      description: "Perfect for medium households",
+      description: "Ideal for medium-sized families",
       color: "from-blue-400 to-blue-600",
-      priceKey: "refill_price_6kg"
+      price: "UGX 50,000"
     },
     {
       size: "12KG",
-      description: "Best for large families or businesses",
+      description: "Best value for large families or commercial use",
       color: "from-purple-400 to-purple-600",
-      priceKey: "refill_price_12kg"
+      price: "UGX 100,000"
     }
   ];
+
+  const handleOrder = (size: string, price: string) => {
+    setSelectedSize(size);
+    navigate(`/order?type=refill&size=${size}&price=${price}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white py-4 sm:py-6">
@@ -74,7 +48,7 @@ const Refill = () => {
         >
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Gas Refill Prices</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Choose your preferred gas size and brand
+            Choose your preferred gas cylinder size
           </p>
         </motion.div>
 
@@ -86,7 +60,7 @@ const Refill = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="relative overflow-hidden p-4 sm:p-6">
+              <Card className="relative overflow-hidden p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10`} />
                 <div className="relative z-10">
                   <div className="flex items-center justify-center mb-3 sm:mb-4">
@@ -94,23 +68,20 @@ const Refill = () => {
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">{item.size}</h2>
                   <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-
+                  
                   <div className="space-y-4">
-                    {brands.map((brand) => (
-                      <div key={brand.name} className="p-3 bg-accent/5 rounded-lg">
-                        <h3 className="font-semibold mb-2">{brand.name}</h3>
-                        <p className="font-bold text-accent mb-3">
-                          {brand[item.priceKey as keyof Brand]}
-                        </p>
-                        <Button
-                          onClick={() => navigate(`/order?type=refill&size=${item.size}&brand=${brand.name}`)}
-                          className="w-full group text-sm py-1"
-                        >
-                          Order Refill
-                          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                      </div>
-                    ))}
+                    <div className="p-3 bg-accent/5 rounded-lg">
+                      <p className="font-bold text-accent text-lg sm:text-xl mb-3">
+                        {item.price}
+                      </p>
+                      <Button
+                        onClick={() => handleOrder(item.size, item.price)}
+                        className="w-full group text-sm py-1"
+                      >
+                        Order Refill
+                        <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </Card>
