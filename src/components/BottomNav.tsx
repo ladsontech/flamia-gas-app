@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { Home, RefreshCw, Package, ShoppingBag } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
-import { UserMenu } from "./navigation/UserMenu";
 
 interface BottomNavProps {
   isAdmin: boolean | null;
@@ -23,7 +22,6 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
           label="Orders"
           isActive={location.pathname === "/dashboard"}
         />
-        <UserMenu isActive={location.pathname === "/account"} isAdmin={isAdmin} />
       </nav>
     );
   }
@@ -54,7 +52,6 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
         label="Shop"
         isActive={location.pathname === "/accessories"}
       />
-      <UserMenu isActive={location.pathname === "/account"} isAdmin={isAdmin} />
     </nav>
   );
 };

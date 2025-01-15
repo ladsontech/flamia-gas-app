@@ -52,7 +52,7 @@ const Refill = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-5xl mx-auto">
           {sizes.map((item) => (
             <motion.div
               key={item.size}
@@ -60,26 +60,26 @@ const Refill = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="relative overflow-hidden p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+              <Card className="relative overflow-hidden p-3 sm:p-4 hover:shadow-lg transition-all duration-300">
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10`} />
                 <div className="relative z-10">
-                  <div className="flex items-center justify-center mb-3 sm:mb-4">
-                    <Flame className="w-8 h-8 sm:w-10 sm:h-10 text-accent" />
+                  <div className="flex items-center justify-center mb-2 sm:mb-3">
+                    <Flame className="w-6 h-6 sm:w-8 sm:h-8 text-accent" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">{item.size}</h2>
-                  <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
+                  <h2 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">{item.size}</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-3">{item.description}</p>
                   
-                  <div className="space-y-4">
-                    <div className="p-3 bg-accent/5 rounded-lg">
-                      <p className="font-bold text-accent text-lg sm:text-xl mb-3">
+                  <div className="space-y-3">
+                    <div className="p-2 sm:p-3 bg-accent/5 rounded-lg">
+                      <p className="font-bold text-accent text-base sm:text-lg mb-2">
                         {item.price}
                       </p>
                       <Button
                         onClick={() => handleOrder(item.size, item.price)}
-                        className="w-full group text-sm py-1"
+                        className="w-full group text-xs sm:text-sm py-1"
                       >
                         Order Refill
-                        <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
                       </Button>
                     </div>
                   </div>

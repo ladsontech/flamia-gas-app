@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { AuthError } from "@supabase/supabase-js";
 import { BackButton } from "@/components/BackButton";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,7 +58,14 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-primary/20 to-background p-4">
       <div className="w-full max-w-md mx-auto">
-        <BackButton />
+        <Button 
+          variant="ghost" 
+          className="mb-4" 
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Home
+        </Button>
         
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold">Welcome Back</h2>
