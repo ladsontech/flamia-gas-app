@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { Flame, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import {
 
 const Refill = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [brands, setBrands] = useState<Array<{ id: string; name: string }>>([]);
