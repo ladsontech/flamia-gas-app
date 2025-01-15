@@ -71,9 +71,6 @@ const Login = () => {
           <h2 className="text-2xl font-bold">Welcome Back</h2>
           <p className="text-muted-foreground mt-2">Sign in to your account</p>
           <p className="text-sm text-muted-foreground mt-1">
-            For admin access, use admin25@gmail.com with password admin25#
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
             Password must be at least 6 characters long
           </p>
         </div>
