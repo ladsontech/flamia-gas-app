@@ -1,14 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { Flame, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Refill = () => {
   const navigate = useNavigate();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string>("");
+  const [brands, setBrands] = useState<Array<{ id: string; name: string }>>([]);
+
+  useEffect(() => {
+    fetchBrands();
+  }, []);
+
+  const fetchBrands = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('brands')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      setBrands(data || []);
+    } catch (error) {
+      console.error('Error fetching brands:', error);
+    }
+  };
 
   const sizes = [
     {
@@ -32,8 +60,16 @@ const Refill = () => {
   ];
 
   const handleOrder = (size: string, price: string) => {
+    if (!selectedBrand) {
+      toast({
+        title: "Please select a brand",
+        description: "You need to select a gas brand before proceeding",
+        variant: "destructive",
+      });
+      return;
+    }
     setSelectedSize(size);
-    navigate(`/order?type=refill&size=${size}&price=${price}`);
+    navigate(`/order?type=refill&size=${size}&price=${price}&brand=${selectedBrand}`);
   };
 
   return (
@@ -47,9 +83,27 @@ const Refill = () => {
           className="text-center mb-6 sm:mb-8"
         >
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Gas Refill Prices</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground mb-4">
             Choose your preferred gas cylinder size
           </p>
+
+          <div className="max-w-xs mx-auto mb-6">
+            <Select
+              value={selectedBrand}
+              onValueChange={setSelectedBrand}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select brand" />
+              </SelectTrigger>
+              <SelectContent>
+                {brands.map((brand) => (
+                  <SelectItem key={brand.id} value={brand.name}>
+                    {brand.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-5xl mx-auto">
