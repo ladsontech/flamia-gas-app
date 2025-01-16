@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Order } from "@/types/order";
 import { Flame } from "lucide-react";
 import { OrdersList } from "@/components/dashboard/OrdersList";
+import { AdminAppBar } from "@/components/admin/AdminAppBar";
 
 const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -94,6 +95,7 @@ const Admin = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background">
+        <AdminAppBar />
         <div className="container py-8 flex items-center justify-center">
           <div className="animate-pulse flex flex-col items-center gap-4">
             <Flame className="w-8 h-8 text-accent animate-bounce" />
@@ -106,6 +108,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background">
+      <AdminAppBar />
       <div className="container py-8">
         <OrdersList 
           orders={orders} 
