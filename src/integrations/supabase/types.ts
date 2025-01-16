@@ -64,6 +64,7 @@ export type Database = {
           image_url_6kg: string | null
           name: string
           price_12kg: string | null
+          price_3kg: string | null
           price_6kg: string | null
           refill_price_12kg: string | null
           refill_price_3kg: string | null
@@ -78,6 +79,7 @@ export type Database = {
           image_url_6kg?: string | null
           name: string
           price_12kg?: string | null
+          price_3kg?: string | null
           price_6kg?: string | null
           refill_price_12kg?: string | null
           refill_price_3kg?: string | null
@@ -92,6 +94,7 @@ export type Database = {
           image_url_6kg?: string | null
           name?: string
           price_12kg?: string | null
+          price_3kg?: string | null
           price_6kg?: string | null
           refill_price_12kg?: string | null
           refill_price_3kg?: string | null
