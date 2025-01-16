@@ -3,16 +3,21 @@ import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 export const AdminAppBar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      navigate('/');
+      
+      // Force a full page reload to clear any stale state
+      window.location.href = '/';
     } catch (error) {
       console.error('Error logging out:', error);
       toast({
@@ -20,24 +25,23 @@ export const AdminAppBar = () => {
         description: "Failed to log out. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <span className="font-semibold">Order Management</span>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          className="flex items-center gap-2"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </Button>
-      </div>
+    <div className="flex items-center justify-between p-4 bg-white border-b">
+      <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+      <Button 
+        onClick={handleLogout} 
+        variant="ghost" 
+        size="sm"
+        disabled={isLoading}
+      >
+        <LogOut className="h-5 w-5 mr-2" />
+        {isLoading ? 'Logging out...' : 'Logout'}
+      </Button>
     </div>
   );
 };
