@@ -73,10 +73,10 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           value={formData.size}
           onValueChange={handleSizeChange}
         >
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Select weight" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border shadow-lg">
             <SelectItem value="3KG">3KG</SelectItem>
             <SelectItem value="6KG">6KG</SelectItem>
             <SelectItem value="12KG">12KG</SelectItem>
