@@ -188,6 +188,30 @@ export type Database = {
           },
         ]
       }
+      refill_prices: {
+        Row: {
+          brand: string
+          created_at: string | null
+          id: string
+          price: number
+          weight: string
+        }
+        Insert: {
+          brand: string
+          created_at?: string | null
+          id?: string
+          price: number
+          weight: string
+        }
+        Update: {
+          brand?: string
+          created_at?: string | null
+          id?: string
+          price?: number
+          weight?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           admin: string
