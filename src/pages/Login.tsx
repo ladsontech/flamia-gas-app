@@ -8,7 +8,8 @@ import { Card } from "@/components/ui/card";
 import { AuthError } from "@supabase/supabase-js";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -43,16 +44,12 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const handleAuthError = (error: AuthError) => {
-    let message = error.message;
-    if (error.message.includes('weak_password')) {
-      message = 'Password should be at least 6 characters long';
-    }
+  const handleGuestAccess = () => {
     toast({
-      title: "Authentication Error",
-      description: message,
-      variant: "destructive",
+      title: "Continuing as Guest",
+      description: "You can place orders without signing in",
     });
+    navigate('/order');
   };
 
   return (
@@ -75,35 +72,60 @@ const Login = () => {
           </p>
         </div>
 
-        <Card className="p-6">
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              style: {
-                button: { background: 'hsl(142, 70%, 45%)', color: 'white' },
-                anchor: { color: 'hsl(142, 70%, 45%)' },
-              },
-              variables: {
-                default: {
-                  colors: {
-                    brand: 'hsl(142, 70%, 45%)',
-                    brandAccent: 'hsl(142, 70%, 40%)',
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <Button
+            onClick={handleGuestAccess}
+            className="w-full bg-accent/10 text-accent hover:bg-accent/20 mb-4"
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Continue as Guest
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <Card className="p-6">
+            <Auth
+              supabaseClient={supabase}
+              appearance={{
+                theme: ThemeSupa,
+                style: {
+                  button: { background: 'hsl(142, 70%, 45%)', color: 'white' },
+                  anchor: { color: 'hsl(142, 70%, 45%)' },
+                },
+                variables: {
+                  default: {
+                    colors: {
+                      brand: 'hsl(142, 70%, 45%)',
+                      brandAccent: 'hsl(142, 70%, 40%)',
+                    },
                   },
                 },
-              },
-            }}
-            providers={[]}
-            localization={{
-              variables: {
-                sign_up: {
-                  password_label: 'Password (minimum 6 characters)',
-                  password_input_placeholder: 'Enter a strong password (min. 6 characters)',
+              }}
+              providers={[]}
+              localization={{
+                variables: {
+                  sign_up: {
+                    password_label: 'Password (minimum 6 characters)',
+                    password_input_placeholder: 'Enter a strong password (min. 6 characters)',
+                  },
                 },
-              },
-            }}
-          />
-        </Card>
+              }}
+            />
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
