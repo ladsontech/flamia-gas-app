@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { OrdersTable } from "@/components/admin/OrdersTable";
+import { OrdersList } from "@/components/dashboard/OrdersList";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Order } from "@/types/order";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { toast } = useToast();
-
-  // List of delivery personnel
-  const deliveryPersonnel = ["Fahad", "Steven", "Osinya"];
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchOrders();
@@ -47,6 +48,29 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      navigate('/');
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+    } catch (error) {
+      console.error('Error logging out:', error);
+      toast({
+        title: "Error",
+        description: "Failed to log out",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   const assignDelivery = async (orderId: string, deliveryPerson: string) => {
     try {
       const { error } = await supabase
@@ -64,7 +88,7 @@ const Dashboard = () => {
         description: `Order assigned to ${deliveryPerson}`,
       });
 
-      fetchOrders(); // Refresh orders
+      fetchOrders();
     } catch (error) {
       console.error('Error assigning delivery:', error);
       toast({
@@ -89,7 +113,7 @@ const Dashboard = () => {
         description: "Order marked as delivered",
       });
 
-      fetchOrders(); // Refresh orders
+      fetchOrders();
     } catch (error) {
       console.error('Error marking as delivered:', error);
       toast({
@@ -111,12 +135,27 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8">
-        <h1 className="text-2xl font-bold mb-6">Orders Dashboard</h1>
-        <OrdersTable 
-          orders={orders} 
-          deliveryPersonnel={deliveryPersonnel}
-          assignDelivery={assignDelivery}
-          markAsDelivered={markAsDelivered}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Orders Dashboard</h1>
+          <Button 
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            variant="outline"
+            className="gap-2"
+          >
+            {isLoggingOut ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogOut className="h-4 w-4" />
+            )}
+            Logout
+          </Button>
+        </div>
+        <OrdersList 
+          orders={orders}
+          isAdmin={true}
+          onAssignDelivery={assignDelivery}
+          onMarkDelivered={markAsDelivered}
         />
       </div>
     </div>
