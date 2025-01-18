@@ -23,48 +23,59 @@ const AppContent = () => {
   const { toast } = useToast();
   const showBottomNav = !['/login'].includes(location.pathname);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        setIsLoading(true);
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
+
         const protectedRoutes = ['/dashboard', '/order'];
         
         if (!session) {
           if (protectedRoutes.includes(location.pathname)) {
             navigate('/login');
           }
-          setIsAdmin(false);
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
           return;
         }
 
         // Get user role from users table using maybeSingle()
-        const { data: userData, error } = await supabase
+        const { data: userData, error: userError } = await supabase
           .from('users')
           .select('admin')
           .eq('id', session.user.id)
           .maybeSingle();
 
-        if (error) {
-          console.error('Error fetching user role:', error);
-          toast({
-            title: "Error",
-            description: "Failed to fetch user role. Please try again.",
-            variant: "destructive",
-          });
-          setIsAdmin(false);
+        if (userError) {
+          console.error('Error fetching user role:', userError);
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
           return;
         }
 
-        // Handle case where user data might not exist
-        if (!userData) {
-          console.warn('No user data found');
+        if (!userData && mounted) {
           setIsAdmin(false);
+          setIsLoading(false);
           return;
         }
 
         const adminStatus = userData.admin === 'admin';
-        setIsAdmin(adminStatus);
+        
+        if (mounted) {
+          setIsAdmin(adminStatus);
+          setIsLoading(false);
+        }
 
         // Handle routing based on admin status
         if (adminStatus) {
@@ -72,28 +83,35 @@ const AppContent = () => {
             navigate('/dashboard');
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Auth check error:', error);
-        toast({
-          title: "Error",
-          description: "Authentication check failed. Please try again.",
-          variant: "destructive",
-        });
-        setIsAdmin(false);
+        if (mounted) {
+          setIsAdmin(false);
+          setIsLoading(false);
+        }
         navigate('/login');
       }
     };
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        checkAuth();
+      }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [location.pathname, navigate]);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
+  }
 
   return (
     <>
