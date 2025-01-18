@@ -46,10 +46,10 @@ const Login = () => {
 
   const handleGuestAccess = () => {
     toast({
-      title: "Continuing as Guest",
-      description: "You can place orders without signing in",
+      title: "Welcome!",
+      description: "You can now place orders as a guest",
     });
-    navigate('/order');
+    navigate('/');
   };
 
   return (
