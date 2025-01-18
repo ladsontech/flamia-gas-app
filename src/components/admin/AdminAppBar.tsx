@@ -13,18 +13,38 @@ export const AdminAppBar = () => {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session, just redirect to login
+        navigate('/login');
+        return;
+      }
+
+      // Proceed with logout
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Force a full page reload to clear any stale state
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+
+      // Force a page reload to clear any stale state
       window.location.href = '/';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error logging out:', error);
       toast({
         title: "Error",
-        description: "Failed to log out. Please try again.",
+        description: error.message || "Failed to log out. Please try again.",
         variant: "destructive",
       });
+      
+      // If we get a session not found error, force reload anyway
+      if (error.message?.includes('session_not_found')) {
+        window.location.href = '/';
+      }
     } finally {
       setIsLoading(false);
     }

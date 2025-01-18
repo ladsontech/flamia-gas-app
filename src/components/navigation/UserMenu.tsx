@@ -20,6 +20,7 @@ export const UserMenu = ({ isActive }: UserMenuProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [userName, setUserName] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -54,10 +55,42 @@ export const UserMenu = ({ isActive }: UserMenuProps) => {
   }, [toast]);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      navigate('/');
-      window.location.reload();
+    try {
+      setIsLoading(true);
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session, just redirect to login
+        navigate('/login');
+        return;
+      }
+
+      // Proceed with logout
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+
+      // Force a page reload to clear any stale state
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error('Error logging out:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+      
+      // If we get a session not found error, force reload anyway
+      if (error.message?.includes('session_not_found')) {
+        window.location.href = '/';
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,8 +114,12 @@ export const UserMenu = ({ isActive }: UserMenuProps) => {
             </DropdownMenuItem>
             
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="py-2 text-red-500 hover:text-red-600 hover:bg-red-50">
-              Logout
+            <DropdownMenuItem 
+              onClick={handleLogout} 
+              className="py-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Logging out...' : 'Logout'}
             </DropdownMenuItem>
           </>
         ) : (
