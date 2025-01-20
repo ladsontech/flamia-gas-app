@@ -23,109 +23,77 @@ const AppContent = () => {
   const { toast } = useToast();
   const showBottomNav = !['/login'].includes(location.pathname);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-
     const checkAuth = async () => {
       try {
-        setIsLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        const protectedRoutes = ['/dashboard', '/order'];
         
-        // First check if we're in guest mode
-        if (isGuest) {
-          if (mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        // Get current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          if (mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        // If no session and not guest mode, handle accordingly
         if (!session) {
-          const protectedRoutes = ['/dashboard'];
           if (protectedRoutes.includes(location.pathname)) {
             navigate('/login');
           }
-          if (mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-          }
+          setIsAdmin(false);
           return;
         }
 
-        // If we have a session, check user role
-        try {
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('admin')
-            .eq('id', session.user.id)
-            .maybeSingle();
+        // Get user role from users table using maybeSingle()
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('admin')
+          .eq('id', session.user.id)
+          .maybeSingle();
 
-          if (userError) throw userError;
+        if (error) {
+          console.error('Error fetching user role:', error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch user role. Please try again.",
+            variant: "destructive",
+          });
+          setIsAdmin(false);
+          return;
+        }
 
-          if (mounted) {
-            const adminStatus = userData?.admin === 'admin';
-            setIsAdmin(adminStatus);
-            
-            // Handle routing based on admin status
-            if (adminStatus && location.pathname !== '/dashboard' && location.pathname !== '/login') {
-              navigate('/dashboard');
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          if (mounted) {
-            setIsAdmin(false);
+        // Handle case where user data might not exist
+        if (!userData) {
+          console.warn('No user data found');
+          setIsAdmin(false);
+          return;
+        }
+
+        const adminStatus = userData.admin === 'admin';
+        setIsAdmin(adminStatus);
+
+        // Handle routing based on admin status
+        if (adminStatus) {
+          if (location.pathname !== '/dashboard' && location.pathname !== '/login') {
+            navigate('/dashboard');
           }
         }
       } catch (error) {
         console.error('Auth check error:', error);
-        if (mounted) {
-          setIsAdmin(false);
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        toast({
+          title: "Error",
+          description: "Authentication check failed. Please try again.",
+          variant: "destructive",
+        });
+        setIsAdmin(false);
+        navigate('/login');
       }
     };
 
-    // Initial auth check
     checkAuth();
 
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-        checkAuth();
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAuth();
     });
 
-    // Cleanup
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, [location.pathname, navigate, isGuest]);
-
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>;
-  }
+  }, [location.pathname, navigate]);
 
   return (
     <>
@@ -133,9 +101,9 @@ const AppContent = () => {
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/order" element={<Order isGuest={isGuest} />} />
+            <Route path="/order" element={<Order />} />
             <Route path="/refill" element={<Refill />} />
-            <Route path="/login" element={<Login setIsGuest={setIsGuest} />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/accessories" element={<Accessories />} />
           </Routes>

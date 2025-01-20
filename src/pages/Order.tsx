@@ -10,11 +10,7 @@ import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
 import { Flame } from "lucide-react";
 
-interface OrderProps {
-  isGuest?: boolean;
-}
-
-const Order = ({ isGuest = false }: OrderProps) => {
+const Order = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -37,18 +33,16 @@ const Order = ({ isGuest = false }: OrderProps) => {
   });
 
   useEffect(() => {
-    if (!isGuest) {
-      checkAuth();
-    }
-  }, [isGuest]);
+    checkAuth();
+  }, []);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session && !isGuest) {
+    if (!session) {
       navigate('/login');
       return;
     }
-    setUserEmail(session?.user.email || null);
+    setUserEmail(session.user.email);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,20 +50,20 @@ const Order = ({ isGuest = false }: OrderProps) => {
     setLoading(true);
     
     try {
-      const orderData = {
-        customer: userEmail || 'guest',
-        phone: formData.phone,
-        address: formData.address,
-        brand: selectedBrand,
-        size: formData.size,
-        quantity: formData.quantity,
-        type: formData.type,
-        accessory_id: formData.accessory_id
-      };
-
       const { error } = await supabase
         .from('orders')
-        .insert([orderData]);
+        .insert([
+          {
+            customer: userEmail,
+            phone: formData.phone,
+            address: formData.address,
+            brand: selectedBrand,
+            size: formData.size,
+            quantity: formData.quantity,
+            type: formData.type,
+            accessory_id: formData.accessory_id
+          }
+        ]);
 
       if (error) throw error;
       
@@ -78,7 +72,7 @@ const Order = ({ isGuest = false }: OrderProps) => {
         description: "We'll deliver your gas cylinder soon!",
       });
       
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",

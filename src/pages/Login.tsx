@@ -5,15 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import { AuthError } from "@supabase/supabase-js";
+import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 
-interface LoginProps {
-  setIsGuest: (value: boolean) => void;
-}
-
-const Login = ({ setIsGuest }: LoginProps) => {
+const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,12 +45,11 @@ const Login = ({ setIsGuest }: LoginProps) => {
   }, [navigate]);
 
   const handleGuestAccess = () => {
-    setIsGuest(true);
     toast({
-      title: "Welcome!",
-      description: "You can now place orders as a guest",
+      title: "Continuing as Guest",
+      description: "You can place orders without signing in",
     });
-    navigate('/');
+    navigate('/order');
   };
 
   return (
