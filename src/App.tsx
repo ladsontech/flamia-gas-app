@@ -32,14 +32,31 @@ const AppContent = () => {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
+        
+        // First check if we're in guest mode
+        if (isGuest) {
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) throw sessionError;
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
+          return;
+        }
 
-        const protectedRoutes = ['/dashboard'];
-        
-        // If user is in guest mode, allow access to order pages
-        if (!session && !isGuest) {
+        // If no session and not guest mode, handle accordingly
+        if (!session) {
+          const protectedRoutes = ['/dashboard'];
           if (protectedRoutes.includes(location.pathname)) {
             navigate('/login');
           }
@@ -50,60 +67,54 @@ const AppContent = () => {
           return;
         }
 
-        if (session) {
-          // Get user role from users table using maybeSingle()
+        // If we have a session, check user role
+        try {
           const { data: userData, error: userError } = await supabase
             .from('users')
             .select('admin')
             .eq('id', session.user.id)
             .maybeSingle();
 
-          if (userError) {
-            console.error('Error fetching user role:', userError);
-            if (mounted) {
-              setIsAdmin(false);
-              setIsLoading(false);
-            }
-            return;
-          }
+          if (userError) throw userError;
 
-          if (!userData && mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-            return;
-          }
-
-          const adminStatus = userData.admin === 'admin';
-          
           if (mounted) {
+            const adminStatus = userData?.admin === 'admin';
             setIsAdmin(adminStatus);
-            setIsLoading(false);
-          }
-
-          // Handle routing based on admin status
-          if (adminStatus) {
-            if (location.pathname !== '/dashboard' && location.pathname !== '/login') {
+            
+            // Handle routing based on admin status
+            if (adminStatus && location.pathname !== '/dashboard' && location.pathname !== '/login') {
               navigate('/dashboard');
             }
           }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          if (mounted) {
+            setIsAdmin(false);
+          }
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Auth check error:', error);
         if (mounted) {
           setIsAdmin(false);
+        }
+      } finally {
+        if (mounted) {
           setIsLoading(false);
         }
       }
     };
 
+    // Initial auth check
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
         checkAuth();
       }
     });
 
+    // Cleanup
     return () => {
       mounted = false;
       subscription.unsubscribe();
