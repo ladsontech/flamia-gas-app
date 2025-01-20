@@ -10,7 +10,11 @@ import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
 import { Flame } from "lucide-react";
 
-const Order = () => {
+interface OrderProps {
+  isGuest?: boolean;
+}
+
+const Order = ({ isGuest = false }: OrderProps) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -33,16 +37,18 @@ const Order = () => {
   });
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (!isGuest) {
+      checkAuth();
+    }
+  }, [isGuest]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    if (!session && !isGuest) {
       navigate('/login');
       return;
     }
-    setUserEmail(session.user.email);
+    setUserEmail(session?.user.email || null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,20 +56,20 @@ const Order = () => {
     setLoading(true);
     
     try {
+      const orderData = {
+        customer: userEmail || 'guest',
+        phone: formData.phone,
+        address: formData.address,
+        brand: selectedBrand,
+        size: formData.size,
+        quantity: formData.quantity,
+        type: formData.type,
+        accessory_id: formData.accessory_id
+      };
+
       const { error } = await supabase
         .from('orders')
-        .insert([
-          {
-            customer: userEmail,
-            phone: formData.phone,
-            address: formData.address,
-            brand: selectedBrand,
-            size: formData.size,
-            quantity: formData.quantity,
-            type: formData.type,
-            accessory_id: formData.accessory_id
-          }
-        ]);
+        .insert([orderData]);
 
       if (error) throw error;
       
@@ -72,7 +78,7 @@ const Order = () => {
         description: "We'll deliver your gas cylinder soon!",
       });
       
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       toast({
         title: "Error",

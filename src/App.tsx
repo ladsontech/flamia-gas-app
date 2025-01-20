@@ -24,6 +24,7 @@ const AppContent = () => {
   const showBottomNav = !['/login'].includes(location.pathname);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -35,9 +36,10 @@ const AppContent = () => {
         
         if (sessionError) throw sessionError;
 
-        const protectedRoutes = ['/dashboard', '/order'];
+        const protectedRoutes = ['/dashboard'];
         
-        if (!session) {
+        // If user is in guest mode, allow access to order pages
+        if (!session && !isGuest) {
           if (protectedRoutes.includes(location.pathname)) {
             navigate('/login');
           }
@@ -48,39 +50,41 @@ const AppContent = () => {
           return;
         }
 
-        // Get user role from users table using maybeSingle()
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('admin')
-          .eq('id', session.user.id)
-          .maybeSingle();
+        if (session) {
+          // Get user role from users table using maybeSingle()
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('admin')
+            .eq('id', session.user.id)
+            .maybeSingle();
 
-        if (userError) {
-          console.error('Error fetching user role:', userError);
-          if (mounted) {
+          if (userError) {
+            console.error('Error fetching user role:', userError);
+            if (mounted) {
+              setIsAdmin(false);
+              setIsLoading(false);
+            }
+            return;
+          }
+
+          if (!userData && mounted) {
             setIsAdmin(false);
             setIsLoading(false);
+            return;
           }
-          return;
-        }
 
-        if (!userData && mounted) {
-          setIsAdmin(false);
-          setIsLoading(false);
-          return;
-        }
+          const adminStatus = userData.admin === 'admin';
+          
+          if (mounted) {
+            setIsAdmin(adminStatus);
+            setIsLoading(false);
+          }
 
-        const adminStatus = userData.admin === 'admin';
-        
-        if (mounted) {
-          setIsAdmin(adminStatus);
-          setIsLoading(false);
-        }
-
-        // Handle routing based on admin status
-        if (adminStatus) {
-          if (location.pathname !== '/dashboard' && location.pathname !== '/login') {
-            navigate('/dashboard');
+          // Handle routing based on admin status
+          if (adminStatus) {
+            if (location.pathname !== '/dashboard' && location.pathname !== '/login') {
+              navigate('/dashboard');
+            }
           }
         }
       } catch (error: any) {
@@ -89,7 +93,6 @@ const AppContent = () => {
           setIsAdmin(false);
           setIsLoading(false);
         }
-        navigate('/login');
       }
     };
 
@@ -105,7 +108,7 @@ const AppContent = () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, isGuest]);
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">
@@ -119,9 +122,9 @@ const AppContent = () => {
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/order" element={<Order />} />
+            <Route path="/order" element={<Order isGuest={isGuest} />} />
             <Route path="/refill" element={<Refill />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login setIsGuest={setIsGuest} />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/accessories" element={<Accessories />} />
           </Routes>
