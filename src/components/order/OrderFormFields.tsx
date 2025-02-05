@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,6 @@ import { motion } from "framer-motion";
 
 interface OrderFormFieldsProps {
   formData: {
-    phone: string;
     address: string;
     quantity: number;
     size: string;
@@ -95,19 +95,6 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
           placeholder="Enter quantity"
-          className="border-accent/20 focus:border-accent/40"
-        />
-      </motion.div>
-
-      <motion.div variants={itemVariants} className="space-y-2">
-        <Label htmlFor="phone">Phone Number</Label>
-        <Input
-          id="phone"
-          name="phone"
-          value={formData.phone}
-          onChange={handleInputChange}
-          required
-          placeholder="+256 123 456 789"
           className="border-accent/20 focus:border-accent/40"
         />
       </motion.div>

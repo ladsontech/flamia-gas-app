@@ -22,7 +22,6 @@ const Order = () => {
   const accessoryId = searchParams.get("accessory");
 
   const [formData, setFormData] = useState({
-    phone: "",
     address: "",
     type: orderType,
     size: size,
@@ -41,7 +40,6 @@ const Order = () => {
 *Brand:* ${selectedBrand}%0A
 *Size:* ${formData.size}%0A
 *Quantity:* ${formData.quantity}%0A
-*Phone:* ${formData.phone}%0A
 *Address:* ${formData.address}%0A
 ------------------------`;
 
@@ -97,7 +95,7 @@ const Order = () => {
                   disabled={loading}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? "Processing..." : "Order via WhatsApp"}
+                    {loading ? "Processing..." : "Order Now"}
                     <Flame className="w-5 h-5 transition-transform group-hover:rotate-12" />
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-0 group-hover:opacity-20 transition-opacity" />
