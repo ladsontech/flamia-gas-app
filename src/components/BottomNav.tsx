@@ -1,5 +1,6 @@
+
 import { useLocation } from "react-router-dom";
-import { Home, RefreshCw, Package, ShoppingBag } from "lucide-react";
+import { Home, RefreshCw, ShoppingBag } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
 
 interface BottomNavProps {
@@ -18,7 +19,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
       <nav className="fixed md:top-1/2 md:-translate-y-1/2 bottom-0 left-0 md:h-auto h-14 bg-background border-t md:border-t-0 md:border-r border-border md:w-14 w-full px-2 flex md:flex-col items-center justify-around md:py-8 md:space-y-6 z-50">
         <NavItem
           to="/dashboard"
-          icon={Package}
+          icon={RefreshCw}
           label="Orders"
           isActive={location.pathname === "/dashboard"}
         />
@@ -39,12 +40,6 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
         icon={RefreshCw}
         label="Refill"
         isActive={location.pathname === "/refill"}
-      />
-      <NavItem
-        to="/dashboard"
-        icon={Package}
-        label="My Orders"
-        isActive={location.pathname === "/dashboard"}
       />
       <NavItem
         to="/accessories"
