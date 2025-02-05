@@ -1,10 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
@@ -12,10 +12,8 @@ import { Flame } from "lucide-react";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Get all parameters from URL
   const selectedBrand = searchParams.get("brand") || "";
@@ -32,51 +30,32 @@ const Order = () => {
     accessory_id: accessoryId || undefined
   });
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/login');
-      return;
-    }
-    setUserEmail(session.user.email);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      const { error } = await supabase
-        .from('orders')
-        .insert([
-          {
-            customer: userEmail,
-            phone: formData.phone,
-            address: formData.address,
-            brand: selectedBrand,
-            size: formData.size,
-            quantity: formData.quantity,
-            type: formData.type,
-            accessory_id: formData.accessory_id
-          }
-        ]);
+      const message = `*New Gas Order*%0A
+------------------------%0A
+*Order Type:* ${formData.type}%0A
+*Brand:* ${selectedBrand}%0A
+*Size:* ${formData.size}%0A
+*Quantity:* ${formData.quantity}%0A
+*Phone:* ${formData.phone}%0A
+*Address:* ${formData.address}%0A
+------------------------`;
 
-      if (error) throw error;
+      // Open WhatsApp with the pre-filled message
+      window.open(`https://wa.me/+256123456789?text=${message}`, '_blank');
       
       toast({
-        title: "Order Placed Successfully",
-        description: "We'll deliver your gas cylinder soon!",
+        title: "Order Initiated",
+        description: "Your order details have been sent to WhatsApp. Please complete the conversation there.",
       });
-      
-      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to place order. Please try again.",
+        description: "Failed to initiate WhatsApp order. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -118,14 +97,8 @@ const Order = () => {
                   disabled={loading}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? (
-                      "Processing..."
-                    ) : (
-                      <>
-                        Place Order
-                        <Flame className="w-5 h-5 transition-transform group-hover:rotate-12" />
-                      </>
-                    )}
+                    {loading ? "Processing..." : "Order via WhatsApp"}
+                    <Flame className="w-5 h-5 transition-transform group-hover:rotate-12" />
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-0 group-hover:opacity-20 transition-opacity" />
                 </Button>
