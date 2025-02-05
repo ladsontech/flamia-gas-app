@@ -44,7 +44,7 @@ const Order = () => {
 ------------------------`;
 
       // Open WhatsApp with the pre-filled message
-      window.open(`https://wa.me/+256123456789?text=${message}`, '_blank');
+      window.open(`https://wa.me/+256789572007?text=${message}`, '_blank');
       
       toast({
         title: "Order Initiated",
