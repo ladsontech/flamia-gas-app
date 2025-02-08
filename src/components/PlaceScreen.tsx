@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { Flame } from "lucide-react";
 
 const PlaceScreen = () => {
   return (
@@ -10,11 +11,7 @@ const PlaceScreen = () => {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center space-y-6"
       >
-        <img
-          src="/lovable-uploads/c2791a2b-59d6-4982-8cda-b78cbc2556b3.png"
-          alt="Flamia Logo"
-          className="w-24 h-24"
-        />
+        <Flame className="w-24 h-24 text-accent animate-pulse" />
         <h1 className="text-4xl font-bold text-gray-800">flamia</h1>
       </motion.div>
       <motion.div

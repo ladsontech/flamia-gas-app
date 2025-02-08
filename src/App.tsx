@@ -15,8 +15,19 @@ import { BottomNav } from "./components/BottomNav";
 
 const AppContent = () => {
   const location = useLocation();
-  const showBottomNav = true;
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
+  const [showPlaceScreen, setShowPlaceScreen] = useState(true);
+
+  // Hide bottom nav when place screen is showing
+  const showBottomNav = !showPlaceScreen;
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPlaceScreen(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>

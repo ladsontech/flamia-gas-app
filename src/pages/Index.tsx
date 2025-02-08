@@ -11,7 +11,6 @@ import { useHomeData } from "@/hooks/useHomeData";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showPlaceScreen, setShowPlaceScreen] = useState(true);
   const { hotDeals, brands, loading } = useHomeData();
 
   useEffect(() => {
@@ -26,14 +25,8 @@ const Index = () => {
       setIsLoggedIn(!!session);
     });
 
-    // Hide place screen after 2 seconds
-    const timer = setTimeout(() => {
-      setShowPlaceScreen(false);
-    }, 2000);
-
     return () => {
       subscription.unsubscribe();
-      clearTimeout(timer);
     };
   }, []);
 
@@ -46,18 +39,15 @@ const Index = () => {
   }
 
   return (
-    <>
-      {showPlaceScreen && <PlaceScreen />}
-      <div className="min-h-screen bg-white flex flex-col">
-        <div className="container px-2 sm:px-4 py-2 sm:py-4 flex-grow">
-          <HomeHeader />
-          <HeaderSection />
-          <BrandsGrid brands={brands} />
-          <HotDealsSection hotDeals={hotDeals} />
-        </div>
-        <Footer />
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="container px-2 sm:px-4 py-2 sm:py-4 flex-grow">
+        <HomeHeader />
+        <HeaderSection />
+        <BrandsGrid brands={brands} />
+        <HotDealsSection hotDeals={hotDeals} />
       </div>
-    </>
+      <Footer />
+    </div>
   );
 };
 
