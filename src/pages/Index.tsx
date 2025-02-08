@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -136,6 +137,50 @@ const Index = () => {
     );
   }
 
+  // Transform brands data into a flat array of cards
+  const allCards = brands.reduce((acc: React.ReactNode[], brand) => {
+    if (brand.refill_price_3kg) {
+      acc.push(
+        <BrandCardNew
+          key={`${brand.id}-3kg`}
+          name={brand.name}
+          brand={brand.brand}
+          image={brand.image_url_3kg || ''}
+          size="3kg"
+          price="Contact for Price"
+          refillPrice={brand.refill_price_3kg}
+        />
+      );
+    }
+    if (brand.price_6kg) {
+      acc.push(
+        <BrandCardNew
+          key={`${brand.id}-6kg`}
+          name={brand.name}
+          brand={brand.brand}
+          image={brand.image_url_6kg || ''}
+          size="6kg"
+          price={brand.price_6kg}
+          refillPrice={brand.refill_price_6kg}
+        />
+      );
+    }
+    if (brand.price_12kg) {
+      acc.push(
+        <BrandCardNew
+          key={`${brand.id}-12kg`}
+          name={brand.name}
+          brand={brand.brand}
+          image={brand.image_url_12kg || ''}
+          size="12kg"
+          price={brand.price_12kg}
+          refillPrice={brand.refill_price_12kg}
+        />
+      );
+    }
+    return acc;
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container px-2 sm:px-4 py-2 sm:py-4">
@@ -157,50 +202,9 @@ const Index = () => {
           </p>
         </motion.div>
 
-        {Object.entries(groupedBrands).map(([brandName, brandItems]) => (
-          <div key={brandName} className="mb-8">
-            <h3 className="text-lg md:text-xl font-semibold mb-4 text-accent">{brandName}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
-              {brandItems.map((item) => (
-                <React.Fragment key={`${item.id}`}>
-                  {item.refill_price_3kg && (
-                    <BrandCardNew
-                      key={`${item.id}-3kg`}
-                      name={item.name}
-                      brand={item.brand}
-                      image={item.image_url_3kg || ''}
-                      size="3kg"
-                      price="Contact for Price"
-                      refillPrice={item.refill_price_3kg}
-                    />
-                  )}
-                  {item.price_6kg && (
-                    <BrandCardNew
-                      key={`${item.id}-6kg`}
-                      name={item.name}
-                      brand={item.brand}
-                      image={item.image_url_6kg || ''}
-                      size="6kg"
-                      price={item.price_6kg}
-                      refillPrice={item.refill_price_6kg}
-                    />
-                  )}
-                  {item.price_12kg && (
-                    <BrandCardNew
-                      key={`${item.id}-12kg`}
-                      name={item.name}
-                      brand={item.brand}
-                      image={item.image_url_12kg || ''}
-                      size="12kg"
-                      price={item.price_12kg}
-                      refillPrice={item.refill_price_12kg}
-                    />
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        ))}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+          {allCards}
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
