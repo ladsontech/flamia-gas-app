@@ -26,6 +26,7 @@ const Order = () => {
     type: orderType,
     size: size,
     quantity: 1,
+    contact: "",
     accessory_id: accessoryId || undefined
   });
 
@@ -40,6 +41,7 @@ const Order = () => {
 *Brand:* ${selectedBrand}%0A
 *Size:* ${formData.size}%0A
 *Quantity:* ${formData.quantity}%0A
+*Contact:* ${formData.contact}%0A
 *Address:* ${formData.address}%0A
 ------------------------`;
 
@@ -110,3 +112,4 @@ const Order = () => {
 };
 
 export default Order;
+

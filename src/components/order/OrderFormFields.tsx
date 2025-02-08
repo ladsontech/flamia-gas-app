@@ -16,6 +16,7 @@ interface OrderFormFieldsProps {
     address: string;
     quantity: number;
     size: string;
+    contact?: string;
   };
   setFormData: (data: any) => void;
   selectedBrand?: string;
@@ -100,6 +101,20 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       </motion.div>
 
       <motion.div variants={itemVariants} className="space-y-2">
+        <Label htmlFor="contact">Contact Number</Label>
+        <Input
+          id="contact"
+          name="contact"
+          type="tel"
+          value={formData.contact}
+          onChange={handleInputChange}
+          required
+          placeholder="Enter your phone number"
+          className="border-accent/20 focus:border-accent/40"
+        />
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="space-y-2">
         <Label htmlFor="address">Delivery Address</Label>
         <Input
           id="address"
@@ -114,3 +129,4 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
     </motion.div>
   );
 };
+
