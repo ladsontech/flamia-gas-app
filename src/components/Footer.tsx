@@ -15,8 +15,8 @@ const Footer = () => {
             className="w-12 h-12"
           />
           <div className="text-center">
-            <p className="text-sm text-gray-400">© 2024 Flamia. All rights reserved.</p>
-            <p className="text-xs text-gray-500 mt-1">Made with ❤️ by Dots</p>
+            <p className="text-sm text-gray-400">© 2025 Flamia. All rights reserved.</p>
+            <p className="text-xs text-gray-500 mt-1">from Dots</p>
           </div>
         </div>
       </div>
