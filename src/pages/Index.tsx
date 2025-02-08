@@ -5,10 +5,13 @@ import HomeHeader from "@/components/home/Header";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import HotDealsSection from "@/components/home/HotDealsSection";
+import PlaceScreen from "@/components/PlaceScreen";
+import Footer from "@/components/Footer";
 import { useHomeData } from "@/hooks/useHomeData";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showPlaceScreen, setShowPlaceScreen] = useState(true);
   const { hotDeals, brands, loading } = useHomeData();
 
   useEffect(() => {
@@ -23,7 +26,15 @@ const Index = () => {
       setIsLoggedIn(!!session);
     });
 
-    return () => subscription.unsubscribe();
+    // Hide place screen after 2 seconds
+    const timer = setTimeout(() => {
+      setShowPlaceScreen(false);
+    }, 2000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   if (loading) {
@@ -35,14 +46,18 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container px-2 sm:px-4 py-2 sm:py-4">
-        <HomeHeader />
-        <HeaderSection />
-        <BrandsGrid brands={brands} />
-        <HotDealsSection hotDeals={hotDeals} />
+    <>
+      {showPlaceScreen && <PlaceScreen />}
+      <div className="min-h-screen bg-white flex flex-col">
+        <div className="container px-2 sm:px-4 py-2 sm:py-4 flex-grow">
+          <HomeHeader />
+          <HeaderSection />
+          <BrandsGrid brands={brands} />
+          <HotDealsSection hotDeals={hotDeals} />
+        </div>
+        <Footer />
       </div>
-    </div>
+    </>
   );
 };
 
