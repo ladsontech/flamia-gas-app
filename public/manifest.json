@@ -1,11 +1,12 @@
+
 {
-  "name": "Gasify Quick",
-  "short_name": "Gasify",
-  "description": "Your Gas Delivery Solution",
+  "name": "Flamia - Gas Delivery Service",
+  "short_name": "Flamia",
+  "description": "Quick and reliable gas delivery service",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#22C55E",
+  "theme_color": "#FF4D00",
   "orientation": "portrait",
   "icons": [
     {

@@ -5,12 +5,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
 
 const AppContent = () => {
@@ -21,7 +22,7 @@ const AppContent = () => {
   // Hide bottom nav when place screen is showing
   const showBottomNav = !showPlaceScreen;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setShowPlaceScreen(false);
     }, 2000);
@@ -29,15 +30,81 @@ const AppContent = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      y: 3,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+    },
+    exit: {
+      opacity: 0,
+      y: -3,
+    },
+  };
+
   return (
     <>
+      <Helmet>
+        <title>Flamia - Gas Delivery Service</title>
+        <meta name="description" content="Quick and reliable gas delivery service. Order gas cylinders and accessories with fast delivery to your doorstep." />
+        <meta name="keywords" content="gas delivery, gas cylinders, cooking gas, LPG, gas accessories" />
+        <meta property="og:title" content="Flamia - Gas Delivery Service" />
+        <meta property="og:description" content="Quick and reliable gas delivery service. Order gas cylinders and accessories with fast delivery to your doorstep." />
+        <meta property="og:type" content="website" />
+        <meta name="theme-color" content="#FF4D00" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+
       <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
         <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/order" element={<Order />} />
-            <Route path="/refill" element={<Refill />} />
-            <Route path="/accessories" element={<Accessories />} />
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.2 }}
+              >
+                <Index />
+              </motion.div>
+            } />
+            <Route path="/order" element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.2 }}
+              >
+                <Order />
+              </motion.div>
+            } />
+            <Route path="/refill" element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.2 }}
+              >
+                <Refill />
+              </motion.div>
+            } />
+            <Route path="/accessories" element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.2 }}
+              >
+                <Accessories />
+              </motion.div>
+            } />
           </Routes>
         </AnimatePresence>
       </div>
@@ -47,7 +114,14 @@ const AppContent = () => {
 };
 
 const App = () => {
-  const [queryClient] = React.useState(() => new QueryClient());
+  const [queryClient] = React.useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        cacheTime: 1000 * 60 * 30, // 30 minutes
+      },
+    },
+  }));
 
   return (
     <QueryClientProvider client={queryClient}>
