@@ -14,12 +14,8 @@ const Header = () => {
           <span className="text-xs md:text-sm text-muted-foreground">Fast & Free Delivery</span>
         </div>
       </div>
-      <div className="relative w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm">
-        <img 
-          src="/lovable-uploads/4f7a9c0c-59ff-4823-9c17-6517bb9de0f7.png"
-          alt="Gas flame"
-          className="w-full h-full object-contain p-2"
-        />
+      <div className="relative w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+        <span className="text-4xl md:text-5xl lg:text-6xl">🔥</span>
       </div>
     </div>
   );
