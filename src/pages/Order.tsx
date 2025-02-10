@@ -35,7 +35,9 @@ const Order = () => {
     setLoading(true);
     
     try {
-      const message = `*New Gas Order*%0A
+      const message = `*Flamia* 🔥%0A
+------------------------%0A
+*New Gas Order*%0A
 ------------------------%0A
 *Order Type:* ${formData.type}%0A
 *Brand:* ${selectedBrand}%0A
@@ -112,4 +114,3 @@ const Order = () => {
 };
 
 export default Order;
-
