@@ -1,5 +1,5 @@
-import { Flame, Truck, MoreVertical } from "lucide-react";
-import { UserMenu } from "./navigation/UserMenu";
+
+import { Flame, Truck } from "lucide-react";
 
 const Header = () => {
   return (
@@ -14,15 +14,12 @@ const Header = () => {
           <span className="text-xs md:text-sm text-muted-foreground">Fast & Free Delivery</span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 overflow-hidden rounded-lg">
-          <img 
-            src="/lovable-uploads/4f7a9c0c-59ff-4823-9c17-6517bb9de0f7.png"
-            alt="Gas flame"
-            className="w-full h-full object-contain"
-          />
-        </div>
-        <UserMenu isActive={false} isAdmin={null} />
+      <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 overflow-hidden rounded-lg">
+        <img 
+          src="/lovable-uploads/4f7a9c0c-59ff-4823-9c17-6517bb9de0f7.png"
+          alt="Gas flame"
+          className="w-full h-full object-contain"
+        />
       </div>
     </div>
   );
