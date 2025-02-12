@@ -35,7 +35,7 @@ const Order = () => {
     setLoading(true);
     
     try {
-      const message = `*Flamia* 🔥%0A
+      const message = `Flamia 🔥%0A
 ------------------------%0A
 *New Gas Order*%0A
 ------------------------%0A
