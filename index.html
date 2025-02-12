@@ -6,21 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Flamia - Gas Delivery Service</title>
   <meta name="description" content="Fast and reliable gas delivery service. Order gas cylinders and accessories with instant delivery to your doorstep." />
-  <meta name="keywords" content="gas delivery, gas cylinders, cooking gas, LPG, gas accessories, Uganda" />
+  <meta name="keywords" content="gas delivery, gas cylinders, cooking gas, LPG, gas accessories, Uganda, Stabex gas, Shell gas, Total gas, gas refill, gas accessories, gas regulator, gas burner, Kampala gas delivery, Uganda gas delivery, gas cylinder prices, gas delivery near me" />
   <meta name="author" content="Flamia" />
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://flamia.vercel.app/" />
+  <meta property="og:url" content="https://flamia.store/" />
   <meta property="og:title" content="Flamia - Gas Delivery Service" />
-  <meta property="og:description" content="Fast and reliable gas delivery service. Order gas cylinders and accessories with instant delivery to your doorstep." />
+  <meta property="og:description" content="Fast and reliable gas delivery service. Order gas cylinders and accessories with instant delivery to your doorstep. Available brands: Stabex, Shell, Total and more." />
   <meta property="og:image" content="/og-image.svg" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://flamia.vercel.app/" />
+  <meta property="twitter:url" content="https://flamia.store/" />
   <meta property="twitter:title" content="Flamia - Gas Delivery Service" />
-  <meta property="twitter:description" content="Fast and reliable gas delivery service. Order gas cylinders and accessories with instant delivery to your doorstep." />
+  <meta property="twitter:description" content="Fast and reliable gas delivery service. Order gas cylinders and accessories with instant delivery to your doorstep. Available brands: Stabex, Shell, Total and more." />
   <meta property="twitter:image" content="/og-image.svg" />
   
   <!-- PWA meta tags -->
@@ -31,6 +31,11 @@
   
   <!-- Robots meta tag for search engine crawling -->
   <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+  
+  <!-- Locale and region -->
+  <meta name="geo.region" content="UG" />
+  <meta name="geo.placename" content="Kampala" />
   
   <!-- PWA icons -->
   <link rel="icon" type="image/png" sizes="196x196" href="/icons/favicon-196.png" />
@@ -38,7 +43,30 @@
   <link rel="manifest" href="/manifest.json" />
   
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://flamia.vercel.app/" />
+  <link rel="canonical" href="https://flamia.store/" />
+
+  <!-- Structured Data for Google -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Flamia Gas Delivery",
+      "image": "/og-image.svg",
+      "description": "Fast and reliable gas delivery service in Uganda. We deliver gas cylinders and accessories directly to your doorstep.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "UG",
+        "addressRegion": "Kampala"
+      },
+      "priceRange": "$$",
+      "servesCuisine": "Gas Delivery",
+      "areaServed": "Kampala, Uganda",
+      "offers": {
+        "@type": "Offer",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  </script>
 </head>
 
 <body>
