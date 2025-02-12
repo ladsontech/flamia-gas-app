@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -22,7 +23,6 @@ if ('serviceWorker' in navigator) {
 
 const root = createRoot(container);
 
-// Add error boundary wrapper
 root.render(
   <React.StrictMode>
     <App />
