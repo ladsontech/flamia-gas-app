@@ -116,15 +116,21 @@ const Refill = () => {
               value={selectedBrand}
               onValueChange={setSelectedBrand}
             >
-              <SelectTrigger className="w-full bg-white/90 backdrop-blur-sm border-accent/20">
+              <SelectTrigger className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12">
                 <SelectValue placeholder="Select brand" />
               </SelectTrigger>
-              <SelectContent className="bg-white/95 backdrop-blur-md border-accent/20 shadow-lg max-h-[200px] overflow-y-auto">
+              <SelectContent 
+                className="bg-white/95 backdrop-blur-md border-accent/20 shadow-lg overflow-y-auto"
+                style={{
+                  maxHeight: 'min(65vh, 600px)', // Increased height to show more items
+                  minHeight: '300px' // Increased minimum height
+                }}
+              >
                 {brands.map((brand) => (
                   <SelectItem 
                     key={brand} 
                     value={brand}
-                    className="hover:bg-accent/10"
+                    className="hover:bg-accent/10 py-3"
                   >
                     {brand}
                   </SelectItem>
