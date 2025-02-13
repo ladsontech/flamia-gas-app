@@ -3,6 +3,7 @@ import React from "react";
 import BrandCardNew from "./BrandCardNew";
 import { Brand } from "@/hooks/useHomeData";
 import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BrandsGridProps {
   brands: Brand[];

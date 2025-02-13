@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -128,7 +129,6 @@ const App = () => {
         retry: 3,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        suspense: true,
         networkMode: 'always',
         cacheTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
       },
