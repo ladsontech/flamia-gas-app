@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
-import { Flame, ArrowRight } from "lucide-react";
+import { Flame, ArrowRight, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -95,21 +96,36 @@ const Refill = () => {
           className="text-center mb-6 sm:mb-8"
         >
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Gas Refill Prices</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mb-4">
+          <p className="text-sm sm:text-base text-muted-foreground mb-2">
             Choose your preferred gas cylinder size
           </p>
+          
+          {/* Free Delivery Notice */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex items-center justify-center gap-2 text-accent font-medium mb-4"
+          >
+            <Truck className="w-4 h-4" />
+            <span>Free Delivery on All Orders!</span>
+          </motion.div>
 
           <div className="max-w-xs mx-auto mb-6">
             <Select
               value={selectedBrand}
               onValueChange={setSelectedBrand}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full bg-white/90 backdrop-blur-sm border-accent/20">
                 <SelectValue placeholder="Select brand" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white/95 backdrop-blur-md border-accent/20 shadow-lg max-h-[200px] overflow-y-auto">
                 {brands.map((brand) => (
-                  <SelectItem key={brand} value={brand}>
+                  <SelectItem 
+                    key={brand} 
+                    value={brand}
+                    className="hover:bg-accent/10"
+                  >
                     {brand}
                   </SelectItem>
                 ))}
