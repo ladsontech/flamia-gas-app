@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -12,7 +13,7 @@ interface BrandCardProps {
   refillPrice?: string;
 }
 
-const BrandCardNew = ({ name, brand, image, size, price, refillPrice }: BrandCardProps) => {
+const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
   const navigate = useNavigate();
 
   const handleOrder = () => {
@@ -53,15 +54,9 @@ const BrandCardNew = ({ name, brand, image, size, price, refillPrice }: BrandCar
         </p>
         <div className="space-y-1 mb-2">
           <div className="flex justify-between items-center">
-            <span className="text-xs sm:text-sm font-medium">New</span>
+            <span className="text-xs sm:text-sm font-medium">Price</span>
             <span className="text-xs sm:text-sm font-semibold text-accent">{price}</span>
           </div>
-          {refillPrice && (
-            <div className="flex justify-between items-center">
-              <span className="text-xs sm:text-sm font-medium">Refill</span>
-              <span className="text-xs sm:text-sm font-semibold text-green-600">{refillPrice}</span>
-            </div>
-          )}
         </div>
         <Button
           onClick={handleOrder}
