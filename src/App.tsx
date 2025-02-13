@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,7 @@ import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
+import { supabase } from "./integrations/supabase/client";
 
 const AppContent = () => {
   const location = useLocation();
@@ -125,11 +125,45 @@ const App = () => {
       queries: {
         staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 30, // 30 minutes
-        retry: 2,
-        refetchOnWindowFocus: false
+        retry: 3,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        suspense: true,
+        networkMode: 'always',
+        cacheTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
       },
     },
   }));
+
+  // Prefetch initial data
+  React.useEffect(() => {
+    const prefetchInitialData = async () => {
+      await Promise.all([
+        queryClient.prefetchQuery({
+          queryKey: ['hotDeals'],
+          queryFn: async () => {
+            const { data } = await supabase
+              .from('hot_deals')
+              .select('*')
+              .order('created_at', { ascending: false });
+            return data;
+          },
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ['brands'],
+          queryFn: async () => {
+            const { data } = await supabase
+              .from('brands')
+              .select('*')
+              .order('brand', { ascending: true });
+            return data;
+          },
+        }),
+      ]);
+    };
+
+    prefetchInitialData();
+  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

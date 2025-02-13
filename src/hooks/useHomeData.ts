@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface HotDeal {
   id: string;
@@ -25,82 +26,100 @@ export interface Brand {
   refill_price_12kg: string | null;
 }
 
+const fetchHotDeals = async () => {
+  const { data, error } = await supabase
+    .from('hot_deals')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as HotDeal[];
+};
+
+const fetchBrands = async () => {
+  const { data, error } = await supabase
+    .from('brands')
+    .select('*')
+    .order('brand', { ascending: true });
+
+  if (error) throw error;
+  return data as Brand[];
+};
+
 export const useHomeData = () => {
   const { toast } = useToast();
-  const [hotDeals, setHotDeals] = useState<HotDeal[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
+  // Query for hot deals
+  const { 
+    data: hotDeals = [], 
+    isLoading: hotDealsLoading 
+  } = useQuery({
+    queryKey: ['hotDeals'],
+    queryFn: fetchHotDeals,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    gcTime: 1000 * 60 * 30, // Keep unused data for 30 minutes
+    retry: 3,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
+  });
+
+  // Query for brands
+  const { 
+    data: brands = [], 
+    isLoading: brandsLoading 
+  } = useQuery({
+    queryKey: ['brands'],
+    queryFn: fetchBrands,
+    staleTime: 1000 * 60 * 10, // Consider data fresh for 10 minutes
+    gcTime: 1000 * 60 * 60, // Keep unused data for 1 hour
+    retry: 3,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
+  });
+
+  // Prefetch on hover
+  const prefetchBrand = async (brandId: string) => {
+    await queryClient.prefetchQuery({
+      queryKey: ['brand', brandId],
+      queryFn: () => fetchBrandDetails(brandId),
+      staleTime: 1000 * 60 * 5
+    });
+  };
+
+  // Prefetch related data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch hot deals
-        const { data: hotDealsData, error: hotDealsError } = await supabase
-          .from('hot_deals')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (hotDealsError) {
-          console.error('Error fetching hot deals:', hotDealsError);
-          toast({
-            title: "Error",
-            description: "Failed to load hot deals. Please try again.",
-            variant: "destructive",
-          });
-        } else if (hotDealsData) {
-          setHotDeals(hotDealsData);
-        }
+    // Prefetch orders data
+    queryClient.prefetchQuery({
+      queryKey: ['orders'],
+      queryFn: () => supabase.from('orders').select('*').order('created_at', { ascending: false }),
+      staleTime: 1000 * 60 * 2
+    });
 
-        // Fetch brands with retry logic
-        let retries = 3;
-        let brandsData = null;
-        let brandsError = null;
+    // Prefetch accessories data
+    queryClient.prefetchQuery({
+      queryKey: ['accessories'],
+      queryFn: () => supabase.from('accessories').select('*'),
+      staleTime: 1000 * 60 * 5
+    });
+  }, [queryClient]);
 
-        while (retries > 0 && !brandsData) {
-          const { data, error } = await supabase
-            .from('brands')
-            .select('*')
-            .order('brand', { ascending: true });
+  return { 
+    hotDeals, 
+    brands, 
+    loading: hotDealsLoading || brandsLoading,
+    prefetchBrand
+  };
+};
 
-          if (data) {
-            brandsData = data;
-            break;
-          }
+// Additional utility function for single brand details
+const fetchBrandDetails = async (brandId: string) => {
+  const { data, error } = await supabase
+    .from('brands')
+    .select('*')
+    .eq('id', brandId)
+    .single();
 
-          brandsError = error;
-          retries--;
-          if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        }
-
-        if (brandsError) {
-          console.error('Error fetching brands:', brandsError);
-          toast({
-            title: "Error",
-            description: "Failed to load brands. Please try again.",
-            variant: "destructive",
-          });
-        } else if (brandsData) {
-          setBrands(brandsData);
-        }
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [toast]);
-
-  return { hotDeals, brands, loading };
+  if (error) throw error;
+  return data;
 };
