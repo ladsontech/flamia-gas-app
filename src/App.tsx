@@ -11,7 +11,7 @@ import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
 
 const AppContent = () => {
@@ -58,57 +58,63 @@ const AppContent = () => {
         <link rel="canonical" href={window.location.href} />
       </Helmet>
 
-      <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={
-              <motion.div
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.2 }}
-              >
-                <Index />
-              </motion.div>
-            } />
-            <Route path="/order" element={
-              <motion.div
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.2 }}
-              >
-                <Order />
-              </motion.div>
-            } />
-            <Route path="/refill" element={
-              <motion.div
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.2 }}
-              >
-                <Refill />
-              </motion.div>
-            } />
-            <Route path="/accessories" element={
-              <motion.div
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.2 }}
-              >
-                <Accessories />
-              </motion.div>
-            } />
-          </Routes>
-        </AnimatePresence>
-      </div>
-      {showBottomNav && <BottomNav isAdmin={isAdmin} />}
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+        </div>
+      }>
+        <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Index />
+                </motion.div>
+              } />
+              <Route path="/order" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Order />
+                </motion.div>
+              } />
+              <Route path="/refill" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Refill />
+                </motion.div>
+              } />
+              <Route path="/accessories" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Accessories />
+                </motion.div>
+              } />
+            </Routes>
+          </AnimatePresence>
+        </div>
+        {showBottomNav && <BottomNav isAdmin={isAdmin} />}
+      </Suspense>
     </>
   );
 };
@@ -119,6 +125,8 @@ const App = () => {
       queries: {
         staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 30, // 30 minutes
+        retry: 2,
+        refetchOnWindowFocus: false
       },
     },
   }));
