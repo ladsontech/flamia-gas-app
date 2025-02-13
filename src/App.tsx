@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -125,12 +124,11 @@ const App = () => {
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 5, // 5 minutes
-        gcTime: 1000 * 60 * 30, // 30 minutes
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours (replacing cacheTime)
         retry: 3,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        networkMode: 'always',
-        cacheTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
+        networkMode: 'always'
       },
     },
   }));
