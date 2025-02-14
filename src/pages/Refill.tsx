@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,8 +85,8 @@ const Refill = () => {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-4 sm:py-6">
-      <div className="container px-2 sm:px-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary to-white flex flex-col">
+      <div className="container px-2 sm:px-4 py-4 sm:py-6 flex-grow">
         <BackButton />
         
         <motion.div
@@ -181,6 +180,7 @@ const Refill = () => {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

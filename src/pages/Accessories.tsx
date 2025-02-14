@@ -72,57 +72,55 @@ const Accessories = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="container mx-auto px-2 sm:px-4 py-4 sm:py-6"
-    >
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop</h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-        {accessories.map((accessory) => (
-          <motion.div
-            key={accessory.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full">
-              <CardHeader className="p-2 sm:p-3">
-                <div className="relative h-24 sm:h-28 md:h-32 mb-2 rounded-md overflow-hidden bg-gray-50">
-                  <img
-                    src={accessory.image_url || 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop'}
-                    alt={accessory.name}
-                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
-                    }}
-                  />
-                </div>
-                <CardTitle className="text-sm sm:text-base">{accessory.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-2 sm:p-3 pt-0">
-                <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
-                  {accessory.description}
-                </p>
-                <p className="text-accent font-bold text-sm sm:text-base mb-2">
-                  UGX {accessory.price.toLocaleString()}
-                </p>
-              </CardContent>
-              <CardFooter className="p-2 sm:p-3 pt-0">
-                <Button
-                  onClick={() => handleOrder(accessory.id)}
-                  className="w-full bg-accent hover:bg-accent/90 text-white text-xs sm:text-sm py-1 h-auto"
-                >
-                  Order Now
-                </Button>
-              </CardFooter>
-            </Card>
-          </motion.div>
-        ))}
+    <div className="min-h-screen flex flex-col">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex-grow">
+        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop</h1>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+          {accessories.map((accessory) => (
+            <motion.div
+              key={accessory.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full">
+                <CardHeader className="p-2 sm:p-3">
+                  <div className="relative h-24 sm:h-28 md:h-32 mb-2 rounded-md overflow-hidden bg-gray-50">
+                    <img
+                      src={accessory.image_url || 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop'}
+                      alt={accessory.name}
+                      className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
+                      }}
+                    />
+                  </div>
+                  <CardTitle className="text-sm sm:text-base">{accessory.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 sm:p-3 pt-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
+                    {accessory.description}
+                  </p>
+                  <p className="text-accent font-bold text-sm sm:text-base mb-2">
+                    UGX {accessory.price.toLocaleString()}
+                  </p>
+                </CardContent>
+                <CardFooter className="p-2 sm:p-3 pt-0">
+                  <Button
+                    onClick={() => handleOrder(accessory.id)}
+                    className="w-full bg-accent hover:bg-accent/90 text-white text-xs sm:text-sm py-1 h-auto"
+                  >
+                    Order Now
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </motion.div>
+      <Footer />
+    </div>
   );
 };
 

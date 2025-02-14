@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -9,13 +8,13 @@ import { BackButton } from "@/components/BackButton";
 import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
 import { Flame } from "lucide-react";
+import { Footer } from "@/components/Footer";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  // Get all parameters from URL
   const selectedBrand = searchParams.get("brand") || "";
   const orderType = searchParams.get("type") || "fullset";
   const size = searchParams.get("size") || "";
@@ -47,7 +46,6 @@ const Order = () => {
 *Address:* ${formData.address}%0A
 ------------------------`;
 
-      // Open WhatsApp with the pre-filled message
       window.open(`https://wa.me/+256789572007?text=${message}`, '_blank');
       
       toast({
@@ -66,8 +64,8 @@ const Order = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white py-12">
-      <div className="container max-w-md px-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary to-white">
+      <div className="container max-w-md px-4 py-12">
         <BackButton />
         
         <motion.div
@@ -109,6 +107,7 @@ const Order = () => {
           </Card>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };
