@@ -40,7 +40,6 @@ const BrandsGrid = ({ brands }: BrandsGridProps) => {
             image={brand.image_url_3kg || ''}
             size="3kg"
             price="Contact for Price"
-            refillPrice={brand.refill_price_3kg}
           />
         </div>
       );
@@ -57,7 +56,6 @@ const BrandsGrid = ({ brands }: BrandsGridProps) => {
             image={brand.image_url_6kg || ''}
             size="6kg"
             price={brand.price_6kg}
-            refillPrice={brand.refill_price_6kg}
           />
         </div>
       );
@@ -74,7 +72,6 @@ const BrandsGrid = ({ brands }: BrandsGridProps) => {
             image={brand.image_url_12kg || ''}
             size="12kg"
             price={brand.price_12kg}
-            refillPrice={brand.refill_price_12kg}
           />
         </div>
       );
