@@ -10,7 +10,6 @@ interface BrandCardProps {
   image: string;
   size: string;
   price: string;
-  refillPrice?: string;
 }
 
 const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
@@ -23,13 +22,32 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
   const getDescription = (size: string) => {
     switch (size) {
       case '3kg':
-        return 'Perfect for small households or portable use';
+        return `${brand} ${size} gas cylinder - Perfect for small households or portable use in Uganda`;
       case '6kg':
-        return 'Ideal for medium-sized families';
+        return `${brand} ${size} gas cylinder - Ideal for medium-sized families in Uganda`;
       case '12kg':
-        return 'Best value for large families or commercial use';
+        return `${brand} ${size} gas cylinder - Best value for large families or commercial use in Uganda`;
       default:
-        return 'High-quality gas cylinder';
+        return `${brand} high-quality gas cylinder available for delivery in Uganda`;
+    }
+  };
+
+  // Structured data for the product
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${brand} ${size} Gas Cylinder`,
+    "description": getDescription(size),
+    "brand": {
+      "@type": "Brand",
+      "name": brand
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": price.replace(/[^0-9]/g, ''),
+      "priceCurrency": "UGX",
+      "availability": "https://schema.org/InStock",
+      "areaServed": "Uganda"
     }
   };
 
@@ -40,11 +58,15 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
       transition={{ duration: 0.5 }}
     >
       <Card className="bg-white shadow-lg p-2 sm:p-3 hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
         <div className="relative h-24 sm:h-28 md:h-32 mb-2 rounded-md overflow-hidden">
           <img
             src={image}
-            alt={`${brand} ${size}`}
+            alt={`${brand} ${size} gas cylinder for sale and delivery in Uganda - ${getDescription(size)}`}
             className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
+            loading="lazy"
           />
         </div>
         <h3 className="text-sm sm:text-base font-semibold mb-1">{brand}</h3>
