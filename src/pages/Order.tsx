@@ -8,7 +8,7 @@ import { BackButton } from "@/components/BackButton";
 import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
 import { Flame } from "lucide-react";
-import { Footer } from "@/components/Footer";
+import Footer from "@/components/Footer";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
