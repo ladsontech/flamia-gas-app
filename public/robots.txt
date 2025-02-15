@@ -2,4 +2,16 @@
 User-agent: *
 Allow: /
 
+# Allow all bots to access everything
+Allow: /refill
+Allow: /accessories
+Allow: /order
+
+# Encourage crawling of important pages
+Allow: /sitemap.xml
+
+# Specify sitemap location
 Sitemap: https://flamia.store/sitemap.xml
+
+# Crawl-delay for better server performance
+Crawl-delay: 1
