@@ -25,8 +25,8 @@ const AdSection = () => {
         <ins
           className="adsbygoogle"
           style={{ display: 'block' }}
-          data-ad-client="YOUR-AD-CLIENT-ID" // Replace with your actual AdSense client ID
-          data-ad-slot="YOUR-AD-SLOT-ID" // Replace with your actual ad slot ID
+          data-ad-client="ca-pub-9672218168779497"
+          data-ad-slot="YOUR-AD-SLOT-ID" // You'll need to replace this with your actual ad slot ID
           data-ad-format="auto"
           data-full-width-responsive="true"
         />
