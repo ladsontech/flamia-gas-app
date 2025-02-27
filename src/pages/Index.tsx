@@ -8,6 +8,7 @@ import HotDealsSection from "@/components/home/HotDealsSection";
 import PlaceScreen from "@/components/PlaceScreen";
 import Footer from "@/components/Footer";
 import { useHomeData } from "@/hooks/useHomeData";
+import AdSection from "@/components/ads/AdSection";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -46,6 +47,7 @@ const Index = () => {
         <BrandsGrid brands={brands} />
         <HotDealsSection hotDeals={hotDeals} />
       </div>
+      <AdSection />
       <Footer />
     </div>
   );
