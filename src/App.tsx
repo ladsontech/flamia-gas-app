@@ -15,6 +15,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "./integrations/supabase/client";
 import { Info } from "lucide-react";
+import InstallPWA from "./components/InstallPWA";
 import {
   Tooltip,
   TooltipContent,
@@ -65,7 +66,8 @@ const AppContent = () => {
         <link rel="canonical" href={window.location.href} />
       </Helmet>
 
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 flex gap-2">
+        <InstallPWA />
         <Tooltip>
           <TooltipTrigger asChild>
             <button className="p-2 rounded-full bg-accent/10 hover:bg-accent/20 transition-colors">
