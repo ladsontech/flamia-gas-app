@@ -11,25 +11,25 @@
   "categories": ["shopping", "utilities", "business"],
   "icons": [
     {
-      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
+      "src": "/lovable-uploads/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
+      "src": "/lovable-uploads/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
+      "src": "/lovable-uploads/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
+      "src": "/lovable-uploads/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -48,12 +48,12 @@
     {
       "name": "Order Gas",
       "url": "/order",
-      "icons": [{ "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/lovable-uploads/icon.png", "sizes": "96x96" }]
     },
     {
       "name": "Gas Refill",
       "url": "/refill",
-      "icons": [{ "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/lovable-uploads/icon.png", "sizes": "96x96" }]
     }
   ],
   "related_applications": [],
