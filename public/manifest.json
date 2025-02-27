@@ -11,16 +11,28 @@
   "categories": ["shopping", "utilities", "business"],
   "icons": [
     {
-      "src": "/icons/manifest-icon-192.maskable.png",
+      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icons/manifest-icon-512.maskable.png",
+      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
@@ -36,12 +48,12 @@
     {
       "name": "Order Gas",
       "url": "/order",
-      "icons": [{ "src": "/icons/order-gas.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png", "sizes": "96x96" }]
     },
     {
       "name": "Gas Refill",
       "url": "/refill",
-      "icons": [{ "src": "/icons/refill.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png", "sizes": "96x96" }]
     }
   ],
   "related_applications": [],
@@ -51,5 +63,19 @@
       "protocol": "web+gas",
       "url": "/order?type=%s"
     }
-  ]
+  ],
+  "capture_links": "existing-client-navigate",
+  "scope": "/",
+  "id": "flamia-gas-delivery-pwa",
+  "lang": "en",
+  "dir": "ltr",
+  "iarc_rating_id": "",
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"]
 }
