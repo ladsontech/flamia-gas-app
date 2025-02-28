@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface HotDealProps {
   id: string;
@@ -14,6 +15,11 @@ interface HotDealProps {
 }
 
 const HotDealCard = ({ title, description, imageUrl, price, onOrder }: HotDealProps) => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
+  const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -21,17 +27,24 @@ const HotDealCard = ({ title, description, imageUrl, price, onOrder }: HotDealPr
       transition={{ duration: 0.5 }}
     >
       <Card className="bg-white shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-        <div className="relative w-full aspect-square">
+        <div className="relative w-full pt-[100%]"> {/* Force 1:1 aspect ratio */}
+          {!isImageLoaded && !imageError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+            </div>
+          )}
           <img
-            src={imageUrl || 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop'}
+            src={imageError ? fallbackImage : (imageUrl || fallbackImage)}
             alt={title}
-            className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
+            className={`absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setIsImageLoaded(true)}
+            onError={() => {
+              setImageError(true);
+              setIsImageLoaded(true);
             }}
+            loading="lazy"
           />
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-2 right-2 z-10">
             <Badge variant="destructive" className="animate-pulse text-[10px] sm:text-xs px-1 py-0">
               Hot Deal!
             </Badge>

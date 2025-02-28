@@ -1,131 +1,178 @@
 
-const CACHE_NAME = 'flamia-gas-v1';
-const urlsToCache = [
+// Cache names
+const CACHE_NAME = 'flamia-cache-v2'; // Incrementing version to force cache refresh
+const STATIC_CACHE = `${CACHE_NAME}-static`;
+const DYNAMIC_CACHE = `${CACHE_NAME}-dynamic`;
+const OFFLINE_PAGE = '/offline.html';
+
+// Resources to cache immediately on install
+const STATIC_RESOURCES = [
   '/',
+  OFFLINE_PAGE,
   '/index.html',
   '/manifest.json',
-  '/lovable-uploads/icon.png',
-  '/src/main.tsx',
-  '/src/App.css',
-  '/offline.html'
+  '/favicon.ico',
+  '/lovable-uploads/icon.png'
 ];
 
-// Install a service worker
+// Install event - cache static resources
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+    Promise.all([
+      caches.open(STATIC_CACHE)
+        .then(cache => cache.addAll(STATIC_RESOURCES))
+        .then(() => self.skipWaiting()) // Force new service worker to become active
+    ])
+  );
+  console.log('Service Worker installed - cache version v2');
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(cacheName => {
+            return cacheName.startsWith('flamia-cache-') && cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE;
+          }).map(cacheName => {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+      })
+      .then(() => {
+        console.log('Service Worker activated and old caches removed');
+        return self.clients.claim(); // Take control of all clients
       })
   );
 });
 
-// Cache and return requests
+// Fetch event - serve from cache or network
 self.addEventListener('fetch', event => {
+  // Skip non-GET requests and browser extensions
+  if (event.request.method !== 'GET' || event.request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+
+  // For API requests (Supabase), use network first, fall back to cache
+  if (event.request.url.includes('supabase.co')) {
+    return networkFirstStrategy(event);
+  }
+
+  // For all other requests, try cache first, fall back to network
   event.respondWith(
     caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
+      .then(cachedResponse => {
+        if (cachedResponse) {
+          // We found a match in cache, return it immediately
+          return cachedResponse;
         }
+
+        // No cache match, fetch from network
         return fetch(event.request)
-          .then(response => {
+          .then(networkResponse => {
             // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
             }
 
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
+            // Clone the response - one to return, one to cache
+            const responseToCache = networkResponse.clone();
+            
+            // Store in dynamic cache
+            caches.open(DYNAMIC_CACHE)
               .then(cache => {
-                // Don't cache API requests or similar dynamic content
-                if (!event.request.url.includes('/api/')) {
-                  cache.put(event.request, responseToCache);
-                }
+                cache.put(event.request, responseToCache);
               });
 
-            return response;
+            return networkResponse;
           })
-          .catch(() => {
-            // If the network request fails, try to serve the offline page
+          .catch(error => {
+            console.log('Fetch failed, serving offline page', error);
+            
+            // Check if this is a navigation request
             if (event.request.mode === 'navigate') {
-              return caches.match('/offline.html');
+              return caches.match(OFFLINE_PAGE);
             }
+            
+            // For image requests, you could return a placeholder
+            if (event.request.destination === 'image') {
+              return new Response('', { 
+                status: 200, 
+                statusText: 'OK' 
+              });
+            }
+            
+            // Return empty response for other asset types
+            return new Response('', { 
+              status: 408, 
+              statusText: 'Request timed out' 
+            });
           });
       })
   );
 });
 
-// Update a service worker
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
+// Network-first strategy for API calls
+function networkFirstStrategy(event) {
+  return event.respondWith(
+    fetch(event.request)
+      .then(networkResponse => {
+        // Clone the response to cache it and return it
+        const clonedResponse = networkResponse.clone();
+        
+        caches.open(DYNAMIC_CACHE)
+          .then(cache => {
+            cache.put(event.request, clonedResponse);
+          });
+          
+        return networkResponse;
+      })
+      .catch(error => {
+        console.log('Network request failed, trying cache', error);
+        
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            return cachedResponse || Promise.reject('No network or cache response available');
+          });
+      })
+  );
+}
+
+// Background sync for offline operations
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-refill-prices') {
+    console.log('Syncing refill prices data...');
+    // The actual sync logic will be handled by the application
+    // when it detects it's back online
+  }
+});
+
+// Push notification handling
+self.addEventListener('push', event => {
+  const data = event.data.json();
+  
+  const options = {
+    body: data.body || 'New update from Flamia Gas',
+    icon: '/lovable-uploads/icon.png',
+    badge: '/lovable-uploads/icon.png',
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || '/'
+    }
+  };
+  
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    self.registration.showNotification(data.title || 'Flamia Gas Notification', options)
   );
 });
 
-// Background Sync for refill prices
-self.addEventListener('sync', event => {
-  console.log('Background sync event fired:', event.tag);
+// Notification click handler
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
   
-  if (event.tag === 'sync-refill-prices') {
-    console.log('Attempting to sync refill prices');
-    event.waitUntil(syncRefillPrices());
-  }
-});
-
-// Function to handle refill prices sync
-async function syncRefillPrices() {
-  console.log('Syncing refill prices in background');
-  
-  try {
-    // Fetch the latest prices
-    const response = await fetch('/api/refill-prices');
-    
-    if (!response.ok) {
-      throw new Error('Failed to sync refill prices');
-    }
-    
-    const data = await response.json();
-    console.log('Successfully synced refill prices:', data);
-    
-    // Notify the user if supported
-    if (self.registration.showNotification) {
-      await self.registration.showNotification('Flamia Gas', {
-        body: 'Refill prices have been updated',
-        icon: '/lovable-uploads/icon.png',
-        badge: '/lovable-uploads/icon.png'
-      });
-    }
-    
-    return data;
-  } catch (error) {
-    console.error('Error syncing refill prices:', error);
-    return Promise.reject(error);
-  }
-}
-
-// Handle offline fallback
-self.addEventListener('fetch', event => {
-  // Skip cross-origin requests
-  if (event.request.mode === 'navigate' && event.request.method === 'GET' && navigator.onLine === false) {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          return caches.match('/offline.html');
-        })
-    );
-  }
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url || '/')
+  );
 });

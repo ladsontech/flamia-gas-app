@@ -20,6 +20,7 @@ const AppContent = () => {
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
+  const [hasPwaUpdate, setHasPwaUpdate] = useState(false);
 
   // Hide bottom nav when place screen is showing
   const showBottomNav = !showPlaceScreen;
@@ -31,6 +32,22 @@ const AppContent = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Check for service worker updates
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      // When the service worker controllerchange event fires, we know the new service worker has taken control
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('New service worker activated');
+        setHasPwaUpdate(true);
+      });
+    }
+  }, []);
+
+  // Function to reload app when new version is available
+  const handleAppUpdate = () => {
+    window.location.reload();
+  };
 
   const pageVariants = {
     initial: {
@@ -58,11 +75,28 @@ const AppContent = () => {
         <meta property="og:type" content="website" />
         <meta name="theme-color" content="#FF4D00" />
         <link rel="canonical" href={window.location.href} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
 
       <div className="fixed top-4 right-4 z-50 flex gap-2">
         <InstallPWA />
       </div>
+
+      {hasPwaUpdate && (
+        <div className="fixed bottom-20 left-0 right-0 mx-auto w-max z-50">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-accent text-white px-4 py-3 rounded-full shadow-lg flex items-center gap-2"
+            onClick={handleAppUpdate}
+          >
+            <span>New version available!</span>
+            <button className="bg-white text-accent text-xs px-2 py-1 rounded-full font-medium">
+              Update now
+            </button>
+          </motion.div>
+        </div>
+      )}
 
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center">

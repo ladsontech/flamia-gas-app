@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 interface BrandCardProps {
   name: string;
@@ -14,6 +15,10 @@ interface BrandCardProps {
 
 const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
   const navigate = useNavigate();
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
 
   const handleOrder = () => {
     navigate(`/order?brand=${brand}&name=${name}&size=${size}&price=${price}`);
@@ -61,12 +66,22 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
-        <div className="relative w-full aspect-square rounded-md overflow-hidden bg-gray-50 mb-2">
+        <div className="relative w-full pt-[100%] rounded-md overflow-hidden bg-gray-50 mb-2">
+          {!isImageLoaded && !imageError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+            </div>
+          )}
           <img
-            src={image}
+            src={imageError ? fallbackImage : image}
             alt={`${brand} ${size} gas cylinder for sale and delivery in Uganda - ${getDescription(size)}`}
-            className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            className={`absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy"
+            onLoad={() => setIsImageLoaded(true)}
+            onError={() => {
+              setImageError(true);
+              setIsImageLoaded(true);
+            }}
           />
         </div>
         <h3 className="text-sm sm:text-base font-semibold mb-1">{brand}</h3>
