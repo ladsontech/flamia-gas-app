@@ -14,13 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "./integrations/supabase/client";
-import { Info } from "lucide-react";
 import InstallPWA from "./components/InstallPWA";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 const AppContent = () => {
   const location = useLocation();
@@ -68,16 +62,6 @@ const AppContent = () => {
 
       <div className="fixed top-4 right-4 z-50 flex gap-2">
         <InstallPWA />
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button className="p-2 rounded-full bg-accent/10 hover:bg-accent/20 transition-colors">
-              <Info className="w-5 h-5 text-accent" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>For the best experience, install our app to your device</p>
-          </TooltipContent>
-        </Tooltip>
       </div>
 
       <Suspense fallback={
