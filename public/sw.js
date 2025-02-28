@@ -4,7 +4,7 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/lovable-uploads/0b980e80-6b42-40e0-a5e7-95c44283e9bf.png',
+  '/lovable-uploads/icon.png',
   '/src/main.tsx',
   '/src/App.css',
   '/offline.html'
@@ -75,6 +75,47 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
+// Background Sync for refill prices
+self.addEventListener('sync', event => {
+  console.log('Background sync event fired:', event.tag);
+  
+  if (event.tag === 'sync-refill-prices') {
+    console.log('Attempting to sync refill prices');
+    event.waitUntil(syncRefillPrices());
+  }
+});
+
+// Function to handle refill prices sync
+async function syncRefillPrices() {
+  console.log('Syncing refill prices in background');
+  
+  try {
+    // Fetch the latest prices
+    const response = await fetch('/api/refill-prices');
+    
+    if (!response.ok) {
+      throw new Error('Failed to sync refill prices');
+    }
+    
+    const data = await response.json();
+    console.log('Successfully synced refill prices:', data);
+    
+    // Notify the user if supported
+    if (self.registration.showNotification) {
+      await self.registration.showNotification('Flamia Gas', {
+        body: 'Refill prices have been updated',
+        icon: '/lovable-uploads/icon.png',
+        badge: '/lovable-uploads/icon.png'
+      });
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error syncing refill prices:', error);
+    return Promise.reject(error);
+  }
+}
 
 // Handle offline fallback
 self.addEventListener('fetch', event => {

@@ -25,6 +25,15 @@ interface RefillPrice {
   price: number;
 }
 
+// Type declaration for the sync property that TypeScript doesn't recognize
+interface SyncManager {
+  register(tag: string): Promise<void>;
+}
+
+interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
+  sync?: SyncManager;
+}
+
 const Refill = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -83,15 +92,19 @@ const Refill = () => {
   useEffect(() => {
     // Register a background sync for when the user is offline and comes back online
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
-      navigator.serviceWorker.ready.then((registration) => {
-        // Register a background sync
-        registration.sync.register('sync-refill-prices')
-          .then(() => {
-            console.log('Background sync registered for refill prices');
-          })
-          .catch((err) => {
-            console.error('Background sync registration failed:', err);
-          });
+      navigator.serviceWorker.ready.then((registration: ExtendedServiceWorkerRegistration) => {
+        // Only register background sync if the feature is available
+        if (registration.sync) {
+          registration.sync.register('sync-refill-prices')
+            .then(() => {
+              console.log('Background sync registered for refill prices');
+            })
+            .catch((err) => {
+              console.error('Background sync registration failed:', err);
+            });
+        } else {
+          console.log('Background sync not supported by this browser');
+        }
       });
     }
     
