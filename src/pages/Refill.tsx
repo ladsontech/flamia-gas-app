@@ -297,6 +297,7 @@ const Refill = () => {
           </AnimatePresence>
         )}
       </div>
+      <div className="mt-20"></div> {/* Add extra spacing before footer */}
       <Footer />
     </div>
   );

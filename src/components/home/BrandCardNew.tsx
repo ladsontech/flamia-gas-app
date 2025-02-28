@@ -57,15 +57,15 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="bg-white shadow-lg p-2 sm:p-3 hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
+      <Card className="bg-white shadow-lg p-2 sm:p-3 hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
-        <div className="relative h-24 sm:h-28 md:h-32 mb-2 rounded-md overflow-hidden">
+        <div className="relative w-full pb-[100%] rounded-md overflow-hidden bg-gray-50 mb-2">
           <img
             src={image}
             alt={`${brand} ${size} gas cylinder for sale and delivery in Uganda - ${getDescription(size)}`}
-            className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
+            className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
         </div>
@@ -82,7 +82,7 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
         </div>
         <Button
           onClick={handleOrder}
-          className="w-full bg-accent text-white hover:bg-accent/90 text-xs py-1 h-auto"
+          className="w-full bg-accent text-white hover:bg-accent/90 text-xs py-1 h-auto mt-auto"
         >
           Order Now
         </Button>
