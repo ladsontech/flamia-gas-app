@@ -28,6 +28,7 @@ const InstallPWA = () => {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault(); // Prevent automatic prompt
       setInstallPrompt(event as BeforeInstallPromptEvent); // Save the event for later use
+      console.log('Install prompt captured and ready');
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -36,7 +37,7 @@ const InstallPWA = () => {
     window.addEventListener('appinstalled', () => {
       setIsInstalled(true);
       setInstallPrompt(null);
-      console.log('PWA was installed');
+      console.log('PWA was installed successfully');
     });
 
     return () => {
@@ -63,11 +64,11 @@ const InstallPWA = () => {
 
   return (
     <Button 
-      className="flex items-center gap-2 bg-accent hover:bg-accent/90" 
+      className="flex items-center gap-2 bg-accent hover:bg-accent/90 transition-all shadow-md" 
       onClick={handleInstallClick}
     >
       <Download className="h-4 w-4" />
-      Download App
+      Install App
     </Button>
   );
 };
