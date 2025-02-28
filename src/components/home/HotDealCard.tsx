@@ -21,7 +21,7 @@ const HotDealCard = ({ title, description, imageUrl, price, onOrder }: HotDealPr
       transition={{ duration: 0.5 }}
     >
       <Card className="bg-white shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-        <div className="relative w-full pb-[100%]">
+        <div className="relative w-full aspect-square">
           <img
             src={imageUrl || 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop'}
             alt={title}

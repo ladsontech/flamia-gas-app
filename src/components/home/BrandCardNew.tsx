@@ -61,7 +61,7 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
-        <div className="relative w-full pb-[100%] rounded-md overflow-hidden bg-gray-50 mb-2">
+        <div className="relative w-full aspect-square rounded-md overflow-hidden bg-gray-50 mb-2">
           <img
             src={image}
             alt={`${brand} ${size} gas cylinder for sale and delivery in Uganda - ${getDescription(size)}`}
