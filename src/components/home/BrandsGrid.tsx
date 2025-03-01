@@ -33,7 +33,6 @@ const staticBrands = [
     refill_price_3kg: "UGX 28,000",
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
-    description_3kg: "Best price for Total 3KG gas cylinder with free delivery in Kampala",
     description_6kg: "Affordable Total 6KG gas cylinder with same-day delivery in Uganda",
     description_12kg: "Total 12KG LPG gas cylinder - perfect for large families in Uganda"
   },
