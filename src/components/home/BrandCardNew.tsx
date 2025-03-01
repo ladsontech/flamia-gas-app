@@ -66,7 +66,7 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
-        <div className="relative w-full pt-[100%] rounded-md overflow-hidden bg-gray-50 mb-2">
+        <div className="relative w-full aspect-square rounded-md overflow-hidden bg-gray-50 mb-2">
           {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
               <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>

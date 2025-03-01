@@ -1,8 +1,5 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 export interface HotDeal {
   id: string;
@@ -26,100 +23,89 @@ export interface Brand {
   refill_price_12kg: string | null;
 }
 
-const fetchHotDeals = async () => {
-  const { data, error } = await supabase
-    .from('hot_deals')
-    .select('*')
-    .order('created_at', { ascending: false });
+// Static hot deals data
+const staticHotDeals: HotDeal[] = [
+  {
+    id: "1",
+    title: "Weekend Special - Total Gas 6KG",
+    description: "Get a brand new Total Gas 6KG cylinder at a discounted price. Limited time offer!",
+    image_url: "https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&w=3000&auto=format&fit=crop",
+    price: "UGX 110,000"
+  },
+  {
+    id: "2",
+    title: "Shell Gas 12KG Bundle",
+    description: "12KG Shell Gas cylinder with free delivery and installation. Comes with a regulator.",
+    image_url: "https://images.unsplash.com/photo-1611587644068-17ccb3e2ac40?q=80&w=2942&auto=format&fit=crop",
+    price: "UGX 175,000"
+  },
+  {
+    id: "3",
+    title: "Oryx Gas Refill Deal",
+    description: "Get your Oryx 6KG cylinder refilled at a special price this week only.",
+    image_url: "https://images.unsplash.com/photo-1599909631178-f1d3e0166f5b?q=80&w=2940&auto=format&fit=crop",
+    price: "UGX 40,000"
+  }
+];
 
-  if (error) throw error;
-  return data as HotDeal[];
-};
-
-const fetchBrands = async () => {
-  const { data, error } = await supabase
-    .from('brands')
-    .select('*')
-    .order('brand', { ascending: true });
-
-  if (error) throw error;
-  return data as Brand[];
-};
+// Static brands data
+const staticBrands: Brand[] = [
+  {
+    id: "1",
+    name: "Total Gas",
+    brand: "Total",
+    image_url_3kg: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop",
+    image_url_6kg: "https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&w=3000&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?q=80&w=2942&auto=format&fit=crop",
+    price_6kg: "UGX 120,000",
+    price_12kg: "UGX 180,000",
+    refill_price_3kg: "UGX 30,000",
+    refill_price_6kg: null,
+    refill_price_12kg: null
+  },
+  {
+    id: "2",
+    name: "Shell Gas",
+    brand: "Shell",
+    image_url_3kg: null,
+    image_url_6kg: "https://images.unsplash.com/photo-1585666876200-20c138ae56aa?q=80&w=3087&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1611587644068-17ccb3e2ac40?q=80&w=2942&auto=format&fit=crop",
+    price_6kg: "UGX 130,000",
+    price_12kg: "UGX 190,000",
+    refill_price_3kg: null,
+    refill_price_6kg: null,
+    refill_price_12kg: null
+  },
+  {
+    id: "3",
+    name: "Oryx Gas",
+    brand: "Oryx",
+    image_url_3kg: "https://images.unsplash.com/photo-1595398062834-5b4e948ce181?q=80&w=2080&auto=format&fit=crop",
+    image_url_6kg: "https://images.unsplash.com/photo-1599909631178-f1d3e0166f5b?q=80&w=2940&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1598128558393-70ff21433be0?q=80&w=2789&auto=format&fit=crop",
+    price_6kg: "UGX 125,000",
+    price_12kg: "UGX 185,000",
+    refill_price_3kg: "UGX 28,000",
+    refill_price_6kg: null,
+    refill_price_12kg: null
+  }
+];
 
 export const useHomeData = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [hotDeals] = useState<HotDeal[]>(staticHotDeals);
+  const [brands] = useState<Brand[]>(staticBrands);
+  const [loading] = useState(false);
 
-  // Query for hot deals
-  const { 
-    data: hotDeals = [], 
-    isLoading: hotDealsLoading 
-  } = useQuery({
-    queryKey: ['hotDeals'],
-    queryFn: fetchHotDeals,
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep unused data for 30 minutes
-    retry: 3,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
-  });
-
-  // Query for brands
-  const { 
-    data: brands = [], 
-    isLoading: brandsLoading 
-  } = useQuery({
-    queryKey: ['brands'],
-    queryFn: fetchBrands,
-    staleTime: 1000 * 60 * 10, // Consider data fresh for 10 minutes
-    gcTime: 1000 * 60 * 60, // Keep unused data for 1 hour
-    retry: 3,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
-  });
-
-  // Prefetch on hover
+  // Simulate prefetching data
   const prefetchBrand = async (brandId: string) => {
-    await queryClient.prefetchQuery({
-      queryKey: ['brand', brandId],
-      queryFn: () => fetchBrandDetails(brandId),
-      staleTime: 1000 * 60 * 5
-    });
+    console.log(`Prefetching brand data for ID: ${brandId}`);
+    // This is now just a placeholder function since data is static
   };
-
-  // Prefetch related data
-  useEffect(() => {
-    // Prefetch orders data
-    queryClient.prefetchQuery({
-      queryKey: ['orders'],
-      queryFn: () => supabase.from('orders').select('*').order('created_at', { ascending: false }),
-      staleTime: 1000 * 60 * 2
-    });
-
-    // Prefetch accessories data
-    queryClient.prefetchQuery({
-      queryKey: ['accessories'],
-      queryFn: () => supabase.from('accessories').select('*'),
-      staleTime: 1000 * 60 * 5
-    });
-  }, [queryClient]);
 
   return { 
     hotDeals, 
     brands, 
-    loading: hotDealsLoading || brandsLoading,
+    loading,
     prefetchBrand
   };
-};
-
-// Additional utility function for single brand details
-const fetchBrandDetails = async (brandId: string) => {
-  const { data, error } = await supabase
-    .from('brands')
-    .select('*')
-    .eq('id', brandId)
-    .single();
-
-  if (error) throw error;
-  return data;
 };

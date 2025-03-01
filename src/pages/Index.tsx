@@ -1,35 +1,15 @@
 
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import React from "react";
 import HomeHeader from "@/components/home/Header";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import HotDealsSection from "@/components/home/HotDealsSection";
-import PlaceScreen from "@/components/PlaceScreen";
 import Footer from "@/components/Footer";
 import { useHomeData } from "@/hooks/useHomeData";
 import AdSection from "@/components/ads/AdSection";
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { hotDeals, brands, loading } = useHomeData();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsLoggedIn(!!session);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   if (loading) {
     return (

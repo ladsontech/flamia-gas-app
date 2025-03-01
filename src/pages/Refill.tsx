@@ -1,12 +1,11 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
-import { Flame, ArrowRight, Truck, Loader2, RefreshCw } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Flame, ArrowRight, Truck } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/Footer";
 import {
@@ -16,110 +15,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
 
-interface RefillPrice {
-  id: string;
-  brand: string;
-  weight: string;
-  price: number;
-}
+// Static refill price data
+const staticBrands = ["Total", "Shell", "Oryx", "Stabex", "Hass", "Vivo Energy"];
 
-// Type declaration for the sync property that TypeScript doesn't recognize
-interface SyncManager {
-  register(tag: string): Promise<void>;
-}
-
-interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
-  sync?: SyncManager;
-}
+const staticRefillPrices = [
+  { id: "1", brand: "Total", weight: "3KG", price: 30000 },
+  { id: "2", brand: "Total", weight: "6KG", price: 45000 },
+  { id: "3", brand: "Total", weight: "12KG", price: 85000 },
+  { id: "4", brand: "Shell", weight: "3KG", price: 32000 },
+  { id: "5", brand: "Shell", weight: "6KG", price: 48000 },
+  { id: "6", brand: "Shell", weight: "12KG", price: 90000 },
+  { id: "7", brand: "Oryx", weight: "3KG", price: 28000 },
+  { id: "8", brand: "Oryx", weight: "6KG", price: 42000 },
+  { id: "9", brand: "Oryx", weight: "12KG", price: 80000 },
+  { id: "10", brand: "Stabex", weight: "6KG", price: 40000 },
+  { id: "11", brand: "Stabex", weight: "12KG", price: 78000 },
+  { id: "12", brand: "Hass", weight: "6KG", price: 39000 },
+  { id: "13", brand: "Vivo Energy", weight: "6KG", price: 47000 },
+  { id: "14", brand: "Vivo Energy", weight: "12KG", price: 88000 },
+];
 
 const Refill = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
-  const [brands, setBrands] = useState<string[]>([]);
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  // Use React Query for data fetching and caching
-  const { 
-    data: refillPrices = [], 
-    isLoading, 
-    isError, 
-    refetch,
-    error 
-  } = useQuery({
-    queryKey: ['refillPrices'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('refill_prices')
-        .select('*')
-        .order('brand', { ascending: true });
-      
-      if (error) throw error;
-      
-      // Extract unique brands
-      const uniqueBrands = [...new Set(data?.map(item => item.brand) || [])];
-      setBrands(uniqueBrands);
-      
-      return data as RefillPrice[];
-    },
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep unused data for 30 minutes
-  });
-
-  // Function to manually trigger a background sync
-  const syncData = useCallback(async () => {
-    try {
-      setIsSyncing(true);
-      await refetch();
-      toast({
-        title: "Data synchronized",
-        description: "Refill prices have been updated",
-      });
-    } catch (err) {
-      console.error('Error syncing data:', err);
-      toast({
-        title: "Sync failed",
-        description: "Could not update refill prices. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSyncing(false);
-    }
-  }, [refetch, toast]);
-
-  useEffect(() => {
-    // Register a background sync for when the user is offline and comes back online
-    if ('serviceWorker' in navigator && 'SyncManager' in window) {
-      navigator.serviceWorker.ready.then((registration: ExtendedServiceWorkerRegistration) => {
-        // Only register background sync if the feature is available
-        if (registration.sync) {
-          registration.sync.register('sync-refill-prices')
-            .then(() => {
-              console.log('Background sync registered for refill prices');
-            })
-            .catch((err) => {
-              console.error('Background sync registration failed:', err);
-            });
-        } else {
-          console.log('Background sync not supported by this browser');
-        }
-      });
-    }
-    
-    // Setup online/offline event listeners
-    const handleOnline = () => {
-      console.log('Device is online, syncing data...');
-      syncData();
-    };
-    
-    window.addEventListener('online', handleOnline);
-    
-    return () => {
-      window.removeEventListener('online', handleOnline);
-    };
-  }, [syncData]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOrder = (weight: string, price: number) => {
     if (!selectedBrand) {
@@ -135,45 +56,14 @@ const Refill = () => {
 
   // Filter prices based on selected brand
   const filteredPrices = selectedBrand
-    ? refillPrices.filter(price => price.brand === selectedBrand)
+    ? staticRefillPrices.filter(price => price.brand === selectedBrand)
     : [];
-
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-primary to-white py-4 sm:py-6 flex flex-col items-center justify-center">
-        <div className="text-destructive text-center mb-4">
-          <p className="text-lg font-semibold">Error loading refill prices</p>
-          <p className="text-sm text-muted-foreground">{(error as Error)?.message || "Please try again later"}</p>
-        </div>
-        <Button onClick={() => refetch()} variant="outline" className="flex items-center gap-2">
-          <RefreshCw className="h-4 w-4" />
-          Try Again
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-white flex flex-col">
       <div className="container px-2 sm:px-4 py-4 sm:py-6 flex-grow">
         <div className="flex justify-between items-center">
           <BackButton />
-          
-          {/* Sync button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={syncData} 
-            disabled={isLoading || isSyncing}
-            className="relative"
-          >
-            {isSyncing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4" />
-            )}
-            <span className="ml-1 sr-only sm:not-sr-only">Refresh</span>
-          </Button>
         </div>
         
         <motion.div
@@ -213,7 +103,7 @@ const Refill = () => {
                   minHeight: '300px'
                 }}
               >
-                {brands.map((brand) => (
+                {staticBrands.map((brand) => (
                   <SelectItem 
                     key={brand} 
                     value={brand}
@@ -230,7 +120,7 @@ const Refill = () => {
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <div className="flex flex-col items-center">
-              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+              <div className="w-8 h-8 animate-spin text-accent border-2 border-accent border-t-transparent rounded-full"></div>
               <p className="mt-4 text-sm text-muted-foreground">Loading refill prices...</p>
             </div>
           </div>
