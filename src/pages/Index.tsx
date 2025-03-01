@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -8,13 +7,10 @@ import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
-
 const Index = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Flamia - Best Gas Delivery & Refill Service in Uganda | Free Delivery</title>
         <meta name="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders. Same-day LPG delivery." />
@@ -28,7 +24,7 @@ const Index = () => {
           {/* Main Content */}
           <section className="space-y-8">
             <div className="text-center space-y-2 max-w-2xl mx-auto">
-              <h2 className="text-xl sm:text-3xl font-bold">Gas Cylinders - Free Delivery in Uganda</h2>
+              
               <p className="text-sm sm:text-base text-muted-foreground">
                 Choose from a variety of gas cylinder brands and sizes. All orders include free delivery in Kampala, Wakiso, and Mukono.
               </p>
@@ -36,13 +32,9 @@ const Index = () => {
 
             {/* Brands Grid */}
             <div className="px-1">
-              {isLoading ? (
-                <div className="flex justify-center py-20">
+              {isLoading ? <div className="flex justify-center py-20">
                   <div className="animate-spin h-8 w-8 border-4 border-accent rounded-full border-t-transparent"></div>
-                </div>
-              ) : (
-                <BrandsGrid brands={[]} />
-              )}
+                </div> : <BrandsGrid brands={[]} />}
             </div>
 
             {/* CTA Section */}
@@ -52,14 +44,10 @@ const Index = () => {
                 <p className="mb-6 text-sm sm:text-base">
                   Contact our gas experts for personalized recommendations based on your household needs.
                 </p>
-                <Button
-                  size="lg"
-                  className="bg-accent hover:bg-accent/90 text-white"
-                  onClick={() => {
-                    // Open WhatsApp
-                    window.open('https://wa.me/256789572007', '_blank');
-                  }}
-                >
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-white" onClick={() => {
+                // Open WhatsApp
+                window.open('https://wa.me/256789572007', '_blank');
+              }}>
                   Chat with Gas Expert
                 </Button>
               </div>
@@ -68,8 +56,6 @@ const Index = () => {
         </div>
       </div>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
