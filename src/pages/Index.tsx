@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
+import ImageCarousel from "@/components/home/ImageCarousel";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
@@ -22,6 +23,9 @@ const Index = () => {
       <AppBar />
 
       <div className="container px-4 py-6 flex-grow">
+        {/* New Image Carousel Component */}
+        <ImageCarousel />
+        
         <div className="flex flex-col gap-12">
           <HeaderSection />
 

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,7 +77,6 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
             <SelectValue placeholder="Select weight" />
           </SelectTrigger>
           <SelectContent className="bg-white border shadow-lg">
-            <SelectItem value="3KG">3KG</SelectItem>
             <SelectItem value="6KG">6KG</SelectItem>
             <SelectItem value="12KG">12KG</SelectItem>
           </SelectContent>
@@ -129,4 +127,3 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
     </motion.div>
   );
 };
-

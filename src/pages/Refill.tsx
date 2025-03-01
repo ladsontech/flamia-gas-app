@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,21 +18,22 @@ import { Helmet } from "react-helmet";
 // Static refill price data with SEO keywords
 const staticBrands = ["Total", "Shell", "Oryx", "Stabex", "Hass", "Vivo Energy"];
 
+// Updated to include all refill brands - independent of full sets
 const staticRefillPrices = [
-  { id: "1", brand: "Total", weight: "3KG", price: 30000, description: "Total 3KG Gas Refill - Best price in Kampala with free delivery" },
-  { id: "2", brand: "Total", weight: "6KG", price: 45000, description: "Total 6KG Gas Refill - Same day delivery in Uganda" },
-  { id: "3", brand: "Total", weight: "12KG", price: 85000, description: "Total 12KG Gas Refill - Perfect for restaurants and large families" },
-  { id: "4", brand: "Shell", weight: "3KG", price: 32000, description: "Shell 3KG Gas Refill - Affordable LPG with delivery in Kampala" },
-  { id: "5", brand: "Shell", weight: "6KG", price: 48000, description: "Shell 6KG Gas Refill - Best gas supplier in Uganda with free delivery" },
-  { id: "6", brand: "Shell", weight: "12KG", price: 90000, description: "Shell 12KG Gas Refill - Premium quality LPG for commercial use" },
-  { id: "7", brand: "Oryx", weight: "3KG", price: 28000, description: "Oryx 3KG Gas Refill - Cheapest price in Uganda with free delivery" },
-  { id: "8", brand: "Oryx", weight: "6KG", price: 42000, description: "Oryx 6KG Gas Refill - Fast delivery in Kampala and Wakiso" },
-  { id: "9", brand: "Oryx", weight: "12KG", price: 80000, description: "Oryx 12KG Gas Refill - Best for hotels and large households" },
-  { id: "10", brand: "Stabex", weight: "6KG", price: 40000, description: "Stabex 6KG Gas Refill - Affordable LPG with delivery in Uganda" },
-  { id: "11", brand: "Stabex", weight: "12KG", price: 78000, description: "Stabex 12KG Gas Refill - Most reliable gas service in Kampala" },
-  { id: "12", brand: "Hass", weight: "6KG", price: 39000, description: "Hass 6KG Gas Refill - Cheap cooking gas with free delivery in Uganda" },
-  { id: "13", brand: "Vivo Energy", weight: "6KG", price: 47000, description: "Vivo Energy 6KG Gas Refill - Premium cooking gas for homes" },
-  { id: "14", brand: "Vivo Energy", weight: "12KG", price: 88000, description: "Vivo Energy 12KG Gas Refill - High-quality LPG for commercial use" },
+  { id: "1", brand: "Total", weight: "6KG", price: 45000, description: "Total 6KG Gas Refill - Same day delivery in Uganda" },
+  { id: "2", brand: "Total", weight: "12KG", price: 85000, description: "Total 12KG Gas Refill - Perfect for restaurants and large families" },
+  { id: "3", brand: "Shell", weight: "6KG", price: 48000, description: "Shell 6KG Gas Refill - Best gas supplier in Uganda with free delivery" },
+  { id: "4", brand: "Shell", weight: "12KG", price: 90000, description: "Shell 12KG Gas Refill - Premium quality LPG for commercial use" },
+  { id: "5", brand: "Oryx", weight: "6KG", price: 42000, description: "Oryx 6KG Gas Refill - Fast delivery in Kampala and Wakiso" },
+  { id: "6", brand: "Oryx", weight: "12KG", price: 80000, description: "Oryx 12KG Gas Refill - Best for hotels and large households" },
+  { id: "7", brand: "Stabex", weight: "6KG", price: 40000, description: "Stabex 6KG Gas Refill - Affordable LPG with delivery in Uganda" },
+  { id: "8", brand: "Stabex", weight: "12KG", price: 78000, description: "Stabex 12KG Gas Refill - Most reliable gas service in Kampala" },
+  { id: "9", brand: "Hass", weight: "6KG", price: 39000, description: "Hass 6KG Gas Refill - Cheap cooking gas with free delivery in Uganda" },
+  { id: "10", brand: "Hass", weight: "12KG", price: 79000, description: "Hass 12KG Gas Refill - Best value LPG in Uganda" },
+  { id: "11", brand: "Vivo Energy", weight: "6KG", price: 47000, description: "Vivo Energy 6KG Gas Refill - Premium cooking gas for homes" },
+  { id: "12", brand: "Vivo Energy", weight: "12KG", price: 88000, description: "Vivo Energy 12KG Gas Refill - High-quality LPG for commercial use" },
+  { id: "13", brand: "Planet Gas", weight: "6KG", price: 44000, description: "Planet Gas 6KG Refill - Affordable cooking gas with free delivery" },
+  { id: "14", brand: "Global Gas", weight: "6KG", price: 43000, description: "Global Gas 6KG Refill - Reliable cooking gas supplier in Uganda" },
 ];
 
 const Refill = () => {
@@ -54,12 +54,10 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
 
-  // Filter prices based on selected brand
   const filteredPrices = selectedBrand
     ? staticRefillPrices.filter(price => price.brand === selectedBrand)
     : [];
 
-  // SEO metadata for refill page
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
 
@@ -196,14 +194,13 @@ const Refill = () => {
           </AnimatePresence>
         )}
         
-        {/* SEO Content Section */}
         <div className="mt-12 px-4 py-6 bg-white/80 rounded-lg shadow-sm max-w-4xl mx-auto">
           <h2 className="text-xl font-semibold mb-4">Gas Refill Service in Uganda</h2>
           <p className="text-sm mb-3">
             Looking for the best gas refill service in Uganda? Flamia offers the most affordable LPG refill prices with free delivery in Kampala, Wakiso, Mukono, and Entebbe. We refill all major brands including Stabex, Total, Shell, Oryx, and Hass gas cylinders.
           </p>
           <p className="text-sm mb-3">
-            Our gas refill prices are updated daily to ensure you get the best deals on cooking gas in Uganda. Whether you need a 3KG, 6KG, or 12KG gas cylinder refilled, our team delivers directly to your doorstep within hours of ordering.
+            Our gas refill prices are updated daily to ensure you get the best deals on cooking gas in Uganda. Whether you need a 6KG or 12KG gas cylinder refilled, our team delivers directly to your doorstep within hours of ordering.
           </p>
           <p className="text-sm">
             Compare gas prices across different brands and enjoy same-day delivery with our reliable service. We pride ourselves on being the fastest gas refill provider in Uganda with exceptional customer satisfaction.
