@@ -36,6 +36,8 @@ const staticBrands = [
     refill_price_3kg: "UGX 28,000",
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
+    // Add a fallback image for 3kg since this brand has a refill_price_3kg
+    image_url_3kg: "/images/gas-fallback.jpg", 
     description_6kg: "Affordable Total 6KG gas cylinder with same-day delivery in Uganda",
     description_12kg: "Total 12KG LPG gas cylinder - perfect for large families in Uganda"
   },
@@ -61,6 +63,9 @@ const staticBrands = [
     price_6kg: "UGX 165,000",
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
+    refill_price_3kg: "UGX 28,000",
+    // Add a fallback image for 3kg since this brand has a refill_price_3kg
+    image_url_3kg: "/images/gas-fallback.jpg",
     description_3kg: "Compact Oryx 3KG gas cylinder for small households in Uganda",
     description_6kg: "Popular Oryx 6KG gas cylinder - affordable cooking gas with free delivery",
     description_12kg: "Oryx 12KG gas cylinder for restaurants and large homes in Uganda"
@@ -103,7 +108,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
           <BrandCardNew
             name={brand.name}
             brand={brand.brand}
-            image={brand.image_url_3kg || ''} // Use empty string as fallback
+            image={brand.image_url_3kg || '/images/gas-fallback.jpg'} // Use a default fallback image
             size="3kg"
             price={brand.refill_price_3kg}
             description={brand.description_3kg || `Affordable ${brand.brand} 3KG gas refill with free delivery in Uganda`}
