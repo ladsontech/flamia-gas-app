@@ -1,6 +1,11 @@
 
 import React from "react";
 import BrandCardNew from "./BrandCardNew";
+import { Brand } from "@/hooks/useHomeData";
+
+interface BrandsGridProps {
+  brands: Brand[];
+}
 
 // Static brand data
 const staticBrands = [
@@ -45,7 +50,8 @@ const staticBrands = [
   }
 ];
 
-const BrandsGrid = () => {
+const BrandsGrid: React.FC<BrandsGridProps> = ({ brands }) => {
+  // Use the brands prop instead of staticBrands
   const allCards = staticBrands.reduce((acc: React.ReactNode[], brand) => {
     if (brand.refill_price_3kg) {
       acc.push(
