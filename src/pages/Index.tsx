@@ -1,21 +1,25 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
+import AppBar from "@/components/AppBar";
+
 const Index = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  
   return <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Flamia - Best Gas Delivery & Refill Service in Uganda | Free Delivery</title>
         <meta name="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders. Same-day LPG delivery." />
         <meta name="keywords" content="gas delivery Uganda, LPG delivery Kampala, cooking gas near me, cheap gas cylinders, gas refill service, Total gas Uganda, Shell gas delivery, Oryx gas price, Stabex gas cylinder, Hass gas Wakiso, free gas delivery" />
       </Helmet>
+
+      <AppBar />
 
       <div className="container px-4 py-6 flex-grow">
         <div className="flex flex-col gap-12">
@@ -24,7 +28,7 @@ const Index = () => {
           {/* Main Content */}
           <section className="space-y-8">
             <div className="text-center space-y-2 max-w-2xl mx-auto">
-              
+              <h2 className="text-xl sm:text-3xl font-bold">Gas Cylinders - Free Delivery in Uganda</h2>
               <p className="text-sm sm:text-base text-muted-foreground">
                 Choose from a variety of gas cylinder brands and sizes. All orders include free delivery in Kampala, Wakiso, and Mukono.
               </p>
@@ -58,4 +62,5 @@ const Index = () => {
       <Footer />
     </div>;
 };
+
 export default Index;
