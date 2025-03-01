@@ -14,6 +14,9 @@ interface Brand {
   refill_price_3kg?: string;
   refill_price_6kg?: string;
   refill_price_12kg?: string;
+  description_3kg?: string;
+  description_6kg?: string;
+  description_12kg?: string;
 }
 
 interface BrandsGridProps {
@@ -53,7 +56,6 @@ const staticBrands = [
     id: "3",
     name: "Oryx Gas Uganda",
     brand: "Oryx",
-
     image_url_6kg: "/images/oryx-6kg.jpg",
     image_url_12kg: "/images/oryx-12kg.jpg",
     price_6kg: "UGX 165,000",
@@ -94,13 +96,14 @@ const staticBrands = [
 const BrandsGrid: React.FC<BrandsGridProps> = () => {
   // Use the staticBrands instead of the brands prop for static data
   const allCards = staticBrands.reduce((acc: React.ReactNode[], brand) => {
+    // Only add 3kg cards if the brand has a refill price for 3kg
     if (brand.refill_price_3kg) {
       acc.push(
         <div key={`${brand.id}-3kg`}>
           <BrandCardNew
             name={brand.name}
             brand={brand.brand}
-            image={brand.image_url_3kg || ''}
+            image={brand.image_url_3kg || ''} // Use empty string as fallback
             size="3kg"
             price={brand.refill_price_3kg}
             description={brand.description_3kg || `Affordable ${brand.brand} 3KG gas refill with free delivery in Uganda`}
@@ -108,6 +111,8 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
         </div>
       );
     }
+    
+    // Add 6kg cards if the brand has a price for 6kg
     if (brand.price_6kg) {
       acc.push(
         <div key={`${brand.id}-6kg`}>
@@ -122,6 +127,8 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
         </div>
       );
     }
+    
+    // Add 12kg cards if the brand has a price for 12kg
     if (brand.price_12kg) {
       acc.push(
         <div key={`${brand.id}-12kg`}>
@@ -136,6 +143,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
         </div>
       );
     }
+    
     return acc;
   }, []);
 
