@@ -1,53 +1,62 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Footer from "@/components/Footer";
 
-interface Accessory {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image_url: string;
-}
+// Static accessories data
+const accessories = [
+  {
+    id: "1",
+    name: "Gas Regulator",
+    description: "Universal gas regulator compatible with all major gas brands in Uganda. Safe and reliable pressure control for all cylinder sizes.",
+    price: 15000,
+    image_url: "/images/regulator.jpg"
+  },
+  {
+    id: "2",
+    name: "Gas Pipe (2 Meters)",
+    description: "High-quality gas pipe that connects your cylinder to the cooker. Durable and leak-proof design for safety.",
+    price: 8000,
+    image_url: "/images/gas-pipe.jpg"
+  },
+  {
+    id: "3",
+    name: "2-Burner Gas Stove",
+    description: "Efficient 2-burner gas stove perfect for Ugandan kitchens. Compatible with all LPG cylinders and easy to clean.",
+    price: 85000,
+    image_url: "/images/gas-stove.jpg"
+  },
+  {
+    id: "4",
+    name: "Cylinder Stand",
+    description: "Sturdy gas cylinder stand for all sizes of LPG cylinders. Keeps your cylinder secure and prevents tipping.",
+    price: 25000,
+    image_url: "/images/cylinder-stand.jpg"
+  },
+  {
+    id: "5",
+    name: "Gas Level Indicator",
+    description: "Easy-to-read gas level indicator that helps you monitor your remaining gas level. Never run out of gas unexpectedly.",
+    price: 12000,
+    image_url: "/images/level-indicator.jpg"
+  },
+  {
+    id: "6",
+    name: "Gas Lighter",
+    description: "Long-lasting gas lighter with ergonomic design. Safe and reliable ignition for your gas cooker.",
+    price: 5000,
+    image_url: "/images/gas-lighter.jpg"
+  }
+];
 
 const Accessories = () => {
-  const [accessories, setAccessories] = useState<Accessory[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchAccessories();
-  }, []);
-
-  const fetchAccessories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('accessories')
-        .select('*')
-        .order('name');
-
-      if (error) throw error;
-      
-      console.log('Fetched accessories:', data); // Debug log
-      setAccessories(data || []);
-    } catch (error: any) {
-      console.error('Error fetching accessories:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load accessories",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOrder = (accessoryId: string) => {
     navigate(`/order?accessory=${accessoryId}`);
@@ -89,12 +98,12 @@ const Accessories = () => {
                 <CardHeader className="p-2 sm:p-3">
                   <div className="relative w-full pb-[100%] mb-2 rounded-md overflow-hidden bg-gray-50">
                     <img
-                      src={accessory.image_url || 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop'}
+                      src={accessory.image_url || '/images/accessory-fallback.jpg'}
                       alt={accessory.name}
                       className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
+                        target.src = '/images/accessory-fallback.jpg';
                       }}
                     />
                   </div>

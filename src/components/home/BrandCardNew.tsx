@@ -19,7 +19,8 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=800&auto=format&fit=crop';
+  // Default fallback image (local)
+  const fallbackImage = '/images/gas-fallback.jpg';
 
   const handleOrder = () => {
     navigate(`/order?brand=${brand}&name=${name}&size=${size}&price=${price}`);

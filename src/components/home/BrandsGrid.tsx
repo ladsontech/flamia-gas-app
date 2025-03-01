@@ -1,7 +1,20 @@
 
 import React from "react";
 import BrandCardNew from "./BrandCardNew";
-import { Brand } from "@/hooks/useHomeData";
+
+interface Brand {
+  id: string;
+  name: string;
+  brand: string;
+  image_url_3kg?: string;
+  image_url_6kg?: string;
+  image_url_12kg?: string;
+  price_6kg?: string;
+  price_12kg?: string;
+  refill_price_3kg?: string;
+  refill_price_6kg?: string;
+  refill_price_12kg?: string;
+}
 
 interface BrandsGridProps {
   brands: Brand[];
@@ -13,9 +26,9 @@ const staticBrands = [
     id: "1",
     name: "Total Gas Uganda",
     brand: "Total",
-    image_url_3kg: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=800&auto=format&fit=crop",
-    image_url_6kg: "https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&w=800&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?q=80&w=800&auto=format&fit=crop",
+    image_url_3kg: "/images/total-3kg.jpg",
+    image_url_6kg: "/images/total-6kg.jpg",
+    image_url_12kg: "/images/total-12kg.jpg",
     price_6kg: "UGX 120,000",
     price_12kg: "UGX 180,000",
     refill_price_3kg: "UGX 30,000",
@@ -29,12 +42,10 @@ const staticBrands = [
     id: "2",
     name: "Shell Gas Uganda",
     brand: "Shell",
-    image_url_3kg: null,
-    image_url_6kg: "https://images.unsplash.com/photo-1585666876200-20c138ae56aa?q=80&w=800&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1611587644068-17ccb3e2ac40?q=80&w=800&auto=format&fit=crop",
+    image_url_6kg: "/images/shell-6kg.jpg",
+    image_url_12kg: "/images/shell-12kg.jpg",
     price_6kg: "UGX 130,000",
     price_12kg: "UGX 190,000",
-    refill_price_3kg: null,
     refill_price_6kg: "UGX 48,000",
     refill_price_12kg: "UGX 90,000",
     description_6kg: "Shell 6KG gas cylinder with fastest delivery in Kampala & Wakiso",
@@ -44,9 +55,9 @@ const staticBrands = [
     id: "3",
     name: "Oryx Gas Uganda",
     brand: "Oryx",
-    image_url_3kg: "https://images.unsplash.com/photo-1595398062834-5b4e948ce181?q=80&w=800&auto=format&fit=crop",
-    image_url_6kg: "https://images.unsplash.com/photo-1599909631178-f1d3e0166f5b?q=80&w=800&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1598128558393-70ff21433be0?q=80&w=800&auto=format&fit=crop",
+    image_url_3kg: "/images/oryx-3kg.jpg",
+    image_url_6kg: "/images/oryx-6kg.jpg",
+    image_url_12kg: "/images/oryx-12kg.jpg",
     price_6kg: "UGX 125,000",
     price_12kg: "UGX 185,000",
     refill_price_3kg: "UGX 28,000",
@@ -60,12 +71,10 @@ const staticBrands = [
     id: "4",
     name: "Stabex Gas Uganda",
     brand: "Stabex",
-    image_url_3kg: null,
-    image_url_6kg: "https://images.unsplash.com/photo-1603665301175-57ba46f392bf?q=80&w=800&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1603665270146-bbdf9858ea55?q=80&w=800&auto=format&fit=crop",
+    image_url_6kg: "/images/stabex-6kg.jpg",
+    image_url_12kg: "/images/stabex-12kg.jpg",
     price_6kg: "UGX 118,000",
     price_12kg: "UGX 178,000",
-    refill_price_3kg: null,
     refill_price_6kg: "UGX 40,000",
     refill_price_12kg: "UGX 78,000",
     description_6kg: "Cheapest Stabex 6KG gas cylinder price in Uganda with free delivery",
@@ -75,12 +84,10 @@ const staticBrands = [
     id: "5",
     name: "Hass Gas Uganda",
     brand: "Hass",
-    image_url_3kg: null,
-    image_url_6kg: "https://images.unsplash.com/photo-1592155931584-901ac15763e3?q=80&w=800&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1574328595366-a35e89721cc6?q=80&w=800&auto=format&fit=crop",
+    image_url_6kg: "/images/hass-6kg.jpg",
+    image_url_12kg: "/images/hass-12kg.jpg",
     price_6kg: "UGX 122,000",
     price_12kg: "UGX 183,000",
-    refill_price_3kg: null,
     refill_price_6kg: "UGX 39,000",
     refill_price_12kg: "UGX 79,000",
     description_6kg: "Hass 6KG gas cylinder - cheap LPG for delivery in Kampala & Wakiso",
@@ -88,7 +95,7 @@ const staticBrands = [
   }
 ];
 
-const BrandsGrid: React.FC<BrandsGridProps> = ({ brands }) => {
+const BrandsGrid: React.FC<BrandsGridProps> = () => {
   // Use the staticBrands instead of the brands prop for static data
   const allCards = staticBrands.reduce((acc: React.ReactNode[], brand) => {
     if (brand.refill_price_3kg) {

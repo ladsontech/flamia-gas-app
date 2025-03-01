@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { Flame, ArrowRight, Truck } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import Footer from "@/components/Footer";
 import {
   Select,
   SelectContent,
@@ -211,8 +210,6 @@ const Refill = () => {
           </p>
         </div>
       </div>
-      <div className="mt-20"></div> {/* Add extra spacing before footer */}
-      <Footer />
     </div>
   );
 };
