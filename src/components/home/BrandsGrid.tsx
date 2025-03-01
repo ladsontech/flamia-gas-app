@@ -7,51 +7,89 @@ interface BrandsGridProps {
   brands: Brand[];
 }
 
-// Static brand data
+// Static brand data with optimized descriptions and keywords
 const staticBrands = [
   {
     id: "1",
-    name: "Total Gas",
+    name: "Total Gas Uganda",
     brand: "Total",
-    image_url_3kg: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop",
-    image_url_6kg: "https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&w=3000&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?q=80&w=2942&auto=format&fit=crop",
+    image_url_3kg: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=800&auto=format&fit=crop",
+    image_url_6kg: "https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&w=800&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?q=80&w=800&auto=format&fit=crop",
     price_6kg: "UGX 120,000",
     price_12kg: "UGX 180,000",
     refill_price_3kg: "UGX 30,000",
-    refill_price_6kg: null,
-    refill_price_12kg: null
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 85,000",
+    description_3kg: "Best price for Total 3KG gas cylinder with free delivery in Kampala",
+    description_6kg: "Affordable Total 6KG gas cylinder with same-day delivery in Uganda",
+    description_12kg: "Total 12KG LPG gas cylinder - perfect for large families in Uganda"
   },
   {
     id: "2",
-    name: "Shell Gas",
+    name: "Shell Gas Uganda",
     brand: "Shell",
     image_url_3kg: null,
-    image_url_6kg: "https://images.unsplash.com/photo-1585666876200-20c138ae56aa?q=80&w=3087&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1611587644068-17ccb3e2ac40?q=80&w=2942&auto=format&fit=crop",
+    image_url_6kg: "https://images.unsplash.com/photo-1585666876200-20c138ae56aa?q=80&w=800&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1611587644068-17ccb3e2ac40?q=80&w=800&auto=format&fit=crop",
     price_6kg: "UGX 130,000",
     price_12kg: "UGX 190,000",
     refill_price_3kg: null,
-    refill_price_6kg: null,
-    refill_price_12kg: null
+    refill_price_6kg: "UGX 48,000",
+    refill_price_12kg: "UGX 90,000",
+    description_6kg: "Shell 6KG gas cylinder with fastest delivery in Kampala & Wakiso",
+    description_12kg: "Premium Shell 12KG gas cylinder - reliable LPG supplier in Uganda"
   },
   {
     id: "3",
-    name: "Oryx Gas",
+    name: "Oryx Gas Uganda",
     brand: "Oryx",
-    image_url_3kg: "https://images.unsplash.com/photo-1595398062834-5b4e948ce181?q=80&w=2080&auto=format&fit=crop",
-    image_url_6kg: "https://images.unsplash.com/photo-1599909631178-f1d3e0166f5b?q=80&w=2940&auto=format&fit=crop",
-    image_url_12kg: "https://images.unsplash.com/photo-1598128558393-70ff21433be0?q=80&w=2789&auto=format&fit=crop",
+    image_url_3kg: "https://images.unsplash.com/photo-1595398062834-5b4e948ce181?q=80&w=800&auto=format&fit=crop",
+    image_url_6kg: "https://images.unsplash.com/photo-1599909631178-f1d3e0166f5b?q=80&w=800&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1598128558393-70ff21433be0?q=80&w=800&auto=format&fit=crop",
     price_6kg: "UGX 125,000",
     price_12kg: "UGX 185,000",
     refill_price_3kg: "UGX 28,000",
-    refill_price_6kg: null,
-    refill_price_12kg: null
+    refill_price_6kg: "UGX 42,000",
+    refill_price_12kg: "UGX 80,000",
+    description_3kg: "Compact Oryx 3KG gas cylinder for small households in Uganda",
+    description_6kg: "Popular Oryx 6KG gas cylinder - affordable cooking gas with free delivery",
+    description_12kg: "Oryx 12KG gas cylinder for restaurants and large homes in Uganda"
+  },
+  {
+    id: "4",
+    name: "Stabex Gas Uganda",
+    brand: "Stabex",
+    image_url_3kg: null,
+    image_url_6kg: "https://images.unsplash.com/photo-1603665301175-57ba46f392bf?q=80&w=800&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1603665270146-bbdf9858ea55?q=80&w=800&auto=format&fit=crop",
+    price_6kg: "UGX 118,000",
+    price_12kg: "UGX 178,000",
+    refill_price_3kg: null,
+    refill_price_6kg: "UGX 40,000",
+    refill_price_12kg: "UGX 78,000",
+    description_6kg: "Cheapest Stabex 6KG gas cylinder price in Uganda with free delivery",
+    description_12kg: "Stabex 12KG gas cylinder - reliable cooking gas for Uganda homes"
+  },
+  {
+    id: "5",
+    name: "Hass Gas Uganda",
+    brand: "Hass",
+    image_url_3kg: null,
+    image_url_6kg: "https://images.unsplash.com/photo-1592155931584-901ac15763e3?q=80&w=800&auto=format&fit=crop",
+    image_url_12kg: "https://images.unsplash.com/photo-1574328595366-a35e89721cc6?q=80&w=800&auto=format&fit=crop",
+    price_6kg: "UGX 122,000",
+    price_12kg: "UGX 183,000",
+    refill_price_3kg: null,
+    refill_price_6kg: "UGX 39,000",
+    refill_price_12kg: "UGX 79,000",
+    description_6kg: "Hass 6KG gas cylinder - cheap LPG for delivery in Kampala & Wakiso",
+    description_12kg: "Premium Hass 12KG gas cylinder for restaurants & large families"
   }
 ];
 
 const BrandsGrid: React.FC<BrandsGridProps> = ({ brands }) => {
-  // Use the brands prop instead of staticBrands
+  // Use the staticBrands instead of the brands prop for static data
   const allCards = staticBrands.reduce((acc: React.ReactNode[], brand) => {
     if (brand.refill_price_3kg) {
       acc.push(
@@ -61,7 +99,8 @@ const BrandsGrid: React.FC<BrandsGridProps> = ({ brands }) => {
             brand={brand.brand}
             image={brand.image_url_3kg || ''}
             size="3kg"
-            price="Contact for Price"
+            price={brand.refill_price_3kg}
+            description={brand.description_3kg || `Affordable ${brand.brand} 3KG gas refill with free delivery in Uganda`}
           />
         </div>
       );
@@ -75,6 +114,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = ({ brands }) => {
             image={brand.image_url_6kg || ''}
             size="6kg"
             price={brand.price_6kg}
+            description={brand.description_6kg || `${brand.brand} 6KG gas cylinder - best prices in Uganda with same-day delivery`}
           />
         </div>
       );
@@ -88,6 +128,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = ({ brands }) => {
             image={brand.image_url_12kg || ''}
             size="12kg"
             price={brand.price_12kg}
+            description={brand.description_12kg || `${brand.brand} 12KG gas cylinder for commercial use and large families in Uganda`}
           />
         </div>
       );

@@ -6,6 +6,15 @@ Allow: /
 Allow: /refill
 Allow: /accessories
 Allow: /order
+Allow: /gas-delivery-kampala
+Allow: /gas-refill-wakiso
+Allow: /gas-delivery-mukono
+Allow: /gas-refill-entebbe
+Allow: /stabex-gas-uganda
+Allow: /total-gas-uganda
+Allow: /shell-gas-uganda
+Allow: /hass-gas-uganda
+Allow: /oryx-gas-uganda
 
 # Encourage crawling of important pages
 Allow: /sitemap.xml
@@ -13,5 +22,5 @@ Allow: /sitemap.xml
 # Specify sitemap location
 Sitemap: https://flamia.store/sitemap.xml
 
-# Crawl-delay for better server performance
+# Better server performance
 Crawl-delay: 1

@@ -11,38 +11,43 @@ interface BrandCardProps {
   image: string;
   size: string;
   price: string;
+  description?: string;
 }
 
-const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
+const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCardProps) => {
   const navigate = useNavigate();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
+  const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=800&auto=format&fit=crop';
 
   const handleOrder = () => {
     navigate(`/order?brand=${brand}&name=${name}&size=${size}&price=${price}`);
   };
 
-  const getDescription = (size: string) => {
+  const getDescription = (brand: string, size: string, customDesc?: string) => {
+    if (customDesc) return customDesc;
+    
     switch (size) {
       case '3kg':
-        return `${brand} ${size} gas cylinder - Perfect for small households or portable use in Uganda`;
+        return `${brand} ${size} gas cylinder - Perfect for small households or portable use in Uganda. Best prices with free delivery in Kampala and surrounding areas.`;
       case '6kg':
-        return `${brand} ${size} gas cylinder - Ideal for medium-sized families in Uganda`;
+        return `${brand} ${size} gas cylinder - Ideal for medium-sized families in Uganda. Affordable cooking gas delivered to your doorstep in Kampala, Wakiso, Mukono.`;
       case '12kg':
-        return `${brand} ${size} gas cylinder - Best value for large families or commercial use in Uganda`;
+        return `${brand} ${size} gas cylinder - Best value for large families or commercial use in Uganda. Fastest LPG delivery service in Kampala and surrounding areas.`;
       default:
-        return `${brand} high-quality gas cylinder available for delivery in Uganda`;
+        return `${brand} high-quality gas cylinder available for same-day delivery in Uganda. Affordable LPG prices with free delivery.`;
     }
   };
 
-  // Structured data for the product
+  const finalDescription = getDescription(brand, size, description);
+
+  // Structured data for the product with additional properties
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": `${brand} ${size} Gas Cylinder`,
-    "description": getDescription(size),
+    "name": `${brand} ${size} Gas Cylinder - Best Price in Uganda`,
+    "description": finalDescription,
     "brand": {
       "@type": "Brand",
       "name": brand
@@ -52,7 +57,23 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
       "price": price.replace(/[^0-9]/g, ''),
       "priceCurrency": "UGX",
       "availability": "https://schema.org/InStock",
-      "areaServed": "Uganda"
+      "areaServed": [
+        "Kampala",
+        "Wakiso",
+        "Mukono",
+        "Entebbe",
+        "Uganda"
+      ],
+      "deliveryLeadTime": {
+        "@type": "QuantitativeValue",
+        "minValue": "30",
+        "maxValue": "90",
+        "unitCode": "MIN"
+      }
+    },
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Residents of Uganda looking for affordable cooking gas"
     }
   };
 
@@ -74,9 +95,11 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
           )}
           <img
             src={imageError ? fallbackImage : image}
-            alt={`${brand} ${size} gas cylinder for sale and delivery in Uganda - ${getDescription(size)}`}
+            alt={`${brand} ${size} gas cylinder for sale in Uganda - ${finalDescription}`}
             className={`absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy"
+            width="400"
+            height="400"
             onLoad={() => setIsImageLoaded(true)}
             onError={() => {
               setImageError(true);
@@ -84,10 +107,10 @@ const BrandCardNew = ({ name, brand, image, size, price }: BrandCardProps) => {
             }}
           />
         </div>
-        <h3 className="text-sm sm:text-base font-semibold mb-1">{brand}</h3>
+        <h3 className="text-sm sm:text-base font-semibold mb-1">{brand} Gas</h3>
         <p className="text-xs sm:text-sm font-medium text-accent mb-1">{size} Cylinder</p>
         <p className="text-muted-foreground mb-2 text-xs sm:text-sm line-clamp-2">
-          {getDescription(size)}
+          {finalDescription}
         </p>
         <div className="space-y-1 mb-2">
           <div className="flex justify-between items-center">

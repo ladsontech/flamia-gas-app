@@ -4,31 +4,99 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://flamia.store/</loc>
-    <lastmod>2024-03-20</lastmod>
+    <lastmod>2024-06-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://flamia.store/og-image.svg</image:loc>
-      <image:title>Flamia Gas Delivery Service</image:title>
-      <image:caption>Fast and reliable gas delivery in Uganda</image:caption>
+      <image:title>Best Gas Delivery Service in Uganda</image:title>
+      <image:caption>Fast and reliable gas delivery with best prices in Kampala, Wakiso, Mukono</image:caption>
     </image:image>
   </url>
   <url>
     <loc>https://flamia.store/refill</loc>
-    <lastmod>2024-03-20</lastmod>
+    <lastmod>2024-06-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&amp;w=800&amp;auto=format&amp;fit=crop</image:loc>
+      <image:title>Gas Refill Prices Uganda Today</image:title>
+      <image:caption>Best gas refill service in Uganda - Stabex, Total, Shell, Oryx, Hass</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://flamia.store/accessories</loc>
-    <lastmod>2024-03-20</lastmod>
+    <lastmod>2024-06-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1603665301175-57ba46f392bf?q=80&amp;w=800&amp;auto=format&amp;fit=crop</image:loc>
+      <image:title>Gas Accessories Uganda</image:title>
+      <image:caption>Best gas accessories, regulators, and burners in Uganda with free delivery</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://flamia.store/order</loc>
-    <lastmod>2024-03-20</lastmod>
+    <lastmod>2024-06-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
+  </url>
+  
+  <!-- Location-based URLs -->
+  <url>
+    <loc>https://flamia.store/gas-delivery-kampala</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/gas-refill-wakiso</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/gas-delivery-mukono</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/gas-refill-entebbe</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Brand-specific URLs -->
+  <url>
+    <loc>https://flamia.store/stabex-gas-uganda</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/total-gas-uganda</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/shell-gas-uganda</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/hass-gas-uganda</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/oryx-gas-uganda</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>

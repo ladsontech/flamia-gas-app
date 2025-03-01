@@ -15,11 +15,14 @@ interface HotDealProps {
 }
 
 // Static fallback image
-const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=3039&auto=format&fit=crop';
+const fallbackImage = 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=800&auto=format&fit=crop';
 
 const HotDealCard = ({ title, description, imageUrl, price, onOrder }: HotDealProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+
+  // SEO optimized alt text
+  const altText = `${title} - ${description || 'Best gas deal in Uganda with free delivery'}`;
 
   return (
     <motion.div
@@ -36,7 +39,7 @@ const HotDealCard = ({ title, description, imageUrl, price, onOrder }: HotDealPr
           )}
           <img
             src={imageError ? fallbackImage : (imageUrl || fallbackImage)}
-            alt={title}
+            alt={altText}
             className={`absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setIsImageLoaded(true)}
             onError={() => {
@@ -44,6 +47,8 @@ const HotDealCard = ({ title, description, imageUrl, price, onOrder }: HotDealPr
               setIsImageLoaded(true);
             }}
             loading="lazy"
+            width="400"
+            height="400"
           />
           <div className="absolute top-2 right-2 z-10">
             <Badge variant="destructive" className="animate-pulse text-[10px] sm:text-xs px-1 py-0">
