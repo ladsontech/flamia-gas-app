@@ -26,7 +26,6 @@ const staticBrands = [
     id: "1",
     name: "Total Gas Uganda",
     brand: "Total",
-    image_url_3kg: "/images/total-3kg.jpg",
     image_url_6kg: "/images/total 6KG.png",
     image_url_12kg: "/images/total 12KG.png",
     price_6kg: "UGX 170,000",
