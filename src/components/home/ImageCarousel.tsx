@@ -29,6 +29,7 @@ const promotionalImages = [
 
 const ImageCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // Auto-advance the carousel
   useEffect(() => {
@@ -53,8 +54,21 @@ const ImageCarousel: React.FC = () => {
     );
   };
 
+  // Calculate next image preview index
+  const nextImageIndex = currentIndex === promotionalImages.length - 1 ? 0 : currentIndex + 1;
+
+  const handleImageLoad = () => {
+    setLoading(false);
+  };
+
   return (
     <div className="relative w-full overflow-hidden rounded-lg shadow-md mb-8 aspect-[16/9]">
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-50">
+          <div className="w-8 h-8 border-4 border-accent rounded-full border-t-transparent animate-spin"></div>
+        </div>
+      )}
+      
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -70,6 +84,7 @@ const ImageCarousel: React.FC = () => {
             alt={promotionalImages[currentIndex].alt}
             className="w-full h-full object-cover"
             loading="lazy"
+            onLoad={handleImageLoad}
           />
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white z-20">
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold drop-shadow-md">
@@ -78,6 +93,19 @@ const ImageCarousel: React.FC = () => {
           </div>
         </motion.div>
       </AnimatePresence>
+      
+      {/* Preview of next image (only visible on medium screens and up) */}
+      <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-1/12 overflow-hidden z-5 opacity-40 hover:opacity-60 transition-opacity">
+        <div className="h-full w-full relative">
+          <img
+            src={promotionalImages[nextImageIndex].src}
+            alt="Next slide preview"
+            className="h-full object-cover"
+            style={{ objectPosition: 'left center' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/80" />
+        </div>
+      </div>
       
       {/* Navigation arrows - hidden on small screens, visible on medium and up */}
       <button 
