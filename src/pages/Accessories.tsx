@@ -86,13 +86,14 @@ const Accessories = () => {
     <div className="min-h-screen flex flex-col">
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex-grow">
         <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop</h1>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
           {accessories.map((accessory) => (
             <motion.div
               key={accessory.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className="h-full"
             >
               <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full flex flex-col">
                 <CardHeader className="p-2 sm:p-3">

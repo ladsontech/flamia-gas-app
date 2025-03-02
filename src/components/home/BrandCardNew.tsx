@@ -30,8 +30,6 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
     if (customDesc) return customDesc;
     
     switch (size) {
-      case '3kg':
-        return `${brand} ${size} gas cylinder - Perfect for small households or portable use in Uganda. Best prices with free delivery in Kampala and surrounding areas.`;
       case '6kg':
         return `${brand} ${size} gas cylinder - Ideal for medium-sized families in Uganda. Affordable cooking gas delivered to your doorstep in Kampala, Wakiso, Mukono.`;
       case '12kg':
@@ -83,12 +81,13 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="h-full"
     >
       <Card className="bg-white shadow-lg p-2 sm:p-3 hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
-        <div className="relative w-full aspect-square rounded-md overflow-hidden bg-gray-50 mb-2">
+        <div className="relative w-full pb-[100%] mb-2 rounded-md overflow-hidden bg-gray-50">
           {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
               <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>

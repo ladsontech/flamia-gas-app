@@ -136,7 +136,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
     // Add 6kg cards if the brand has a price for 6kg
     if (brand.price_6kg) {
       acc.push(
-        <div key={`${brand.id}-6kg`}>
+        <div key={`${brand.id}-6kg`} className="h-full">
           <BrandCardNew
             name={brand.name}
             brand={brand.brand}
@@ -152,7 +152,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
     // Add 12kg cards if the brand has a price for 12kg
     if (brand.price_12kg) {
       acc.push(
-        <div key={`${brand.id}-12kg`}>
+        <div key={`${brand.id}-12kg`} className="h-full">
           <BrandCardNew
             name={brand.name}
             brand={brand.brand}
@@ -169,7 +169,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
       {allCards}
     </div>
   );
