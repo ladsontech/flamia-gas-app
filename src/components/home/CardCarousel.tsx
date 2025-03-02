@@ -7,33 +7,33 @@ import { motion, AnimatePresence } from "framer-motion";
 // Define our promotional cards data
 const promotionCards = [
   {
-    id: 1,
-    title: "Fast Delivery",
-    description: "Same-day gas delivery in Kampala",
-    image: "/images/total 6KG.png",
-    color: "from-blue-500/20 to-blue-500/40",
+    id: 1,    
+    image: "/images/make_order.png",
+    
   },
   {
-    id: 2,
-    title: "Best Prices",
-    description: "Lowest gas prices in Uganda guaranteed",
-    image: "/images/shell 6KG.png",
-    color: "from-green-500/20 to-green-500/40",
+    id: 2,   
+    image: "/images/free_delivery.png",
+    
   },
   {
     id: 3,
-    title: "Reliable Supply",
-    description: "Always available when you need it",
-    image: "/images/total 12KG.png",
-    color: "from-red-500/20 to-red-500/40",
+    image: "/images/cook_healthy.png",
+    
   },
   {
-    id: 4,
-    title: "Free Delivery",
-    description: "No delivery fees on any order",
-    image: "/images/promo-3.jpg",
-    color: "from-purple-500/20 to-purple-500/40",
+    id: 4,    
+    image: "/images/eat_healthy.png",
+    
+  },
+  {
+    id: 5,    
+    image: "/images/stay_healthy.png",
+    
   }
+
+
+
 ];
 
 const CardCarousel: React.FC = () => {
