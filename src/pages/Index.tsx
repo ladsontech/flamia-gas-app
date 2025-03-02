@@ -24,7 +24,7 @@ const Index = () => {
       <AppBar />
 
       <div className="container px-4 py-4 md:py-6 flex-grow">
-        {/* Image Carousel Component */}
+        {"/images/total 6KG.png"}
         <ImageCarousel />
         
         <div className="flex flex-col gap-8 md:gap-12">
