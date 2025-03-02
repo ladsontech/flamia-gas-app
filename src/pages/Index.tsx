@@ -8,6 +8,7 @@ import ImageCarousel from "@/components/home/ImageCarousel";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
+import CardCarousel from "@/components/home/CardCarousel";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,19 +25,15 @@ const Index = () => {
       <AppBar />
 
       <div className="container px-4 py-4 md:py-6 flex-grow">
-        {/* Image Carousel - Make sure it's properly displayed */}
-        <ImageCarousel />
+        <CardCarousel />
         
         <div className="flex flex-col gap-8 md:gap-12">
           <HeaderSection />
 
           {/* Main Content */}
           <section className="space-y-6 md:space-y-8">
-            <div className="text-center space-y-2 max-w-2xl mx-auto">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Gas Cylinders - Free Delivery in Uganda</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Choose from a variety of gas cylinder brands and sizes. All orders include free delivery in Kampala, Wakiso, and Mukono.
-              </p>
+            <div className="text-center">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Gas Cylinders</h2>
             </div>
 
             {/* Brands Grid */}
