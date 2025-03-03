@@ -1,8 +1,17 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+/* Import a serif font for the Flamia logo */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+/* Apply the font to the .font-serif class (used in AppBar) */
+.font-serif {
+  font-family: 'Playfair Display', serif;
 }
 
 .logo {
