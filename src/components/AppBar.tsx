@@ -36,7 +36,7 @@ const AppBar = () => {
   };
 
   return (
-    <div className="w-full px-3 py-2 bg-white shadow-sm border-b flex flex-col">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full px-3 py-2 bg-white shadow-sm border-b flex flex-col">
       <div className="flex items-center justify-between">
         <Link to="/" className="flex items-center gap-1.5">
           <Flame className="h-7 w-7 text-accent animate-pulse" />
