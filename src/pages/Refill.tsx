@@ -187,7 +187,7 @@ const Refill = () => {
         opacity: 1,
         y: 0
       }} className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">LPG Gas Refill Prices Uganda Today</h1>
+          
           <p className="text-sm sm:text-base text-muted-foreground mb-4">
             Compare gas refill prices in Uganda. Choose your preferred brand and cylinder size for best rates.
           </p>
