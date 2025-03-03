@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet";
 
 // Static accessories data
 const accessories = [
@@ -37,8 +38,6 @@ const accessories = [
     price: 25000,
     image_url: "/images/gas_stand.png"
   },
-
-
   {
     id: "5",
     name: "6Kg Burner",
@@ -46,8 +45,6 @@ const accessories = [
     price: 25000,
     image_url: "/images/6burner.png"
   },
-  
-  
   {
     id: "6",
     name: "Gas Lighter",
@@ -68,7 +65,7 @@ const Accessories = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="container mx-auto px-2 py-3">
         <div className="flex items-center justify-center min-h-[200px]">
           <p className="text-center text-muted-foreground">Loading accessories...</p>
         </div>
@@ -76,56 +73,58 @@ const Accessories = () => {
     );
   }
 
-  if (!accessories.length) {
-    return (
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
-        <div className="text-center">
-          <p className="text-muted-foreground">No accessories available at the moment.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex-grow">
-        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop</h1>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+      <Helmet>
+        <title>Gas Accessories - Flamia</title>
+        <meta name="description" content="Shop for gas accessories including regulators, pipes, stoves, and more. Free delivery in Kampala." />
+        <meta name="keywords" content="gas accessories, gas regulator, gas pipe, gas stove, cylinder stand, LPG accessories" />
+        {/* Preload critical images */}
+        <link rel="preload" as="image" href="/images/regulator.jpeg" />
+        <link rel="preload" as="image" href="/images/horse_pipe.jpeg" />
+      </Helmet>
+      
+      <div className="container mx-auto px-2 py-3 flex-grow">
+        <h1 className="text-lg sm:text-xl font-bold mb-3">Shop Accessories</h1>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {accessories.map((accessory) => (
             <motion.div
               key={accessory.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
               className="h-full"
             >
-              <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full flex flex-col">
-                <CardHeader className="p-2 sm:p-3">
-                  <div className="relative w-full pb-[100%] mb-2 rounded-md overflow-hidden bg-gray-50">
+              <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden h-full flex flex-col">
+                <CardHeader className="p-2">
+                  <div className="relative w-full pb-[100%] mb-1 rounded-md overflow-hidden bg-gray-50">
                     <img
                       src={accessory.image_url || '/images/accessory-fallback.jpg'}
                       alt={accessory.name}
                       className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      width="200"
+                      height="200"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/images/accessory-fallback.jpg';
                       }}
                     />
                   </div>
-                  <CardTitle className="text-sm sm:text-base">{accessory.name}</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">{accessory.name}</CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 sm:p-3 pt-0 flex-grow">
-                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
+                <CardContent className="p-2 pt-0 flex-grow">
+                  <p className="text-xs text-muted-foreground mb-1 line-clamp-2">
                     {accessory.description}
                   </p>
-                  <p className="text-accent font-bold text-sm sm:text-base mb-2">
+                  <p className="text-accent font-bold text-xs sm:text-sm mb-1">
                     UGX {accessory.price.toLocaleString()}
                   </p>
                 </CardContent>
-                <CardFooter className="p-2 sm:p-3 pt-0">
+                <CardFooter className="p-2 pt-0">
                   <Button
                     onClick={() => handleOrder(accessory.id)}
-                    className="w-full bg-accent hover:bg-accent/90 text-white text-xs sm:text-sm py-1 h-auto"
+                    className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1 h-7"
                   >
                     Order Now
                   </Button>
