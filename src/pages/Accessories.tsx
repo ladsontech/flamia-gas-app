@@ -21,7 +21,7 @@ const accessories = [
     name: "Gas Pipe (2 Meters)",
     description: "High-quality gas pipe that connects your cylinder to the cooker. Durable and leak-proof design for safety.",
     price: 8000,
-    image_url: "/images/horse_pip.jpeg"
+    image_url: "/images/horse_pipe.jpeg"
   },
   {
     id: "3",
