@@ -18,133 +18,158 @@ const staticRefillPrices = [{
   brand: "Total",
   weight: "6KG",
   price: 45000,
-  description: "Total 6KG Gas Refill - Same day delivery in Uganda"
+  description: "Total 6KG Gas Refill - free delivery in kampala"
 }, {
   id: "2",
   brand: "Total",
   weight: "12KG",
-  price: 85000,
+  price: 95000,
   description: "Total 12KG Gas Refill - Perfect for restaurants and large families"
 }, {
   id: "3",
   brand: "Total",
   weight: "3KG",
-  price: 25000,
+  price: 28000,
   description: "Total 3KG Gas Refill - Ideal for small households and students"
 }, {
   id: "4",
   brand: "Shell",
   weight: "6KG",
-  price: 48000,
+  price: 45000,
   description: "Shell 6KG Gas Refill - Best gas supplier in Uganda with free delivery"
 }, {
   id: "5",
   brand: "Shell",
   weight: "12KG",
-  price: 90000,
+  price: 95000,
   description: "Shell 12KG Gas Refill - Premium quality LPG for commercial use"
 }, {
   id: "6",
   brand: "Shell",
   weight: "3KG",
-  price: 26000,
+  price: 28000,
   description: "Shell 3KG Gas Refill - Compact cooking gas for small spaces"
 }, {
   id: "7",
   brand: "Oryx",
   weight: "6KG",
-  price: 42000,
+  price: 45000,
   description: "Oryx 6KG Gas Refill - Fast delivery in Kampala and Wakiso"
 }, {
   id: "8",
   brand: "Oryx",
   weight: "12KG",
-  price: 80000,
+  price: 95000,
   description: "Oryx 12KG Gas Refill - Best for hotels and large households"
-}, {
-  id: "9",
-  brand: "Oryx",
-  weight: "3KG",
-  price: 24000,
-  description: "Oryx 3KG Gas Refill - Perfect for singles and small families"
-}, {
+},  {
   id: "10",
   brand: "Stabex",
   weight: "6KG",
-  price: 40000,
+  price: 45000,
   description: "Stabex 6KG Gas Refill - Affordable LPG with delivery in Uganda"
 }, {
   id: "11",
   brand: "Stabex",
   weight: "12KG",
-  price: 78000,
+  price: 95000,
   description: "Stabex 12KG Gas Refill - Most reliable gas service in Kampala"
-}, {
-  id: "12",
-  brand: "Stabex",
-  weight: "3KG",
-  price: 23000,
-  description: "Stabex 3KG Gas Refill - Economical size for small homes"
 }, {
   id: "13",
   brand: "Hass",
   weight: "6KG",
-  price: 39000,
+  price: 45000,
   description: "Hass 6KG Gas Refill - Cheap cooking gas with free delivery in Uganda"
 }, {
   id: "14",
   brand: "Hass",
   weight: "12KG",
-  price: 79000,
+  price: 95000,
   description: "Hass 12KG Gas Refill - Best value LPG in Uganda"
-}, {
-  id: "15",
-  brand: "Hass",
-  weight: "3KG",
-  price: 22000,
-  description: "Hass 3KG Gas Refill - Most affordable small cylinder refill in Kampala"
-}, {
+},  {
   id: "16",
-  brand: "Vivo Energy",
+  brand: "Ola Energy",
   weight: "6KG",
-  price: 47000,
-  description: "Vivo Energy 6KG Gas Refill - Premium cooking gas for homes"
+  price: 45000,
+  description: "Ola Energy 6KG Gas Refill - Premium cooking gas for homes"
 }, {
   id: "17",
-  brand: "Vivo Energy",
+  brand: "Ola Energy",
   weight: "12KG",
-  price: 88000,
-  description: "Vivo Energy 12KG Gas Refill - High-quality LPG for commercial use"
-}, {
-  id: "18",
-  brand: "Vivo Energy",
-  weight: "3KG",
-  price: 27000,
-  description: "Vivo Energy 3KG Gas Refill - Convenient size for small kitchens"
-}, {
+  price: 95000,
+  description: "Ola Energy 12KG Gas Refill - High-quality LPG for commercial use"
+},  {
   id: "19",
-  brand: "Planet Gas",
+  brand: "Hashi",
   weight: "6KG",
-  price: 44000,
-  description: "Planet Gas 6KG Refill - Affordable cooking gas with free delivery"
+  price: 45000,
+  description: "Hashi 6KG Refill - Affordable cooking gas with free delivery"
 }, {
   id: "20",
-  brand: "Planet Gas",
-  weight: "3KG",
-  price: 25000,
-  description: "Planet Gas 3KG Refill - Compact cylinder for small families"
+  brand: "Hashi",
+  weight: "12KG",
+  price: 95000,
+  description: "Hashi Gas 12KG Refill - Compact cylinder for small families"
 }, {
   id: "21",
-  brand: "Global Gas",
+  brand: "Taifa",
   weight: "6KG",
-  price: 43000,
-  description: "Global Gas 6KG Refill - Reliable cooking gas supplier in Uganda"
+  price: 45000,
+  description: "Taifa Gas 6KG Refill - Reliable cooking gas supplier in Uganda"
 }, {
   id: "22",
-  brand: "Global Gas",
+  brand: "Taifa",
   weight: "3KG",
-  price: 24500,
-  description: "Global Gas 3KG Refill - Budget-friendly option for students"
+  price: 28000,
+  description: "Taifa Gas 3KG Refill - Budget-friendly option for students"
+},
+{
+  id: "23",
+  brand: "Taifa",
+  weight: "12KG",
+  price: 95000,
+  description: "Taifa Gas 12KG Refill - Budget-friendly option for students"
+},
+{
+  id: "24",
+  brand: "K Gas",
+  weight: "6KG",
+  price: 45000,
+  description: "K Gas 6KG Refill - Budget-friendly option for students"
+},
+{
+  id: "25",
+  brand: "K Gas",
+  weight: "12KG",
+  price: 95000,
+  description: "K Gas 12KG Refill - Budget-friendly option for students"
+},
+{
+  id: "26",
+  brand: "Ven Gas",
+  weight: "6KG",
+  price: 45000,
+  description: "Ven Gas 6KG Refill - Budget-friendly option for students"
+},
+{
+  id: "27",
+  brand: "Ven GAs",
+  weight: "12KG",
+  price: 95000,
+  description: "Ven Gas 3KG Refill - Budget-friendly option for students"
+},
+{
+  id: "28",
+  brand: "C Gas",
+  weight: "6KG",
+  price: 45000,
+  description: "C Gas 3KG Refill - Budget-friendly option for students"
+},
+{
+  id: "29",
+  brand: "C Gas",
+  weight: "12KG",
+  price: 95000,
+  description: "C Gas 3KG Refill - Budget-friendly option for students"
 }];
 const Refill = () => {
   const navigate = useNavigate();
