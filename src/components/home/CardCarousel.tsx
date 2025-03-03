@@ -25,26 +25,6 @@ const promotionCards = [
   {
     id: 5,    
     image: "/images/stay_healthy.png",
-  },
-  {
-    id: 6,    
-    image: "/images/total 6KG.png",
-  },
-  {
-    id: 7,    
-    image: "/images/shell 6KG.png",
-  },
-  {
-    id: 8,    
-    image: "/images/total 12KG.png",
-  },
-  {
-    id: 9,    
-    image: "/images/stabex 6KG.png",
-  },
-  {
-    id: 10,    
-    image: "/images/stabex 12KG.png",
   }
 ];
 
