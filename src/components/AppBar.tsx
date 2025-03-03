@@ -10,9 +10,7 @@ const AppBar = () => {
         <Link to="/order" className="text-sm text-muted-foreground hover:text-accent transition-colors">
           Order
         </Link>
-        <Link to="/refill" className="text-sm text-muted-foreground hover:text-accent transition-colors">
-          Refill
-        </Link>
+        
       </div>
     </div>;
 };
