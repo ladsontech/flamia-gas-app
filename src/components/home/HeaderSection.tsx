@@ -1,6 +1,4 @@
-
 import { motion } from "framer-motion";
-
 const HeaderSection = () => {
   return <motion.div initial={{
     opacity: 0,
@@ -16,10 +14,7 @@ const HeaderSection = () => {
           Quality Gas Cylinders
         </h2>
       </div>
-      <p className="text-muted-foreground mb-3 text-xs sm:text-sm">
-        Choose from our selection of trusted gas brands
-      </p>
+      
     </motion.div>;
 };
-
 export default HeaderSection;
