@@ -54,8 +54,7 @@ const staticBrands = [
     id: "3",
     name: "Oryx Gas Uganda",
     brand: "Oryx",
-    image_url_6kg: "/images/oryx-6kg.jpg",
-    image_url_12kg: "/images/oryx-12kg.jpg",
+    image_url_6kg: "/images/oryx 6KG.png",    
     price_6kg: "UGX 165,000",
     description_6kg: "Popular Oryx 6KG gas cylinder - affordable cooking gas with free delivery",
     description_12kg: "Oryx 12KG gas cylinder for restaurants and large homes in Uganda"
@@ -75,10 +74,9 @@ const staticBrands = [
     id: "5",
     name: "Hass Gas Uganda",
     brand: "Hass",
-    image_url_6kg: "/images/hass-6kg.jpg",
-    image_url_12kg: "/images/hass-12kg.jpg",
-    price_6kg: "UGX 122,000",
-    price_12kg: "UGX 183,000",
+    image_url_6kg: "/images/hass 6KG.png",    
+    price_6kg: "UGX 165,000",
+
     description_6kg: "Hass 6KG gas cylinder - cheap LPG for delivery in Kampala & Wakiso",
     description_12kg: "Premium Hass 12KG gas cylinder for restaurants & large families"
   }
