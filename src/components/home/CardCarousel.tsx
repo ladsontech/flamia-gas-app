@@ -4,36 +4,48 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Define our promotional cards data
+// Define our promotional cards data with images only
 const promotionCards = [
   {
     id: 1,    
     image: "/images/make_order.png",
-    
   },
   {
     id: 2,   
     image: "/images/free_delivery.png",
-    
   },
   {
     id: 3,
     image: "/images/cook_healthy.png",
-    
   },
   {
     id: 4,    
     image: "/images/eat_healthy.png",
-    
   },
   {
     id: 5,    
     image: "/images/stay_healthy.png",
-    
+  },
+  {
+    id: 6,    
+    image: "/images/total 6KG.png",
+  },
+  {
+    id: 7,    
+    image: "/images/shell 6KG.png",
+  },
+  {
+    id: 8,    
+    image: "/images/total 12KG.png",
+  },
+  {
+    id: 9,    
+    image: "/images/stabex 6KG.png",
+  },
+  {
+    id: 10,    
+    image: "/images/stabex 12KG.png",
   }
-
-
-
 ];
 
 const CardCarousel: React.FC = () => {
@@ -66,7 +78,7 @@ const CardCarousel: React.FC = () => {
 
   return (
     <div className="relative w-full overflow-hidden rounded-lg mb-4">
-      <div className="relative aspect-square md:aspect-auto md:h-[200px] lg:h-[250px] w-full">
+      <div className="relative aspect-square w-full">
         {loading && (
           <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
             <div className="w-6 h-6 border-3 border-accent rounded-full border-t-transparent animate-spin"></div>
@@ -83,21 +95,14 @@ const CardCarousel: React.FC = () => {
             className="absolute inset-0"
           >
             <Card className="w-full h-full overflow-hidden border-0 shadow-md">
-              <CardContent className="p-0 h-full flex flex-col md:flex-row">
-                <div className="relative w-full md:w-1/2 h-48 md:h-full">
-                  <div className="relative w-full h-full aspect-square">
-                    <img 
-                      src={promotionCards[currentIndex].image}
-                      alt={promotionCards[currentIndex].title}
-                      className="w-full h-full object-cover"
-                      onLoad={handleImageLoad}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
-                  </div>
-                </div>
-                <div className={`flex-1 flex flex-col justify-center p-3 bg-gradient-to-r ${promotionCards[currentIndex].color}`}>
-                  <h3 className="text-lg md:text-xl font-bold mb-1">{promotionCards[currentIndex].title}</h3>
-                  <p className="text-xs md:text-sm">{promotionCards[currentIndex].description}</p>
+              <CardContent className="p-0 h-full">
+                <div className="relative w-full h-full aspect-square">
+                  <img 
+                    src={promotionCards[currentIndex].image}
+                    alt="Promotional image"
+                    className="w-full h-full object-cover"
+                    onLoad={handleImageLoad}
+                  />
                 </div>
               </CardContent>
             </Card>

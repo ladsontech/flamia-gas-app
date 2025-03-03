@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
-import ImageCarousel from "@/components/home/ImageCarousel";
 
 // Static refill price data with SEO keywords
 const staticBrands = ["Total", "Shell", "Oryx", "Stabex", "Hass", "Vivo Energy", "Planet Gas", "Global Gas"];
@@ -84,9 +82,6 @@ const Refill = () => {
         <div className="flex justify-between items-center mb-4">
           <BackButton />
         </div>
-        
-        {/* Image Carousel Component */}
-        <ImageCarousel />
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
