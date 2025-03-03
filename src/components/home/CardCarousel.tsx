@@ -57,37 +57,40 @@ const CardCarousel: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg mb-4">
-      <div className="relative aspect-square w-full">
-        {loading && (
-          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
-            <div className="w-6 h-6 border-3 border-accent rounded-full border-t-transparent animate-spin"></div>
-          </div>
-        )}
-        
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0"
-          >
-            <Card className="w-full h-full overflow-hidden border-0 shadow-md">
-              <CardContent className="p-0 h-full">
-                <div className="relative w-full h-full aspect-square">
-                  <img 
-                    src={promotionCards[currentIndex].image}
-                    alt="Promotional image"
-                    className="w-full h-full object-cover"
-                    onLoad={handleImageLoad}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </AnimatePresence>
+    <div className="relative w-full overflow-visible mb-4">
+      {/* Carousel container that will show a peek of next/previous cards */}
+      <div className="relative w-[85%] mx-auto overflow-visible">
+        <div className="relative aspect-square w-full">
+          {loading && (
+            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+              <div className="w-6 h-6 border-3 border-accent rounded-full border-t-transparent animate-spin"></div>
+            </div>
+          )}
+          
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0"
+            >
+              <Card className="w-full h-full overflow-hidden border-0 shadow-md">
+                <CardContent className="p-0 h-full">
+                  <div className="relative w-full h-full aspect-square">
+                    <img 
+                      src={promotionCards[currentIndex].image}
+                      alt="Promotional image"
+                      className="w-full h-full object-cover"
+                      onLoad={handleImageLoad}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
       
       {/* Navigation buttons */}
