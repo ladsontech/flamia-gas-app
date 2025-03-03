@@ -7,9 +7,7 @@ const AppBar = () => {
         <span className="font-bold text-4xl">Flamia</span>
       </Link>
       <div className="flex items-center gap-3">
-        <Link to="/order" className="text-sm text-muted-foreground hover:text-accent transition-colors">
-          Order
-        </Link>
+        
         
       </div>
     </div>;
