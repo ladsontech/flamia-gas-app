@@ -25,15 +25,8 @@ const promotionCards = [
   {
     id: 5,    
     image: "/images/stay_healthy.png",
-  },
-  {
-    id: 6,    
-    image: "/images/oryx 6KG.png",
-  },
-  {
-    id: 7,    
-    image: "/images/hass 6KG.png",
   }
+  
 ];
 
 const CardCarousel: React.FC = () => {
