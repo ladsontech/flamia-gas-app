@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
+import InstallPWA from "./InstallPWA";
 
 const AppBar = () => {
   // State for showing update notification
@@ -45,7 +46,7 @@ const AppBar = () => {
           </span>
         </Link>
         <div className="flex items-center gap-3">
-          {/* Add any additional buttons or menu items here */}
+          <InstallPWA />
         </div>
       </div>
       

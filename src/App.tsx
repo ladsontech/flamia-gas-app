@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +13,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "./integrations/supabase/client";
-import InstallPWA from "./components/InstallPWA";
 
 const AppContent = () => {
   const location = useLocation();
@@ -77,10 +75,6 @@ const AppContent = () => {
         <link rel="canonical" href={window.location.href} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
-
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
-        <InstallPWA />
-      </div>
 
       {hasPwaUpdate && (
         <div className="fixed bottom-20 left-0 right-0 mx-auto w-max z-50">

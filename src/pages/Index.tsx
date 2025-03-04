@@ -48,6 +48,22 @@ const Index = () => {
         <meta name="format-detection" content="telephone=yes" />
         <meta name="format-detection" content="address=yes" />
         
+        {/* Additional SEO Meta Tags */}
+        <meta name="author" content="Flamia Gas Delivery" />
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
+        <meta name="google" content="notranslate" />
+        <meta name="theme-color" content="#00b341" />
+        <meta name="msapplication-TileColor" content="#00b341" />
+        <meta name="msapplication-navbutton-color" content="#00b341" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="application-name" content="Flamia Gas Delivery" />
+        <meta name="apple-mobile-web-app-title" content="Flamia Gas" />
+
+        {/* Schema.org markup for Google+ */}
+        <meta itemprop="name" content="Flamia - Best Gas Delivery Service in Uganda" />
+        <meta itemprop="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders." />
+        
         {/* Preload critical images */}
         <link rel="preload" as="image" href="/images/oryx 6KG.png" />
         <link rel="preload" as="image" href="/images/hass 6KG.png" />
