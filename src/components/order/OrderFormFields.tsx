@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import { Truck } from "lucide-react";
 
 interface OrderFormFieldsProps {
   formData: {
@@ -17,6 +18,8 @@ interface OrderFormFieldsProps {
     quantity: number;
     size: string;
     contact?: string;
+    brand?: string;
+    type?: string;
   };
   setFormData: (data: any) => void;
   selectedBrand?: string;
@@ -36,6 +39,38 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       ...prev,
       size: value
     }));
+  };
+
+  const handleBrandChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      brand: value
+    }));
+  };
+
+  // Gas brands list
+  const gasBrands = [
+    "Total", 
+    "Taifa", 
+    "Stabex", 
+    "Shell", 
+    "Hass", 
+    "Meru", 
+    "Ven Gas", 
+    "Ola Energy", 
+    "Oryx", 
+    "Ultimate", 
+    "K Gas", 
+    "C Gas", 
+    "Hashi"
+  ];
+
+  // Get price based on size
+  const getPrice = () => {
+    if (formData.size === "3KG") return 28000;
+    if (formData.size === "6KG") return 45000;
+    if (formData.size === "12KG") return 95000;
+    return 0;
   };
 
   const containerVariants = {
@@ -61,6 +96,25 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       animate="visible"
       className="space-y-3"
     >
+      {!selectedBrand && formData.type !== "fullset" && (
+        <motion.div variants={itemVariants} className="space-y-1">
+          <Label htmlFor="brand" className="text-sm">Brand</Label>
+          <Select
+            value={formData.brand}
+            onValueChange={handleBrandChange}
+          >
+            <SelectTrigger id="brand" className="bg-white h-8 text-sm">
+              <SelectValue placeholder="Select brand" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border shadow-md max-h-[300px]">
+              {gasBrands.map(brand => (
+                <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </motion.div>
+      )}
+
       {selectedBrand && (
         <motion.div variants={itemVariants} className="space-y-1">
           <Label className="text-sm">Selected Brand</Label>
@@ -78,11 +132,22 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
             <SelectValue placeholder="Select weight" />
           </SelectTrigger>
           <SelectContent className="bg-white border shadow-md">
+            {(formData.brand === "Total" || formData.brand === "Taifa" || selectedBrand === "Total" || selectedBrand === "Taifa") && (
+              <SelectItem value="3KG">3KG</SelectItem>
+            )}
             <SelectItem value="6KG">6KG</SelectItem>
             <SelectItem value="12KG">12KG</SelectItem>
           </SelectContent>
         </Select>
       </motion.div>
+
+      {formData.size && (
+        <motion.div variants={itemVariants} className="bg-accent/5 p-2 rounded-md">
+          <p className="text-accent font-semibold text-sm">
+            Price: UGX {getPrice().toLocaleString()}
+          </p>
+        </motion.div>
+      )}
 
       <motion.div variants={itemVariants} className="space-y-1">
         <Label htmlFor="quantity" className="text-sm">Quantity</Label>
@@ -124,6 +189,14 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           placeholder="Enter your delivery address"
           className="border-accent/20 focus:border-accent/40 h-8 text-sm"
         />
+      </motion.div>
+
+      <motion.div 
+        variants={itemVariants}
+        className="flex items-center justify-center text-sm text-muted-foreground mt-1 p-2 bg-gray-50/50 rounded-md"
+      >
+        <Truck className="w-4 h-4 mr-2 text-accent" />
+        <span>Free Delivery in Kampala</span>
       </motion.div>
     </motion.div>
   );
