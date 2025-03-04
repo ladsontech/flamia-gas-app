@@ -19,6 +19,36 @@ const Index = () => {
         <title>Flamia - Best Gas Delivery & Refill Service in Uganda | Free Delivery</title>
         <meta name="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders. Same-day LPG delivery." />
         <meta name="keywords" content="gas delivery Uganda, LPG delivery Kampala, cooking gas near me, cheap gas cylinders, gas refill service, Total gas Uganda, Shell gas delivery, Oryx gas price, Stabex gas cylinder, Hass gas Wakiso, free gas delivery" />
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="geo.region" content="UG" />
+        <meta name="geo.placename" content="Kampala" />
+        <meta name="geo.position" content="0.347596;32.582520" />
+        <meta name="ICBM" content="0.347596, 32.582520" />
+        <meta name="og:locale" content="en_UG" />
+        <meta name="og:type" content="website" />
+        <meta name="og:title" content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery" />
+        <meta name="og:description" content="Order cooking gas online with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass cylinders." />
+        <meta name="og:url" content="https://flamia.store/" />
+        <meta name="og:site_name" content="Flamia Gas Delivery" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery" />
+        <meta name="twitter:description" content="Order cooking gas online with free delivery in Kampala, Wakiso & Mukono. Best prices on all top brands." />
+        
+        {/* Content Specifications */}
+        <meta name="content-language" content="en" />
+        <meta http-equiv="content-language" content="en" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="target" content="all" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        
+        {/* Structured Data Hint */}
+        <meta name="format-detection" content="telephone=yes" />
+        <meta name="format-detection" content="address=yes" />
+        
+        {/* Preload critical images */}
         <link rel="preload" as="image" href="/images/oryx 6KG.png" />
         <link rel="preload" as="image" href="/images/hass 6KG.png" />
         <link rel="preload" as="image" href="/images/total 6KG.png" />

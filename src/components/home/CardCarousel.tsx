@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,13 +26,80 @@ const promotionCards = [
     id: 5,    
     image: "/images/stay_healthy.png",
   }
-  
 ];
 
 const CardCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [imagesPreloaded, setImagesPreloaded] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
+  // Handle touch start
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  // Handle touch move
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  // Handle touch end
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      nextCard();
+    }
+    
+    if (isRightSwipe) {
+      prevCard();
+    }
+  };
+
+  // Mouse drag functionality
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState(0);
+  const [dragEnd, setDragEnd] = useState(0);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart(e.clientX);
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (isDragging) {
+      setDragEnd(e.clientX);
+    }
+  };
+
+  const onMouseUp = () => {
+    if (isDragging) {
+      const distance = dragStart - dragEnd;
+      if (Math.abs(distance) > minSwipeDistance) {
+        if (distance > 0) {
+          nextCard();
+        } else {
+          prevCard();
+        }
+      }
+      setIsDragging(false);
+    }
+  };
+
+  const onMouseLeave = () => {
+    setIsDragging(false);
+  };
 
   // Preload all images on component mount
   useEffect(() => {
@@ -88,7 +155,21 @@ const CardCarousel: React.FC = () => {
   return (
     <div className="relative w-full overflow-visible mb-3">
       {/* Carousel container that will show a peek of next/previous cards */}
-      <div className="relative w-[85%] mx-auto overflow-visible">
+      <div 
+        className="relative w-[85%] mx-auto overflow-visible"
+        ref={carouselRef}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
+        style={{ 
+          cursor: isDragging ? 'grabbing' : 'grab',
+          userSelect: 'none'
+        }}
+      >
         <div className="relative aspect-square w-full">
           {loading && (
             <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">

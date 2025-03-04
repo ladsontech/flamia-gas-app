@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +67,26 @@ const Accessories = () => {
         <title>Gas Accessories - Flamia</title>
         <meta name="description" content="Shop for gas accessories including regulators, pipes, stoves, and more. Free delivery in Kampala." />
         <meta name="keywords" content="gas accessories, gas regulator, gas pipe, gas stove, cylinder stand, LPG accessories" />
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="geo.region" content="UG" />
+        <meta name="geo.placename" content="Kampala" />
+        <meta name="og:locale" content="en_UG" />
+        <meta name="og:type" content="product" />
+        <meta name="og:title" content="Gas Accessories & Equipment - Flamia Uganda" />
+        <meta name="og:description" content="Shop quality gas accessories with free delivery in Kampala. Gas regulators, pipes, burners, stoves, and more at best prices." />
+        <meta name="og:url" content="https://flamia.store/accessories" />
+        <meta name="og:site_name" content="Flamia Gas Delivery" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Gas Accessories & Equipment - Flamia Uganda" />
+        <meta name="twitter:description" content="Shop quality gas accessories with free delivery in Kampala. Regulators, pipes, burners, stoves at best prices." />
+        
+        {/* Content Specifications */}
+        <meta name="content-language" content="en" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        
         {/* Preload critical images */}
         <link rel="preload" as="image" href="/images/regulator.jpeg" />
         <link rel="preload" as="image" href="/images/horse_pipe.jpeg" />
