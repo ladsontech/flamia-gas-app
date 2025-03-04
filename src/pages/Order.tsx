@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -105,6 +106,26 @@ const Order = () => {
     brand: selectedBrand || (accessoryData ? "" : "Total") // Default to Total for new accessory orders
   });
 
+  // Function to get price based on brand, size and order type
+  const getPrice = () => {
+    if (formData.type === "refill") {
+      const brand = refillBrands.find(b => b.brand === formData.brand);
+      if (!brand) return "Price not available";
+
+      if (formData.size === "3KG") return brand.refill_price_3kg || "Price not available";
+      if (formData.size === "6KG") return brand.refill_price_6kg || "Price not available";
+      if (formData.size === "12KG") return brand.refill_price_12kg || "Price not available";
+    } else {
+      const brand = staticBrands.find(b => b.brand === formData.brand);
+      if (!brand) return "Price not available";
+
+      if (formData.size === "6KG") return brand.price_6kg || "Price not available";
+      if (formData.size === "12KG") return brand.price_12kg || "Price not available";
+    }
+    
+    return "Price not available";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -128,23 +149,19 @@ const Order = () => {
 *Free Delivery:* Within Kampala%0A
 ------------------------`;
       } else {
-        // Get the price based on size
-        let price = 0;
-        if (formData.size === "3KG") price = 28000;
-        else if (formData.size === "6KG") price = 45000;
-        else if (formData.size === "12KG") price = 95000;
+        // Get price from our data
+        const price = getPrice();
         
         // Format message for gas order with price and free delivery info
         message = `Flamia 🔥%0A
 ------------------------%0A
 *New Gas Order*%0A
 ------------------------%0A
-*Order Type:* ${formData.type}%0A
+*Order Type:* ${formData.type === "refill" ? "Refill" : "Full Set"}%0A
 *Brand:* ${formData.brand}%0A
 *Size:* ${formData.size}%0A
-*Price:* UGX ${price.toLocaleString()}%0A
+*Price:* ${price}%0A
 *Quantity:* ${formData.quantity}%0A
-*Total Amount:* UGX ${(price * formData.quantity).toLocaleString()}%0A
 *Contact:* ${formData.contact}%0A
 *Address:* ${formData.address}%0A
 *Free Delivery:* Within Kampala%0A
@@ -169,7 +186,7 @@ const Order = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white">
+    <div className={`min-h-screen ${formData.type === "fullset" ? "bg-gradient-to-b from-primary to-white" : "bg-gradient-to-b from-accent/5 to-white"}`}>
       <div className="container max-w-md px-3 py-6">
         <BackButton />
         
@@ -179,8 +196,8 @@ const Order = () => {
           exit={{ opacity: 0, y: -20 }}
           className="space-y-4"
         >
-          <Card className="p-4 relative overflow-hidden border-none shadow-lg bg-white/80 backdrop-blur-sm">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-75" />
+          <Card className={`p-4 relative overflow-hidden border-none shadow-lg ${formData.type === "fullset" ? "bg-white/80 backdrop-blur-sm" : "bg-white/95"}`}>
+            <div className={`absolute top-0 left-0 w-full h-1 ${formData.type === "fullset" ? "bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-75" : "bg-accent"}`} />
             
             {accessoryData ? (
               <div className="text-center mb-6">
@@ -294,14 +311,22 @@ const Order = () => {
               >
                 <Button
                   type="submit"
-                  className="w-full bg-accent text-white hover:bg-accent/90 relative overflow-hidden group h-10"
+                  className={`w-full text-white relative overflow-hidden group h-10 ${
+                    formData.type === "fullset" 
+                      ? "bg-accent hover:bg-accent/90" 
+                      : "bg-accent/90 hover:bg-accent"
+                  }`}
                   disabled={loading}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     {loading ? "Processing..." : "Order Now"}
                     <Flame className="w-4 h-4 transition-transform group-hover:rotate-12" />
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-0 group-hover:opacity-20 transition-opacity" />
+                  <div className={`absolute inset-0 ${
+                    formData.type === "fullset"
+                      ? "bg-gradient-to-r from-flame-inner via-flame-middle to-flame-outer opacity-0 group-hover:opacity-20"
+                      : "bg-accent opacity-0 group-hover:opacity-10"
+                  } transition-opacity`} />
                 </Button>
               </motion.div>
             </form>

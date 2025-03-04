@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,12 +8,12 @@ import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
 import CardCarousel from "@/components/home/CardCarousel";
 
-const Index = () => {
+export default function Index() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <Helmet>
         <title>Flamia - Best Gas Delivery & Refill Service in Uganda | Free Delivery</title>
         <meta name="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders. Same-day LPG delivery." />
@@ -61,8 +60,8 @@ const Index = () => {
         <meta name="apple-mobile-web-app-title" content="Flamia Gas" />
 
         {/* Schema.org markup for Google+ */}
-        <meta itemprop="name" content="Flamia - Best Gas Delivery Service in Uganda" />
-        <meta itemprop="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders." />
+        <meta itemProp="name" content="Flamia - Best Gas Delivery Service in Uganda" />
+        <meta itemProp="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders." />
         
         {/* Preload critical images */}
         <link rel="preload" as="image" href="/images/oryx 6KG.png" />
@@ -135,8 +134,6 @@ const Index = () => {
         </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
-};
-
-export default Index;
+}

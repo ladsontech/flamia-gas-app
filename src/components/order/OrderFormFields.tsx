@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Truck } from "lucide-react";
+import { Truck, Info } from "lucide-react";
+import { staticBrands, refillBrands } from "../home/BrandsData"; // We'll create this file
 
 interface OrderFormFieldsProps {
   formData: {
@@ -26,6 +27,12 @@ interface OrderFormFieldsProps {
 }
 
 export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderFormFieldsProps) => {
+  const [brandPrices, setBrandPrices] = useState<{
+    price6kg?: string;
+    price12kg?: string;
+    price3kg?: string;
+  }>({});
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ 
@@ -46,6 +53,26 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       ...prev,
       brand: value
     }));
+    
+    // Update prices when brand changes
+    const brandData = formData.type === "refill" 
+      ? refillBrands.find(b => b.brand === value)
+      : staticBrands.find(b => b.brand === value);
+    
+    if (brandData) {
+      if (formData.type === "refill") {
+        setBrandPrices({
+          price3kg: (brandData as any).refill_price_3kg,
+          price6kg: (brandData as any).refill_price_6kg,
+          price12kg: (brandData as any).refill_price_12kg,
+        });
+      } else {
+        setBrandPrices({
+          price6kg: (brandData as any).price_6kg,
+          price12kg: (brandData as any).price_12kg,
+        });
+      }
+    }
   };
 
   // Gas brands list
@@ -65,13 +92,32 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
     "Hashi"
   ];
 
-  // Get price based on size
+  // Get price based on selected brand and size
   const getPrice = () => {
-    if (formData.size === "3KG") return 28000;
-    if (formData.size === "6KG") return 45000;
-    if (formData.size === "12KG") return 95000;
-    return 0;
+    if (formData.type === "refill") {
+      const brand = refillBrands.find(b => b.brand === formData.brand);
+      if (!brand) return "Price not available";
+
+      if (formData.size === "3KG") return brand.refill_price_3kg || "Price not available";
+      if (formData.size === "6KG") return brand.refill_price_6kg || "Price not available";
+      if (formData.size === "12KG") return brand.refill_price_12kg || "Price not available";
+    } else {
+      const brand = staticBrands.find(b => b.brand === formData.brand);
+      if (!brand) return "Price not available";
+
+      if (formData.size === "6KG") return brand.price_6kg || "Price not available";
+      if (formData.size === "12KG") return brand.price_12kg || "Price not available";
+    }
+    
+    return "Price not available";
   };
+
+  // Initialize brand data when component mounts or when form type/brand changes
+  useEffect(() => {
+    if (formData.brand) {
+      handleBrandChange(formData.brand);
+    }
+  }, [formData.type, formData.brand]);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 10 },
@@ -96,14 +142,14 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       animate="visible"
       className="space-y-3"
     >
-      {!selectedBrand && formData.type !== "fullset" && (
+      {!selectedBrand && (
         <motion.div variants={itemVariants} className="space-y-1">
           <Label htmlFor="brand" className="text-sm">Brand</Label>
           <Select
             value={formData.brand}
             onValueChange={handleBrandChange}
           >
-            <SelectTrigger id="brand" className="bg-white h-8 text-sm">
+            <SelectTrigger id="brand" className={`h-8 text-sm ${formData.type === "fullset" ? "bg-white/90" : "bg-white"}`}>
               <SelectValue placeholder="Select brand" />
             </SelectTrigger>
             <SelectContent className="bg-white border shadow-md max-h-[300px]">
@@ -128,7 +174,7 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           value={formData.size}
           onValueChange={handleSizeChange}
         >
-          <SelectTrigger className="bg-white h-8 text-sm">
+          <SelectTrigger className={`h-8 text-sm ${formData.type === "fullset" ? "bg-white/90" : "bg-white"}`}>
             <SelectValue placeholder="Select weight" />
           </SelectTrigger>
           <SelectContent className="bg-white border shadow-md">
@@ -141,11 +187,19 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
         </Select>
       </motion.div>
 
-      {formData.size && (
-        <motion.div variants={itemVariants} className="bg-accent/5 p-2 rounded-md">
+      {formData.size && formData.brand && (
+        <motion.div 
+          variants={itemVariants} 
+          className={`p-2 rounded-md flex items-center justify-between ${
+            formData.type === "fullset" ? "bg-accent/10" : "bg-accent/5"
+          }`}
+        >
           <p className="text-accent font-semibold text-sm">
-            Price: UGX {getPrice().toLocaleString()}
+            Price: {getPrice()}
           </p>
+          {formData.type === "fullset" && (
+            <Info className="w-4 h-4 text-accent/70" />
+          )}
         </motion.div>
       )}
 
@@ -160,7 +214,9 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
           placeholder="Enter quantity"
-          className="border-accent/20 focus:border-accent/40 h-8 text-sm"
+          className={`border-accent/20 focus:border-accent/40 h-8 text-sm ${
+            formData.type === "fullset" ? "bg-white/90" : "bg-white"
+          }`}
         />
       </motion.div>
 
@@ -174,7 +230,9 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
           placeholder="Enter your phone number"
-          className="border-accent/20 focus:border-accent/40 h-8 text-sm"
+          className={`border-accent/20 focus:border-accent/40 h-8 text-sm ${
+            formData.type === "fullset" ? "bg-white/90" : "bg-white"
+          }`}
         />
       </motion.div>
 
@@ -187,13 +245,17 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
           onChange={handleInputChange}
           required
           placeholder="Enter your delivery address"
-          className="border-accent/20 focus:border-accent/40 h-8 text-sm"
+          className={`border-accent/20 focus:border-accent/40 h-8 text-sm ${
+            formData.type === "fullset" ? "bg-white/90" : "bg-white"
+          }`}
         />
       </motion.div>
 
       <motion.div 
         variants={itemVariants}
-        className="flex items-center justify-center text-sm text-muted-foreground mt-1 p-2 bg-gray-50/50 rounded-md"
+        className={`flex items-center justify-center text-sm text-muted-foreground mt-1 p-2 rounded-md ${
+          formData.type === "fullset" ? "bg-accent/5" : "bg-gray-50/50"
+        }`}
       >
         <Truck className="w-4 h-4 mr-2 text-accent" />
         <span>Free Delivery in Kampala</span>
