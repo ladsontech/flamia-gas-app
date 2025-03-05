@@ -54,13 +54,13 @@ export const staticBrands = [
   }
 ];
 
-// Separate refill brands data - Some may not have full sets
+// Expanded refill brands data with comprehensive pricing for all common brands
 export const refillBrands = [
   {
     id: "1",
     name: "Total Gas Uganda",
     brand: "Total",
-    refill_price_3kg: "UGX 25,000",
+    refill_price_3kg: "UGX 28,000",
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
   },
@@ -98,5 +98,62 @@ export const refillBrands = [
     brand: "Vivo Energy",
     refill_price_6kg: "UGX 47,000",
     refill_price_12kg: "UGX 88,000",
+  },
+  {
+    id: "7",
+    name: "Taifa Gas Uganda",
+    brand: "Taifa",
+    refill_price_3kg: "UGX 28,000",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "8",
+    name: "Meru Gas Uganda",
+    brand: "Meru",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "9",
+    name: "Ven Gas Uganda",
+    brand: "Ven Gas",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "10",
+    name: "Ola Energy Gas Uganda",
+    brand: "Ola Energy",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "11",
+    name: "Ultimate Gas Uganda",
+    brand: "Ultimate",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "12",
+    name: "K Gas Uganda",
+    brand: "K Gas",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "13",
+    name: "C Gas Uganda",
+    brand: "C Gas",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "14",
+    name: "Hashi Gas Uganda",
+    brand: "Hashi",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
   }
 ];

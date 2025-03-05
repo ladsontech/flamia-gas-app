@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { Truck, Info } from "lucide-react";
-import { staticBrands, refillBrands } from "../home/BrandsData"; // We'll create this file
+import { staticBrands, refillBrands } from "../home/BrandsData"; // Import the refillBrands data
 
 interface OrderFormFieldsProps {
   formData: {
