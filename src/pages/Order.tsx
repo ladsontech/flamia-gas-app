@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
+import { accessories } from "@/components/accessories/AccessoriesData";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -26,7 +26,6 @@ const Order = () => {
   const size = searchParams.get("size") || "";
   const accessoryId = searchParams.get("accessory");
 
-  // Gas brands for selection
   const gasBrands = [
     "Total", 
     "Taifa", 
@@ -43,46 +42,10 @@ const Order = () => {
     "Hashi"
   ];
 
-  // Fetch accessory data if accessoryId is provided
   useEffect(() => {
     const fetchAccessoryData = async () => {
       if (accessoryId) {
         try {
-          // This is a static lookup since we have a static array in Accessories.tsx
-          // In a real app, you would fetch from Supabase or another data source
-          const accessories = [
-            {
-              id: "1",
-              name: "Gas Regulator",
-              price: 15000,
-            },
-            {
-              id: "2",
-              name: "Gas Pipe (2 Meters)",
-              price: 8000,
-            },
-            {
-              id: "3",
-              name: "2-Burner Gas Stove",
-              price: 85000,
-            },
-            {
-              id: "4",
-              name: "Cylinder Stand",
-              price: 25000,
-            },
-            {
-              id: "5",
-              name: "6Kg Burner",
-              price: 25000,
-            },
-            {
-              id: "6",
-              name: "Gas Lighter",
-              price: 5000,
-            }
-          ];
-          
           const accessory = accessories.find(a => a.id === accessoryId);
           if (accessory) {
             setAccessoryData(accessory);
@@ -103,10 +66,9 @@ const Order = () => {
     quantity: 1,
     contact: "",
     accessory_id: accessoryId || undefined,
-    brand: selectedBrand || (accessoryData ? "" : "Total") // Default to Total for new accessory orders
+    brand: selectedBrand || (accessoryData ? "" : "Total")
   });
 
-  // Function to get price based on brand, size and order type
   const getPrice = () => {
     if (formData.type === "refill") {
       const brand = refillBrands.find(b => b.brand === formData.brand);
@@ -134,7 +96,6 @@ const Order = () => {
       let message = '';
       
       if (accessoryData) {
-        // Format message for accessory order with brand and free delivery info
         message = `Flamia 🔥%0A
 ------------------------%0A
 *New Accessory Order*%0A
@@ -149,10 +110,8 @@ const Order = () => {
 *Free Delivery:* Within Kampala%0A
 ------------------------`;
       } else {
-        // Get price from our data
         const price = getPrice();
         
-        // Format message for gas order with price and free delivery info
         message = `Flamia 🔥%0A
 ------------------------%0A
 *New Gas Order*%0A
