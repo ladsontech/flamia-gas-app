@@ -242,7 +242,7 @@ const staticRefillPrices = [
     brand: "Safe",
     weight: "6KG",
     price: 45000,
-    description: "Safe Gas 12KG Refill - Ideal for large families and businesses"
+    description: "Safe Gas 6KG Refill - Best for students and small families"
   },
   {
     id: "30",
