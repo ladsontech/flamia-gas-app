@@ -17,9 +17,9 @@ const STATIC_RESOURCES = [
 
 // Version info for update notifications
 const APP_VERSION = {
-  version: '1.2.0',
+  version: '1.2.1',
   buildDate: new Date().toISOString(),
-  features: ['Improved update notifications', 'Better offline support']
+  features: ['Improved update notifications', 'Better offline support', 'Enhanced splash screen']
 };
 
 // Install event - cache static resources
@@ -164,6 +164,17 @@ self.addEventListener('sync', event => {
     // The actual sync logic will be handled by the application
     // when it detects it's back online
   }
+  
+  // Add additional sync handlers for different operations
+  if (event.tag === 'sync-pending-orders') {
+    console.log('Syncing pending orders...');
+    // Sync pending orders that were created offline
+  }
+  
+  if (event.tag === 'sync-user-preferences') {
+    console.log('Syncing user preferences...');
+    // Sync any user preference changes made offline
+  }
 });
 
 // Push notification handling
@@ -201,5 +212,24 @@ self.addEventListener('message', event => {
       type: 'VERSION_INFO',
       version: APP_VERSION
     });
+  }
+  
+  // Handle message requests for background sync
+  if (event.data && event.data.type === 'SYNC_DATA') {
+    self.registration.sync.register(event.data.syncTag || 'sync-data')
+      .then(() => {
+        console.log(`Background sync registered for: ${event.data.syncTag}`);
+        event.source.postMessage({
+          type: 'SYNC_REGISTERED',
+          syncTag: event.data.syncTag
+        });
+      })
+      .catch(error => {
+        console.error('Background sync registration failed:', error);
+        event.source.postMessage({
+          type: 'SYNC_ERROR',
+          error: error.message
+        });
+      });
   }
 });

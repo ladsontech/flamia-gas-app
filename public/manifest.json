@@ -69,7 +69,7 @@
   "id": "flamia-gas-delivery-pwa",
   "lang": "en",
   "dir": "ltr",
-  "iarc_rating_id": "",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "edge_side_panel": {
     "preferred_width": 400
   },
@@ -79,5 +79,6 @@
   },
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "offline_enabled": true,
-  "permissions": ["notifications", "geolocation"]
+  "permissions": ["notifications", "geolocation"],
+  "background_sync": true
 }
