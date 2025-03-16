@@ -22,9 +22,10 @@ const staticBrands = [
   "Ola Energy", 
   "Oryx", 
   "Ultimate", 
-  "K Gas", 
-  "C Gas", 
-  "Hashi"
+  "K ", 
+  "C", 
+  "Hashi",
+  "Safe"
 ];
 
 const staticRefillPrices = [
@@ -235,6 +236,20 @@ const staticRefillPrices = [
     weight: "12KG",
     price: 95000,
     description: "Hashi Gas 12KG Refill - Ideal for large families and businesses"
+  },
+  {
+    id: "29",
+    brand: "Safe",
+    weight: "6KG",
+    price: 45000,
+    description: "Safe Gas 12KG Refill - Ideal for large families and businesses"
+  },
+  {
+    id: "30",
+    brand: "Safe",
+    weight: "12KG",
+    price: 95000,
+    description: "Safe Gas 12KG Refill - Ideal for large families and businesses"
   }
 ];
 
