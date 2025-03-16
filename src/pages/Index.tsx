@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,9 +16,9 @@ export default function Index() {
   return (
     <>
       <Helmet>
-        <title>Flamia - Best Gas Delivery & Refill Service in Uganda | Free Delivery</title>
-        <meta name="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders. Same-day LPG delivery." />
-        <meta name="keywords" content="gas delivery Uganda, LPG delivery Kampala, cooking gas near me, cheap gas cylinders, gas refill service, Total gas Uganda, Shell gas delivery, Oryx gas price, Stabex gas cylinder, Hass gas Wakiso, free gas delivery" />
+        <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
+        <meta name="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices in Kampala, Wakiso & Mukono." />
+        <meta name="keywords" content="best gas delivery service in Uganda, fastest gas delivery Kampala, same-day gas cylinder delivery, free gas delivery near me, gas cylinder home delivery, LPG gas delivery service, best gas app Uganda, Total gas delivery, Shell gas delivery, Stabex gas delivery, Hass gas delivery, Oryx gas delivery, Ultimate gas delivery, C gas delivery, alternative to Fumbaa gas" />
         
         <meta name="geo.region" content="UG" />
         <meta name="geo.placename" content="Kampala" />
@@ -26,17 +27,17 @@ export default function Index() {
         <meta name="og:locale" content="en_UG" />
         <meta name="og:type" content="website" />
         <meta name="og:title" content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery" />
-        <meta name="og:description" content="Order cooking gas online with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass cylinders." />
+        <meta name="og:description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas at cheapest prices. Faster than Fumbaa gas!" />
         <meta name="og:url" content="https://flamia.store/" />
         <meta name="og:site_name" content="Flamia Gas Delivery" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery" />
-        <meta name="twitter:description" content="Order cooking gas online with free delivery in Kampala, Wakiso & Mukono. Best prices on all top brands." />
+        <meta name="twitter:description" content="Fastest gas delivery service in Uganda with free same-day delivery. Better than Fumbaa gas with lower prices and faster service." />
         
         <meta name="content-language" content="en" />
         <meta http-equiv="content-language" content="en" />
         <meta name="rating" content="general" />
-        <meta name="revisit-after" content="7 days" />
+        <meta name="revisit-after" content="3 days" />
         <meta name="target" content="all" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -45,7 +46,7 @@ export default function Index() {
         <meta name="format-detection" content="address=yes" />
         
         <meta name="author" content="Flamia Gas Delivery" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="googlebot" content="index, follow" />
         <meta name="google" content="notranslate" />
         <meta name="theme-color" content="#00b341" />
@@ -56,7 +57,7 @@ export default function Index() {
         <meta name="apple-mobile-web-app-title" content="Flamia Gas" />
 
         <meta itemProp="name" content="Flamia - Best Gas Delivery Service in Uganda" />
-        <meta itemProp="description" content="Order cooking gas with free delivery in Kampala, Wakiso & Mukono. Best prices on Total, Shell, Oryx, Stabex & Hass gas cylinders." />
+        <meta itemProp="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices." />
         
         <link rel="preload" as="image" href="/images/oryx 6KG.png" />
         <link rel="preload" as="image" href="/images/hass 6KG.png" />
@@ -94,7 +95,8 @@ export default function Index() {
 
               <section className="space-y-3 md:space-y-4">
                 <div className="text-center">
-                  
+                  <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">Best Gas Delivery Service in Uganda</h2>
+                  <p className="text-sm text-muted-foreground mb-3">Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe</p>
                 </div>
 
                 <div className="px-1">

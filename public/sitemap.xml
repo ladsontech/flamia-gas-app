@@ -1,10 +1,9 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://flamia.store/</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -13,9 +12,23 @@
       <image:caption>Fast and reliable gas delivery with best prices in Kampala, Wakiso, Mukono</image:caption>
     </image:image>
   </url>
+  
+  <!-- Enhanced Delivery Page - NEW -->
+  <url>
+    <loc>https://flamia.store/gas-delivery-uganda</loc>
+    <lastmod>2024-06-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1598449426314-8b17b0cc9c46?q=80&amp;w=800&amp;auto=format&amp;fit=crop</image:loc>
+      <image:title>Best Gas Delivery Service Uganda</image:title>
+      <image:caption>Fastest gas delivery in Uganda - free same-day LPG delivery in Kampala, Wakiso, Mukono</image:caption>
+    </image:image>
+  </url>
+  
   <url>
     <loc>https://flamia.store/refill</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -24,6 +37,8 @@
       <image:caption>Best gas refill service in Uganda - Stabex, Total, Shell, Oryx, Hass</image:caption>
     </image:image>
   </url>
+  
+  <!-- Other URLs -->
   <url>
     <loc>https://flamia.store/accessories</loc>
     <lastmod>2024-06-15</lastmod>
@@ -68,51 +83,71 @@
     <priority>0.7</priority>
   </url>
   
-  <!-- Brand-specific URLs -->
+  <!-- Brand-specific URLs with improved delivery focus -->
   <url>
     <loc>https://flamia.store/stabex-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flamia.store/total-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flamia.store/shell-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flamia.store/hass-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flamia.store/oryx-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flamia.store/ultimate-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flamia.store/c-gas-uganda</loc>
-    <lastmod>2024-06-15</lastmod>
+    <lastmod>2024-06-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
-  <!-- New Gas Cylinder Pages -->
+  <!-- NEW Delivery-specific URLs -->
+  <url>
+    <loc>https://flamia.store/fastest-gas-delivery-kampala</loc>
+    <lastmod>2024-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/same-day-gas-delivery-uganda</loc>
+    <lastmod>2024-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://flamia.store/free-gas-delivery-service-uganda</loc>
+    <lastmod>2024-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Gas Cylinder Pages -->
   <url>
     <loc>https://flamia.store/brand-new-gas-cylinders-uganda</loc>
     <lastmod>2024-06-15</lastmod>
@@ -139,5 +174,13 @@
     <lastmod>2024-06-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  
+  <!-- NEW Alternative to Fumbaa Gas Page -->
+  <url>
+    <loc>https://flamia.store/alternative-to-fumbaa-gas</loc>
+    <lastmod>2024-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

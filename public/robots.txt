@@ -22,6 +22,13 @@ Allow: /gas-cylinder-delivery-kampala
 Allow: /gas-cylinder-prices-uganda
 Allow: /gas-vs-fumbaa-gas
 
+# New optimized delivery pages
+Allow: /gas-delivery-uganda
+Allow: /fastest-gas-delivery-kampala
+Allow: /same-day-gas-delivery-uganda
+Allow: /free-gas-delivery-service-uganda
+Allow: /alternative-to-fumbaa-gas
+
 # Encourage crawling of important pages
 Allow: /sitemap.xml
 
