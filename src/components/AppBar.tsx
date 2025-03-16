@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import InstallPWA from "./InstallPWA";
+import UpdateNotification from "./UpdateNotification";
 
 const AppBar = () => {
   // State for showing update notification
@@ -34,6 +35,11 @@ const AppBar = () => {
   // Handle dismissing the update notice
   const dismissUpdate = () => {
     setShowUpdateNotice(false);
+  };
+
+  // Handle app update
+  const handleAppUpdate = () => {
+    window.location.reload();
   };
 
   return (
@@ -71,6 +77,9 @@ const AppBar = () => {
           </Button>
         </motion.div>
       )}
+
+      {/* Add the update notification component */}
+      <UpdateNotification onUpdate={handleAppUpdate} />
     </div>
   );
 };

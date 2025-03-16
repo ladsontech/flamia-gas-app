@@ -10,6 +10,9 @@ if (!container) {
   throw new Error("Root element not found!");
 }
 
+// Custom event bus for service worker updates
+const swEvents = new EventTarget();
+
 // Register Service Worker with update handling
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
@@ -18,16 +21,31 @@ if ('serviceWorker' in navigator) {
         scope: '/'
       });
 
+      // Function to check for updates more frequently
+      const checkForUpdates = () => {
+        registration.update().catch(err => {
+          console.error('Error checking for service worker updates:', err);
+        });
+      };
+
+      // Check for updates on page focus
+      window.addEventListener('focus', checkForUpdates);
+
+      // Also check periodically (every 30 minutes)
+      setInterval(checkForUpdates, 30 * 60 * 1000);
+
       // Check for updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content is available
-              if (confirm('New version available! Would you like to update?')) {
-                window.location.reload();
-              }
+              // New content is available, dispatch event
+              console.log('New service worker installed and waiting to activate');
+              swEvents.dispatchEvent(new Event('update-available'));
+              
+              // This will be picked up by the UpdateNotification component
+              // The service worker 'message' event will handle the notification
             }
           });
         }
@@ -58,6 +76,9 @@ if ('serviceWorker' in navigator) {
     document.dispatchEvent(new CustomEvent('app-status', { detail: { isOnline: false } }));
   });
 }
+
+// Expose service worker events to window for component access
+window.swEvents = swEvents;
 
 const root = createRoot(container);
 

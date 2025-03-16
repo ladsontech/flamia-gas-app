@@ -1,6 +1,6 @@
 
 // Cache names
-const CACHE_NAME = 'flamia-cache-v2'; // Incrementing version to force cache refresh
+const CACHE_NAME = 'flamia-cache-v3'; // Incrementing version to force cache refresh
 const STATIC_CACHE = `${CACHE_NAME}-static`;
 const DYNAMIC_CACHE = `${CACHE_NAME}-dynamic`;
 const OFFLINE_PAGE = '/offline.html';
@@ -15,6 +15,13 @@ const STATIC_RESOURCES = [
   '/lovable-uploads/icon.png'
 ];
 
+// Version info for update notifications
+const APP_VERSION = {
+  version: '1.2.0',
+  buildDate: new Date().toISOString(),
+  features: ['Improved update notifications', 'Better offline support']
+};
+
 // Install event - cache static resources
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -24,10 +31,10 @@ self.addEventListener('install', event => {
         .then(() => self.skipWaiting()) // Force new service worker to become active
     ])
   );
-  console.log('Service Worker installed - cache version v2');
+  console.log('Service Worker installed - cache version v3');
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and notify clients about update
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -43,7 +50,17 @@ self.addEventListener('activate', event => {
       })
       .then(() => {
         console.log('Service Worker activated and old caches removed');
-        return self.clients.claim(); // Take control of all clients
+        
+        // Notify all clients about the update
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'APP_UPDATED',
+              version: APP_VERSION
+            });
+          });
+          return self.clients.claim(); // Take control of all clients
+        });
       })
   );
 });
@@ -175,4 +192,14 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(
     clients.openWindow(event.notification.data.url || '/')
   );
+});
+
+// Message handler for communication with the app
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.source.postMessage({
+      type: 'VERSION_INFO',
+      version: APP_VERSION
+    });
+  }
 });
