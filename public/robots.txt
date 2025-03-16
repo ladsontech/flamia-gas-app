@@ -15,6 +15,12 @@ Allow: /total-gas-uganda
 Allow: /shell-gas-uganda
 Allow: /hass-gas-uganda
 Allow: /oryx-gas-uganda
+Allow: /ultimate-gas-uganda
+Allow: /c-gas-uganda
+Allow: /brand-new-gas-cylinders-uganda
+Allow: /gas-cylinder-delivery-kampala
+Allow: /gas-cylinder-prices-uganda
+Allow: /gas-vs-fumbaa-gas
 
 # Encourage crawling of important pages
 Allow: /sitemap.xml
