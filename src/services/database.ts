@@ -1,16 +1,9 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Order } from "@/types/order";
 
 export const verifyAdminPassword = async (password: string) => {
-  const { data, error } = await supabase
-    .from('admin_credentials')
-    .select('password_hash')
-    .single();
-
-  if (error) throw error;
-  
-  return data.password_hash === password;
+  // Hard-coded admin password check
+  return password === 'flamia123';
 };
 
 export const fetchOrders = async () => {
