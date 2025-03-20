@@ -10,18 +10,22 @@ import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
+import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import { supabase } from "./integrations/supabase/client";
+import PlaceScreen from "./components/PlaceScreen";
 
 const AppContent = () => {
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
 
-  // Hide bottom nav when place screen is showing
-  const showBottomNav = !showPlaceScreen;
+  // Hide bottom nav when place screen is showing or on admin/login routes
+  const showBottomNav = !showPlaceScreen && 
+    !['/admin', '/login'].includes(location.pathname);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -59,6 +63,8 @@ const AppContent = () => {
         <link rel="canonical" href={window.location.href} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
+
+      {showPlaceScreen && <PlaceScreen />}
 
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center">
@@ -110,6 +116,28 @@ const AppContent = () => {
                   transition={{ duration: 0.2 }}
                 >
                   <Accessories />
+                </motion.div>
+              } />
+              <Route path="/admin" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Admin />
+                </motion.div>
+              } />
+              <Route path="/login" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Login />
                 </motion.div>
               } />
             </Routes>
