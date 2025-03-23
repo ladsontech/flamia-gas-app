@@ -48,10 +48,34 @@ export const staticBrands = [
     name: "Hass Gas Uganda",
     brand: "Hass",
     image_url_6kg: "/images/hass 6KG.png",    
-    price_6kg: "UGX 165,000",
+    price_6kg: "UGX 150,000",
     description_6kg: "Hass 6KG gas cylinder - cheap LPG for delivery in Kampala & Wakiso",
     description_12kg: "Premium Hass 12KG gas cylinder for restaurants & large families"
+  },
+  {
+    id: "6",
+    name: "Ultimate Gas Uganda",
+    brand: "Ultimate",
+    image_url_6kg: "/images/ultimate 6.png", 
+    iamge_url_12kg: "/images/ultimate 13.png",   
+    price_6kg: "UGX 120,000",
+    price_12kg: "UGX 250,000",
+    description_6kg: " Comes with a burner",
+    description_12kg: "comes with a regulator, horse pipe and two-plate burner"
+  },
+
+  {
+    id: "7",
+    name: "Nova Gas",
+    brand: "Nova",
+    image_url_6kg: "/images/Nova 6kg.png",
+    image_url_12kg: "/images/Nova 12kg.png",
+    price_6kg: "UGX 130,000",
+    price_12kg: "UGX 250,000",
+    description_6kg: "Comes with a burner",
+    description_12kg: "comes with a regulator, horse pipe and two plate burner"
   }
+
 ];
 
 // Expanded refill brands data with comprehensive pricing for all common brands

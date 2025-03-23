@@ -25,7 +25,9 @@ const staticBrands = [
   "K ", 
   "C", 
   "Hashi",
-  "Safe"
+  "Safe",
+  "Nova"
+
 ];
 
 const staticRefillPrices = [
@@ -249,7 +251,28 @@ const staticRefillPrices = [
     brand: "Safe",
     weight: "12KG",
     price: 95000,
-    description: "Safe Gas 12KG Refill - Ideal for large families and businesses"
+    description: "free delivery within K'la"
+  },
+  {
+    id: "31",
+    brand: "Nova",
+    weight: "3KG",
+    price: 28000,
+    description: "Free delivery within K'la"
+  },
+  {
+    id: "32",
+    brand: "Nova",
+    weight: "6KG",
+    price: 45000,
+    description: "free delivery within K'la"
+  },
+  {
+    id: "33",
+    brand: "Nova",
+    weight: "12KG",
+    price: 95000,
+    description: "Free Delivery within K'la"
   }
 ];
 
