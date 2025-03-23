@@ -113,15 +113,15 @@ export const refillBrands = [
     id: "5",
     name: "Hass Gas Uganda",
     brand: "Hass",
-    refill_price_6kg: "UGX 39,000",
-    refill_price_12kg: "UGX 79,000",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
   },
   {
     id: "6",
     name: "Vivo Energy Gas Uganda",
     brand: "Vivo Energy",
-    refill_price_6kg: "UGX 47,000",
-    refill_price_12kg: "UGX 88,000",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
   },
   {
     id: "7",
@@ -179,5 +179,13 @@ export const refillBrands = [
     brand: "Hashi",
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
-  }
+  },
+  {
+    id: "15",
+    name: "Nova Gas Uganda",
+    brand: "Nova",
+    refill_price_3kg: "UGX 28,000",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
 ];
