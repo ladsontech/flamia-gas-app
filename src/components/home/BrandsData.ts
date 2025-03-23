@@ -57,7 +57,7 @@ export const staticBrands = [
     name: "Ultimate Gas Uganda",
     brand: "Ultimate",
     image_url_6kg: "/images/ultimate 6.png", 
-    iamge_url_12kg: "/images/ultimate 13.png",   
+    image_url_12kg: "/images/ultimate 13.png",   
     price_6kg: "UGX 120,000",
     price_12kg: "UGX 250,000",
     description_6kg: " Comes with a burner",
