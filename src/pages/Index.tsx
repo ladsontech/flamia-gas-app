@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,8 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
 import CardCarousel from "@/components/home/CardCarousel";
+import ImageCarousel from "@/components/home/ImageCarousel";
+import PromotionsSection from "@/components/home/PromotionsSection";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -92,6 +93,10 @@ export default function Index() {
             
             <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
+              
+              <ImageCarousel />
+              
+              <PromotionsSection />
 
               <section className="space-y-3 md:space-y-4">
                 <div className="text-center">
