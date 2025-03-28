@@ -3,61 +3,43 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// Array of promotional images to cycle through
+// Array of promotional images to cycle through with local paths
 export const promotionalImages = [
   {
-    src: "/images/promo-1.jpg",
-    alt: "Fast gas delivery in Kampala and surrounding areas",
-    caption: "Same-day gas delivery in Kampala",
-    whatsapp: "+256789572007" // Add WhatsApp number
+    src: "/images/total 6KG.png",
+    alt: "Total Gas 6KG cylinder for fast delivery in Kampala",
+    caption: "Total Gas 6KG - Same day delivery",
+    whatsapp: "+256789572007"
   },
   {
-    src: "/images/Nova 3kg.jpg",
-    alt: "Best gas cylinder prices in Uganda",
-    caption: "Best prices in Uganda",
-    whatsapp: "+256789572007" // Add WhatsApp number
+    src: "/images/shell 6KG.png",
+    alt: "Shell Gas 6KG cylinder - best prices in Uganda",
+    caption: "Shell Gas - Best prices in Uganda",
+    whatsapp: "+256789572007"
   },
   {
-    src: "/images/gas-fallback.jpg",
-    alt: "Reliable LPG supply in Uganda",
-    caption: "Reliable cooking gas supply",
-    whatsapp: "1122334455" // Add WhatsApp number
+    src: "/images/oryx 6KG.png",
+    alt: "Oryx Gas 6KG - reliable LPG supply in Uganda",
+    caption: "Oryx Gas - Reliable supply",
+    whatsapp: "+256789572007"
   },
   {
-    src: "/images/promo-3.jpg",
-    alt: "Free gas delivery service in Kampala",
-    caption: "Free delivery on all orders",
-    whatsapp: "2233445566" // Add WhatsApp number
+    src: "/images/stabex 6KG.png",
+    alt: "Stabex Gas 6KG - free gas delivery service in Kampala",
+    caption: "Stabex Gas - Free delivery",
+    whatsapp: "+256789572007"
   }
-];
-
-// Array of brand images to cycle through
-const brandImages = [
-  {
-    src: "/images/brand-1.jpg",
-    alt: "Brand Image 1",
-    caption: "Brand 1 Description"
-  },
-  {
-    src: "/images/brand-2.jpg",
-    alt: "Brand Image 2",
-    caption: "Brand 2 Description"
-  },
-  // Add more brand images as needed
 ];
 
 const ImageCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Combine promotional and brand images
-  const allImages = [...promotionalImages, ...brandImages];
-
   // Auto-advance the carousel
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => 
-        prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex === promotionalImages.length - 1 ? 0 : prevIndex + 1
       );
     }, 5000); // Change image every 5 seconds
 
@@ -66,18 +48,18 @@ const ImageCarousel: React.FC = () => {
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
+      prevIndex === promotionalImages.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? allImages.length - 1 : prevIndex - 1
+      prevIndex === 0 ? promotionalImages.length - 1 : prevIndex - 1
     );
   };
 
   // Calculate next image preview index
-  const nextImageIndex = currentIndex === allImages.length - 1 ? 0 : currentIndex + 1;
+  const nextImageIndex = currentIndex === promotionalImages.length - 1 ? 0 : currentIndex + 1;
 
   const handleImageLoad = () => {
     setLoading(false);
@@ -102,15 +84,15 @@ const ImageCarousel: React.FC = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10" />
           <img
-            src={allImages[currentIndex].src}
-            alt={allImages[currentIndex].alt}
-            className="w-full h-full object-cover"
+            src={promotionalImages[currentIndex].src}
+            alt={promotionalImages[currentIndex].alt}
+            className="w-full h-full object-contain"
             loading="lazy"
             onLoad={handleImageLoad}
           />
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white z-20">
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold drop-shadow-md">
-              {allImages[currentIndex].caption}
+              {promotionalImages[currentIndex].caption}
             </h3>
           </div>
         </motion.div>
@@ -120,7 +102,7 @@ const ImageCarousel: React.FC = () => {
       <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-1/12 overflow-hidden z-5 opacity-40 hover:opacity-60 transition-opacity">
         <div className="h-full w-full relative">
           <img
-            src={allImages[nextImageIndex].src}
+            src={promotionalImages[nextImageIndex].src}
             alt="Next slide preview"
             className="h-full object-cover"
             style={{ objectPosition: 'left center' }}
@@ -148,7 +130,7 @@ const ImageCarousel: React.FC = () => {
       
       {/* Indicator dots */}
       <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1 z-30">
-        {allImages.map((_, index) => (
+        {promotionalImages.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}

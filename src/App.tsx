@@ -10,12 +10,9 @@ import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
-import Admin from "./pages/Admin";
-import Login from "./pages/Login";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
-import { supabase } from "./integrations/supabase/client";
 import PlaceScreen from "./components/PlaceScreen";
 
 const AppContent = () => {
@@ -118,28 +115,6 @@ const AppContent = () => {
                   <Accessories />
                 </motion.div>
               } />
-              <Route path="/admin" element={
-                <motion.div
-                  variants={pageVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.2 }}
-                >
-                  <Admin />
-                </motion.div>
-              } />
-              <Route path="/login" element={
-                <motion.div
-                  variants={pageVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.2 }}
-                >
-                  <Login />
-                </motion.div>
-              } />
             </Routes>
           </AnimatePresence>
         </div>
@@ -162,36 +137,6 @@ const App = () => {
       },
     },
   }));
-
-  // Prefetch initial data
-  React.useEffect(() => {
-    const prefetchInitialData = async () => {
-      await Promise.all([
-        queryClient.prefetchQuery({
-          queryKey: ['hotDeals'],
-          queryFn: async () => {
-            const { data } = await supabase
-              .from('hot_deals')
-              .select('*')
-              .order('created_at', { ascending: false });
-            return data;
-          },
-        }),
-        queryClient.prefetchQuery({
-          queryKey: ['brands'],
-          queryFn: async () => {
-            const { data } = await supabase
-              .from('brands')
-              .select('*')
-              .order('brand', { ascending: true });
-            return data;
-          },
-        }),
-      ]);
-    };
-
-    prefetchInitialData();
-  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
