@@ -1,17 +1,19 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { promotionalImages } from './ImageCarousel';
 
+// Ensure promotionalImages is safely used with a default empty array
+const safePromotionalImages = Array.isArray(promotionalImages) ? promotionalImages : [];
+
 const promotionCards = [
   // Add promotional images if available
-  ...(Array.isArray(promotionalImages) 
-    ? promotionalImages.map((img, index) => ({
-        id: `promo-${index + 1}`,
-        image: img.src,
-      }))
-    : []),
+  ...safePromotionalImages.map((img, index) => ({
+    id: `promo-${index + 1}`,
+    image: img.src,
+  })),
 
   {
     id: "make-order",    
@@ -111,16 +113,16 @@ const CardCarousel: React.FC = () => {
   // Preload all images on component mount
   useEffect(() => {
     const preloadImages = async () => {
-      const promises = promotionCards.map((card) => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.src = card.image;
-          img.onload = resolve;
-          img.onerror = reject;
-        });
-      });
-      
       try {
+        const promises = promotionCards.map((card) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = card.image;
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+        });
+        
         await Promise.all(promises);
         setImagesPreloaded(true);
         setLoading(false);
