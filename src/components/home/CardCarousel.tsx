@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Import the promotional images array correctly
-import { promotionalImages } from './ImageCarousel'; // Import promotional images array directly
+// Fix the import to get the array correctly
+import { promotionalImages } from './ImageCarousel';
 
 const promotionCards = [
   // Combine promotional images with existing promotionCards
