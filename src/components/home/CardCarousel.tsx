@@ -5,11 +5,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { promotionalImages } from './ImageCarousel';
 
-// Ensure promotionalImages is safely used with a default empty array
+// Ensure promotionalImages is an array before using it
 const safePromotionalImages = Array.isArray(promotionalImages) ? promotionalImages : [];
 
 const promotionCards = [
-  // Add promotional images if available
+  // Add promotional images if available, using the safe array
   ...safePromotionalImages.map((img, index) => ({
     id: `promo-${index + 1}`,
     image: img.src,
