@@ -1,41 +1,38 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Define our promotional cards data with images only
-import promotionalImages from './ImageCarousel'; // Import promotional images
-
+// Import the promotional images array correctly
+import { promotionalImages } from './ImageCarousel'; // Import promotional images array directly
 
 const promotionCards = [
-  // Combine promotional images from ImageCarousel with existing promotionCards
+  // Combine promotional images with existing promotionCards
   ...promotionalImages.map((img, index) => ({
-    id: index + 1, // Assign an id based on the index
+    id: `promo-${index + 1}`, // Assign a unique id
     image: img.src,
   })),
 
   {
-    id: 1,    
+    id: "make-order",    
     image: "/images/make_order.png",
   },
   {
-    id: 2,   
+    id: "free-delivery",   
     image: "/images/free_delivery.png",
   },
   {
-    id: 3,
+    id: "cook-healthy",
     image: "/images/cook_healthy.png",
   },
   {
-    id: 4,    
+    id: "eat-healthy",    
     image: "/images/eat_healthy.png",
   },
   {
-    id: 5,    
+    id: "stay-healthy",    
     image: "/images/stay_healthy.png",
   },
-
 ];
 
 const CardCarousel: React.FC = () => {

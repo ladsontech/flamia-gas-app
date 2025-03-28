@@ -1,10 +1,10 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Array of promotional images to cycle through
 export const promotionalImages = [
-
   {
     src: "/images/promo-1.jpg",
     alt: "Fast gas delivery in Kampala and surrounding areas",
