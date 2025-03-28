@@ -8,23 +8,31 @@ const promotionalImages = [
   {
     src: "/images/promo-1.jpg",
     alt: "Fast gas delivery in Kampala and surrounding areas",
-    caption: "Same-day gas delivery in Kampala"
+    caption: "Same-day gas delivery in Kampala",
+    whatsapp: "+256789572007" // Add WhatsApp number
   },
+
   {
-    src: "/images/promo-2.jpg",
+    src: "/images/Nova 3kg.jpg",
     alt: "Best gas cylinder prices in Uganda",
-    caption: "Best prices in Uganda"
+    caption: "Best prices in Uganda",
+    whatsapp: "+256789572007" // Add WhatsApp number
   },
+
   {
     src: "/images/gas-fallback.jpg",
     alt: "Reliable LPG supply in Uganda",
-    caption: "Reliable cooking gas supply"
+    caption: "Reliable cooking gas supply",
+    whatsapp: "1122334455" // Add WhatsApp number
   },
+
   {
     src: "/images/promo-3.jpg",
     alt: "Free gas delivery service in Kampala",
-    caption: "Free delivery on all orders"
+    caption: "Free delivery on all orders",
+    whatsapp: "2233445566" // Add WhatsApp number
   }
+
 ];
 
 const ImageCarousel: React.FC = () => {
