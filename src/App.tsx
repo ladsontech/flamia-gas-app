@@ -14,11 +14,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import PlaceScreen from "./components/PlaceScreen";
+import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 
 const AppContent = () => {
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
+
+  // Check for admin status on mount
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    setIsAdmin(userRole === 'admin');
+  }, []);
 
   // Hide bottom nav when place screen is showing or on admin/login routes
   const showBottomNav = !showPlaceScreen && 
@@ -113,6 +121,28 @@ const AppContent = () => {
                   transition={{ duration: 0.2 }}
                 >
                   <Accessories />
+                </motion.div>
+              } />
+              <Route path="/admin" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Admin />
+                </motion.div>
+              } />
+              <Route path="/login" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <Login />
                 </motion.div>
               } />
             </Routes>

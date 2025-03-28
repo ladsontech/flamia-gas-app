@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -18,20 +19,10 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         if (session) {
-          try {
-            const { data: userData } = await supabase
-              .from('users')
-              .select('admin')
-              .eq('id', session.user.id)
-              .single();
-
-            if (userData?.admin === 'admin') {
-              navigate('/dashboard');
-            } else {
-              navigate('/');
-            }
-          } catch (error) {
-            console.error('Error checking user role:', error);
+          // Simplified admin check (using local storage for admin role)
+          if (localStorage.getItem('userRole') === 'admin') {
+            navigate('/dashboard');
+          } else {
             navigate('/');
           }
         }
@@ -101,6 +92,9 @@ const Login = () => {
                   password_input_placeholder: 'Enter a strong password (min. 6 characters)',
                 },
               },
+            }}
+            callbacks={{
+              onError: handleAuthError,
             }}
           />
         </Card>

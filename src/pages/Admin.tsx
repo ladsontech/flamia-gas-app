@@ -29,6 +29,14 @@ const Admin = () => {
     enabled: authenticated,
   });
 
+  // Check if already authenticated on mount
+  useEffect(() => {
+    const isAdmin = localStorage.getItem('userRole') === 'admin';
+    if (isAdmin) {
+      setAuthenticated(true);
+    }
+  }, []);
+
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -38,6 +46,7 @@ const Admin = () => {
       
       if (isValid) {
         setAuthenticated(true);
+        localStorage.setItem('userRole', 'admin');
         toast({ 
           title: "Authentication successful",
           description: "Welcome to the admin dashboard"
