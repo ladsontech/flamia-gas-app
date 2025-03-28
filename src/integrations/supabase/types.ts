@@ -129,65 +129,6 @@ export type Database = {
         }
         Relationships: []
       }
-      orders: {
-        Row: {
-          accessory_id: string | null
-          address: string
-          brand: string
-          created_at: string | null
-          customer: string
-          customer_name: string | null
-          delivery_person: string | null
-          id: string
-          order_date: string | null
-          phone: string
-          quantity: number
-          size: string
-          status: string
-          type: string
-        }
-        Insert: {
-          accessory_id?: string | null
-          address: string
-          brand: string
-          created_at?: string | null
-          customer: string
-          customer_name?: string | null
-          delivery_person?: string | null
-          id?: string
-          order_date?: string | null
-          phone: string
-          quantity: number
-          size: string
-          status?: string
-          type: string
-        }
-        Update: {
-          accessory_id?: string | null
-          address?: string
-          brand?: string
-          created_at?: string | null
-          customer?: string
-          customer_name?: string | null
-          delivery_person?: string | null
-          id?: string
-          order_date?: string | null
-          phone?: string
-          quantity?: number
-          size?: string
-          status?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "orders_accessory_id_fkey"
-            columns: ["accessory_id"]
-            isOneToOne: false
-            referencedRelation: "accessories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       refill_prices: {
         Row: {
           brand: string
