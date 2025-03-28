@@ -1,18 +1,14 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ImageCarousel from './ImageCarousel';
-
-// Get the promotionalImages array properly
-const { promotionalImages } = ImageCarousel;
+import { promotionalImages } from './ImageCarousel';
 
 const promotionCards = [
-  // Only use promotionalImages if it exists and is an array
+  // Add promotional images if available
   ...(Array.isArray(promotionalImages) 
     ? promotionalImages.map((img, index) => ({
-        id: `promo-${index + 1}`, // Assign a unique id
+        id: `promo-${index + 1}`,
         image: img.src,
       }))
     : []),
