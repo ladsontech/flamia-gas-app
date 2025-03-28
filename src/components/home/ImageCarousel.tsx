@@ -1,49 +1,63 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Array of promotional images to cycle through
-const promotionalImages = [
+export const promotionalImages = [
+
   {
     src: "/images/promo-1.jpg",
     alt: "Fast gas delivery in Kampala and surrounding areas",
     caption: "Same-day gas delivery in Kampala",
     whatsapp: "+256789572007" // Add WhatsApp number
   },
-
   {
     src: "/images/Nova 3kg.jpg",
     alt: "Best gas cylinder prices in Uganda",
     caption: "Best prices in Uganda",
     whatsapp: "+256789572007" // Add WhatsApp number
   },
-
   {
     src: "/images/gas-fallback.jpg",
     alt: "Reliable LPG supply in Uganda",
     caption: "Reliable cooking gas supply",
     whatsapp: "1122334455" // Add WhatsApp number
   },
-
   {
     src: "/images/promo-3.jpg",
     alt: "Free gas delivery service in Kampala",
     caption: "Free delivery on all orders",
     whatsapp: "2233445566" // Add WhatsApp number
   }
+];
 
+// Array of brand images to cycle through
+const brandImages = [
+  {
+    src: "/images/brand-1.jpg",
+    alt: "Brand Image 1",
+    caption: "Brand 1 Description"
+  },
+  {
+    src: "/images/brand-2.jpg",
+    alt: "Brand Image 2",
+    caption: "Brand 2 Description"
+  },
+  // Add more brand images as needed
 ];
 
 const ImageCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Combine promotional and brand images
+  const allImages = [...promotionalImages, ...brandImages];
+
   // Auto-advance the carousel
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => 
-        prevIndex === promotionalImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
       );
     }, 5000); // Change image every 5 seconds
 
@@ -52,18 +66,18 @@ const ImageCarousel: React.FC = () => {
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === promotionalImages.length - 1 ? 0 : prevIndex + 1
+      prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? promotionalImages.length - 1 : prevIndex - 1
+      prevIndex === 0 ? allImages.length - 1 : prevIndex - 1
     );
   };
 
   // Calculate next image preview index
-  const nextImageIndex = currentIndex === promotionalImages.length - 1 ? 0 : currentIndex + 1;
+  const nextImageIndex = currentIndex === allImages.length - 1 ? 0 : currentIndex + 1;
 
   const handleImageLoad = () => {
     setLoading(false);
@@ -88,15 +102,15 @@ const ImageCarousel: React.FC = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10" />
           <img
-            src={promotionalImages[currentIndex].src}
-            alt={promotionalImages[currentIndex].alt}
+            src={allImages[currentIndex].src}
+            alt={allImages[currentIndex].alt}
             className="w-full h-full object-cover"
             loading="lazy"
             onLoad={handleImageLoad}
           />
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white z-20">
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold drop-shadow-md">
-              {promotionalImages[currentIndex].caption}
+              {allImages[currentIndex].caption}
             </h3>
           </div>
         </motion.div>
@@ -106,7 +120,7 @@ const ImageCarousel: React.FC = () => {
       <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-1/12 overflow-hidden z-5 opacity-40 hover:opacity-60 transition-opacity">
         <div className="h-full w-full relative">
           <img
-            src={promotionalImages[nextImageIndex].src}
+            src={allImages[nextImageIndex].src}
             alt="Next slide preview"
             className="h-full object-cover"
             style={{ objectPosition: 'left center' }}
@@ -134,7 +148,7 @@ const ImageCarousel: React.FC = () => {
       
       {/* Indicator dots */}
       <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1 z-30">
-        {promotionalImages.map((_, index) => (
+        {allImages.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}

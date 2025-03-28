@@ -5,7 +5,16 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Define our promotional cards data with images only
+import promotionalImages from './ImageCarousel'; // Import promotional images
+
+
 const promotionCards = [
+  // Combine promotional images from ImageCarousel with existing promotionCards
+  ...promotionalImages.map((img, index) => ({
+    id: index + 1, // Assign an id based on the index
+    image: img.src,
+  })),
+
   {
     id: 1,    
     image: "/images/make_order.png",
@@ -25,7 +34,8 @@ const promotionCards = [
   {
     id: 5,    
     image: "/images/stay_healthy.png",
-  }
+  },
+
 ];
 
 const CardCarousel: React.FC = () => {
