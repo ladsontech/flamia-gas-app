@@ -6,8 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { AuthError } from "@supabase/supabase-js";
-import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -34,9 +32,9 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const handleAuthError = (error: AuthError) => {
+  const handleError = (error: Error) => {
     let message = error.message;
-    if (error.message.includes('weak_password')) {
+    if (message.includes('weak_password')) {
       message = 'Password should be at least 6 characters long';
     }
     toast({
@@ -93,9 +91,7 @@ const Login = () => {
                 },
               },
             }}
-            callbacks={{
-              onError: handleAuthError,
-            }}
+            onError={handleError}
           />
         </Card>
       </div>
