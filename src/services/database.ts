@@ -23,11 +23,31 @@ export const fetchOrders = async (): Promise<Order[]> => {
 };
 
 export const updateOrderStatus = async (orderId: string, status: string, deliveryPerson?: string) => {
+  // First, get the current order to update order_details
+  const { data: order, error: fetchError } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .single();
+  
+  if (fetchError) {
+    console.error("Error fetching order:", fetchError);
+    throw fetchError;
+  }
+  
+  // Update the order_details with the new status and delivery person
+  const updatedOrderDetails = {
+    ...order.order_details,
+    status,
+    ...(deliveryPerson && { delivery_person: deliveryPerson }),
+  };
+  
+  // Update the record with the modified order_details
   const { error } = await supabase
     .from('orders')
     .update({
       status,
-      ...(deliveryPerson && { delivery_person: deliveryPerson }),
+      order_details: updatedOrderDetails
     })
     .eq('id', orderId);
   
@@ -37,13 +57,29 @@ export const updateOrderStatus = async (orderId: string, status: string, deliver
   }
 };
 
-export const createOrder = async (orderData: Omit<Order, 'id' | 'status' | 'created_at' | 'order_date' | 'delivery_person'>) => {
+export const createOrder = async (orderData: {
+  customer: string;
+  phone: string;
+  address: string;
+  brand: string;
+  size: string;
+  quantity: number;
+  type: string;
+}) => {
+  const orderDetails = {
+    ...orderData,
+    status: 'pending',
+    order_date: new Date().toISOString(),
+    created_at: new Date().toISOString()
+  };
+
   const { error } = await supabase
     .from('orders')
     .insert([{
-      ...orderData,
       status: 'pending',
+      quantity: orderData.quantity,
       order_date: new Date().toISOString(),
+      order_details: orderDetails
     }]);
   
   if (error) {

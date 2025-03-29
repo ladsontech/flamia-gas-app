@@ -88,7 +88,7 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
                       {index + 1}
                     </span>
                     <span className="font-semibold">
-                      {order.type === 'accessory' ? 'New Accessory Order' : 'New Gas Order'}
+                      {order.order_details.type === 'accessory' ? 'New Accessory Order' : 'New Gas Order'}
                     </span>
                   </div>
                   <div>
@@ -99,26 +99,26 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
                 </div>
                 
                 <div className="p-4 bg-muted/10 space-y-1 text-sm">
-                  {order.type !== 'accessory' && (
+                  {order.order_details.type !== 'accessory' && (
                     <>
                       <div className="flex justify-between">
                         <span className="font-medium">Order Type:</span>
-                        <span>{order.type === 'fullset' ? 'Full Set' : 'Refill'}</span>
+                        <span>{order.order_details.type === 'fullset' ? 'Full Set' : 'Refill'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="font-medium">Brand:</span>
-                        <span>{order.brand}</span>
+                        <span>{order.order_details.brand}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="font-medium">Size:</span>
-                        <span>{order.size}</span>
+                        <span>{order.order_details.size}</span>
                       </div>
                     </>
                   )}
-                  {order.type === 'accessory' && (
+                  {order.order_details.type === 'accessory' && (
                     <div className="flex justify-between">
                       <span className="font-medium">Item:</span>
-                      <span>{order.brand}</span>
+                      <span>{order.order_details.brand}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
@@ -127,20 +127,20 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Contact:</span>
-                    <span>{order.phone}</span>
+                    <span>{order.order_details.phone}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Address:</span>
-                    <span>{order.address}</span>
+                    <span>{order.order_details.address}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Date/Time:</span>
                     <span>{new Date(order.created_at || order.order_date).toLocaleString()}</span>
                   </div>
-                  {order.delivery_person && (
+                  {order.order_details.delivery_person && (
                     <div className="flex justify-between">
                       <span className="font-medium">Delivery Person:</span>
-                      <span>{order.delivery_person}</span>
+                      <span>{order.order_details.delivery_person}</span>
                     </div>
                   )}
                   <div className="pt-2">

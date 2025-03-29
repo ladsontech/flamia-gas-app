@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -135,7 +136,7 @@ const Order = () => {
         brand: formData.brand,
         size: formData.size,
         quantity: formData.quantity,
-        type: formData.type
+        type: accessoryData ? "accessory" : formData.type
       });
 
       window.open(`https://wa.me/+256789572007?text=${message}`, '_blank');
