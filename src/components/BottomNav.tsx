@@ -1,8 +1,7 @@
 
 import { useLocation } from "react-router-dom";
-import { Home, Package, RotateCw, ShoppingBag, Settings } from "lucide-react";
+import { Home, Package, RotateCw, ShoppingBag, Settings, Flame } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
-import GasSafetyTips from "./safety/GasSafetyTips";
 
 interface BottomNavProps {
   isAdmin: boolean | null;
@@ -55,7 +54,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
       ) : (
         <NavItem
           to="/safety"
-          icon={GasSafetyTips}
+          icon={Flame}
           label="Safety"
           isActive={isSafetyActive}
         />
