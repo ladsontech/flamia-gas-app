@@ -1,7 +1,8 @@
 
 import { useLocation } from "react-router-dom";
-import { Package, RefreshCw, ShoppingBag } from "lucide-react";
+import { Package, RefreshCw, ShoppingBag, Flame } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
+import GasSafetyTips from "./safety/GasSafetyTips";
 
 interface BottomNavProps {
   isAdmin: boolean | null;
@@ -33,6 +34,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
         label="Accessories"
         isActive={location.pathname === "/accessories"}
       />
+      <GasSafetyTips />
     </nav>
   );
 };
