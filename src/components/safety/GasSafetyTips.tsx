@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Dialog,
@@ -200,7 +199,7 @@ const GasSafetyTips = () => {
         <div className="mt-4 bg-muted/20 p-3 rounded-lg border border-muted flex items-start">
           <Info className="h-5 w-5 text-accent mr-2 mt-0.5 flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-            For more information or assistance with gas safety, contact our gas experts via WhatsApp at <a href="https://wa.me/256789572007" className="text-accent font-medium">+256 789 572 007</a>
+            For more information or assistance with gas safety, contact our gas experts via WhatsApp at <a href="https://wa.me/256787899483" className="text-accent font-medium">+256 787 899 483</a>
           </p>
         </div>
       </DialogContent>
