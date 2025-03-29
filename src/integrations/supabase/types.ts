@@ -16,7 +16,6 @@ export type Database = {
           order_date: string
           order_details: Json
           quantity: number
-          status: string
         }
         Insert: {
           created_at?: string
@@ -24,7 +23,6 @@ export type Database = {
           order_date?: string
           order_details: Json
           quantity?: number
-          status?: string
         }
         Update: {
           created_at?: string
@@ -32,7 +30,6 @@ export type Database = {
           order_date?: string
           order_details?: Json
           quantity?: number
-          status?: string
         }
         Relationships: []
       }

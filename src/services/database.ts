@@ -19,7 +19,7 @@ export const fetchOrders = async (): Promise<Order[]> => {
     return [];
   }
   
-  return data || [];
+  return data as Order[] || [];
 };
 
 export const updateOrderStatus = async (orderId: string, status: string, deliveryPerson?: string) => {
@@ -39,7 +39,7 @@ export const updateOrderStatus = async (orderId: string, status: string, deliver
   const updatedOrderDetails = {
     ...order.order_details,
     status,
-    ...(deliveryPerson && { delivery_person: deliveryPerson }),
+    ...(deliveryPerson ? { delivery_person: deliveryPerson } : {})
   };
   
   // Update the record with the modified order_details

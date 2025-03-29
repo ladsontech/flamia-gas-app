@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -127,19 +128,19 @@ export const OrdersList = ({
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
-                            <span className="truncate">{order.address}</span>
+                            <span className="truncate">{order.order_details.address}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Package2 className="w-3 h-3" />
                             <span>
-                              {order.size} x {order.quantity} • {order.brand}
+                              {order.order_details.size} x {order.quantity} • {order.order_details.brand}
                             </span>
                           </div>
                         </div>
 
-                        {isAdmin && order.delivery_person && (
+                        {isAdmin && order.order_details.delivery_person && (
                           <div className="mt-1 text-xs text-muted-foreground">
-                            Assigned to: {order.delivery_person}
+                            Assigned to: {order.order_details.delivery_person}
                           </div>
                         )}
                       </div>
