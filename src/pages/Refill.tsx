@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
-import { Flame, ArrowRight, Truck } from "lucide-react";
+import { Flame, ArrowRight, Truck, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const staticBrands = [
   "Total", 
@@ -27,7 +27,6 @@ const staticBrands = [
   "Hashi",
   "Safe",
   "Nova"
-
 ];
 
 const staticRefillPrices = [
@@ -278,11 +277,10 @@ const staticRefillPrices = [
 
 const Refill = () => {
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleOrder = (weight: string, price: number) => {
     if (!selectedBrand) {
@@ -296,13 +294,19 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
 
+  const filteredBrands = searchQuery
+    ? staticBrands.filter(brand => 
+        brand.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : staticBrands;
+
   const filteredPrices = selectedBrand ? staticRefillPrices.filter(price => price.brand === selectedBrand) : [];
 
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-primary/40 to-white flex flex-col">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -315,41 +319,57 @@ const Refill = () => {
           <BackButton />
         </div>
         
-        <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} className="text-center mb-6 sm:mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          className="text-center mb-6 sm:mb-8"
+        >
+          <div className="mb-6 max-w-2xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
+              Gas Refill Price Comparison
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4">
+              Compare gas refill prices in Uganda. Choose your preferred brand and cylinder size for best rates.
+            </p>
+          </div>
           
-          <p className="text-sm sm:text-base text-muted-foreground mb-4">
-            Compare gas refill prices in Uganda. Choose your preferred brand and cylinder size for best rates.
-          </p>
-          
-          <motion.div initial={{
-            opacity: 0,
-            y: 10
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            delay: 0.2
-          }} className="flex items-center justify-center gap-2 text-accent font-medium p-2 bg-accent/10 rounded-full mb-6 max-w-xs mx-auto">
-            <Truck className="w-4 h-4" />
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.2 }} 
+            className="flex items-center justify-center gap-2 text-accent font-medium p-3 bg-accent/10 rounded-xl mb-6 max-w-md mx-auto shadow-sm border border-accent/20"
+          >
+            <Truck className="w-5 h-5" />
             <span>Free Delivery on All Gas Refills in Kampala!</span>
           </motion.div>
 
-          <div className="max-w-xs mx-auto mb-6">
+          <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100">
+            <div className="mb-4">
+              <Label htmlFor="search" className="text-sm font-medium mb-1.5 block text-left">
+                Search Brand
+              </Label>
+              <Input
+                id="search"
+                type="text"
+                placeholder="Search for a brand..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full mb-3 border-gray-200"
+              />
+            </div>
+            
+            <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
+              Select Gas Brand
+            </Label>
             <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-              <SelectTrigger className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12 shadow-sm">
+              <SelectTrigger id="brand-select" className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12 shadow-sm">
                 <SelectValue placeholder="Select gas brand" />
               </SelectTrigger>
               <SelectContent className="bg-white border-accent/20 shadow-lg overflow-y-auto z-50" position="popper" style={{
-                maxHeight: 'min(65vh, 600px)',
+                maxHeight: 'min(65vh, 400px)',
                 minHeight: '300px'
               }}>
-                {staticBrands.map(brand => (
+                {filteredBrands.map(brand => (
                   <SelectItem key={brand} value={brand} className="hover:bg-accent/10 py-3">
                     {brand} Gas
                   </SelectItem>
@@ -368,41 +388,59 @@ const Refill = () => {
           </div>
         ) : (
           <AnimatePresence>
+            {selectedBrand && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="mb-8"
+              >
+                <h2 className="text-xl font-semibold mb-4 text-center">
+                  Available Refill Options for <span className="text-accent">{selectedBrand}</span>
+                </h2>
+              </motion.div>
+            )}
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
               {filteredPrices.length > 0 ? (
                 filteredPrices.map((item, index) => (
                   <motion.div 
                     key={item.id} 
-                    initial={{
-                      opacity: 0,
-                      y: 20
-                    }} 
-                    animate={{
-                      opacity: 1,
-                      y: 0
-                    }} 
-                    transition={{
-                      duration: 0.3,
-                      delay: index * 0.1
-                    }} 
-                    whileHover={{
-                      scale: 1.02
-                    }} 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ duration: 0.3, delay: index * 0.1 }} 
+                    whileHover={{ scale: 1.02 }} 
                     className="h-full"
                   >
-                    <Card className="relative overflow-hidden p-4 sm:p-5 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent/5 opacity-20" />
+                    <Card className="relative overflow-hidden p-5 sm:p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col border-accent/10">
+                      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-white opacity-50" />
                       <div className="relative z-10 flex flex-col h-full">
-                        <div className="flex items-center justify-center mb-3 sm:mb-4">
-                          <Flame className="w-7 h-7 sm:w-9 sm:h-9 text-accent" />
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                            <Flame className="w-7 h-7 sm:w-8 sm:h-8 text-accent" />
+                          </div>
                         </div>
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2">{item.weight} Refill</h2>
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-4 flex-grow">
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-center">{item.weight} Refill</h2>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-4 flex-grow text-center">
                           {item.description}
                         </p>
                         
-                        <div className="p-3 sm:p-4 bg-accent/5 rounded-lg mt-auto">
-                          <p className="font-bold text-accent text-lg sm:text-xl mb-3">
+                        <div className="p-4 sm:p-5 bg-gradient-to-r from-accent/5 to-white rounded-lg mt-auto border border-accent/10 shadow-sm">
+                          <div className="flex items-center justify-center gap-2 mb-3">
+                            <ul className="text-xs space-y-1.5">
+                              <li className="flex items-center gap-1.5">
+                                <Check size={14} className="text-accent" />
+                                <span>Same-day delivery</span>
+                              </li>
+                              <li className="flex items-center gap-1.5">
+                                <Check size={14} className="text-accent" />
+                                <span>Quality guaranteed</span>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <p className="font-bold text-accent text-lg sm:text-xl mb-3 text-center">
                             UGX {item.price.toLocaleString()}
                           </p>
                           <Button 
@@ -419,26 +457,24 @@ const Refill = () => {
                 ))
               ) : selectedBrand ? (
                 <motion.div 
-                  initial={{
-                    opacity: 0
-                  }} 
-                  animate={{
-                    opacity: 1
-                  }} 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
                   className="col-span-full text-center py-8"
                 >
                   <p className="text-muted-foreground">No gas refill prices available for this brand currently.</p>
                 </motion.div>
               ) : (
                 <motion.div 
-                  initial={{
-                    opacity: 0
-                  }} 
-                  animate={{
-                    opacity: 1
-                  }} 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
                   className="col-span-full text-center py-8"
                 >
+                  <div className="p-6 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-100 shadow-sm max-w-xl mx-auto">
+                    <h3 className="text-lg font-medium mb-3">Select a Brand to View Prices</h3>
+                    <p className="text-muted-foreground text-sm">
+                      Choose your preferred gas brand from the dropdown menu above to see available refill options and prices.
+                    </p>
+                  </div>
                 </motion.div>
               )}
             </div>
