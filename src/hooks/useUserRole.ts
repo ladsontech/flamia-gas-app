@@ -6,7 +6,7 @@ export const useUserRole = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Since we're removing admin functionality, this hook now just returns false
+    // Admin functionality removed, always returning false
     setIsAdmin(false);
     setLoading(false);
   }, []);
