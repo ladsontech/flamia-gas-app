@@ -5,13 +5,26 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
-import { Flame, ArrowRight, Truck, Check } from "lucide-react";
+import { Flame, ArrowRight, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { refillBrands } from "@/components/home/BrandsData";
+import { 
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from "@/components/ui/command";
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
 
 // Refactored staticBrands from the original data file
 const staticBrands = [
@@ -285,14 +298,15 @@ const Refill = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Use useEffect to simulate immediate loading of data
   useEffect(() => {
-    // Simulate data loading
+    // Simulate data loading - make this even faster
     const timer = setTimeout(() => {
       setIsLoading(false);
       setAllBrandsLoaded(true);
-    }, 100); // Very short timeout to ensure DOM has rendered
+    }, 50); // Shorter timeout for faster loading
 
     return () => clearTimeout(timer);
   }, []);
@@ -327,7 +341,7 @@ const Refill = () => {
       opacity: 1,
       transition: { 
         duration: 0.3,
-        // Remove staggering effect to load all at once
+        // No staggering for instant loading
         when: "beforeChildren",
         staggerChildren: 0
       }
@@ -355,6 +369,10 @@ const Refill = () => {
       <div className="container px-2 sm:px-4 py-4 sm:py-6 flex-grow">
         <div className="flex justify-between items-center mb-4">
           <BackButton />
+          {/* Moving price comparison text to app bar */}
+          <div className="text-accent font-medium text-sm sm:text-base px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 shadow-sm">
+            Gas Refill Price Comparison
+          </div>
         </div>
         
         <motion.div 
@@ -365,20 +383,20 @@ const Refill = () => {
         >
           <div className="mb-6 max-w-2xl mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-              Gas Refill Price Comparison
+              Compare Gas Refill Prices
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Compare gas refill prices in Uganda. Choose your preferred brand and cylinder size for best rates.
+              Choose your preferred brand and cylinder size for best rates in Uganda.
             </p>
           </div>
           
+          {/* Free delivery notice without the icon */}
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             transition={{ duration: 0.3 }} 
-            className="flex items-center justify-center gap-2 text-accent font-medium p-3 bg-accent/10 rounded-xl mb-6 max-w-md mx-auto shadow-sm border border-accent/20"
+            className="flex items-center justify-center text-accent font-medium p-3 bg-accent/10 rounded-xl mb-6 max-w-md mx-auto shadow-sm border border-accent/20"
           >
-            <Truck className="w-5 h-5" />
             <span>Free Delivery on All Gas Refills in Kampala!</span>
           </motion.div>
 
@@ -387,14 +405,47 @@ const Refill = () => {
               <Label htmlFor="search" className="text-sm font-medium mb-1.5 block text-left">
                 Search Brand
               </Label>
-              <Input
-                id="search"
-                type="text"
-                placeholder="Search for a brand..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full mb-3 border-gray-200"
-              />
+              {/* Replacing input with Popover and Command for better search experience */}
+              <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={isSearchOpen}
+                    className="w-full justify-between border-gray-200 bg-white"
+                  >
+                    {searchQuery ? searchQuery : "Search for a brand..."}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 bg-white" align="start">
+                  <Command>
+                    <CommandInput 
+                      placeholder="Search for a brand..." 
+                      value={searchQuery}
+                      onValueChange={setSearchQuery}
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>No brands found.</CommandEmpty>
+                      <CommandGroup>
+                        {filteredBrands.map((brand) => (
+                          <CommandItem
+                            key={brand}
+                            value={brand}
+                            onSelect={(currentValue) => {
+                              setSearchQuery(currentValue);
+                              setSelectedBrand(currentValue);
+                              setIsSearchOpen(false);
+                            }}
+                          >
+                            {brand}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             
             <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
