@@ -6,7 +6,6 @@ import BrandsGrid from "@/components/home/BrandsGrid";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
-import CardCarousel from "@/components/home/CardCarousel";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 
@@ -72,7 +71,6 @@ export default function Index() {
       <div className="flex-grow flex flex-col lg:flex-row pt-16">
         <div className="hidden lg:block lg:w-1/3 xl:w-1/4 border-r border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16">
-            <CardCarousel />
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
               <h3 className="text-base font-medium mb-1">Need Help?</h3>
               <p className="text-xs text-gray-600 mb-2">Contact our gas experts for personalized recommendations.</p>
@@ -87,10 +85,6 @@ export default function Index() {
 
         <div className="flex-1 w-full lg:w-2/3 xl:w-3/4">
           <div className="container px-2 py-2 md:py-3">
-            <div className="lg:hidden">
-              <CardCarousel />
-            </div>
-            
             <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
               
