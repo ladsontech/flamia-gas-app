@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
+import { createOrder } from "@/services/database";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -127,16 +128,27 @@ const Order = () => {
 ------------------------`;
       }
 
+      await createOrder({
+        customer: "customer",
+        phone: formData.contact,
+        address: formData.address,
+        brand: formData.brand,
+        size: formData.size,
+        quantity: formData.quantity,
+        type: formData.type
+      });
+
       window.open(`https://wa.me/+256789572007?text=${message}`, '_blank');
       
       toast({
         title: "Order Initiated",
-        description: "Your order details have been sent to WhatsApp. Please complete the conversation there.",
+        description: "Your order has been saved and sent to WhatsApp. Please complete the conversation there.",
       });
     } catch (error) {
+      console.error("Order submission error:", error);
       toast({
         title: "Error",
-        description: "Failed to initiate WhatsApp order. Please try again.",
+        description: "Failed to process your order. Please try again.",
         variant: "destructive",
       });
     } finally {

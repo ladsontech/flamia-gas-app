@@ -1,44 +1,53 @@
 
 import { Order } from "@/types/order";
+import { supabase } from "@/integrations/supabase/client";
 
 // Hard-coded admin password check
 export const verifyAdminPassword = async (password: string) => {
-  return password === 'flamia123';
+  return password === 'flamia2025';
 };
 
-// Mock data for orders (local storage)
+// Fetch orders from Supabase
 export const fetchOrders = async (): Promise<Order[]> => {
-  const storedOrders = localStorage.getItem('orders');
-  return storedOrders ? JSON.parse(storedOrders) : [];
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error("Error fetching orders:", error);
+    return [];
+  }
+  
+  return data || [];
 };
 
 export const updateOrderStatus = async (orderId: string, status: string, deliveryPerson?: string) => {
-  const orders = await fetchOrders();
-  const updatedOrders = orders.map(order => {
-    if (order.id === orderId) {
-      return {
-        ...order,
-        status,
-        ...(deliveryPerson && { delivery_person: deliveryPerson }),
-      };
-    }
-    return order;
-  });
+  const { error } = await supabase
+    .from('orders')
+    .update({
+      status,
+      ...(deliveryPerson && { delivery_person: deliveryPerson }),
+    })
+    .eq('id', orderId);
   
-  localStorage.setItem('orders', JSON.stringify(updatedOrders));
+  if (error) {
+    console.error("Error updating order status:", error);
+    throw error;
+  }
 };
 
 export const createOrder = async (orderData: Omit<Order, 'id' | 'status' | 'created_at' | 'order_date' | 'delivery_person'>) => {
-  const orders = await fetchOrders();
-  const newOrder: Order = {
-    ...orderData,
-    id: `order-${Date.now()}`,
-    status: 'pending',
-    order_date: new Date().toISOString(),
-    created_at: new Date().toISOString(),
-    delivery_person: null
-  };
+  const { error } = await supabase
+    .from('orders')
+    .insert([{
+      ...orderData,
+      status: 'pending',
+      order_date: new Date().toISOString(),
+    }]);
   
-  orders.push(newOrder);
-  localStorage.setItem('orders', JSON.stringify(orders));
+  if (error) {
+    console.error("Error creating order:", error);
+    throw error;
+  }
 };
