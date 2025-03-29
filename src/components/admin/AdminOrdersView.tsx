@@ -45,21 +45,6 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
     new Date(b).getTime() - new Date(a).getTime()
   );
 
-  const getStatusBadgeClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-500/10 text-yellow-500';
-      case 'delivered':
-        return 'bg-green-500/10 text-green-500';
-      case 'cancelled':
-        return 'bg-red-500/10 text-red-500';
-      case 'assigned':
-        return 'bg-blue-500/10 text-blue-500';
-      default:
-        return 'bg-gray-500/10 text-gray-500';
-    }
-  };
-
   if (!orders.length) {
     return (
       <Card className="p-6">
@@ -82,19 +67,14 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {groupedOrders[dateKey].orders.map((order, index) => (
               <Card key={order.id} className="overflow-hidden">
-                <div className="p-4 border-b flex justify-between items-center">
+                <div className="p-4 border-b">
                   <div className="flex items-center gap-2">
                     <span className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
                       {index + 1}
                     </span>
                     <span className="font-semibold">
-                      {order.order_details.type === 'accessory' ? 'New Accessory Order' : 'New Gas Order'}
+                      {order.order_details.type === 'accessory' ? 'Accessory Order' : 'Gas Order'}
                     </span>
-                  </div>
-                  <div>
-                    <Badge variant="outline" className={getStatusBadgeClass(order.status)}>
-                      {order.status}
-                    </Badge>
                   </div>
                 </div>
                 
@@ -126,6 +106,10 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
                     <span>{order.quantity}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="font-medium">Customer:</span>
+                    <span>{order.order_details.customer || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="font-medium">Contact:</span>
                     <span>{order.order_details.phone}</span>
                   </div>
@@ -137,12 +121,6 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
                     <span className="font-medium">Date/Time:</span>
                     <span>{new Date(order.created_at || order.order_date).toLocaleString()}</span>
                   </div>
-                  {order.order_details.delivery_person && (
-                    <div className="flex justify-between">
-                      <span className="font-medium">Delivery Person:</span>
-                      <span>{order.order_details.delivery_person}</span>
-                    </div>
-                  )}
                   <div className="pt-2">
                     <div className="flex justify-between">
                       <span className="font-medium">Free Delivery:</span>

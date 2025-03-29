@@ -21,19 +21,6 @@ export const OrdersList = ({
   onMarkDelivered 
 }: OrdersListProps) => {
   const navigate = useNavigate();
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100/80 text-yellow-800 border border-yellow-200';
-      case 'assigned':
-        return 'bg-blue-100/80 text-blue-800 border border-blue-200';
-      case 'delivered':
-        return 'bg-green-100/80 text-green-800 border border-green-200';
-      default:
-        return 'bg-gray-100/80 text-gray-800 border border-gray-200';
-    }
-  };
 
   if (!orders || orders.length === 0) {
     return (
@@ -114,9 +101,6 @@ export const OrdersList = ({
                           <span className="text-xs font-medium">
                             Order #{index + 1}
                           </span>
-                          <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
                         </div>
                         
                         <div className="space-y-1 text-xs text-muted-foreground">
@@ -137,27 +121,8 @@ export const OrdersList = ({
                             </span>
                           </div>
                         </div>
-
-                        {isAdmin && order.order_details.delivery_person && (
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            Assigned to: {order.order_details.delivery_person}
-                          </div>
-                        )}
                       </div>
                     </div>
-
-                    {isAdmin && order.status === "assigned" && (
-                      <div className="mt-2">
-                        <Button
-                          size="sm"
-                          onClick={() => onMarkDelivered(order.id)}
-                          className="w-full bg-green-500 text-white hover:bg-green-600 h-7 text-xs relative overflow-hidden group"
-                        >
-                          <span className="relative z-10">Mark Delivered</span>
-                          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-20 transition-opacity" />
-                        </Button>
-                      </div>
-                    )}
                   </Card>
                 </motion.div>
               ))}

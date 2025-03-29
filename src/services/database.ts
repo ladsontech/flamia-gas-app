@@ -38,15 +38,18 @@ export const updateOrderStatus = async (orderId: string, status: string, deliver
   // Update the order_details with the new status and delivery person
   const updatedOrderDetails = {
     ...order.order_details,
-    status,
-    ...(deliveryPerson ? { delivery_person: deliveryPerson } : {})
+    status
   };
+  
+  // Add delivery person if provided
+  if (deliveryPerson) {
+    updatedOrderDetails.delivery_person = deliveryPerson;
+  }
   
   // Update the record with the modified order_details
   const { error } = await supabase
     .from('orders')
     .update({
-      status,
       order_details: updatedOrderDetails
     })
     .eq('id', orderId);
@@ -76,7 +79,6 @@ export const createOrder = async (orderData: {
   const { error } = await supabase
     .from('orders')
     .insert([{
-      status: 'pending',
       quantity: orderData.quantity,
       order_date: new Date().toISOString(),
       order_details: orderDetails
