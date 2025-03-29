@@ -1,37 +1,21 @@
+
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
-interface AdminNavProps {
-  activeSection: 'orders' | 'hotdeals' | 'brands' | 'accessories';
-  onSectionChange: (section: 'orders' | 'hotdeals' | 'brands' | 'accessories') => void;
-}
-
-export const AdminNav = ({ activeSection, onSectionChange }: AdminNavProps) => {
+export const AdminNav = ({ onRefresh }: { onRefresh: () => void }) => {
+  const navigate = useNavigate();
+  
   return (
-    <div className="flex flex-wrap gap-2 mb-8">
-      <Button
-        variant={activeSection === 'orders' ? 'default' : 'outline'}
-        onClick={() => onSectionChange('orders')}
-      >
-        Manage Orders
-      </Button>
-      <Button
-        variant={activeSection === 'hotdeals' ? 'default' : 'outline'}
-        onClick={() => onSectionChange('hotdeals')}
-      >
-        Manage Hot Deals
-      </Button>
-      <Button
-        variant={activeSection === 'brands' ? 'default' : 'outline'}
-        onClick={() => onSectionChange('brands')}
-      >
-        Manage Brands
-      </Button>
-      <Button
-        variant={activeSection === 'accessories' ? 'default' : 'outline'}
-        onClick={() => onSectionChange('accessories')}
-      >
-        Manage Accessories
-      </Button>
+    <div className="flex justify-between items-center mb-8">
+      <h1 className="text-3xl font-bold">Flamia Admin Orders</h1>
+      <div className="flex space-x-2">
+        <Button variant="outline" onClick={onRefresh}>
+          Refresh
+        </Button>
+        <Button variant="ghost" onClick={() => navigate('/')}>
+          Back to Website
+        </Button>
+      </div>
     </div>
   );
 };

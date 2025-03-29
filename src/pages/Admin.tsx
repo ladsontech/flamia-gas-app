@@ -1,23 +1,19 @@
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
 import { fetchOrders, verifyAdminPassword } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
-import { Order } from '@/types/order';
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState<'orders' | 'hotdeals' | 'brands' | 'accessories'>('orders');
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const { 
     data: orders = [], 
@@ -97,53 +93,17 @@ const Admin = () => {
 
     return (
       <div className="space-y-6">
-        <AdminNav 
-          activeSection={activeSection} 
-          onSectionChange={(section) => setActiveSection(section)} 
-        />
+        <AdminNav onRefresh={refetchOrders} />
         
-        {activeSection === 'orders' && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">All Orders</h2>
-              <Button 
-                variant="outline" 
-                onClick={() => refetchOrders()}
-                disabled={ordersLoading}
-              >
-                Refresh
-              </Button>
-            </div>
-            
-            {ordersLoading ? (
-              <Card className="p-6">
-                <p className="text-center text-muted-foreground">Loading orders...</p>
-              </Card>
-            ) : (
-              <AdminOrdersView 
-                orders={orders} 
-                onOrdersUpdate={() => refetchOrders()} 
-              />
-            )}
-          </div>
-        )}
-        
-        {activeSection === 'hotdeals' && (
+        {ordersLoading ? (
           <Card className="p-6">
-            <p className="text-center text-muted-foreground">Hot Deals management will be implemented soon</p>
+            <p className="text-center text-muted-foreground">Loading orders...</p>
           </Card>
-        )}
-        
-        {activeSection === 'brands' && (
-          <Card className="p-6">
-            <p className="text-center text-muted-foreground">Brands management will be implemented soon</p>
-          </Card>
-        )}
-        
-        {activeSection === 'accessories' && (
-          <Card className="p-6">
-            <p className="text-center text-muted-foreground">Accessories management will be implemented soon</p>
-          </Card>
+        ) : (
+          <AdminOrdersView 
+            orders={orders} 
+            onOrdersUpdate={() => refetchOrders()} 
+          />
         )}
       </div>
     );
@@ -152,15 +112,6 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Flamia Admin</h1>
-          {authenticated && (
-            <Button variant="ghost" onClick={() => navigate('/')}>
-              Back to Website
-            </Button>
-          )}
-        </div>
-        
         {renderContent()}
       </div>
     </div>
