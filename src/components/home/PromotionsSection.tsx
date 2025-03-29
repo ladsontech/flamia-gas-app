@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { promotionalOffers } from "./promotionalData";
-import { ArrowRight, Percent } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const PromotionsSection: React.FC = () => {
   const handleOrderClick = (whatsappNumber: string) => {
@@ -24,10 +24,9 @@ const PromotionsSection: React.FC = () => {
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm">
             <div className="relative">
-              {/* Discount badge */}
-              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md flex items-center">
+              {/* Discount badge - removed the percent icon */}
+              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
                 <span>20% OFF</span>
-                <Percent size={12} className="ml-0.5" />
               </div>
               
               <div className="flex sm:flex-col">
