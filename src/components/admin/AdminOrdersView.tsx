@@ -1,11 +1,8 @@
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Order } from "@/types/order";
-import { formatDistanceToNow, format, isSameDay } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { ChevronDown, ChevronUp, User, Phone, MapPin, Calendar, Flame, Package, Truck } from "lucide-react";
+import { Order } from "@/types/order";
+import { format, isSameDay } from "date-fns";
+import { Calendar } from "lucide-react";
 
 interface AdminOrdersViewProps {
   orders: Order[];
@@ -23,7 +20,7 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
   // Group orders by date
   const groupOrdersByDate = (orders: Order[]): GroupedOrders => {
     return orders.reduce((acc: GroupedOrders, order) => {
-      const orderDate = new Date(order.created_at || order.order_date);
+      const orderDate = new Date(order.created_at);
       const dateKey = format(orderDate, 'yyyy-MM-dd');
       
       if (!acc[dateKey]) {
@@ -73,60 +70,16 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
                       {index + 1}
                     </span>
                     <span className="font-semibold">
-                      {order.order_details.type === 'accessory' ? 'Accessory Order' : 'Gas Order'}
+                      Order Details
+                    </span>
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {format(new Date(order.created_at), 'h:mm a')}
                     </span>
                   </div>
                 </div>
                 
-                <div className="p-4 bg-muted/10 space-y-1 text-sm">
-                  {order.order_details.type !== 'accessory' && (
-                    <>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Order Type:</span>
-                        <span>{order.order_details.type === 'fullset' ? 'Full Set' : 'Refill'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Brand:</span>
-                        <span>{order.order_details.brand}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Size:</span>
-                        <span>{order.order_details.size}</span>
-                      </div>
-                    </>
-                  )}
-                  {order.order_details.type === 'accessory' && (
-                    <div className="flex justify-between">
-                      <span className="font-medium">Item:</span>
-                      <span>{order.order_details.brand}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="font-medium">Quantity:</span>
-                    <span>{order.quantity}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Customer:</span>
-                    <span>{order.order_details.customer || 'Not specified'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Contact:</span>
-                    <span>{order.order_details.phone}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Address:</span>
-                    <span>{order.order_details.address}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Date/Time:</span>
-                    <span>{new Date(order.created_at || order.order_date).toLocaleString()}</span>
-                  </div>
-                  <div className="pt-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium">Free Delivery:</span>
-                      <span>Within Kampala</span>
-                    </div>
-                  </div>
+                <div className="p-4 whitespace-pre-wrap text-sm">
+                  {order.description}
                 </div>
               </Card>
             ))}

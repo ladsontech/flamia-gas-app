@@ -1,16 +1,14 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
 import { Flame, Truck } from "lucide-react";
 import Footer from "@/components/Footer";
-import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
@@ -98,48 +96,40 @@ const Order = () => {
       let message = '';
       
       if (accessoryData) {
-        message = `Flamia 🔥%0A
-------------------------%0A
-*New Accessory Order*%0A
-------------------------%0A
-*Item:* ${accessoryData.name}%0A
-*Price:* UGX ${accessoryData.price.toLocaleString()}%0A
-*Preferred Brand:* ${formData.brand}%0A
-*Quantity:* ${formData.quantity}%0A
-*Total Amount:* UGX ${(accessoryData.price * formData.quantity).toLocaleString()}%0A
-*Contact:* ${formData.contact}%0A
-*Address:* ${formData.address}%0A
-*Free Delivery:* Within Kampala%0A
+        message = `Flamia 🔥
+------------------------
+*New Accessory Order*
+------------------------
+*Item:* ${accessoryData.name}
+*Price:* UGX ${accessoryData.price.toLocaleString()}
+*Preferred Brand:* ${formData.brand}
+*Quantity:* ${formData.quantity}
+*Total Amount:* UGX ${(accessoryData.price * formData.quantity).toLocaleString()}
+*Contact:* ${formData.contact}
+*Address:* ${formData.address}
+*Free Delivery:* Within Kampala
 ------------------------`;
       } else {
         const price = getPrice();
         
-        message = `Flamia 🔥%0A
-------------------------%0A
-*New Gas Order*%0A
-------------------------%0A
-*Order Type:* ${formData.type === "refill" ? "Refill" : "Full Set"}%0A
-*Brand:* ${formData.brand}%0A
-*Size:* ${formData.size}%0A
-*Price:* ${price}%0A
-*Quantity:* ${formData.quantity}%0A
-*Contact:* ${formData.contact}%0A
-*Address:* ${formData.address}%0A
-*Free Delivery:* Within Kampala%0A
+        message = `Flamia 🔥
+------------------------
+*New Gas Order*
+------------------------
+*Order Type:* ${formData.type === "refill" ? "Refill" : "Full Set"}
+*Brand:* ${formData.brand}
+*Size:* ${formData.size}
+*Price:* ${price}
+*Quantity:* ${formData.quantity}
+*Contact:* ${formData.contact}
+*Address:* ${formData.address}
+*Free Delivery:* Within Kampala
 ------------------------`;
       }
 
-      await createOrder({
-        customer: "customer",
-        phone: formData.contact,
-        address: formData.address,
-        brand: formData.brand,
-        size: formData.size,
-        quantity: formData.quantity,
-        type: accessoryData ? "accessory" : formData.type
-      });
+      await createOrder(message);
 
-      window.open(`https://wa.me/+256789572007?text=${message}`, '_blank');
+      window.open(`https://wa.me/+256789572007?text=${encodeURIComponent(message)}`, '_blank');
       
       toast({
         title: "Order Initiated",

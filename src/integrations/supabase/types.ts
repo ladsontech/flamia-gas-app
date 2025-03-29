@@ -12,24 +12,18 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          description: string
           id: string
-          order_date: string
-          order_details: Json
-          quantity: number
         }
         Insert: {
           created_at?: string
+          description: string
           id?: string
-          order_date?: string
-          order_details: Json
-          quantity?: number
         }
         Update: {
           created_at?: string
+          description?: string
           id?: string
-          order_date?: string
-          order_details?: Json
-          quantity?: number
         }
         Relationships: []
       }

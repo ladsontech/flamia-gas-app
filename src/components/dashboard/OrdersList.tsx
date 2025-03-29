@@ -3,22 +3,18 @@ import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/order";
-import { PlusCircle, MapPin, Package2, Clock } from "lucide-react";
+import { PlusCircle, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 interface OrdersListProps {
   orders: Order[];
   isAdmin: boolean;
-  onAssignDelivery: (orderId: string, deliveryPerson: string) => void;
-  onMarkDelivered: (orderId: string) => void;
 }
 
 export const OrdersList = ({ 
   orders, 
-  isAdmin, 
-  onAssignDelivery, 
-  onMarkDelivered 
+  isAdmin
 }: OrdersListProps) => {
   const navigate = useNavigate();
 
@@ -63,7 +59,7 @@ export const OrdersList = ({
 
   // Group orders by date and sort them
   const groupedOrders = orders.reduce((groups: { [key: string]: Order[] }, order) => {
-    const date = format(new Date(order.created_at!), 'yyyy-MM-dd');
+    const date = format(new Date(order.created_at), 'yyyy-MM-dd');
     if (!groups[date]) groups[date] = [];
     groups[date].push(order);
     return groups;
@@ -94,32 +90,20 @@ export const OrdersList = ({
             <motion.div variants={container} className="space-y-2">
               {dateOrders.map((order, index) => (
                 <motion.div key={order.id} variants={item}>
-                  <Card className="p-2 glass-card hover:shadow-md transition-shadow duration-300">
+                  <Card className="p-4 glass-card hover:shadow-md transition-shadow duration-300">
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-medium">
                             Order #{index + 1}
                           </span>
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(order.created_at), 'h:mm a')}
+                          </span>
                         </div>
                         
-                        <div className="space-y-1 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>
-                              {format(new Date(order.created_at!), 'h:mm a')}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            <span className="truncate">{order.order_details.address}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Package2 className="w-3 h-3" />
-                            <span>
-                              {order.order_details.size} x {order.quantity} • {order.order_details.brand}
-                            </span>
-                          </div>
+                        <div className="text-sm text-muted-foreground line-clamp-3">
+                          {order.description}
                         </div>
                       </div>
                     </div>
