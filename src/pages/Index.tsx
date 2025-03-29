@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
+import PopularBrands from "@/components/home/PopularBrands";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -88,10 +90,11 @@ export default function Index() {
             <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
               
+              {/* Reordering the sections as requested */}
+              <PromotionsSection />
+              
               <ImageCarousel />
               
-              <PromotionsSection />
-
               <section className="space-y-3 md:space-y-4">
                 <div className="text-center">
                   <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">Best Gas Delivery Service in Uganda</h2>
@@ -103,21 +106,24 @@ export default function Index() {
                       <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
                     </div> : <BrandsGrid brands={[]} />}
                 </div>
-
-                <div className="py-3 md:py-4 lg:hidden">
-                  <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
-                    <h3 className="text-base sm:text-lg font-bold mb-1">Can't decide which cylinder to buy?</h3>
-                    <p className="mb-2 text-xs">
-                      Contact our gas experts for personalized recommendations based on your household needs.
-                    </p>
-                    <Button size="sm" className="bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
-                    window.open('https://wa.me/256789572007', '_blank');
-                  }}>
-                      Chat with Gas Expert
-                    </Button>
-                  </div>
-                </div>
               </section>
+              
+              {/* Adding the Popular Brands section at the bottom */}
+              <PopularBrands />
+
+              <div className="py-3 md:py-4 lg:hidden">
+                <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
+                  <h3 className="text-base sm:text-lg font-bold mb-1">Can't decide which cylinder to buy?</h3>
+                  <p className="mb-2 text-xs">
+                    Contact our gas experts for personalized recommendations based on your household needs.
+                  </p>
+                  <Button size="sm" className="bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
+                  window.open('https://wa.me/256789572007', '_blank');
+                }}>
+                    Chat with Gas Expert
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
