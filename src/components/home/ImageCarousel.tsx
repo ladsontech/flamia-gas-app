@@ -19,16 +19,6 @@ const carouselImages = [
     src: "/images/cook_healthy.png",
     alt: "Cook healthy meals with reliable gas supply",
     caption: "Cook Healthy Meals"
-  },
-  {
-    src: "/images/eat_healthy.png",
-    alt: "Eat healthy food with consistent cooking gas",
-    caption: "Eat Healthier Food"
-  },
-  {
-    src: "/images/stay_healthy.png",
-    alt: "Stay healthy with clean cooking gas options",
-    caption: "Stay Healthy With Clean Gas"
   }
 ];
 
