@@ -5,7 +5,7 @@ import { formatDistanceToNow, format, isSameDay } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, User, Phone, MapPin, Calendar } from "lucide-react";
+import { ChevronDown, ChevronUp, User, Phone, MapPin, Calendar, Flame, Package, Truck } from "lucide-react";
 
 interface AdminOrdersViewProps {
   orders: Order[];
@@ -20,8 +20,6 @@ type GroupedOrders = {
 };
 
 export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps) => {
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
-
   // Group orders by date
   const groupOrdersByDate = (orders: Order[]): GroupedOrders => {
     return orders.reduce((acc: GroupedOrders, order) => {
@@ -60,10 +58,6 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
       default:
         return 'bg-gray-500/10 text-gray-500';
     }
-  };
-
-  const toggleOrderExpanded = (orderId: string) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
   if (!orders.length) {
