@@ -52,40 +52,45 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
 
   return (
     <div className="space-y-8">
-      {sortedDates.map(dateKey => (
-        <div key={dateKey} className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-xl font-semibold">
-              {format(groupedOrders[dateKey].dateObj, 'EEEE, MMMM d, yyyy')}
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {groupedOrders[dateKey].orders.map((order, index) => (
-              <Card key={order.id} className="overflow-hidden">
-                <div className="p-4 border-b">
-                  <div className="flex items-center gap-2">
-                    <span className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </span>
-                    <span className="font-semibold">
-                      Order Details
-                    </span>
-                    <span className="ml-auto text-xs text-muted-foreground">
-                      {format(new Date(order.created_at), 'h:mm a')}
-                    </span>
+      {sortedDates.map(dateKey => {
+        // Reset counter for each date
+        let orderCounter = 1;
+        
+        return (
+          <div key={dateKey} className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <h2 className="text-xl font-semibold">
+                {format(groupedOrders[dateKey].dateObj, 'EEEE, MMMM d, yyyy')}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {groupedOrders[dateKey].orders.map((order) => (
+                <Card key={order.id} className="overflow-hidden">
+                  <div className="p-4 border-b">
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                        {orderCounter++}
+                      </span>
+                      <span className="font-semibold">
+                        Order Details
+                      </span>
+                      <span className="ml-auto text-xs text-muted-foreground">
+                        {format(new Date(order.created_at), 'h:mm a')}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="p-4 whitespace-pre-wrap text-sm">
-                  {order.description}
-                </div>
-              </Card>
-            ))}
+                  
+                  <div className="p-4 whitespace-pre-wrap text-sm">
+                    {order.description}
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

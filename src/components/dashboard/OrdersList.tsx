@@ -79,6 +79,9 @@ export const OrdersList = ({
     >
       {sortedDates.map((date) => {
         const dateOrders = groupedOrders[date];
+        // Reset counter for each date
+        let orderCounter = 1;
+        
         return (
           <div key={date} className="space-y-2">
             <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10 py-1">
@@ -88,14 +91,17 @@ export const OrdersList = ({
             </div>
             
             <motion.div variants={container} className="space-y-2">
-              {dateOrders.map((order, index) => (
+              {dateOrders.map((order) => (
                 <motion.div key={order.id} variants={item}>
                   <Card className="p-4 glass-card hover:shadow-md transition-shadow duration-300">
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium">
-                            Order #{index + 1}
+                          <span className="flex items-center gap-1.5">
+                            <span className="h-5 w-5 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-medium">
+                              {orderCounter++}
+                            </span>
+                            <span className="text-xs font-medium">Order</span>
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {format(new Date(order.created_at), 'h:mm a')}
