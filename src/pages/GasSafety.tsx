@@ -15,7 +15,7 @@ const GasSafety = () => {
   return (
     <div className="min-h-screen pb-16">
       <AppBar />
-      <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6 pt-16">
+      <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6 pt-20">
         <div className="text-center space-y-2 mb-6">
           <div className="flex justify-center">
             <div className="bg-flame-outer/10 w-16 h-16 rounded-full flex items-center justify-center">

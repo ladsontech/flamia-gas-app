@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -380,7 +381,7 @@ const Refill = () => {
               </Select>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
