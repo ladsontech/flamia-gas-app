@@ -32,18 +32,6 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const handleError = (error: Error) => {
-    let message = error.message;
-    if (message.includes('weak_password')) {
-      message = 'Password should be at least 6 characters long';
-    }
-    toast({
-      title: "Authentication Error",
-      description: message,
-      variant: "destructive",
-    });
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-primary/20 to-background p-4">
       <div className="w-full max-w-md mx-auto">
@@ -91,7 +79,6 @@ const Login = () => {
                 },
               },
             }}
-            onError={handleError}
           />
         </Card>
       </div>

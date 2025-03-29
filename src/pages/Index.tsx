@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import AppBar from "@/components/AppBar";
 import CardCarousel from "@/components/home/CardCarousel";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
-import HotOffersSection from "@/components/home/HotOffersSection";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -97,8 +95,6 @@ export default function Index() {
               <HeaderSection />
               
               <ImageCarousel />
-              
-              <HotOffersSection />
               
               <PromotionsSection />
 
