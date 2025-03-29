@@ -20,7 +20,7 @@ const PromotionsSection: React.FC = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm">
             <div className="relative">
@@ -30,24 +30,26 @@ const PromotionsSection: React.FC = () => {
                 <Percent size={12} className="ml-0.5" />
               </div>
               
-              <div className="h-32 sm:h-36 md:h-40 bg-gray-50 flex items-center justify-center">
-                <img 
-                  src={offer.image} 
-                  alt={offer.title} 
-                  className="h-[80%] object-contain"
-                  loading="lazy"
-                />
-              </div>
-              
-              <div className="p-3">
-                <h3 className="font-medium text-sm truncate">{offer.title}</h3>
-                <p className="text-muted-foreground text-xs line-clamp-1 mb-2">{offer.description}</p>
-                <Button 
-                  className="w-full text-xs bg-accent hover:bg-accent/90 text-white py-1 h-7" 
-                  onClick={() => handleOrderClick(offer.whatsapp)}
-                >
-                  Order Now
-                </Button>
+              <div className="flex sm:flex-col">
+                <div className="w-1/3 sm:w-full h-24 sm:h-32 md:h-40 bg-gray-50 flex items-center justify-center">
+                  <img 
+                    src={offer.image} 
+                    alt={offer.title} 
+                    className="h-[80%] sm:h-[70%] object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                
+                <div className="w-2/3 sm:w-full p-3">
+                  <h3 className="font-medium text-sm truncate">{offer.title}</h3>
+                  <p className="text-muted-foreground text-xs line-clamp-1 mb-2">{offer.description}</p>
+                  <Button 
+                    className="w-full text-xs bg-accent hover:bg-accent/90 text-white py-1 h-7" 
+                    onClick={() => handleOrderClick(offer.whatsapp)}
+                  >
+                    Order Now
+                  </Button>
+                </div>
               </div>
             </div>
           </Card>
