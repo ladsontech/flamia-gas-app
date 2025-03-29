@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
+import GasSafety from "./pages/GasSafety";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect, Suspense } from 'react';
 import { BottomNav } from "./components/BottomNav";
@@ -60,7 +61,7 @@ const AppContent = () => {
       <Helmet>
         <title>Flamia - Gas Delivery Service</title>
         <meta name="description" content="Quick and reliable gas delivery service. Order gas cylinders and accessories with fast delivery to your doorstep." />
-        <meta name="keywords" content="gas delivery, gas cylinders, cooking gas, LPG, gas accessories" />
+        <meta name="keywords" content="gas delivery, gas cylinders, cooking gas, LPG, gas accessories, gas safety" />
         <meta property="og:title" content="Flamia - Gas Delivery Service" />
         <meta property="og:description" content="Quick and reliable gas delivery service. Order gas cylinders and accessories with fast delivery to your doorstep." />
         <meta property="og:type" content="website" />
@@ -121,6 +122,17 @@ const AppContent = () => {
                   transition={{ duration: 0.2 }}
                 >
                   <Accessories />
+                </motion.div>
+              } />
+              <Route path="/safety" element={
+                <motion.div
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                >
+                  <GasSafety />
                 </motion.div>
               } />
               <Route path="/admin" element={
