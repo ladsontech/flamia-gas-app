@@ -3,27 +3,32 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// Array of carousel images to cycle through with local paths
+// Array of informational carousel images to cycle through with local paths
 const carouselImages = [
   {
-    src: "/images/total 6KG.png",
-    alt: "Total Gas 6KG cylinder for fast delivery in Kampala",
-    caption: "Total Gas 6KG - Same day delivery"
+    src: "/images/make_order.png",
+    alt: "Make your gas order online with Flamia",
+    caption: "Easy Online Ordering"
   },
   {
-    src: "/images/shell 6KG.png",
-    alt: "Shell Gas 6KG cylinder - best prices in Uganda",
-    caption: "Shell Gas - Best prices in Uganda"
+    src: "/images/free_delivery.png",
+    alt: "Free gas delivery service in Kampala, Uganda",
+    caption: "Free Same-Day Delivery"
   },
   {
-    src: "/images/oryx 6KG.png",
-    alt: "Oryx Gas 6KG - reliable LPG supply in Uganda",
-    caption: "Oryx Gas - Reliable supply"
+    src: "/images/cook_healthy.png",
+    alt: "Cook healthy meals with reliable gas supply",
+    caption: "Cook Healthy Meals"
   },
   {
-    src: "/images/stabex 6KG.png",
-    alt: "Stabex Gas 6KG - free gas delivery service in Kampala",
-    caption: "Stabex Gas - Free delivery"
+    src: "/images/eat_healthy.png",
+    alt: "Eat healthy food with consistent cooking gas",
+    caption: "Eat Healthier Food"
+  },
+  {
+    src: "/images/stay_healthy.png",
+    alt: "Stay healthy with clean cooking gas options",
+    caption: "Stay Healthy With Clean Gas"
   }
 ];
 
@@ -78,7 +83,7 @@ const ImageCarousel: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="absolute inset-0"
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/10 z-10" />
           <img
             src={carouselImages[currentIndex].src}
             alt={carouselImages[currentIndex].alt}
