@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,22 +8,8 @@ import { Flame, ArrowRight, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { refillBrands } from "@/components/home/BrandsData";
-import { 
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from "@/components/ui/command";
-import { 
-  Popover, 
-  PopoverContent, 
-  PopoverTrigger 
-} from "@/components/ui/popover";
 
 // Refactored staticBrands from the original data file
 const staticBrands = [
@@ -296,9 +281,7 @@ const Refill = () => {
   const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Use useEffect to simulate immediate loading of data
   useEffect(() => {
@@ -323,12 +306,7 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
 
-  const filteredBrands = searchQuery
-    ? staticBrands.filter(brand => 
-        brand.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : staticBrands;
-
+  const filteredBrands = staticBrands;
   const filteredPrices = selectedBrand ? staticRefillPrices.filter(price => price.brand === selectedBrand) : [];
 
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
@@ -401,53 +379,6 @@ const Refill = () => {
           </motion.div>
 
           <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100">
-            <div className="mb-4">
-              <Label htmlFor="search" className="text-sm font-medium mb-1.5 block text-left">
-                Search Brand
-              </Label>
-              {/* Replacing input with Popover and Command for better search experience */}
-              <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={isSearchOpen}
-                    className="w-full justify-between border-gray-200 bg-white"
-                  >
-                    {searchQuery ? searchQuery : "Search for a brand..."}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0 bg-white" align="start">
-                  <Command>
-                    <CommandInput 
-                      placeholder="Search for a brand..." 
-                      value={searchQuery}
-                      onValueChange={setSearchQuery}
-                      className="h-9"
-                    />
-                    <CommandList>
-                      <CommandEmpty>No brands found.</CommandEmpty>
-                      <CommandGroup>
-                        {filteredBrands.map((brand) => (
-                          <CommandItem
-                            key={brand}
-                            value={brand}
-                            onSelect={(currentValue) => {
-                              setSearchQuery(currentValue);
-                              setSelectedBrand(currentValue);
-                              setIsSearchOpen(false);
-                            }}
-                          >
-                            {brand}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-            
             <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
               Select Gas Brand
             </Label>
