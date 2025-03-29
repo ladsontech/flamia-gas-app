@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Helmet } from "react-helmet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { refillBrands } from "@/components/home/BrandsData";
 
+// Refactored staticBrands from the original data file
 const staticBrands = [
   "Total", 
   "Taifa", 
@@ -22,8 +25,8 @@ const staticBrands = [
   "Ola Energy", 
   "Oryx", 
   "Ultimate", 
-  "K ", 
-  "C", 
+  "K Gas", 
+  "C Gas", 
   "Hashi",
   "Safe",
   "Nova"
@@ -279,8 +282,20 @@ const Refill = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
+
+  // Use useEffect to simulate immediate loading of data
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setAllBrandsLoaded(true);
+    }, 100); // Very short timeout to ensure DOM has rendered
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOrder = (weight: string, price: number) => {
     if (!selectedBrand) {
@@ -305,6 +320,29 @@ const Refill = () => {
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
 
+  // Define container variants for instant loading of all items
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.3,
+        // Remove staggering effect to load all at once
+        when: "beforeChildren",
+        staggerChildren: 0
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/40 to-white flex flex-col">
       <Helmet>
@@ -320,8 +358,9 @@ const Refill = () => {
         </div>
         
         <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }} 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ duration: 0.3 }}
           className="text-center mb-6 sm:mb-8"
         >
           <div className="mb-6 max-w-2xl mx-auto">
@@ -334,9 +373,9 @@ const Refill = () => {
           </div>
           
           <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }} 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ duration: 0.3 }} 
             className="flex items-center justify-center gap-2 text-accent font-medium p-3 bg-accent/10 rounded-xl mb-6 max-w-md mx-auto shadow-sm border border-accent/20"
           >
             <Truck className="w-5 h-5" />
@@ -361,21 +400,20 @@ const Refill = () => {
             <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
               Select Gas Brand
             </Label>
-            <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-              <SelectTrigger id="brand-select" className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12 shadow-sm">
-                <SelectValue placeholder="Select gas brand" />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-accent/20 shadow-lg overflow-y-auto z-50" position="popper" style={{
-                maxHeight: 'min(65vh, 400px)',
-                minHeight: '300px'
-              }}>
-                {filteredBrands.map(brand => (
-                  <SelectItem key={brand} value={brand} className="hover:bg-accent/10 py-3">
-                    {brand} Gas
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {allBrandsLoaded && (
+              <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                <SelectTrigger id="brand-select" className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12 shadow-sm">
+                  <SelectValue placeholder="Select gas brand" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-accent/20 shadow-lg overflow-y-auto z-50 max-h-[400px]">
+                  {filteredBrands.map(brand => (
+                    <SelectItem key={brand} value={brand} className="hover:bg-accent/10 py-3">
+                      {brand} Gas
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </motion.div>
 
@@ -390,9 +428,9 @@ const Refill = () => {
           <AnimatePresence>
             {selectedBrand && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="mb-8"
               >
@@ -402,15 +440,17 @@ const Refill = () => {
               </motion.div>
             )}
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               {filteredPrices.length > 0 ? (
-                filteredPrices.map((item, index) => (
+                filteredPrices.map((item) => (
                   <motion.div 
                     key={item.id} 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.3, delay: index * 0.1 }} 
-                    whileHover={{ scale: 1.02 }} 
+                    variants={itemVariants}
                     className="h-full"
                   >
                     <Card className="relative overflow-hidden p-5 sm:p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col border-accent/10">
@@ -457,16 +497,14 @@ const Refill = () => {
                 ))
               ) : selectedBrand ? (
                 <motion.div 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
+                  variants={itemVariants}
                   className="col-span-full text-center py-8"
                 >
                   <p className="text-muted-foreground">No gas refill prices available for this brand currently.</p>
                 </motion.div>
               ) : (
                 <motion.div 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
+                  variants={itemVariants}
                   className="col-span-full text-center py-8"
                 >
                   <div className="p-6 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-100 shadow-sm max-w-xl mx-auto">
@@ -477,7 +515,7 @@ const Refill = () => {
                   </div>
                 </motion.div>
               )}
-            </div>
+            </motion.div>
           </AnimatePresence>
         )}
       </div>
