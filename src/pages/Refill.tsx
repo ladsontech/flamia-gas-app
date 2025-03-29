@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { BackButton } from "@/components/BackButton";
+import AppBar from "@/components/AppBar";
 import { Flame, ArrowRight, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,7 +11,6 @@ import { Helmet } from "react-helmet";
 import { Label } from "@/components/ui/label";
 import { refillBrands } from "@/components/home/BrandsData";
 
-// Refactored staticBrands from the original data file
 const staticBrands = [
   "Total", 
   "Taifa", 
@@ -283,13 +282,11 @@ const Refill = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
 
-  // Use useEffect to simulate immediate loading of data
   useEffect(() => {
-    // Simulate data loading - make this even faster
     const timer = setTimeout(() => {
       setIsLoading(false);
       setAllBrandsLoaded(true);
-    }, 50); // Shorter timeout for faster loading
+    }, 50);
 
     return () => clearTimeout(timer);
   }, []);
@@ -312,14 +309,12 @@ const Refill = () => {
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
 
-  // Define container variants for instant loading of all items
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
       transition: { 
         duration: 0.3,
-        // No staggering for instant loading
         when: "beforeChildren",
         staggerChildren: 0
       }
@@ -344,21 +339,10 @@ const Refill = () => {
         <link rel="canonical" href="https://flamia.store/refill" />
       </Helmet>
       
-      <div className="container px-2 sm:px-4 py-4 sm:py-6 flex-grow">
-        <div className="flex justify-between items-center mb-4">
-          <BackButton />
-          {/* Moving price comparison text to app bar */}
-          <div className="text-accent font-medium text-sm sm:text-base px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 shadow-sm">
-            Gas Refill Price Comparison
-          </div>
-        </div>
-        
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          transition={{ duration: 0.3 }}
-          className="text-center mb-6 sm:mb-8"
-        >
+      <AppBar />
+      
+      <div className="container px-2 sm:px-4 py-4 sm:py-6 flex-grow pt-16">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="mb-6 max-w-2xl mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
               Compare Gas Refill Prices
@@ -368,11 +352,10 @@ const Refill = () => {
             </p>
           </div>
           
-          {/* Free delivery notice without the icon */}
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
-            transition={{ duration: 0.3 }} 
+            transition={{ duration: 0.3 }}
             className="flex items-center justify-center text-accent font-medium p-3 bg-accent/10 rounded-xl mb-6 max-w-md mx-auto shadow-sm border border-accent/20"
           >
             <span>Free Delivery on All Gas Refills in Kampala!</span>

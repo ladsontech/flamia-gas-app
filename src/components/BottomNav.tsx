@@ -1,6 +1,6 @@
 
 import { useLocation } from "react-router-dom";
-import { Home, Package, RefuelingStation, ShoppingBag, Settings } from "lucide-react";
+import { Home, Package, RotateCw, ShoppingBag, Settings } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
 import GasSafetyTips from "./safety/GasSafetyTips";
 
@@ -35,7 +35,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
       />
       <NavItem
         to="/refill"
-        icon={RefuelingStation}
+        icon={RotateCw}
         label="Refill"
         isActive={isRefillActive}
       />
