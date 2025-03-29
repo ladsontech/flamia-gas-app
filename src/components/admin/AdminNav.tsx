@@ -7,7 +7,7 @@ export const AdminNav = ({ onRefresh }: { onRefresh: () => void }) => {
   
   return (
     <div className="flex justify-between items-center mb-8">
-      <h1 className="text-3xl font-bold">Flamia Admin Orders</h1>
+      <h1 className="text-3xl font-bold">Flamia Admin</h1>
       <div className="flex space-x-2">
         <Button variant="outline" onClick={onRefresh}>
           Refresh
