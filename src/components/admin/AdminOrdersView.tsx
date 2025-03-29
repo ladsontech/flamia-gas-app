@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Order } from "@/types/order";
 import { format, isSameDay } from "date-fns";
 import { Calendar } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface AdminOrdersViewProps {
   orders: Order[];
@@ -65,14 +66,14 @@ export const AdminOrdersView = ({ orders, onOrdersUpdate }: AdminOrdersViewProps
               </h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {groupedOrders[dateKey].orders.map((order) => (
                 <Card key={order.id} className="overflow-hidden">
                   <div className="p-4 border-b">
                     <div className="flex items-center gap-2">
-                      <span className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                      <Badge variant="default" className="h-6 w-6 rounded-full p-0 flex items-center justify-center">
                         {orderCounter++}
-                      </span>
+                      </Badge>
                       <span className="font-semibold">
                         Order Details
                       </span>
