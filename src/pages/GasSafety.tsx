@@ -1,6 +1,6 @@
 
 import React from "react";
-import { AppBar } from "@/components/AppBar";
+import AppBar from "@/components/AppBar";
 import { 
   Accordion,
   AccordionContent,

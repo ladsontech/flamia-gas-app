@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,13 +22,11 @@ const AppContent = () => {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
 
-  // Check for admin status on mount
   useEffect(() => {
     const userRole = localStorage.getItem('userRole');
     setIsAdmin(userRole === 'admin');
   }, []);
 
-  // Hide bottom nav when place screen is showing or on admin/login routes
   const showBottomNav = !showPlaceScreen && 
     !['/admin', '/login'].includes(location.pathname);
 
@@ -181,15 +178,17 @@ const App = () => {
   }));
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <AppContent />
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </TooltipProvider>
         </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 };
 
