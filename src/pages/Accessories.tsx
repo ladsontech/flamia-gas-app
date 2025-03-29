@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -7,13 +8,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import { accessories } from "@/components/accessories/AccessoriesData";
+import AppBar from "@/components/AppBar";
 
 const Accessories = () => {
   const [loading, setLoading] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
+  
   const handleOrder = (accessoryId: string) => {
     navigate(`/order?accessory=${accessoryId}`);
   };
@@ -56,7 +57,8 @@ const Accessories = () => {
         <link rel="preload" as="image" href="/images/horse_pipe.jpeg" />
       </Helmet>
       
-      <div className="container mx-auto px-2 py-3 flex-grow">
+      <AppBar />
+      <div className="container mx-auto px-2 py-3 flex-grow pt-20">
         <h1 className="text-lg sm:text-xl font-bold mb-3">Shop Accessories</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {accessories.map(accessory => <motion.div key={accessory.id} initial={{

@@ -1,6 +1,6 @@
 
 import { useLocation } from "react-router-dom";
-import { Home, Package, RotateCw, ShoppingBag, Settings, Flame } from "lucide-react";
+import { Home, ShoppingBag, Flame } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
 
 interface BottomNavProps {
@@ -13,8 +13,6 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
 
   // Define active states
   const isHomeActive = path === "/";
-  const isOrderActive = path === "/order";
-  const isRefillActive = path === "/refill";
   const isAccessoriesActive = path === "/accessories";
   const isSafetyActive = path === "/safety";
 
@@ -27,18 +25,6 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
         isActive={isHomeActive}
       />
       <NavItem
-        to="/order"
-        icon={Package}
-        label="Order"
-        isActive={isOrderActive}
-      />
-      <NavItem
-        to="/refill"
-        icon={RotateCw}
-        label="Refill"
-        isActive={isRefillActive}
-      />
-      <NavItem
         to="/accessories"
         icon={ShoppingBag}
         label="Accessories"
@@ -47,7 +33,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
       {isAdmin ? (
         <NavItem
           to="/admin"
-          icon={Settings}
+          icon={Flame}
           label="Admin"
           isActive={false}
         />
