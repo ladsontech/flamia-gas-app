@@ -29,7 +29,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
       <NavItem
         to="/order"
         icon={Package}
-        label="Full Set"
+        label="Order"
         isActive={isOrderActive}
       />
       <NavItem
