@@ -18,7 +18,7 @@ export const BottomNav = ({ isAdmin }: BottomNavProps) => {
   const isRefillActive = path === "/refill";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around bg-background border-t border-border h-16 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around bg-background border-t border-border h-16 px-2">
       <NavItem
         to="/"
         icon={Home}

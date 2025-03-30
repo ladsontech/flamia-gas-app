@@ -1,11 +1,12 @@
 
-import { Flame } from "lucide-react";
+import { Flame, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import InstallPWA from "./InstallPWA";
 import UpdateNotification from "./UpdateNotification";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "./ui/navigation-menu";
 
 const AppBar = () => {
   // State for showing update notification
@@ -51,6 +52,69 @@ const AppBar = () => {
             Flamia
           </span>
         </Link>
+
+        {/* Desktop Navigation - Only visible on md and up screens */}
+        <div className="hidden md:block">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <Link to="/">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Home
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/refill">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Refill
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/accessories">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Accessories
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/safety">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Safety
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Help</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="p-4 w-[200px]">
+                    <div className="flex flex-col gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => window.open('https://wa.me/256789572007', '_blank')}
+                        className="flex items-center justify-start text-sm"
+                      >
+                        <span>Chat with Expert</span>
+                        <ChevronRight className="ml-auto h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="flex items-center justify-start text-sm"
+                      >
+                        <span>FAQs</span>
+                        <ChevronRight className="ml-auto h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+
         <div className="flex items-center gap-3">
           <InstallPWA />
         </div>

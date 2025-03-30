@@ -11,7 +11,7 @@ const PromotionsSection: React.FC = () => {
   };
 
   return (
-    <section className="mb-6">
+    <section className="mb-4">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg md:text-xl font-bold">Special Promotions</h2>
         <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs">
@@ -20,7 +20,7 @@ const PromotionsSection: React.FC = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-2">
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm">
             <div className="relative">
@@ -30,7 +30,7 @@ const PromotionsSection: React.FC = () => {
               </div>
               
               <div className="flex sm:flex-col">
-                <div className="w-1/3 sm:w-full h-24 sm:h-32 md:h-40 bg-gray-50 flex items-center justify-center">
+                <div className="w-1/3 sm:w-full h-24 sm:h-32 md:h-28 lg:h-24 bg-gray-50 flex items-center justify-center">
                   <img 
                     src={offer.image} 
                     alt={offer.title} 
@@ -39,7 +39,7 @@ const PromotionsSection: React.FC = () => {
                   />
                 </div>
                 
-                <div className="w-2/3 sm:w-full p-3">
+                <div className="w-2/3 sm:w-full p-3 md:p-2 lg:p-2">
                   <h3 className="font-medium text-sm truncate">{offer.title}</h3>
                   <p className="text-muted-foreground text-xs line-clamp-1 mb-2">{offer.description}</p>
                   <Button 

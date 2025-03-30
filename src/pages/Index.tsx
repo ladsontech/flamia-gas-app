@@ -71,7 +71,8 @@ export default function Index() {
       <AppBar />
 
       <div className="flex-grow flex flex-col lg:flex-row pt-16">
-        <div className="hidden lg:block lg:w-1/3 xl:w-1/4 border-r border-gray-200 bg-gray-50 py-2 px-2">
+        {/* Sidebar for large screens - Hidden on mobile */}
+        <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16">
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
               <h3 className="text-base font-medium mb-1">Need Help?</h3>
@@ -85,17 +86,17 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="flex-1 w-full lg:w-2/3 xl:w-3/4">
+        {/* Main Content Area */}
+        <div className="flex-1 w-full lg:w-1/2 xl:w-3/5">
           <div className="container px-2 py-2 md:py-3">
             <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
               
-              {/* Reordering the sections as requested */}
-              <PromotionsSection />
+              <div className="md:px-3 lg:px-6">
+                <PromotionsSection />
+              </div>
               
-              <ImageCarousel />
-              
-              <section className="space-y-3 md:space-y-4">
+              <section className="space-y-3 md:space-y-3">
                 <div className="text-center">
                   <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">Best Gas Delivery Service in Uganda</h2>
                   <p className="text-sm text-muted-foreground mb-3">Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe</p>
@@ -108,10 +109,9 @@ export default function Index() {
                 </div>
               </section>
               
-              {/* Adding the Popular Brands section at the bottom */}
               <PopularBrands />
 
-              <div className="py-3 md:py-4 lg:hidden">
+              <div className="py-3 md:hidden">
                 <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
                   <h3 className="text-base sm:text-lg font-bold mb-1">Can't decide which cylinder to buy?</h3>
                   <p className="mb-2 text-xs">
@@ -127,7 +127,29 @@ export default function Index() {
             </div>
           </div>
         </div>
+        
+        {/* Right sidebar with carousel - Only on large screens */}
+        <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-l border-gray-200 bg-gray-50 py-2 px-2">
+          <div className="sticky top-16 pt-2">
+            <ImageCarousel />
+            
+            {/* Additional content for the right sidebar */}
+            <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
+              <h3 className="text-base font-medium mb-1">Quick Order</h3>
+              <p className="text-xs text-gray-600 mb-2">Order your favorite gas cylinder with just one click.</p>
+              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => navigate('/order')}>
+                Order Now
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      {/* Only show carousel in the main area on mobile and medium screens */}
+      <div className="lg:hidden px-2 py-2">
+        <ImageCarousel />
+      </div>
+      
       <Footer />
     </>
   );
