@@ -31,11 +31,11 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
     
     switch (size) {
       case '6kg':
-        return `${brand} ${size} gas cylinder - Ideal for medium-sized families in Uganda. Affordable cooking gas delivered to your doorstep in Kampala, Wakiso, Mukono.`;
+        return `${brand} ${size} gas cylinder - Ideal for medium-sized families in Uganda.`;
       case '12kg':
-        return `${brand} ${size} gas cylinder - Best value for large families or commercial use in Uganda. Fastest LPG delivery service in Kampala and surrounding areas.`;
+        return `${brand} ${size} gas cylinder - Best value for large families or commercial use.`;
       default:
-        return `${brand} high-quality gas cylinder available for same-day delivery in Uganda. Affordable LPG prices with free delivery.`;
+        return `${brand} high-quality gas cylinder available for same-day delivery in Uganda.`;
     }
   };
 
@@ -69,28 +69,24 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
         "maxValue": "90",
         "unitCode": "MIN"
       }
-    },
-    "audience": {
-      "@type": "Audience",
-      "audienceType": "Residents of Uganda looking for affordable cooking gas"
     }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
       className="h-full"
     >
-      <Card className="bg-white shadow-lg p-2 sm:p-3 hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
+      <Card className="bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden h-full flex flex-col p-1.5">
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
-        <div className="relative w-full pb-[100%] mb-2 rounded-md overflow-hidden bg-gray-50">
+        <div className="relative w-full pb-[80%] mb-1.5 rounded-md overflow-hidden bg-gray-50">
           {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-              <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>
             </div>
           )}
           <img
@@ -107,20 +103,18 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
             }}
           />
         </div>
-        <h3 className="text-sm sm:text-base font-semibold mb-1">{brand} Gas</h3>
-        <p className="text-xs sm:text-sm font-medium text-accent mb-1">{size} Cylinder</p>
-        <p className="text-muted-foreground mb-2 text-xs sm:text-sm line-clamp-2">
+        <h3 className="text-xs font-semibold mb-0.5">{brand} Gas</h3>
+        <p className="text-xs font-medium text-accent mb-0.5">{size} Cylinder</p>
+        <p className="text-muted-foreground mb-1 text-xs line-clamp-1">
           {finalDescription}
         </p>
-        <div className="space-y-1 mb-2">
-          <div className="flex justify-between items-center">
-            <span className="text-xs sm:text-sm font-medium">Price</span>
-            <span className="text-xs sm:text-sm font-semibold text-accent">{price}</span>
-          </div>
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs font-medium">Price</span>
+          <span className="text-xs font-semibold text-accent">{price}</span>
         </div>
         <Button
           onClick={handleOrder}
-          className="w-full bg-accent text-white hover:bg-accent/90 text-xs py-1 h-auto mt-auto"
+          className="w-full bg-accent text-white hover:bg-accent/90 text-xs py-0.5 h-6 mt-auto"
         >
           Order Now
         </Button>
