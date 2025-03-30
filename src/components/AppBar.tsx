@@ -115,6 +115,7 @@ const AppBar = () => {
           </NavigationMenu>
         </div>
 
+        {/* Always show install button in header for non-installed users */}
         <div className="flex items-center gap-3">
           <InstallPWA />
         </div>
