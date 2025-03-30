@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -282,6 +281,7 @@ const Refill = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -352,22 +352,18 @@ const Refill = () => {
               Choose your preferred brand and cylinder size for best rates in Uganda.
             </p>
           </div>
-          
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ duration: 0.3 }}
-            className="flex items-center justify-center text-accent font-medium p-3 bg-accent/10 rounded-xl mb-6 max-w-md mx-auto shadow-sm border border-accent/20"
-          >
-            <span>Free Delivery on All Gas Refills in Kampala!</span>
-          </motion.div>
 
           <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100">
             <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
               Select Gas Brand
             </Label>
             {allBrandsLoaded && (
-              <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+              <Select 
+                value={selectedBrand} 
+                onValueChange={setSelectedBrand} 
+                defaultOpen={true} 
+                onOpenChange={setIsDropdownOpen}
+              >
                 <SelectTrigger id="brand-select" className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12 shadow-sm">
                   <SelectValue placeholder="Select gas brand" />
                 </SelectTrigger>
@@ -435,10 +431,6 @@ const Refill = () => {
                         <div className="p-4 sm:p-5 bg-gradient-to-r from-accent/5 to-white rounded-lg mt-auto border border-accent/10 shadow-sm">
                           <div className="flex items-center justify-center gap-2 mb-3">
                             <ul className="text-xs space-y-1.5">
-                              <li className="flex items-center gap-1.5">
-                                <Check size={14} className="text-accent" />
-                                <span>Same-day delivery</span>
-                              </li>
                               <li className="flex items-center gap-1.5">
                                 <Check size={14} className="text-accent" />
                                 <span>Quality guaranteed</span>
