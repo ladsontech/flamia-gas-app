@@ -13,6 +13,16 @@ if (!container) {
 // Custom event bus for service worker updates
 const swEvents = new EventTarget();
 
+// Check if the app is running in standalone mode (installed PWA)
+const isAppInstalled = () => {
+  // For iOS Safari
+  const standaloneSafari = (window.navigator as any).standalone === true;
+  // For other browsers
+  const standaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+  
+  return standaloneSafari || standaloneMode;
+};
+
 // Register Service Worker with update handling
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
@@ -40,12 +50,14 @@ if ('serviceWorker' in navigator) {
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content is available, dispatch event
+              // New content is available, dispatch event only if app is installed
               console.log('New service worker installed and waiting to activate');
-              swEvents.dispatchEvent(new Event('update-available'));
-              
-              // This will be picked up by the UpdateNotification component
-              // The service worker 'message' event will handle the notification
+              if (isAppInstalled()) {
+                swEvents.dispatchEvent(new Event('update-available'));
+                
+                // This will be picked up by the UpdateNotification component
+                // The service worker 'message' event will handle the notification
+              }
             }
           });
         }

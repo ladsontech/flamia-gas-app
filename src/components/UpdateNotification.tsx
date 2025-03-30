@@ -19,11 +19,25 @@ interface UpdateNotificationProps {
 const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [updateInfo, setUpdateInfo] = useState<AppVersion | null>(null);
+  const [isStandalone, setIsStandalone] = useState(false);
   
   useEffect(() => {
+    // Check if the app is running in standalone mode (installed PWA)
+    const checkIfInstalled = () => {
+      // For iOS Safari
+      const standaloneSafari = (window.navigator as any).standalone === true;
+      // For other browsers
+      const standaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+      
+      setIsStandalone(standaloneSafari || standaloneMode);
+    };
+    
+    // Check when component mounts
+    checkIfInstalled();
+    
     // Listen for messages from the service worker
     const handleMessage = (event: MessageEvent) => {
-      if (event.data && event.data.type === 'APP_UPDATED') {
+      if (event.data && event.data.type === 'APP_UPDATED' && isStandalone) {
         setUpdateInfo(event.data.version);
         setShowUpdateDialog(true);
         
@@ -44,7 +58,7 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
     navigator.serviceWorker.addEventListener('message', handleMessage);
 
     // When this component mounts, check if we need to show the update notification
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller && isStandalone) {
       // Query the service worker for version info
       navigator.serviceWorker.controller.postMessage({
         type: 'GET_VERSION'
@@ -55,7 +69,7 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
     return () => {
       navigator.serviceWorker.removeEventListener('message', handleMessage);
     };
-  }, [onUpdate]);
+  }, [onUpdate, isStandalone]);
 
   // Handle dismissing the update notice
   const dismissUpdate = () => {
@@ -68,8 +82,8 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
     onUpdate();
   };
 
-  // Show floating notification for smaller updates
-  if (!showUpdateDialog || !updateInfo) return null;
+  // Only show notifications if app is installed as PWA
+  if (!isStandalone || !showUpdateDialog || !updateInfo) return null;
 
   return (
     <>
