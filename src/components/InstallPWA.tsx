@@ -17,7 +17,7 @@ interface SafariNavigator extends Navigator {
 const InstallPWA = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [isInstallable, setIsInstallable] = useState(true); // Default to true to show button
 
   useEffect(() => {
     // Check if the app is already installed as a PWA
@@ -25,6 +25,7 @@ const InstallPWA = () => {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                           (window.navigator as SafariNavigator).standalone === true;
       setIsInstalled(isStandalone);
+      console.log("PWA installed status:", isStandalone);
       return isStandalone;
     };
 
@@ -36,12 +37,13 @@ const InstallPWA = () => {
       
       // For iOS, we'll show a custom install button with instructions
       if (isIOSWithSafari) {
-        setIsInstallable(true);
+        console.log("iOS Safari detected, showing install instructions");
         return true;
       }
 
-      // For other browsers, we check if beforeinstallprompt is supported
-      return 'BeforeInstallPromptEvent' in window;
+      // For other browsers, we show the button anyway
+      console.log("Browser supports installation:", 'BeforeInstallPromptEvent' in window);
+      return true; // Always return true to show the button
     };
 
     // Check installed state first
@@ -50,7 +52,7 @@ const InstallPWA = () => {
       return;
     }
 
-    // Check if installable
+    // Check if installable and set state
     setIsInstallable(checkIfInstallable());
 
     const handleBeforeInstallPrompt = (event: Event) => {
@@ -100,26 +102,30 @@ const InstallPWA = () => {
         description: "Tap the share icon and then 'Add to Home Screen'",
         duration: 5000,
       });
+      return;
     }
+
+    // For other browsers without beforeinstallprompt support
+    toast({
+      title: "Install this app",
+      description: "Use your browser's 'Add to Home Screen' or 'Install' option from the menu",
+      duration: 5000,
+    });
   };
 
   // Don't show if already installed as PWA
   if (isInstalled) return null;
   
-  // Show install button if the device supports installation
-  if (isInstallable) {
-    return (
-      <Button 
-        className="flex items-center gap-2 bg-accent hover:bg-accent/90 transition-all shadow-md" 
-        onClick={handleInstallClick}
-      >
-        <Download className="h-4 w-4" />
-        Install App
-      </Button>
-    );
-  }
-
-  return null;
+  // Always show install button for web users
+  return (
+    <Button 
+      className="flex items-center gap-2 bg-accent hover:bg-accent/90 transition-all shadow-md" 
+      onClick={handleInstallClick}
+    >
+      <Download className="h-4 w-4" />
+      Install App
+    </Button>
+  );
 };
 
 export default InstallPWA;
