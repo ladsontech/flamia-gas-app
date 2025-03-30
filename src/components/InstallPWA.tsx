@@ -82,30 +82,55 @@ const InstallPWA = () => {
   const handleInstallClick = () => {
     // For browsers that support the beforeinstallprompt event
     if (installPrompt) {
-      installPrompt.prompt(); // Show install prompt
-      installPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === "accepted") {
-          console.log("User accepted the install prompt");
-        } else {
-          console.log("User dismissed the install prompt");
-        }
-        setInstallPrompt(null);
-      }).catch(error => console.error('Install prompt error:', error));
+      // Trigger the install prompt immediately
+      installPrompt.prompt();
+      
+      // Track user's choice
+      installPrompt.userChoice
+        .then((choiceResult) => {
+          if (choiceResult.outcome === "accepted") {
+            console.log("User accepted the install prompt");
+            toast({
+              title: "Installing app...",
+              description: "Adding Flamia Gas to your home screen",
+              duration: 3000,
+            });
+          } else {
+            console.log("User dismissed the install prompt");
+          }
+          setInstallPrompt(null);
+        })
+        .catch(error => console.error('Install prompt error:', error));
       return;
     }
     
-    // For iOS Safari, show instructions
+    // Special handling for iOS Safari
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    if (isIOS) {
+    const isIOSWithSafari = isIOS && /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    
+    if (isIOSWithSafari) {
+      // Show clear instructions with visual cues for iOS
+      toast({
+        title: "Add to Home Screen",
+        description: "1. Tap the Share button at the bottom of your screen\n2. Scroll and tap 'Add to Home Screen'\n3. Tap 'Add' to confirm",
+        duration: 8000,
+      });
+      return;
+    }
+
+    // For other browsers without direct install support
+    // Check if it might be an Android device
+    const isAndroid = /Android/.test(navigator.userAgent);
+    if (isAndroid) {
       toast({
         title: "Install this app",
-        description: "Tap the share icon and then 'Add to Home Screen'",
+        description: "Open in Chrome and tap 'Add to Home Screen' from the menu (three dots)",
         duration: 5000,
       });
       return;
     }
 
-    // For other browsers without beforeinstallprompt support
+    // Generic fallback for other browsers
     toast({
       title: "Install this app",
       description: "Use your browser's 'Add to Home Screen' or 'Install' option from the menu",
