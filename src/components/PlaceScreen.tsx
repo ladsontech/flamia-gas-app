@@ -4,7 +4,7 @@ import { Flame } from "lucide-react";
 
 const PlaceScreen = () => {
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-white to-accent/5 z-50 flex flex-col items-center justify-center">
+    <div className="fixed inset-0 bg-gradient-to-b from-white to-accent/5 backdrop-blur-md z-50 flex flex-col items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
