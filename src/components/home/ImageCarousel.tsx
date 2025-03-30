@@ -58,8 +58,8 @@ const ImageCarousel: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg shadow-sm mb-4">
-      <div className="aspect-[3/1.2]"> 
+    <div className="relative w-full overflow-hidden rounded-lg shadow-md mb-4 bg-white">
+      <div className="aspect-[3/2]"> {/* 2400x1600 aspect ratio (3:2) */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-50">
             <div className="w-8 h-8 border-4 border-accent rounded-full border-t-transparent animate-spin"></div>
@@ -75,20 +75,20 @@ const ImageCarousel: React.FC = () => {
             transition={{ duration: 0.7 }}
             className="absolute inset-0"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-transparent z-10" />
-            <AspectRatio ratio={3/1.2}>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent z-10" />
+            <AspectRatio ratio={3/2}> {/* 2400x1600 = 3:2 ratio */}
               <img
                 src={carouselImages[currentIndex].src}
                 alt={carouselImages[currentIndex].alt}
                 className="w-full h-full object-contain bg-white"
                 loading="lazy"
+                onLoad={handleImageLoad}
                 width="2400"
                 height="1600"
-                onLoad={handleImageLoad}
               />
             </AspectRatio>
-            <div className="absolute bottom-0 left-0 right-0 p-3 text-white z-20">
-              <h3 className="text-lg font-bold drop-shadow-md">
+            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white z-20">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold drop-shadow-md">
                 {carouselImages[currentIndex].caption}
               </h3>
             </div>
@@ -109,25 +109,25 @@ const ImageCarousel: React.FC = () => {
         </div>
       </div>
       
-      {/* Navigation arrows */}
+      {/* Navigation arrows - hidden on small screens, visible on medium and up */}
       <button 
         onClick={prevSlide}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-white/70 hover:bg-white/90 text-accent"
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-30 hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-white/70 hover:bg-white/90 text-accent"
         aria-label="Previous slide"
       >
-        <ChevronLeft size={18} />
+        <ChevronLeft size={20} />
       </button>
       
       <button 
         onClick={nextSlide}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-white/70 hover:bg-white/90 text-accent"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-30 hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-white/70 hover:bg-white/90 text-accent"
         aria-label="Next slide"
       >
-        <ChevronRight size={18} />
+        <ChevronRight size={20} />
       </button>
       
       {/* Indicator dots */}
-      <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-30">
+      <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1 z-30">
         {carouselImages.map((_, index) => (
           <button
             key={index}

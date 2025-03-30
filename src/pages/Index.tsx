@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
@@ -10,6 +12,7 @@ import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
 
 export default function Index() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   
   return (
@@ -67,13 +70,13 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row pt-14">
-        <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-1.5 px-1.5">
-          <div className="sticky top-14">
-            <div className="mt-2 bg-white p-2 rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium mb-1">Need Help?</h3>
-              <p className="text-xs text-gray-600 mb-1.5">Contact our gas experts for personalized recommendations.</p>
-              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-7" onClick={() => {
+      <div className="flex-grow flex flex-col lg:flex-row pt-16">
+        <div className="hidden lg:block lg:w-1/3 xl:w-1/4 border-r border-gray-200 bg-gray-50 py-2 px-2">
+          <div className="sticky top-16">
+            <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
+              <h3 className="text-base font-medium mb-1">Need Help?</h3>
+              <p className="text-xs text-gray-600 mb-2">Contact our gas experts for personalized recommendations.</p>
+              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
               window.open('https://wa.me/256789572007', '_blank');
             }}>
                 Chat with Gas Expert
@@ -82,9 +85,9 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="flex-1 w-full lg:w-3/4 xl:w-4/5">
-          <div className="container px-1.5 py-1.5 md:py-2">
-            <div className="flex flex-col gap-2">
+        <div className="flex-1 w-full lg:w-2/3 xl:w-3/4">
+          <div className="container px-2 py-2 md:py-3">
+            <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
               
               {/* Reordering the sections as requested */}
@@ -92,15 +95,15 @@ export default function Index() {
               
               <ImageCarousel />
               
-              <section className="space-y-2">
+              <section className="space-y-3 md:space-y-4">
                 <div className="text-center">
-                  <h2 className="text-lg md:text-xl font-bold text-primary mb-1.5">Best Gas Delivery Service in Uganda</h2>
-                  <p className="text-xs text-muted-foreground mb-2">Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe</p>
+                  <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">Best Gas Delivery Service in Uganda</h2>
+                  <p className="text-sm text-muted-foreground mb-3">Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe</p>
                 </div>
 
-                <div className="px-0.5">
-                  {isLoading ? <div className="flex justify-center py-4">
-                      <div className="animate-spin h-5 w-5 border-3 border-accent rounded-full border-t-transparent"></div>
+                <div className="px-1">
+                  {isLoading ? <div className="flex justify-center py-6">
+                      <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
                     </div> : <BrandsGrid brands={[]} />}
                 </div>
               </section>
@@ -108,13 +111,13 @@ export default function Index() {
               {/* Adding the Popular Brands section at the bottom */}
               <PopularBrands />
 
-              <div className="py-2 lg:hidden">
-                <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-2 text-center">
-                  <h3 className="text-sm font-bold mb-0.5">Can't decide which cylinder to buy?</h3>
-                  <p className="mb-1.5 text-xs">
+              <div className="py-3 md:py-4 lg:hidden">
+                <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
+                  <h3 className="text-base sm:text-lg font-bold mb-1">Can't decide which cylinder to buy?</h3>
+                  <p className="mb-2 text-xs">
                     Contact our gas experts for personalized recommendations based on your household needs.
                   </p>
-                  <Button size="sm" className="bg-accent hover:bg-accent/90 text-white py-0.5 h-7" onClick={() => {
+                  <Button size="sm" className="bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
                   window.open('https://wa.me/256789572007', '_blank');
                 }}>
                     Chat with Gas Expert
