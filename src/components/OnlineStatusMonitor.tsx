@@ -14,7 +14,9 @@ export function OnlineStatusMonitor() {
         title: "You're offline",
         description: "Some features may be limited until connection is restored.",
         variant: "destructive",
-        icon: <WifiOff className="h-5 w-5" />
+        action: (
+          <WifiOff className="h-5 w-5" />
+        ),
       });
     };
 
@@ -25,7 +27,9 @@ export function OnlineStatusMonitor() {
         title: "You're back online",
         description: "All features are now available.",
         variant: "default",
-        icon: <Wifi className="h-5 w-5" />
+        action: (
+          <Wifi className="h-5 w-5" />
+        ),
       });
     };
 

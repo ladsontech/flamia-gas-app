@@ -1,4 +1,3 @@
-
 // Cache names
 const CACHE_NAME = 'flamia-cache-v1';
 const OFFLINE_PAGE = '/offline.html';
@@ -108,19 +107,144 @@ workbox.routing.setCatchHandler(({ event }) => {
   return Response.error();
 });
 
+// IndexedDB setup for offline data
+const DB_NAME = 'flamia-offline-db';
+const STORE_NAME = 'pending-actions';
+
+// Open the IndexedDB database
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    
+    request.onerror = () => reject(new Error('Could not open IndexedDB'));
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    
+    request.onsuccess = (event) => resolve(event.target.result);
+  });
+}
+
+// Store an action to be synchronized later
+async function storeAction(action) {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    
+    await new Promise((resolve, reject) => {
+      const request = store.add(action);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(new Error('Could not store action'));
+    });
+    
+    console.log('Action stored for background sync:', action);
+    return true;
+  } catch (error) {
+    console.error('Failed to store action:', error);
+    return false;
+  }
+}
+
+// Retrieve and process all pending actions
+async function processPendingActions() {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    
+    const actions = await new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(new Error('Could not retrieve actions'));
+    });
+    
+    console.log('Processing pending actions:', actions.length);
+    
+    if (actions.length === 0) {
+      return;
+    }
+    
+    // Process each action
+    for (const action of actions) {
+      try {
+        // Attempt to send the action to the server
+        const response = await fetch(action.url, {
+          method: action.method || 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...action.headers
+          },
+          body: JSON.stringify(action.data)
+        });
+        
+        if (response.ok) {
+          // If successful, remove the action from the store
+          await new Promise((resolve, reject) => {
+            const request = store.delete(action.id);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(new Error('Could not delete action'));
+          });
+          
+          console.log(`Action ID ${action.id} processed and removed from queue`);
+        } else {
+          console.error(`Failed to process action ID ${action.id}:`, response.statusText);
+        }
+      } catch (error) {
+        console.error(`Error processing action ID ${action.id}:`, error);
+        // Keep the action in the queue for the next sync attempt
+      }
+    }
+  } catch (error) {
+    console.error('Failed to process pending actions:', error);
+  }
+}
+
 // Background sync for offline operations
 self.addEventListener('sync', event => {
   if (event.tag === 'sync-pending-data') {
-    event.waitUntil(syncPendingData());
+    event.waitUntil(processPendingActions());
   }
 });
 
-// Simple sync function placeholder
-async function syncPendingData() {
-  // This would normally interact with IndexedDB
-  console.log('Background sync triggered for pending data');
-  return Promise.resolve();
-}
+// Periodic sync for regular background processing
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'content-sync') {
+    event.waitUntil(processPendingActions());
+  }
+});
+
+// Register action saving method for client pages
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SAVE_OFFLINE_ACTION') {
+    event.waitUntil(
+      storeAction(event.data.action)
+        .then(success => {
+          // Notify the client of the result
+          event.source.postMessage({
+            type: 'ACTION_SAVED',
+            success,
+            actionId: event.data.action.id
+          });
+        })
+    );
+  }
+
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.source.postMessage({
+      type: 'VERSION_INFO',
+      version: APP_VERSION
+    });
+  }
+});
 
 // Push notification handling
 self.addEventListener('push', event => {
@@ -148,18 +272,4 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(
     clients.openWindow(event.notification.data.url || '/')
   );
-});
-
-// Message handler for communication with the app
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  
-  if (event.data && event.data.type === 'GET_VERSION') {
-    event.source.postMessage({
-      type: 'VERSION_INFO',
-      version: APP_VERSION
-    });
-  }
 });

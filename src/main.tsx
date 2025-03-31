@@ -48,6 +48,52 @@ const openDatabase = () => {
   });
 };
 
+// Helper to save offline actions
+const saveOfflineAction = async (action: any): Promise<boolean> => {
+  // First try to use the service worker if available
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    return new Promise((resolve) => {
+      // Create a message channel to receive the response
+      const messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = (event) => {
+        if (event.data && event.data.type === 'ACTION_SAVED') {
+          resolve(event.data.success);
+        }
+      };
+      
+      // Send the action to the service worker
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SAVE_OFFLINE_ACTION',
+        action: action
+      }, [messageChannel.port2]);
+    });
+  } 
+  
+  // Fallback to direct IndexedDB if service worker isn't available
+  try {
+    const db = await openDatabase() as IDBDatabase;
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction('pending-actions', 'readwrite');
+      const store = transaction.objectStore('pending-actions');
+      
+      const request = store.add(action);
+      
+      request.onsuccess = () => {
+        console.log('Action saved for sync:', action);
+        resolve(true);
+      };
+      
+      request.onerror = () => {
+        console.error('Failed to save action:', request.error);
+        reject(false);
+      };
+    });
+  } catch (error) {
+    console.error('Error saving offline action:', error);
+    return false;
+  }
+};
+
 // Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
@@ -91,6 +137,24 @@ if ('serviceWorker' in navigator) {
         console.error('Failed to initialize offline database:', error);
       }
       
+      // Register for periodic background sync if supported
+      if ('periodicSync' in registration) {
+        try {
+          const status = await navigator.permissions.query({
+            name: 'periodic-background-sync' as PermissionName,
+          });
+          
+          if (status.state === 'granted') {
+            await registration.periodicSync.register('content-sync', {
+              minInterval: 24 * 60 * 60 * 1000, // 24 hours
+            });
+            console.log('Periodic background sync registered');
+          }
+        } catch (error) {
+          console.error('Error registering periodic background sync:', error);
+        }
+      }
+      
       console.log('SW registered:', registration);
     } catch (error) {
       console.error('SW registration failed:', error);
@@ -103,12 +167,15 @@ if ('serviceWorker' in navigator) {
     document.dispatchEvent(new CustomEvent('app-status', { detail: { isOnline: true } }));
     
     // Trigger background sync for any pending actions if supported
-    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
-        if ('sync' in registration) {
+        // Check if sync is available before using it
+        if (registration.sync) {
           registration.sync.register('sync-pending-data')
             .then(() => console.log('Background sync registered for pending data'))
             .catch(err => console.error('Background sync registration failed:', err));
+        } else {
+          console.log('Background Sync API not supported');
         }
       });
     }
@@ -118,6 +185,9 @@ if ('serviceWorker' in navigator) {
     console.log('Application is offline');
     document.dispatchEvent(new CustomEvent('app-status', { detail: { isOnline: false } }));
   });
+
+  // Make the saveOfflineAction function available globally
+  window.saveOfflineAction = saveOfflineAction;
 }
 
 // Expose service worker events to window for component access
@@ -131,8 +201,8 @@ declare global {
   }
   
   interface ServiceWorkerRegistration {
-    sync?: {
-      register(tag: string): Promise<void>;
+    periodicSync?: {
+      register(tag: string, options?: { minInterval: number }): Promise<void>;
     };
   }
   
