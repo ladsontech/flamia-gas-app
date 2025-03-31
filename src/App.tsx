@@ -12,16 +12,27 @@ import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import PlaceScreen from "./components/PlaceScreen";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
+
+// Lazy load the update notification component 
+const UpdateNotification = lazy(() => import('./components/UpdateNotification'));
+const InstallPWA = lazy(() => import('./components/InstallPWA'));
 
 const AppContent = () => {
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
+
+  // Handle service worker updates
+  const handleUpdate = () => {
+    // Reload the page to activate the new service worker
+    window.location.reload();
+  };
 
   useEffect(() => {
     const userRole = localStorage.getItem('userRole');
@@ -69,6 +80,17 @@ const AppContent = () => {
       </Helmet>
 
       {showPlaceScreen && <PlaceScreen />}
+
+      {/* PWA Updates and Installation */}
+      <Suspense fallback={null}>
+        <UpdateNotification onUpdate={handleUpdate} />
+        <div className="fixed top-4 right-4 z-50">
+          <InstallPWA />
+        </div>
+      </Suspense>
+
+      {/* Online/Offline Status Monitor */}
+      <OnlineStatusMonitor />
 
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center">

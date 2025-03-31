@@ -48,27 +48,25 @@ const openDatabase = () => {
   });
 };
 
-// Register Service Worker with update handling
+// Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
-      });
-
-      // Function to check for updates more frequently
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      
+      // Function to check for updates
       const checkForUpdates = () => {
         registration.update().catch(err => {
           console.error('Error checking for service worker updates:', err);
         });
       };
-
+      
       // Check for updates on page focus
       window.addEventListener('focus', checkForUpdates);
-
+      
       // Also check periodically (every 30 minutes)
       setInterval(checkForUpdates, 30 * 60 * 1000);
-
+      
       // Check for updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
@@ -85,81 +83,33 @@ if ('serviceWorker' in navigator) {
         }
       });
 
-      // Enable background sync for orders
-      if ('sync' in registration) {
-        // Request notification permission
-        if ('Notification' in window) {
-          Notification.requestPermission();
-        }
-        
-        // Initialize IndexedDB for offline storage
-        try {
-          await openDatabase();
-          console.log('Offline database initialized');
-        } catch (error) {
-          console.error('Failed to initialize offline database:', error);
-        }
-        
-        // Setup listeners for sync events from service worker
-        navigator.serviceWorker.addEventListener('message', event => {
-          if (event.data && event.data.type === 'SYNC_COMPLETED') {
-            console.log('Sync completed:', event.data);
-            document.dispatchEvent(
-              new CustomEvent('sync-status', { 
-                detail: { 
-                  success: event.data.success,
-                  actionId: event.data.actionId,
-                  error: event.data.error
-                } 
-              })
-            );
-          }
-        });
+      // Initialize IndexedDB for offline storage
+      try {
+        await openDatabase();
+        console.log('Offline database initialized');
+      } catch (error) {
+        console.error('Failed to initialize offline database:', error);
       }
-
+      
       console.log('SW registered:', registration);
     } catch (error) {
       console.error('SW registration failed:', error);
     }
   });
 
-  // Helper function for offline actions
-  window.saveOfflineAction = async (action) => {
-    if (!navigator.serviceWorker.controller) {
-      console.warn('No active service worker found, cannot store offline action');
-      return false;
-    }
-    
-    return new Promise((resolve) => {
-      const messageChannel = new MessageChannel();
-      
-      messageChannel.port1.onmessage = (event) => {
-        if (event.data && event.data.type === 'ACTION_STORED') {
-          resolve(event.data.success);
-        }
-      };
-      
-      navigator.serviceWorker.controller.postMessage(
-        {
-          type: 'STORE_OFFLINE_ACTION',
-          action
-        },
-        [messageChannel.port2]
-      );
-    });
-  };
-
   // Handle offline/online status
   window.addEventListener('online', () => {
     console.log('Application is online');
     document.dispatchEvent(new CustomEvent('app-status', { detail: { isOnline: true } }));
     
-    // Trigger background sync for any pending actions
+    // Trigger background sync for any pending actions if supported
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       navigator.serviceWorker.ready.then(registration => {
-        registration.sync.register('sync-pending-data')
-          .then(() => console.log('Background sync registered for pending data'))
-          .catch(err => console.error('Background sync registration failed:', err));
+        if ('sync' in registration) {
+          registration.sync.register('sync-pending-data')
+            .then(() => console.log('Background sync registered for pending data'))
+            .catch(err => console.error('Background sync registration failed:', err));
+        }
       });
     }
   });
@@ -177,7 +127,17 @@ window.swEvents = swEvents;
 declare global {
   interface Window {
     swEvents: EventTarget;
-    saveOfflineAction: (action: any) => Promise<boolean>;
+    saveOfflineAction?: (action: any) => Promise<boolean>;
+  }
+  
+  interface ServiceWorkerRegistration {
+    sync?: {
+      register(tag: string): Promise<void>;
+    };
+  }
+  
+  interface WindowEventMap {
+    'app-status': CustomEvent<{ isOnline: boolean }>;
   }
 }
 

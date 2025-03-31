@@ -87,6 +87,5 @@
   },
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "offline_enabled": true,
-  "permissions": ["notifications", "geolocation"],
-  "background_sync": true
+  "permissions": ["notifications", "geolocation"]
 }
