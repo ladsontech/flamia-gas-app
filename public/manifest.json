@@ -64,6 +64,14 @@
       "url": "/order?type=%s"
     }
   ],
+  "scope_extensions": [
+    {
+      "origin": "https://*.flamiagas.com"
+    },
+    {
+      "origin": "https://*.lovableproject.com"
+    }
+  ],
   "capture_links": "existing-client-navigate",
   "scope": "/",
   "id": "flamia-gas-delivery-pwa",

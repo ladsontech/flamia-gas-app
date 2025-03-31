@@ -157,29 +157,121 @@ function networkFirstStrategy(event) {
   );
 }
 
-// Background sync for offline operations
+// Background sync for offline operations - improved implementation
 self.addEventListener('sync', event => {
-  if (event.tag === 'sync-refill-prices') {
-    console.log('Syncing refill prices data...');
-    // The actual sync logic will be handled by the application
-    // when it detects it's back online
-  }
+  console.log(`Background sync triggered: ${event.tag}`);
   
-  // Add additional sync handlers for different operations
-  if (event.tag === 'sync-pending-orders') {
-    console.log('Syncing pending orders...');
-    // Sync pending orders that were created offline
+  // Handle different types of sync operations
+  if (event.tag === 'sync-pending-data') {
+    event.waitUntil(syncPendingData());
+  } 
+  else if (event.tag === 'sync-refill-prices') {
+    event.waitUntil(syncRefillPrices());
   }
-  
-  if (event.tag === 'sync-user-preferences') {
-    console.log('Syncing user preferences...');
-    // Sync any user preference changes made offline
+  else if (event.tag === 'sync-pending-orders') {
+    event.waitUntil(syncPendingOrders());
+  }
+  else if (event.tag === 'sync-user-preferences') {
+    event.waitUntil(syncUserPreferences());
   }
 });
 
+// Store pending actions in IndexedDB when offline
+const dbPromise = idb ? idb.openDB('flamia-offline-db', 1, {
+  upgrade(db) {
+    if (!db.objectStoreNames.contains('pending-actions')) {
+      db.createObjectStore('pending-actions', { keyPath: 'id', autoIncrement: true });
+    }
+    if (!db.objectStoreNames.contains('user-data')) {
+      db.createObjectStore('user-data', { keyPath: 'key' });
+    }
+  }
+}) : Promise.reject('IndexedDB not supported');
+
+// Function to sync all pending data
+async function syncPendingData() {
+  try {
+    const db = await dbPromise;
+    const tx = db.transaction('pending-actions', 'readonly');
+    const store = tx.objectStore('pending-actions');
+    const actions = await store.getAll();
+    
+    if (actions.length === 0) {
+      console.log('No pending actions to sync');
+      return;
+    }
+    
+    console.log(`Found ${actions.length} pending actions to sync`);
+    
+    // Process each action
+    for (const action of actions) {
+      try {
+        // Attempt to perform the action
+        const response = await fetch(action.url, {
+          method: action.method,
+          headers: action.headers,
+          body: action.body
+        });
+        
+        if (response.ok) {
+          // If successful, remove from pending actions
+          const deleteTx = db.transaction('pending-actions', 'readwrite');
+          const deleteStore = deleteTx.objectStore('pending-actions');
+          await deleteStore.delete(action.id);
+          console.log(`Synced action ${action.id} successfully`);
+          
+          // Notify the client that data has been synced
+          const clients = await self.clients.matchAll();
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'SYNC_COMPLETED',
+              actionId: action.id,
+              success: true
+            });
+          });
+        } else {
+          throw new Error(`Failed to sync: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error(`Failed to sync action ${action.id}:`, error);
+        
+        // Notify the client of the failure
+        const clients = await self.clients.matchAll();
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SYNC_COMPLETED',
+            actionId: action.id,
+            success: false,
+            error: error.message
+          });
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error during background sync:', error);
+    return Promise.reject(error);
+  }
+}
+
+// Specialized sync functions
+async function syncRefillPrices() {
+  console.log('Syncing refill prices data...');
+  return syncPendingData();
+}
+
+async function syncPendingOrders() {
+  console.log('Syncing pending orders...');
+  return syncPendingData();
+}
+
+async function syncUserPreferences() {
+  console.log('Syncing user preferences...');
+  return syncPendingData();
+}
+
 // Push notification handling
 self.addEventListener('push', event => {
-  const data = event.data.json();
+  const data = event.data ? event.data.json() : { title: 'New Notification', body: 'You have a new notification' };
   
   const options = {
     body: data.body || 'New update from Flamia Gas',
@@ -232,4 +324,33 @@ self.addEventListener('message', event => {
         });
       });
   }
+  
+  // Add pending action to IndexedDB when offline
+  if (event.data && event.data.type === 'STORE_OFFLINE_ACTION') {
+    const { action } = event.data;
+    
+    dbPromise.then(db => {
+      const tx = db.transaction('pending-actions', 'readwrite');
+      const store = tx.objectStore('pending-actions');
+      return store.add(action);
+    }).then(() => {
+      console.log('Action stored for offline sync');
+      event.source.postMessage({
+        type: 'ACTION_STORED',
+        success: true
+      });
+    }).catch(error => {
+      console.error('Failed to store offline action:', error);
+      event.source.postMessage({
+        type: 'ACTION_STORED',
+        success: false,
+        error: error.message
+      });
+    });
+  }
+});
+
+// Define valid scope extensions
+self.registration.navigationPreload.enable().catch(err => {
+  console.warn('Navigation Preload not supported', err);
 });
