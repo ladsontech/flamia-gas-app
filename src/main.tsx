@@ -48,7 +48,7 @@ const openDatabase = () => {
   });
 };
 
-// Helper to save offline actions
+// Helper to save offline action
 const saveOfflineAction = async (action: any): Promise<boolean> => {
   // First try to use the service worker if available
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -169,8 +169,8 @@ if ('serviceWorker' in navigator) {
     // Trigger background sync for any pending actions if supported
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
-        // Check if sync is available before using it
-        if (registration.sync) {
+        // Check if background sync is supported before using it
+        if ('sync' in registration) {
           registration.sync.register('sync-pending-data')
             .then(() => console.log('Background sync registered for pending data'))
             .catch(err => console.error('Background sync registration failed:', err));
@@ -203,6 +203,10 @@ declare global {
   interface ServiceWorkerRegistration {
     periodicSync?: {
       register(tag: string, options?: { minInterval: number }): Promise<void>;
+    };
+    // Adding the sync property to the ServiceWorkerRegistration interface
+    sync?: {
+      register(tag: string): Promise<void>;
     };
   }
   
