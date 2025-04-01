@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,41 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
   const filteredBrands = staticBrands;
-  const filteredPrices = selectedBrand ? staticRefillPrices.filter(price => price.brand === selectedBrand) : [];
+  
+  // Instead of using staticRefillPrices, use the refillBrands array
+  const filteredPrices = selectedBrand ? refillBrands.filter(brand => brand.brand === selectedBrand).map(brand => {
+    const prices = [];
+    
+    if (brand.refill_price_3kg) {
+      prices.push({
+        id: `${brand.id}-3kg`,
+        weight: "3KG",
+        price: parseInt(brand.refill_price_3kg.replace(/[^0-9]/g, '')),
+        description: "Small cylinder perfect for small households and students"
+      });
+    }
+    
+    if (brand.refill_price_6kg) {
+      prices.push({
+        id: `${brand.id}-6kg`,
+        weight: "6KG",
+        price: parseInt(brand.refill_price_6kg.replace(/[^0-9]/g, '')),
+        description: "Medium cylinder suitable for most households"
+      });
+    }
+    
+    if (brand.refill_price_12kg) {
+      prices.push({
+        id: `${brand.id}-12kg`,
+        weight: "12KG",
+        price: parseInt(brand.refill_price_12kg.replace(/[^0-9]/g, '')),
+        description: "Large cylinder ideal for big families and extended use"
+      });
+    }
+    
+    return prices;
+  }).flat() : [];
+  
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
   const containerVariants = {
