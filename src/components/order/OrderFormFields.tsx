@@ -89,7 +89,8 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
     "Ultimate", 
     "K Gas", 
     "C Gas", 
-    "Hashi"
+    "Hashi",
+    "Mogas"
   ];
 
   // Get price based on selected brand and size

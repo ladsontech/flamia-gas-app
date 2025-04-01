@@ -188,4 +188,11 @@ export const refillBrands = [
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
   },
+  {
+    id: "16",
+    name: "Mogas Gas Uganda",
+    brand: "Mogas",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
 ];

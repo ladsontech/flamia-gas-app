@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -39,7 +40,8 @@ const Order = () => {
     "Ultimate", 
     "K Gas", 
     "C Gas", 
-    "Hashi"
+    "Hashi",
+    "Mogas"
   ];
 
   useEffect(() => {
