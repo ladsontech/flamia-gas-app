@@ -209,6 +209,19 @@ const staticRefillPrices = [{
   weight: "12KG",
   price: 95000,
   description: "Free Delivery within K'la"
+},
+                           {
+  id: "34",
+  brand: "Mogas",
+  weight: "6KG",
+  price: 45000,
+  description: "free delivery within K'la"
+}, {
+  id: "35",
+  brand: "Mogas",
+  weight: "12KG",
+  price: 95000,
+  description: "Free Delivery within K'la"
 }];
 const Refill = () => {
   const navigate = useNavigate();
