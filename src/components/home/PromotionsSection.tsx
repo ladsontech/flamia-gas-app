@@ -24,9 +24,9 @@ const PromotionsSection: React.FC = () => {
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm">
             <div className="relative">
-              {/* Discount badge - removed the percent icon */}
+              {/* Discount badge - fixed format */}
               <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
-                <span>20% OFF</span>
+                20% OFF
               </div>
               
               <div className="flex sm:flex-col">

@@ -33,6 +33,24 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/lovable-uploads/icon.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lovable-uploads/icon.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lovable-uploads/icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "screenshots": [
@@ -87,5 +105,8 @@
   },
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "offline_enabled": true,
-  "permissions": ["notifications", "geolocation"]
+  "permissions": ["notifications", "geolocation"],
+  "apple_mobile_web_app_capable": "yes",
+  "apple_mobile_web_app_status_bar_style": "black-translucent",
+  "apple_mobile_web_app_title": "Flamia Gas"
 }

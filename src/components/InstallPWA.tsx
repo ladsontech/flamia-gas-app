@@ -17,7 +17,7 @@ interface SafariNavigator extends Navigator {
 const InstallPWA = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isInstallable, setIsInstallable] = useState(true); // Default to true to show button
+  const [isIOSSafari, setIsIOSSafari] = useState(false);
 
   useEffect(() => {
     // Check if the app is already installed as a PWA
@@ -29,32 +29,23 @@ const InstallPWA = () => {
       return isStandalone;
     };
 
-    // Check if PWA is supported
-    const checkIfInstallable = () => {
-      // If on iOS Safari, PWA is always technically installable
+    // Check if on iOS Safari
+    const detectIOSSafari = () => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       const isIOSWithSafari = isIOS && /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-      
-      // For iOS, we'll show a custom install button with instructions
-      if (isIOSWithSafari) {
-        console.log("iOS Safari detected, showing install instructions");
-        return true;
-      }
-
-      // For other browsers, we show the button anyway
-      console.log("Browser supports installation:", 'BeforeInstallPromptEvent' in window);
-      return true; // Always return true to show the button
+      setIsIOSSafari(isIOSWithSafari);
+      return isIOSWithSafari;
     };
 
-    // Check installed state first
+    // Already installed, no need to continue
     if (checkIfInstalled()) {
-      // Already installed, no need to continue
       return;
     }
 
-    // Check if installable and set state
-    setIsInstallable(checkIfInstallable());
+    // Check if it's iOS Safari
+    detectIOSSafari();
 
+    // Capture install prompt for other browsers
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault(); // Prevent automatic prompt
       setInstallPrompt(event as BeforeInstallPromptEvent); // Save the event for later use
@@ -79,20 +70,26 @@ const InstallPWA = () => {
     };
   }, []);
 
-  // Function to directly trigger installation on supported browsers
+  // Function to handle installation based on browser
   const handleInstallClick = () => {
-    // For browsers that support the beforeinstallprompt event
+    // For browsers that support the beforeinstallprompt event (Chrome, Edge, etc.)
     if (installPrompt) {
-      // Trigger the install prompt immediately
       installPrompt.prompt();
       
-      // Track user's choice
       installPrompt.userChoice
         .then((choiceResult) => {
           if (choiceResult.outcome === "accepted") {
             console.log("User accepted the install prompt");
+            toast({
+              title: "Installation started",
+              description: "The app is being installed to your device",
+            });
           } else {
             console.log("User dismissed the install prompt");
+            toast({
+              title: "Installation cancelled",
+              description: "You can install the app later if you change your mind",
+            });
           }
           setInstallPrompt(null);
         })
@@ -100,186 +97,340 @@ const InstallPWA = () => {
       return;
     }
     
-    // Special handling for iOS Safari - try to show "Add to Home" via a hidden iframe
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    const isIOSWithSafari = isIOS && /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-    
-    if (isIOSWithSafari) {
-      // Since iOS doesn't allow automated add to home screen,
-      // create a minimalist instruction that mimics installation
-      const addToHomeIframe = document.createElement('div');
-      addToHomeIframe.style.position = 'fixed';
-      addToHomeIframe.style.top = '0';
-      addToHomeIframe.style.left = '0';
-      addToHomeIframe.style.width = '100%';
-      addToHomeIframe.style.height = '100%';
-      addToHomeIframe.style.backgroundColor = 'rgba(0,0,0,0.85)';
-      addToHomeIframe.style.zIndex = '9999';
-      addToHomeIframe.style.display = 'flex';
-      addToHomeIframe.style.flexDirection = 'column';
-      addToHomeIframe.style.alignItems = 'center';
-      addToHomeIframe.style.justifyContent = 'center';
-      addToHomeIframe.style.color = 'white';
-      addToHomeIframe.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-      
-      const closeButton = document.createElement('button');
-      closeButton.innerText = '×';
-      closeButton.style.position = 'absolute';
-      closeButton.style.top = '20px';
-      closeButton.style.right = '20px';
-      closeButton.style.fontSize = '24px';
-      closeButton.style.color = 'white';
-      closeButton.style.background = 'transparent';
-      closeButton.style.border = 'none';
-      closeButton.style.cursor = 'pointer';
-      closeButton.onclick = () => document.body.removeChild(addToHomeIframe);
-      
-      const title = document.createElement('h2');
-      title.innerText = 'Install Flamia Gas App';
-      title.style.marginBottom = '15px';
-      
-      const instructionDiv = document.createElement('div');
-      instructionDiv.style.display = 'flex';
-      instructionDiv.style.flexDirection = 'column';
-      instructionDiv.style.alignItems = 'center';
-      instructionDiv.style.maxWidth = '300px';
-      instructionDiv.style.textAlign = 'center';
-      
-      const step1 = document.createElement('p');
-      step1.innerHTML = '1. Tap <strong>Share</strong> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>';
-      step1.style.marginBottom = '10px';
-      
-      const step2 = document.createElement('p');
-      step2.innerHTML = '2. Scroll down and tap <strong>Add to Home Screen</strong>';
-      step2.style.marginBottom = '10px';
-      
-      const step3 = document.createElement('p');
-      step3.innerHTML = '3. Tap <strong>Add</strong> in the top right';
-      step3.style.marginBottom = '20px';
-      
-      instructionDiv.appendChild(step1);
-      instructionDiv.appendChild(step2);
-      instructionDiv.appendChild(step3);
-      
-      addToHomeIframe.appendChild(closeButton);
-      addToHomeIframe.appendChild(title);
-      addToHomeIframe.appendChild(instructionDiv);
-      
-      document.body.appendChild(addToHomeIframe);
+    // Special handling for iOS Safari
+    if (isIOSSafari) {
+      showIOSInstallInstructions();
       return;
     }
 
-    // For Android Chrome, try to trigger the install banner
+    // For Android browsers and others that don't trigger beforeinstallprompt
     const isAndroid = /Android/.test(navigator.userAgent);
-    const isChrome = /Chrome/.test(navigator.userAgent);
     
-    if (isAndroid && isChrome) {
-      // Create a full-screen overlay with instructions
-      const overlay = document.createElement('div');
-      overlay.style.position = 'fixed';
-      overlay.style.top = '0';
-      overlay.style.left = '0';
-      overlay.style.width = '100%';
-      overlay.style.height = '100%';
-      overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
-      overlay.style.zIndex = '9999';
-      overlay.style.display = 'flex';
-      overlay.style.flexDirection = 'column';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
-      overlay.style.color = 'white';
-      overlay.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-      
-      const closeBtn = document.createElement('button');
-      closeBtn.innerText = '×';
-      closeBtn.style.position = 'absolute';
-      closeBtn.style.top = '20px';
-      closeBtn.style.right = '20px';
-      closeBtn.style.fontSize = '24px';
-      closeBtn.style.color = 'white';
-      closeBtn.style.background = 'transparent';
-      closeBtn.style.border = 'none';
-      closeBtn.style.cursor = 'pointer';
-      closeBtn.onclick = () => document.body.removeChild(overlay);
-      
-      const title = document.createElement('h2');
-      title.innerText = 'Install Flamia Gas App';
-      title.style.marginBottom = '15px';
-      
-      const instructions = document.createElement('div');
-      instructions.style.display = 'flex';
-      instructions.style.flexDirection = 'column';
-      instructions.style.alignItems = 'center';
-      instructions.style.maxWidth = '300px';
-      instructions.style.textAlign = 'center';
-      
-      const step1 = document.createElement('p');
-      step1.innerHTML = '1. Tap <strong>⋮</strong> (three dots) in the top right';
-      step1.style.marginBottom = '10px';
-      
-      const step2 = document.createElement('p');
-      step2.innerHTML = '2. Tap <strong>Add to Home screen</strong>';
-      step2.style.marginBottom = '20px';
-      
-      instructions.appendChild(step1);
-      instructions.appendChild(step2);
-      
-      overlay.appendChild(closeBtn);
-      overlay.appendChild(title);
-      overlay.appendChild(instructions);
-      
-      document.body.appendChild(overlay);
-      return;
+    if (isAndroid) {
+      showAndroidInstallInstructions();
+    } else {
+      // Generic fallback for other browsers
+      showGenericInstallInstructions();
     }
+  };
 
-    // Generic fallback for other browsers
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
-    overlay.style.zIndex = '9999';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    overlay.style.color = 'white';
-    overlay.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+  // Function to display iOS install instructions
+  const showIOSInstallInstructions = () => {
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'ios-install-modal';
+    modalContainer.style.position = 'fixed';
+    modalContainer.style.top = '0';
+    modalContainer.style.left = '0';
+    modalContainer.style.width = '100%';
+    modalContainer.style.height = '100%';
+    modalContainer.style.backgroundColor = 'rgba(0,0,0,0.85)';
+    modalContainer.style.zIndex = '9999';
+    modalContainer.style.display = 'flex';
+    modalContainer.style.flexDirection = 'column';
+    modalContainer.style.alignItems = 'center';
+    modalContainer.style.justifyContent = 'center';
+    modalContainer.style.padding = '20px';
+    
+    const content = document.createElement('div');
+    content.style.backgroundColor = 'white';
+    content.style.borderRadius = '12px';
+    content.style.padding = '20px';
+    content.style.maxWidth = '350px';
+    content.style.textAlign = 'center';
+    content.style.position = 'relative';
     
     const closeButton = document.createElement('button');
-    closeButton.innerText = '×';
+    closeButton.innerHTML = '×';
     closeButton.style.position = 'absolute';
-    closeButton.style.top = '20px';
-    closeButton.style.right = '20px';
+    closeButton.style.top = '10px';
+    closeButton.style.right = '15px';
     closeButton.style.fontSize = '24px';
-    closeButton.style.color = 'white';
-    closeButton.style.background = 'transparent';
     closeButton.style.border = 'none';
+    closeButton.style.background = 'transparent';
     closeButton.style.cursor = 'pointer';
-    closeButton.onclick = () => document.body.removeChild(overlay);
+    closeButton.style.color = '#666';
+    closeButton.onclick = () => document.body.removeChild(modalContainer);
     
-    const title = document.createElement('h2');
-    title.innerText = 'Install Flamia Gas App';
-    title.style.marginBottom = '15px';
+    const title = document.createElement('h3');
+    title.textContent = 'Install Flamia Gas App';
+    title.style.fontSize = '18px';
+    title.style.color = '#333';
+    title.style.margin = '0 0 15px 0';
+    title.style.fontWeight = 'bold';
+    
+    const steps = document.createElement('div');
+    steps.style.textAlign = 'left';
+    
+    const step1 = document.createElement('div');
+    step1.style.margin = '15px 0';
+    step1.style.display = 'flex';
+    step1.style.alignItems = 'flex-start';
+    
+    const step1Number = document.createElement('div');
+    step1Number.textContent = '1';
+    step1Number.style.backgroundColor = '#FF4D00';
+    step1Number.style.color = 'white';
+    step1Number.style.width = '24px';
+    step1Number.style.height = '24px';
+    step1Number.style.borderRadius = '50%';
+    step1Number.style.display = 'flex';
+    step1Number.style.alignItems = 'center';
+    step1Number.style.justifyContent = 'center';
+    step1Number.style.marginRight = '10px';
+    step1Number.style.flexShrink = '0';
+    
+    const step1Text = document.createElement('div');
+    step1Text.innerHTML = 'Tap the <b>Share</b> button <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> at the bottom of the screen';
+    
+    step1.appendChild(step1Number);
+    step1.appendChild(step1Text);
+    
+    const step2 = document.createElement('div');
+    step2.style.margin = '15px 0';
+    step2.style.display = 'flex';
+    step2.style.alignItems = 'flex-start';
+    
+    const step2Number = document.createElement('div');
+    step2Number.textContent = '2';
+    step2Number.style.backgroundColor = '#FF4D00';
+    step2Number.style.color = 'white';
+    step2Number.style.width = '24px';
+    step2Number.style.height = '24px';
+    step2Number.style.borderRadius = '50%';
+    step2Number.style.display = 'flex';
+    step2Number.style.alignItems = 'center';
+    step2Number.style.justifyContent = 'center';
+    step2Number.style.marginRight = '10px';
+    step2Number.style.flexShrink = '0';
+    
+    const step2Text = document.createElement('div');
+    step2Text.innerHTML = 'Scroll down and tap <b>Add to Home Screen</b>';
+    
+    step2.appendChild(step2Number);
+    step2.appendChild(step2Text);
+    
+    const step3 = document.createElement('div');
+    step3.style.margin = '15px 0';
+    step3.style.display = 'flex';
+    step3.style.alignItems = 'flex-start';
+    
+    const step3Number = document.createElement('div');
+    step3Number.textContent = '3';
+    step3Number.style.backgroundColor = '#FF4D00';
+    step3Number.style.color = 'white';
+    step3Number.style.width = '24px';
+    step3Number.style.height = '24px';
+    step3Number.style.borderRadius = '50%';
+    step3Number.style.display = 'flex';
+    step3Number.style.alignItems = 'center';
+    step3Number.style.justifyContent = 'center';
+    step3Number.style.marginRight = '10px';
+    step3Number.style.flexShrink = '0';
+    
+    const step3Text = document.createElement('div');
+    step3Text.innerHTML = 'Tap <b>Add</b> in the top right corner';
+    
+    step3.appendChild(step3Number);
+    step3.appendChild(step3Text);
+    
+    const note = document.createElement('p');
+    note.textContent = 'Once installed, you can access the app from your home screen even when offline.';
+    note.style.fontSize = '12px';
+    note.style.color = '#666';
+    note.style.marginTop = '15px';
+    
+    // Assemble the modal
+    steps.appendChild(step1);
+    steps.appendChild(step2);
+    steps.appendChild(step3);
+    
+    content.appendChild(closeButton);
+    content.appendChild(title);
+    content.appendChild(steps);
+    content.appendChild(note);
+    
+    modalContainer.appendChild(content);
+    document.body.appendChild(modalContainer);
+  };
+
+  // Function to display Android install instructions
+  const showAndroidInstallInstructions = () => {
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'android-install-modal';
+    modalContainer.style.position = 'fixed';
+    modalContainer.style.top = '0';
+    modalContainer.style.left = '0';
+    modalContainer.style.width = '100%';
+    modalContainer.style.height = '100%';
+    modalContainer.style.backgroundColor = 'rgba(0,0,0,0.85)';
+    modalContainer.style.zIndex = '9999';
+    modalContainer.style.display = 'flex';
+    modalContainer.style.alignItems = 'center';
+    modalContainer.style.justifyContent = 'center';
+    modalContainer.style.padding = '20px';
+    
+    const content = document.createElement('div');
+    content.style.backgroundColor = 'white';
+    content.style.borderRadius = '12px';
+    content.style.padding = '20px';
+    content.style.maxWidth = '350px';
+    content.style.textAlign = 'center';
+    content.style.position = 'relative';
+    
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '10px';
+    closeButton.style.right = '15px';
+    closeButton.style.fontSize = '24px';
+    closeButton.style.border = 'none';
+    closeButton.style.background = 'transparent';
+    closeButton.style.cursor = 'pointer';
+    closeButton.style.color = '#666';
+    closeButton.onclick = () => document.body.removeChild(modalContainer);
+    
+    const title = document.createElement('h3');
+    title.textContent = 'Install Flamia Gas App';
+    title.style.fontSize = '18px';
+    title.style.color = '#333';
+    title.style.margin = '0 0 15px 0';
+    title.style.fontWeight = 'bold';
+    
+    const steps = document.createElement('div');
+    steps.style.textAlign = 'left';
+    
+    const step1 = document.createElement('div');
+    step1.style.margin = '15px 0';
+    step1.style.display = 'flex';
+    step1.style.alignItems = 'flex-start';
+    
+    const step1Number = document.createElement('div');
+    step1Number.textContent = '1';
+    step1Number.style.backgroundColor = '#FF4D00';
+    step1Number.style.color = 'white';
+    step1Number.style.width = '24px';
+    step1Number.style.height = '24px';
+    step1Number.style.borderRadius = '50%';
+    step1Number.style.display = 'flex';
+    step1Number.style.alignItems = 'center';
+    step1Number.style.justifyContent = 'center';
+    step1Number.style.marginRight = '10px';
+    step1Number.style.flexShrink = '0';
+    
+    const step1Text = document.createElement('div');
+    step1Text.innerHTML = 'Tap the menu button <b>⋮</b> in the top right corner';
+    
+    step1.appendChild(step1Number);
+    step1.appendChild(step1Text);
+    
+    const step2 = document.createElement('div');
+    step2.style.margin = '15px 0';
+    step2.style.display = 'flex';
+    step2.style.alignItems = 'flex-start';
+    
+    const step2Number = document.createElement('div');
+    step2Number.textContent = '2';
+    step2Number.style.backgroundColor = '#FF4D00';
+    step2Number.style.color = 'white';
+    step2Number.style.width = '24px';
+    step2Number.style.height = '24px';
+    step2Number.style.borderRadius = '50%';
+    step2Number.style.display = 'flex';
+    step2Number.style.alignItems = 'center';
+    step2Number.style.justifyContent = 'center';
+    step2Number.style.marginRight = '10px';
+    step2Number.style.flexShrink = '0';
+    
+    const step2Text = document.createElement('div');
+    step2Text.innerHTML = 'Select <b>Install app</b> or <b>Add to Home screen</b>';
+    
+    step2.appendChild(step2Number);
+    step2.appendChild(step2Text);
+    
+    const note = document.createElement('p');
+    note.textContent = 'Once installed, you can access the app from your home screen even when offline.';
+    note.style.fontSize = '12px';
+    note.style.color = '#666';
+    note.style.marginTop = '15px';
+    
+    // Assemble the modal
+    steps.appendChild(step1);
+    steps.appendChild(step2);
+    
+    content.appendChild(closeButton);
+    content.appendChild(title);
+    content.appendChild(steps);
+    content.appendChild(note);
+    
+    modalContainer.appendChild(content);
+    document.body.appendChild(modalContainer);
+  };
+
+  // Function to display generic install instructions
+  const showGenericInstallInstructions = () => {
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'generic-install-modal';
+    modalContainer.style.position = 'fixed';
+    modalContainer.style.top = '0';
+    modalContainer.style.left = '0';
+    modalContainer.style.width = '100%';
+    modalContainer.style.height = '100%';
+    modalContainer.style.backgroundColor = 'rgba(0,0,0,0.85)';
+    modalContainer.style.zIndex = '9999';
+    modalContainer.style.display = 'flex';
+    modalContainer.style.alignItems = 'center';
+    modalContainer.style.justifyContent = 'center';
+    modalContainer.style.padding = '20px';
+    
+    const content = document.createElement('div');
+    content.style.backgroundColor = 'white';
+    content.style.borderRadius = '12px';
+    content.style.padding = '20px';
+    content.style.maxWidth = '350px';
+    content.style.textAlign = 'center';
+    content.style.position = 'relative';
+    
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '10px';
+    closeButton.style.right = '15px';
+    closeButton.style.fontSize = '24px';
+    closeButton.style.border = 'none';
+    closeButton.style.background = 'transparent';
+    closeButton.style.cursor = 'pointer';
+    closeButton.style.color = '#666';
+    closeButton.onclick = () => document.body.removeChild(modalContainer);
+    
+    const title = document.createElement('h3');
+    title.textContent = 'Install Flamia Gas App';
+    title.style.fontSize = '18px';
+    title.style.color = '#333';
+    title.style.margin = '0 0 15px 0';
+    title.style.fontWeight = 'bold';
     
     const message = document.createElement('p');
-    message.innerText = 'Use your browser\'s "Add to Home Screen" option from the menu to install this app';
-    message.style.maxWidth = '300px';
-    message.style.textAlign = 'center';
+    message.textContent = 'Use your browser\'s menu to find the "Add to Home Screen" or "Install" option to download this app to your device.';
+    message.style.margin = '10px 0';
     
-    overlay.appendChild(closeButton);
-    overlay.appendChild(title);
-    overlay.appendChild(message);
+    const note = document.createElement('p');
+    note.textContent = 'Once installed, you can access the app from your home screen even when offline.';
+    note.style.fontSize = '12px';
+    note.style.color = '#666';
+    note.style.marginTop = '15px';
     
-    document.body.appendChild(overlay);
+    content.appendChild(closeButton);
+    content.appendChild(title);
+    content.appendChild(message);
+    content.appendChild(note);
+    
+    modalContainer.appendChild(content);
+    document.body.appendChild(modalContainer);
   };
 
   // Don't show if already installed as PWA
   if (isInstalled) return null;
   
-  // Always show install button for web users
   return (
     <Button 
       className="flex items-center gap-2 bg-accent hover:bg-accent/90 transition-all shadow-md" 
