@@ -22,10 +22,10 @@ const PromotionsSection: React.FC = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-2">
         {promotionalOffers.map((offer) => (
-          <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm">
+          <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200">
             <div className="relative">
-              {/* Discount badge - fixed format */}
-              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
+              {/* Discount badge */}
+              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
                 20% OFF
               </div>
               

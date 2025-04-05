@@ -3,8 +3,9 @@
   "name": "Flamia - Gas Delivery Service",
   "short_name": "Flamia Gas",
   "description": "Quick and reliable gas delivery service in Uganda",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#FFFFFF",
   "theme_color": "#FF4D00",
   "orientation": "portrait",
@@ -103,7 +104,6 @@
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
   },
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "offline_enabled": true,
   "permissions": ["notifications", "geolocation"],
   "apple_mobile_web_app_capable": "yes",
