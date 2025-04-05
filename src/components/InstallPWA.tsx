@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -17,7 +18,7 @@ const InstallPWA = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOSSafari, setIsIOSSafari] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if the app is already installed as a PWA
@@ -25,24 +26,7 @@ const InstallPWA = () => {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                           (window.navigator as SafariNavigator).standalone === true;
       setIsInstalled(isStandalone);
-      console.log("PWA installed status:", isStandalone);
       return isStandalone;
-    };
-
-    // Check if on iOS Safari
-    const detectIOSSafari = () => {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-      const isIOSWithSafari = isIOS && isSafari;
-      setIsIOSSafari(isIOSWithSafari);
-      return isIOSWithSafari;
-    };
-
-    // Check if on Android
-    const detectAndroid = () => {
-      const isAndroid = /Android/.test(navigator.userAgent);
-      setIsAndroid(isAndroid);
-      return isAndroid;
     };
 
     // Already installed, no need to continue
@@ -50,11 +34,16 @@ const InstallPWA = () => {
       return;
     }
 
-    // Check device platforms
-    detectIOSSafari();
-    detectAndroid();
+    // Detect browser environment
+    const detectBrowserEnvironment = () => {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+      setIsIOSSafari(isIOS && isSafari);
+    };
 
-    // Capture install prompt for other browsers
+    detectBrowserEnvironment();
+
+    // Capture install prompt for browsers that support it
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault(); // Prevent automatic prompt
       setInstallPrompt(event as BeforeInstallPromptEvent); // Save the event for later use
@@ -75,7 +64,7 @@ const InstallPWA = () => {
     };
   }, []);
 
-  // Function to handle installation based on browser
+  // Function to handle installation
   const handleInstallClick = () => {
     // For browsers that support the beforeinstallprompt event (Chrome, Edge, etc.)
     if (installPrompt) {
@@ -94,45 +83,19 @@ const InstallPWA = () => {
       return;
     }
     
-    // For iOS Safari - direct users to use the Safari "Add to Home Screen" feature
+    // For iOS Safari - show a toast with installation instructions
     if (isIOSSafari) {
-      // Open a small modal or floating message with instructions
-      const instructionElement = document.createElement('div');
-      instructionElement.innerHTML = `
-        <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
-                    background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    max-width: 90%; z-index: 10000; text-align: center;">
-          <div style="font-weight: bold; margin-bottom: 8px;">Install on iOS</div>
-          <div style="font-size: 14px; margin-bottom: 12px;">Tap the share icon <span style="font-size: 16px;">⎙</span> then select "Add to Home Screen"</div>
-          <button id="close-install-instructions" style="background: #FF4D00; color: white; border: none; 
-                  padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer;">Got it</button>
-        </div>
-      `;
-      document.body.appendChild(instructionElement);
-      
-      document.getElementById('close-install-instructions')?.addEventListener('click', () => {
-        document.body.removeChild(instructionElement);
+      toast({
+        title: "Install on iOS",
+        description: "Tap the share button and select 'Add to Home Screen'",
+        duration: 5000,
       });
-    } else if (isAndroid) {
-      // For Android browsers without beforeinstallprompt support
-      window.location.href = "intent://flamia.store/#Intent;scheme=https;package=app.lovable.flamia;end";
     } else {
-      // For other browsers, show browser menu instructions
-      const instructionElement = document.createElement('div');
-      instructionElement.innerHTML = `
-        <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
-                    background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    max-width: 90%; z-index: 10000; text-align: center;">
-          <div style="font-weight: bold; margin-bottom: 8px;">Install App</div>
-          <div style="font-size: 14px; margin-bottom: 12px;">Click on the menu in your browser and select "Install App" or "Add to Home Screen"</div>
-          <button id="close-install-instructions" style="background: #FF4D00; color: white; border: none; 
-                  padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer;">Got it</button>
-        </div>
-      `;
-      document.body.appendChild(instructionElement);
-      
-      document.getElementById('close-install-instructions')?.addEventListener('click', () => {
-        document.body.removeChild(instructionElement);
+      // For other browsers that don't support beforeinstallprompt
+      toast({
+        title: "Install App",
+        description: "Use your browser's menu option to install this app",
+        duration: 5000,
       });
     }
   };

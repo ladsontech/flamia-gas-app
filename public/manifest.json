@@ -105,11 +105,20 @@
     "client_mode": ["navigate-existing", "auto"]
   },
   "offline_enabled": true,
+  "permissions_policy": {
+    "geolocation": ["self"],
+    "notifications": ["self"]
+  },
   "permissions": ["notifications", "geolocation"],
   "install_provider": "browser",
   "browser_action": {
     "default_icon": "/lovable-uploads/icon.png",
     "default_title": "Install Flamia Gas Delivery"
+  },
+  "app": {
+    "background": {
+      "scripts": ["/sw.js"]
+    }
   },
   "apple_mobile_web_app_capable": "yes",
   "apple_mobile_web_app_status_bar_style": "black-translucent",
