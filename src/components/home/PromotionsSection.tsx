@@ -6,8 +6,18 @@ import { promotionalOffers } from "./promotionalData";
 import { ArrowRight } from "lucide-react";
 
 const PromotionsSection: React.FC = () => {
-  const handleOrderClick = (whatsappNumber: string) => {
-    window.open(`https://wa.me/${whatsappNumber}?text=I'm interested in your gas promotion.`, '_blank');
+  const handleOrderClick = (offer: typeof promotionalOffers[0]) => {
+    const message = `Flamia 🔥
+------------------------
+*Promotional Offer Order*
+------------------------
+*Product:* ${offer.title}
+*Description:* ${offer.description}
+*Price:* ${offer.discount}
+------------------------
+I'm interested in this promotion.`;
+    
+    window.open(`https://wa.me/${offer.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
@@ -24,9 +34,9 @@ const PromotionsSection: React.FC = () => {
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200">
             <div className="relative">
-              {/* Discount badge */}
-              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
-                {offer.discount || "20% OFF"}
+              {/* Price badge */}
+              <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
+                {offer.discount || "Price not available"}
               </div>
               
               <div className="flex sm:flex-col">
@@ -44,7 +54,7 @@ const PromotionsSection: React.FC = () => {
                   <p className="text-muted-foreground text-xs line-clamp-1 mb-2">{offer.description}</p>
                   <Button 
                     className="w-full text-xs bg-accent hover:bg-accent/90 text-white py-1 h-7" 
-                    onClick={() => handleOrderClick(offer.whatsapp)}
+                    onClick={() => handleOrderClick(offer)}
                   >
                     Order Now
                   </Button>

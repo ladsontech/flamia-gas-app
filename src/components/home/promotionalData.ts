@@ -6,7 +6,7 @@ type PromotionalOffer = {
   description: string;
   image: string;
   whatsapp: string;
-  discount?: string; // Optional discount property
+  discount?: string; // This is used to store the price
 };
 
 // Array of promotional offers with their details
@@ -27,5 +27,4 @@ export const promotionalOffers: PromotionalOffer[] = [
     whatsapp: "+256770477723",
     discount: "UGX 270,000"
   }
-  
 ];
