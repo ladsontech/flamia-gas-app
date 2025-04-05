@@ -110,6 +110,9 @@
     "notifications": ["self"]
   },
   "permissions": ["notifications", "geolocation"],
+  "install_experience": {
+    "prefer_related_applications": false
+  },
   "install_provider": "browser",
   "browser_action": {
     "default_icon": "/lovable-uploads/icon.png",
