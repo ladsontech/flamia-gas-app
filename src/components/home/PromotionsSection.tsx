@@ -34,11 +34,6 @@ I'm interested in this promotion.`;
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200">
             <div className="relative">
-              {/* Price badge - Repositioned */}
-              <div className="absolute top-2 left-2 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
-                {offer.discount || "Price not available"}
-              </div>
-              
               <div className="flex sm:flex-col">
                 <div className="w-1/3 sm:w-full h-24 sm:h-32 md:h-28 lg:h-24 bg-gray-50 flex items-center justify-center">
                   <img 
@@ -50,7 +45,12 @@ I'm interested in this promotion.`;
                 </div>
                 
                 <div className="w-2/3 sm:w-full p-3 md:p-2 lg:p-2">
-                  <h3 className="font-medium text-sm truncate mt-3 sm:mt-0">{offer.title}</h3>
+                  {/* Price badge - Repositioned below image and above title */}
+                  <div className="bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-md w-fit mb-2">
+                    {offer.discount || "Price not available"}
+                  </div>
+                  
+                  <h3 className="font-medium text-sm truncate sm:mt-0">{offer.title}</h3>
                   <p className="text-muted-foreground text-xs line-clamp-2 min-h-[2rem] mb-2">{offer.description}</p>
                   <Button 
                     className="w-full text-xs bg-accent hover:bg-accent/90 text-white py-1 h-7" 
