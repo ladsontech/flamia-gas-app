@@ -7,9 +7,9 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox
 
 // Version info for update notifications
 const APP_VERSION = {
-  version: '1.2.1',
+  version: '1.3.0',
   buildDate: new Date().toISOString(),
-  features: ['Improved offline support', 'Enhanced update notifications', 'Better performance']
+  features: ['File handlers support', 'Share target integration', 'Widget support', 'Improved offline support']
 };
 
 self.addEventListener('install', event => {
@@ -107,6 +107,103 @@ workbox.routing.setCatchHandler(({ event }) => {
   return Response.error();
 });
 
+// Handle share target requests
+workbox.routing.registerRoute(
+  ({ url }) => url.pathname.startsWith('/share-target/'),
+  async ({ url, request }) => {
+    try {
+      const clientUrl = new URL('/', url.origin);
+      
+      // Get the shared data from the URL
+      const title = url.searchParams.get('title') || '';
+      const text = url.searchParams.get('text') || '';
+      const shareUrl = url.searchParams.get('url') || '';
+      
+      // Append shared data as query params
+      if (title) clientUrl.searchParams.set('title', title);
+      if (text) clientUrl.searchParams.set('text', text);
+      if (shareUrl) clientUrl.searchParams.set('shareUrl', shareUrl);
+      
+      // Add a special param to indicate this is from share
+      clientUrl.searchParams.set('source', 'share-target');
+      
+      // Open a window to the client with the shared data
+      const clients = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true
+      });
+      
+      // If we have an existing client, use it
+      for (const client of clients) {
+        if (client.url.includes(self.registration.scope)) {
+          return client.navigate(clientUrl.toString()).then(() => new Response('', {
+            status: 303,
+            headers: { Location: clientUrl.toString() }
+          }));
+        }
+      }
+      
+      // If no existing client, open a new window
+      await self.clients.openWindow(clientUrl.toString());
+      
+      return new Response('', {
+        status: 200
+      });
+    } catch (error) {
+      console.error('Share target error:', error);
+      return new Response('Share target processing error', { status: 500 });
+    }
+  }
+);
+
+// Handle file_handlers
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  
+  // Check if this is a file handler request
+  if (url.pathname === '/order' && url.searchParams.has('file')) {
+    event.respondWith(
+      (async () => {
+        try {
+          // Get the file from the request
+          const formData = await event.request.formData();
+          const file = formData.get('file');
+          
+          if (!file) {
+            return new Response('No file provided', { status: 400 });
+          }
+          
+          // Process the file contents
+          const text = await file.text();
+          
+          // Store file data in IndexedDB for the client to access
+          const db = await openDB();
+          const transaction = db.transaction('file-uploads', 'readwrite');
+          const store = transaction.objectStore('file-uploads');
+          
+          const fileData = {
+            id: Date.now().toString(),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            content: text,
+            timestamp: new Date().toISOString()
+          };
+          
+          await store.add(fileData);
+          
+          // Redirect to the order page with a reference to the file
+          const redirectUrl = `/order?fileId=${fileData.id}`;
+          return Response.redirect(redirectUrl, 303);
+        } catch (error) {
+          console.error('File handler error:', error);
+          return new Response('File processing error', { status: 500 });
+        }
+      })()
+    );
+  }
+});
+
 // IndexedDB setup for offline data
 const DB_NAME = 'flamia-offline-db';
 const STORE_NAME = 'pending-actions';
@@ -114,7 +211,7 @@ const STORE_NAME = 'pending-actions';
 // Open the IndexedDB database
 function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
+    const request = indexedDB.open(DB_NAME, 2);
     
     request.onerror = () => reject(new Error('Could not open IndexedDB'));
     
@@ -122,6 +219,9 @@ function openDB() {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      }
+      if (!db.objectStoreNames.contains('file-uploads')) {
+        db.createObjectStore('file-uploads', { keyPath: 'id' });
       }
     };
     
@@ -213,6 +313,24 @@ self.addEventListener('sync', event => {
 
 // Periodic sync for regular background processing
 self.addEventListener('periodicsync', event => {
+  if (event.tag === 'widget-update') {
+    event.waitUntil(
+      fetch('/widgets/quick-order-data.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to update widget data');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update the widget data in cache
+          return caches.open('widget-cache')
+            .then(cache => cache.put('/widgets/quick-order-data.json', new Response(JSON.stringify(data))));
+        })
+        .catch(error => console.error('Widget update failed:', error))
+    );
+  }
+
   if (event.tag === 'content-sync') {
     event.waitUntil(processPendingActions());
   }

@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
@@ -18,6 +18,7 @@ import PlaceScreen from "./components/PlaceScreen";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
+import ShareTargetHandler from "./components/ShareTargetHandler";
 
 // Lazy load the update notification component 
 const UpdateNotification = lazy(() => import('./components/UpdateNotification'));
@@ -25,8 +26,10 @@ const InstallPWA = lazy(() => import('./components/InstallPWA'));
 
 const AppContent = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
+  const [showShareHandler, setShowShareHandler] = useState(false);
 
   // Handle service worker updates
   const handleUpdate = () => {
@@ -38,6 +41,14 @@ const AppContent = () => {
     const userRole = localStorage.getItem('userRole');
     setIsAdmin(userRole === 'admin');
   }, []);
+
+  useEffect(() => {
+    // Check if this is a share target navigation
+    const source = searchParams.get("source");
+    if (source === "share-target") {
+      setShowShareHandler(true);
+    }
+  }, [searchParams]);
 
   const showBottomNav = !showPlaceScreen && 
     !['/admin', '/login'].includes(location.pathname);
@@ -80,6 +91,9 @@ const AppContent = () => {
       </Helmet>
 
       {showPlaceScreen && <PlaceScreen />}
+
+      {/* Share Target Handler */}
+      {showShareHandler && <ShareTargetHandler />}
 
       {/* PWA Updates and Installation */}
       <Suspense fallback={null}>

@@ -1,0 +1,24 @@
+
+{
+  "updatedAt": "2025-04-05T14:30:00Z",
+  "products": [
+    {
+      "id": "6kg",
+      "name": "6KG Cylinder",
+      "url": "/order?type=6kg",
+      "price": 35000
+    },
+    {
+      "id": "12kg",
+      "name": "12KG Cylinder",
+      "url": "/order?type=12kg",
+      "price": 65000
+    },
+    {
+      "id": "refill",
+      "name": "Gas Refill",
+      "url": "/refill",
+      "price": 25000
+    }
+  ]
+}

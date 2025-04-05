@@ -1,0 +1,68 @@
+
+{
+  "version": 1,
+  "tags": ["quick-order"],
+  "template": {
+    "type": "AdaptiveCard",
+    "version": "1.5",
+    "body": [
+      {
+        "type": "Container",
+        "items": [
+          {
+            "type": "ColumnSet",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "Image",
+                    "url": "${host}/lovable-uploads/icon.png",
+                    "size": "small",
+                    "style": "person"
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "Flamia Gas Quick Order",
+                    "weight": "bolder",
+                    "wrap": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "ActionSet",
+            "actions": [
+              {
+                "type": "Action.OpenUrl",
+                "title": "Order 6KG Cylinder",
+                "url": "${host}/order?type=6kg"
+              },
+              {
+                "type": "Action.OpenUrl",
+                "title": "Order 12KG Cylinder",
+                "url": "${host}/order?type=12kg"
+              },
+              {
+                "type": "Action.OpenUrl",
+                "title": "Request Refill",
+                "url": "${host}/refill"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "data": {
+    "host": "https://flamiagas.com"
+  }
+}
