@@ -26,7 +26,7 @@ const PromotionsSection: React.FC = () => {
             <div className="relative">
               {/* Discount badge */}
               <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
-                20% OFF
+                {offer.discount || "20% OFF"}
               </div>
               
               <div className="flex sm:flex-col">

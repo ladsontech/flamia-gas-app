@@ -100,12 +100,17 @@
   "edge_side_panel": {
     "preferred_width": 400
   },
-  "handle_links": "preferred",
+  "handle_links": "prefer-native",
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
   },
   "offline_enabled": true,
   "permissions": ["notifications", "geolocation"],
+  "install_provider": "browser",
+  "browser_action": {
+    "default_icon": "/lovable-uploads/icon.png",
+    "default_title": "Install Flamia Gas Delivery"
+  },
   "apple_mobile_web_app_capable": "yes",
   "apple_mobile_web_app_status_bar_style": "black-translucent",
   "apple_mobile_web_app_title": "Flamia Gas"
