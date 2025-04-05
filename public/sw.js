@@ -7,9 +7,9 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox
 
 // Version info for update notifications
 const APP_VERSION = {
-  version: '1.3.0',
+  version: '1.4.0',
   buildDate: new Date().toISOString(),
-  features: ['File handlers support', 'Share target integration', 'Widget support', 'Improved offline support']
+  features: ['File handlers support', 'Share target integration', 'Enhanced Widget support', 'Improved offline support']
 };
 
 self.addEventListener('install', event => {
@@ -311,23 +311,72 @@ self.addEventListener('sync', event => {
   }
 });
 
-// Periodic sync for regular background processing
+// Enhanced periodic sync for widget updates
 self.addEventListener('periodicsync', event => {
   if (event.tag === 'widget-update') {
     event.waitUntil(
-      fetch('/widgets/quick-order-data.json')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to update widget data');
-          }
-          return response.json();
-        })
-        .then(data => {
-          // Update the widget data in cache
-          return caches.open('widget-cache')
-            .then(cache => cache.put('/widgets/quick-order-data.json', new Response(JSON.stringify(data))));
-        })
-        .catch(error => console.error('Widget update failed:', error))
+      Promise.all([
+        // Fetch the latest widget data
+        fetch('/widgets/quick-order-data.json')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to update widget data');
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Update the timestamp to current time
+            data.updatedAt = new Date().toISOString();
+            
+            // Update the widget data in cache
+            return caches.open('widget-cache')
+              .then(cache => cache.put(
+                '/widgets/quick-order-data.json', 
+                new Response(JSON.stringify(data), {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'max-age=3600'
+                  }
+                })
+              ));
+          })
+          .catch(error => console.error('Widget data update failed:', error)),
+          
+        // Update the widget template if needed
+        fetch('/widgets/quick-order-template.html')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to update widget template');
+            }
+            return response.text();
+          })
+          .then(templateHtml => {
+            return caches.open('widget-cache')
+              .then(cache => cache.put(
+                '/widgets/quick-order-template.html', 
+                new Response(templateHtml, {
+                  headers: {
+                    'Content-Type': 'text/html',
+                    'Cache-Control': 'max-age=86400'
+                  }
+                })
+              ));
+          })
+          .catch(error => console.error('Widget template update failed:', error))
+      ])
+      .then(() => {
+        console.log('Widget updates completed successfully');
+        // Notify clients that widget data has been updated
+        return self.clients.matchAll()
+          .then(clients => {
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'WIDGET_UPDATED',
+                timestamp: new Date().toISOString()
+              });
+            });
+          });
+      })
     );
   }
 
@@ -361,6 +410,51 @@ self.addEventListener('message', event => {
       type: 'VERSION_INFO',
       version: APP_VERSION
     });
+  }
+
+  if (event.data && event.data.type === 'REQUEST_WIDGET_UPDATE') {
+    event.waitUntil(
+      Promise.all([
+        fetch('/widgets/quick-order-data.json', { cache: 'no-cache' })
+          .then(response => response.json())
+          .then(data => {
+            // Send the updated widget data back to the client
+            event.source.postMessage({
+              type: 'WIDGET_DATA_UPDATED',
+              data: data
+            });
+            
+            // Also update the cache
+            return caches.open('widget-cache')
+              .then(cache => cache.put(
+                '/widgets/quick-order-data.json', 
+                new Response(JSON.stringify(data), {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'max-age=3600'
+                  }
+                })
+              ));
+          })
+          .catch(error => {
+            console.error('Failed to fetch widget data:', error);
+            // Try to get from cache if network fetch failed
+            return caches.match('/widgets/quick-order-data.json')
+              .then(response => {
+                if (response) {
+                  return response.json().then(cachedData => {
+                    event.source.postMessage({
+                      type: 'WIDGET_DATA_UPDATED',
+                      data: cachedData,
+                      fromCache: true
+                    });
+                  });
+                }
+                throw new Error('No cached widget data available');
+              });
+          })
+      ])
+    );
   }
 });
 

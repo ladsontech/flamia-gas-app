@@ -33,6 +33,35 @@
                     "text": "Flamia Gas Quick Order",
                     "weight": "bolder",
                     "wrap": true
+                  },
+                  {
+                    "type": "TextBlock",
+                    "text": "Fast & reliable gas delivery",
+                    "size": "small",
+                    "spacing": "none",
+                    "wrap": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "FactSet",
+                "facts": [
+                  {
+                    "title": "6KG Cylinder",
+                    "value": "${productPrices.6kg}"
+                  },
+                  {
+                    "title": "12KG Cylinder",
+                    "value": "${productPrices.12kg}"
+                  },
+                  {
+                    "title": "Gas Refill",
+                    "value": "${productPrices.refill}"
                   }
                 ]
               }
@@ -57,12 +86,25 @@
                 "url": "${host}/refill"
               }
             ]
+          },
+          {
+            "type": "TextBlock",
+            "text": "Last updated: ${lastUpdated}",
+            "size": "small",
+            "isSubtle": true,
+            "horizontalAlignment": "right"
           }
         ]
       }
     ]
   },
   "data": {
-    "host": "https://flamiagas.com"
+    "host": "https://flamiagas.com",
+    "productPrices": {
+      "6kg": "UGX 35,000",
+      "12kg": "UGX 65,000",
+      "refill": "UGX 25,000"
+    },
+    "lastUpdated": "2025-04-05"
   }
 }

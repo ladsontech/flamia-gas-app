@@ -41,6 +41,11 @@
       font-weight: bold;
       font-size: 14px;
     }
+    .widget-subtitle {
+      font-size: 10px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
     .widget-actions {
       display: flex;
       flex-direction: column;
@@ -64,41 +69,72 @@
     .action-button:hover {
       background-color: white;
     }
+    .price {
+      font-size: 10px;
+      color: #FF4D00;
+      opacity: 0.9;
+    }
+    .updated-info {
+      font-size: 8px;
+      text-align: right;
+      margin-top: 6px;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
   <div class="widget-container">
     <div class="widget-header">
       <img src="/lovable-uploads/icon.png" alt="Flamia Gas" class="widget-logo">
-      <div class="widget-title">Flamia Quick Order</div>
+      <div>
+        <div class="widget-title">Flamia Quick Order</div>
+        <div class="widget-subtitle">Fast & reliable gas delivery</div>
+      </div>
     </div>
-    <div class="widget-actions">
-      <button class="action-button" onclick="window.open('/order?type=6kg', '_blank')">
-        Order 6KG Cylinder
-        <span>→</span>
-      </button>
-      <button class="action-button" onclick="window.open('/order?type=12kg', '_blank')">
-        Order 12KG Cylinder
-        <span>→</span>
-      </button>
-      <button class="action-button" onclick="window.open('/refill', '_blank')">
-        Request Refill
-        <span>→</span>
-      </button>
+    <div class="widget-actions" id="product-buttons">
+      <!-- Product buttons will be dynamically inserted here -->
     </div>
+    <div class="updated-info" id="updated-date">Updated: Today</div>
   </div>
   <script>
     // Widget initialization code
     document.addEventListener('DOMContentLoaded', function() {
-      // Register click events
-      const buttons = document.querySelectorAll('.action-button');
-      buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          e.preventDefault();
-          const url = this.getAttribute('onclick').match(/window\.open\('([^']+)'/)[1];
-          window.open(url, '_blank');
+      // Fetch the latest product data
+      fetch('/widgets/quick-order-data.json')
+        .then(response => response.json())
+        .then(data => {
+          // Format the date
+          const updatedDate = new Date(data.updatedAt);
+          const dateOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+          document.getElementById('updated-date').innerText = 'Updated: ' + updatedDate.toLocaleDateString(undefined, dateOptions);
+          
+          // Create product buttons
+          const productsContainer = document.getElementById('product-buttons');
+          data.products.forEach(product => {
+            // Format price to UGX
+            const formattedPrice = new Intl.NumberFormat('en-UG', {
+              style: 'currency',
+              currency: 'UGX',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            }).format(product.price);
+            
+            const button = document.createElement('button');
+            button.className = 'action-button';
+            button.innerHTML = `
+              <span>${product.name}</span>
+              <span class="price">${formattedPrice}</span>
+            `;
+            button.addEventListener('click', function() {
+              window.open(product.url, '_blank');
+            });
+            productsContainer.appendChild(button);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading widget data:', error);
+          document.getElementById('product-buttons').innerHTML = '<div style="text-align:center;color:white;">Unable to load products</div>';
         });
-      });
     });
   </script>
 </body>
