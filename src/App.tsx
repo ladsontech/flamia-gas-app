@@ -19,6 +19,7 @@ import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
 import ShareTargetHandler from "./components/ShareTargetHandler";
+import AppBar from "./components/AppBar";
 
 // Lazy load the update notification component 
 const UpdateNotification = lazy(() => import('./components/UpdateNotification'));
@@ -90,6 +91,9 @@ const AppContent = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
 
+      {/* Fixed App Bar */}
+      <AppBar />
+
       {showPlaceScreen && <PlaceScreen />}
 
       {/* Share Target Handler */}
@@ -98,9 +102,7 @@ const AppContent = () => {
       {/* PWA Updates and Installation */}
       <Suspense fallback={null}>
         <UpdateNotification onUpdate={handleUpdate} />
-        <div className="fixed top-4 right-4 z-50">
-          <InstallPWA />
-        </div>
+        <InstallPWA />
       </Suspense>
 
       {/* Online/Offline Status Monitor */}
@@ -111,7 +113,7 @@ const AppContent = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
         </div>
       }>
-        <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
+        <div className="min-h-screen md:pl-16 pb-16 md:pb-0 pt-16">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={
