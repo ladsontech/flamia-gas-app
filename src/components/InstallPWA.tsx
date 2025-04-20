@@ -16,7 +16,7 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
-const InstallPWA: React.FC = () => {
+const InstallPWA = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const { toast } = useToast();
