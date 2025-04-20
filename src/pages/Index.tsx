@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -93,6 +92,7 @@ export default function Index() {
               <HeaderSection />
               
               <div className="md:px-3 lg:px-6">
+                <PopularBrands />
                 <PromotionsSection />
               </div>
               
@@ -109,8 +109,6 @@ export default function Index() {
                 </div>
               </section>
               
-              <PopularBrands />
-
               <div className="py-3 md:hidden">
                 <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
                   <h3 className="text-base sm:text-lg font-bold mb-1">Can't decide which cylinder to buy?</h3>
