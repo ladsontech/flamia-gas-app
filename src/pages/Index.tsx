@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,7 @@ export default function Index() {
       <AppBar />
 
       <div className="flex-grow flex flex-col lg:flex-row pt-16">
-        {/* Sidebar for large screens - Hidden on mobile */}
+        {/* Sidebar for large screens */}
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16">
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
@@ -92,6 +93,8 @@ export default function Index() {
               <HeaderSection />
               
               <div className="md:px-3 lg:px-6">
+                {/* Move ImageCarousel here, before PopularBrands */}
+                <ImageCarousel />
                 <PopularBrands />
                 <PromotionsSection />
               </div>
@@ -126,7 +129,7 @@ export default function Index() {
           </div>
         </div>
         
-        {/* Right sidebar with carousel - Only on large screens */}
+        {/* Right sidebar with carousel */}
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-l border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16 pt-2">
             <ImageCarousel />
@@ -143,10 +146,7 @@ export default function Index() {
         </div>
       </div>
       
-      {/* Only show carousel in the main area on mobile and medium screens */}
-      <div className="lg:hidden px-2 py-2">
-        <ImageCarousel />
-      </div>
+      {/* Remove the mobile carousel section as it's now in the main content area */}
       
       <Footer />
     </>
