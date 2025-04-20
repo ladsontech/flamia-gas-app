@@ -197,6 +197,10 @@ const AppContent = () => {
         </div>
         {showBottomNav && <BottomNav isAdmin={isAdmin} />}
       </Suspense>
+      
+      {/* Toast components */}
+      <Toaster />
+      <Sonner />
     </>
   );
 };
@@ -220,8 +224,6 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <TooltipProvider>
-            <Toaster />
-            <Sonner />
             <AppContent />
           </TooltipProvider>
         </BrowserRouter>
