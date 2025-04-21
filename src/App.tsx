@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,11 +19,11 @@ import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
 import ShareTargetHandler from "./components/ShareTargetHandler";
-import AppBar from "./components/AppBar";
 
 // Lazy load the update notification component 
 const UpdateNotification = lazy(() => import('./components/UpdateNotification'));
 const InstallPWA = lazy(() => import('./components/InstallPWA'));
+
 const AppContent = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -35,10 +36,12 @@ const AppContent = () => {
     // Reload the page to activate the new service worker
     window.location.reload();
   };
+
   useEffect(() => {
     const userRole = localStorage.getItem('userRole');
     setIsAdmin(userRole === 'admin');
   }, []);
+
   useEffect(() => {
     // Check if this is a share target navigation
     const source = searchParams.get("source");
@@ -46,13 +49,16 @@ const AppContent = () => {
       setShowShareHandler(true);
     }
   }, [searchParams]);
+
   const showBottomNav = !showPlaceScreen && !['/admin', '/login'].includes(location.pathname);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPlaceScreen(false);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
+
   const pageVariants = {
     initial: {
       opacity: 0,
@@ -67,7 +73,9 @@ const AppContent = () => {
       y: -3
     }
   };
-  return <>
+
+  return (
+    <>
       <Helmet>
         <title>Flamia - Gas Delivery Service</title>
         <meta name="description" content="Quick and reliable gas delivery service. Order gas cylinders and accessories with fast delivery to your doorstep." />
@@ -79,9 +87,6 @@ const AppContent = () => {
         <link rel="canonical" href={window.location.href} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
-
-      {/* Fixed App Bar */}
-      <AppBar />
 
       {showPlaceScreen && <PlaceScreen />}
 
@@ -100,7 +105,7 @@ const AppContent = () => {
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
         </div>}>
-        <div className="min-h-screen md:pl-16 pb-16 md:pb-0 pt-16 py-0">
+        <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
@@ -147,16 +152,16 @@ const AppContent = () => {
       {/* Toast components */}
       <Toaster />
       <Sonner />
-    </>;
+    </>
+  );
 };
+
 const App = () => {
   const [queryClient] = React.useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60 * 5,
-        // 5 minutes
-        gcTime: 1000 * 60 * 60 * 24,
-        // 24 hours (replacing cacheTime)
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours (replacing cacheTime)
         retry: 3,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
@@ -164,7 +169,9 @@ const App = () => {
       }
     }
   }));
-  return <React.StrictMode>
+
+  return (
+    <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <TooltipProvider>
@@ -172,6 +179,8 @@ const App = () => {
           </TooltipProvider>
         </BrowserRouter>
       </QueryClientProvider>
-    </React.StrictMode>;
+    </React.StrictMode>
+  );
 };
+
 export default App;

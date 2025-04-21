@@ -1,3 +1,4 @@
+
 import { Flame, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -138,9 +139,6 @@ const AppBar = () => {
             </Button>
           </motion.div>
         )}
-
-        {/* Add the update notification component */}
-        <UpdateNotification onUpdate={handleAppUpdate} />
       </div>
 
       {/* Install PWA Dialog */}

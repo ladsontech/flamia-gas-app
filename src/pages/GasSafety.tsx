@@ -1,3 +1,4 @@
+
 import React from "react";
 import AppBar from "@/components/AppBar";
 import { 
@@ -9,12 +10,13 @@ import {
 import { AlertTriangle, CheckCircle2, Info, Flame } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 
 const GasSafety = () => {
   return (
-    <div className="min-h-screen pb-16">
+    <div className="min-h-screen pb-0">
       <AppBar />
-      <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6 pt-20">
+      <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="text-center space-y-2 mb-6">
           <div className="flex justify-center">
             <div className="bg-flame-outer/10 w-16 h-16 rounded-full flex items-center justify-center">
@@ -191,6 +193,7 @@ const GasSafety = () => {
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
