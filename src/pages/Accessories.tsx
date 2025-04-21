@@ -4,10 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import { accessories } from "@/components/accessories/AccessoriesData";
 import AppBar from "@/components/AppBar";
+
 const Accessories = () => {
   const [loading, setLoading] = useState(false);
   const {
@@ -30,7 +30,6 @@ const Accessories = () => {
         <meta name="description" content="Shop for gas accessories including regulators, pipes, stoves, and more. Free delivery in Kampala." />
         <meta name="keywords" content="gas accessories, gas regulator, gas pipe, gas stove, cylinder stand, LPG accessories" />
         
-        {/* Additional SEO Meta Tags */}
         <meta name="geo.region" content="UG" />
         <meta name="geo.placename" content="Kampala" />
         <meta name="og:locale" content="en_UG" />
@@ -43,30 +42,29 @@ const Accessories = () => {
         <meta name="twitter:title" content="Gas Accessories & Equipment - Flamia Uganda" />
         <meta name="twitter:description" content="Shop quality gas accessories with free delivery in Kampala. Regulators, pipes, burners, stoves at best prices." />
         
-        {/* Content Specifications */}
         <meta name="content-language" content="en" />
         <meta name="rating" content="general" />
         <meta name="revisit-after" content="7 days" />
         <meta name="mobile-web-app-capable" content="yes" />
         
-        {/* Preload critical images */}
         <link rel="preload" as="image" href="/images/regulator.jpeg" />
         <link rel="preload" as="image" href="/images/horse_pipe.jpeg" />
       </Helmet>
       
       <AppBar />
-      <div className="container mx-auto px-2 flex-grow pt-20 py-0">
+      <div className="container mx-auto px-3 md:px-6 flex-grow py-0">
         <h1 className="text-lg sm:text-xl font-bold mb-3">Shop Accessories</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-          {accessories.map(accessory => <motion.div key={accessory.id} initial={{
-          opacity: 0,
-          y: 10
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.3
-        }} className="h-full">
+          {accessories.map(accessory => (
+            <motion.div key={accessory.id} initial={{
+              opacity: 0,
+              y: 10
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.3
+            }} className="h-full">
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden h-full flex flex-col">
                 <CardHeader className="p-2">
                   <div className="relative w-full pb-[100%] mb-1 rounded-md overflow-hidden bg-gray-50">
@@ -91,10 +89,11 @@ const Accessories = () => {
                   </Button>
                 </CardFooter>
               </Card>
-            </motion.div>)}
+            </motion.div>
+          ))}
         </div>
       </div>
-      <Footer />
     </div>;
 };
+
 export default Accessories;

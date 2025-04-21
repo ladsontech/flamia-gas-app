@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
-import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import AppBar from "@/components/AppBar";
 import ImageCarousel from "@/components/home/ImageCarousel";
@@ -188,8 +187,6 @@ export default function Index() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </>
   );
 }

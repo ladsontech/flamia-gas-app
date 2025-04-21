@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Helmet } from "react-helmet";
 import { Label } from "@/components/ui/label";
 import { refillBrands } from "@/components/home/BrandsData";
+
 const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas"];
+
 const Refill = () => {
   const navigate = useNavigate();
   const {
@@ -20,6 +22,7 @@ const Refill = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -27,6 +30,7 @@ const Refill = () => {
     }, 50);
     return () => clearTimeout(timer);
   }, []);
+
   const handleOrder = (weight: string, price: number) => {
     if (!selectedBrand) {
       toast({
@@ -38,9 +42,8 @@ const Refill = () => {
     }
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
-  const filteredBrands = staticBrands;
 
-  // Instead of using staticRefillPrices, use the refillBrands array
+  const filteredBrands = staticBrands;
   const filteredPrices = selectedBrand ? refillBrands.filter(brand => brand.brand === selectedBrand).map(brand => {
     const prices = [];
     if (brand.refill_price_3kg) {
@@ -69,8 +72,10 @@ const Refill = () => {
     }
     return prices;
   }).flat() : [];
+
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
+
   const containerVariants = {
     hidden: {
       opacity: 0
@@ -84,6 +89,7 @@ const Refill = () => {
       }
     }
   };
+
   const itemVariants = {
     hidden: {
       opacity: 0,
@@ -97,6 +103,7 @@ const Refill = () => {
       }
     }
   };
+
   return <div className="min-h-screen bg-gradient-to-b from-primary/40 to-white flex flex-col">
       <Helmet>
         <title>{pageTitle}</title>
@@ -107,10 +114,8 @@ const Refill = () => {
       
       <AppBar />
       
-      <div className="container px-2 sm:px-4 sm:py-6 flex-grow pt-16 py-0">
+      <div className="container px-3 md:px-6 sm:py-6 flex-grow pt-0 py-0">
         <div className="text-center mb-6 sm:mb-8">
-          
-
           <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100">
             <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
               Select Gas Brand
@@ -135,14 +140,14 @@ const Refill = () => {
             </div>
           </div> : <AnimatePresence>
             {selectedBrand && <motion.div initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} exit={{
-          opacity: 0
-        }} transition={{
-          duration: 0.3
-        }} className="mb-8">
+              opacity: 0
+            }} animate={{
+              opacity: 1
+            }} exit={{
+              opacity: 0
+            }} transition={{
+              duration: 0.3
+            }} className="mb-8">
                 <h2 className="text-xl font-semibold mb-4 text-center">
                   Available Refill Options for <span className="text-accent">{selectedBrand}</span>
                 </h2>
@@ -162,7 +167,6 @@ const Refill = () => {
                         <p className="text-xs sm:text-sm text-muted-foreground mb-4 flex-grow text-center">
                           {item.description}
                         </p>
-                        
                         <div className="p-4 sm:p-5 bg-gradient-to-r from-accent/5 to-white rounded-lg mt-auto border border-accent/10 shadow-sm">
                           <div className="flex items-center justify-center gap-2 mb-3">
                             <ul className="text-xs space-y-1.5">
@@ -172,7 +176,6 @@ const Refill = () => {
                               </li>
                             </ul>
                           </div>
-                          
                           <p className="font-bold text-accent text-lg sm:text-xl mb-3 text-center">
                             UGX {item.price.toLocaleString()}
                           </p>
@@ -198,4 +201,5 @@ const Refill = () => {
       </div>
     </div>;
 };
+
 export default Refill;
