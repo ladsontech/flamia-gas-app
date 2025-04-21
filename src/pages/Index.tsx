@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
 
 export default function Index() {
-  const navigate = useNavigate(); // Removed try-catch fallback, hooks must be called unconditionally
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -91,8 +90,7 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row py-0"> {/* Removed pt-16 to reduce top space */}
-        {/* Sidebar for large screens */}
+      <div className="flex-grow flex flex-col lg:flex-row py-0 px-3 md:px-6">
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16">
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
@@ -113,14 +111,12 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Main Content Area */}
         <div className="flex-1 w-full lg:w-1/2 xl:w-3/5">
           <div className="container px-0 py-0 md:py-0">
             <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
 
               <div className="md:px-0 lg:px-0">
-                {/* ImageCarousel before PromotionsSection */}
                 <ImageCarousel />
                 <PromotionsSection />
                 <PopularBrands />
@@ -170,12 +166,10 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Right sidebar with carousel */}
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-l border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16 pt-2">
             <ImageCarousel />
 
-            {/* Additional content for the right sidebar */}
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
               <h3 className="text-base font-medium mb-1">Quick Order</h3>
               <p className="text-xs text-gray-600 mb-2">
@@ -185,11 +179,7 @@ export default function Index() {
                 size="sm"
                 className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8"
                 onClick={() => {
-                  try {
-                    navigate("/order");
-                  } catch (error) {
-                    window.location.href = "/order";
-                  }
+                  navigate("/order");
                 }}
               >
                 Order Now
