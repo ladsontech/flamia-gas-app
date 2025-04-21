@@ -12,15 +12,7 @@ import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
 
 export default function Index() {
-  let navigate;
-  try {
-    navigate = useNavigate();
-  } catch (error) {
-    // If useNavigate fails, use a fallback function
-    navigate = () => {
-      console.warn("Navigation attempted outside Router context");
-    };
-  }
+  const navigate = useNavigate(); // Removed try-catch fallback, hooks must be called unconditionally
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -99,7 +91,7 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row pt-16 py-0">
+      <div className="flex-grow flex flex-col lg:flex-row py-0"> {/* Removed pt-16 to reduce top space */}
         {/* Sidebar for large screens */}
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16">
