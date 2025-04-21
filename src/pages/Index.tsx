@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import AppBar from "@/components/AppBar";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
-
 export default function Index() {
   let navigate;
   try {
@@ -21,11 +19,8 @@ export default function Index() {
       console.warn("Navigation attempted outside Router context");
     };
   }
-  
   const [isLoading, setIsLoading] = useState(false);
-  
-  return (
-    <>
+  return <>
       <Helmet>
         <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
         <meta name="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices in Kampala, Wakiso & Mukono." />
@@ -79,7 +74,7 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row pt-16">
+      <div className="flex-grow flex flex-col lg:flex-row pt-16 py-0">
         {/* Sidebar for large screens */}
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16">
@@ -148,12 +143,12 @@ export default function Index() {
               <h3 className="text-base font-medium mb-1">Quick Order</h3>
               <p className="text-xs text-gray-600 mb-2">Order your favorite gas cylinder with just one click.</p>
               <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
-                try {
-                  navigate('/order');
-                } catch (error) {
-                  window.location.href = '/order';
-                }
-              }}>
+              try {
+                navigate('/order');
+              } catch (error) {
+                window.location.href = '/order';
+              }
+            }}>
                 Order Now
               </Button>
             </div>
@@ -162,6 +157,5 @@ export default function Index() {
       </div>
       
       <Footer />
-    </>
-  );
+    </>;
 }
