@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Helmet } from "react-helmet";
 import { Label } from "@/components/ui/label";
 import { refillBrands } from "@/components/home/BrandsData";
-
 const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas"];
-
 const Refill = () => {
   const navigate = useNavigate();
   const {
@@ -42,11 +39,10 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
   const filteredBrands = staticBrands;
-  
+
   // Instead of using staticRefillPrices, use the refillBrands array
   const filteredPrices = selectedBrand ? refillBrands.filter(brand => brand.brand === selectedBrand).map(brand => {
     const prices = [];
-    
     if (brand.refill_price_3kg) {
       prices.push({
         id: `${brand.id}-3kg`,
@@ -55,7 +51,6 @@ const Refill = () => {
         description: "Small cylinder perfect for small households and students"
       });
     }
-    
     if (brand.refill_price_6kg) {
       prices.push({
         id: `${brand.id}-6kg`,
@@ -64,7 +59,6 @@ const Refill = () => {
         description: "Medium cylinder suitable for most households"
       });
     }
-    
     if (brand.refill_price_12kg) {
       prices.push({
         id: `${brand.id}-12kg`,
@@ -73,10 +67,8 @@ const Refill = () => {
         description: "Large cylinder ideal for big families and extended use"
       });
     }
-    
     return prices;
   }).flat() : [];
-  
   const pageTitle = "Gas Refill Prices Uganda | Cheapest LPG Refill Services in Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex, and Hass gas cylinders with free delivery in Kampala, Wakiso, Mukono and Entebbe.";
   const containerVariants = {
@@ -115,7 +107,7 @@ const Refill = () => {
       
       <AppBar />
       
-      <div className="container px-2 sm:px-4 py-4 sm:py-6 flex-grow pt-16">
+      <div className="container px-2 sm:px-4 sm:py-6 flex-grow pt-16 py-0">
         <div className="text-center mb-6 sm:mb-8">
           
 
