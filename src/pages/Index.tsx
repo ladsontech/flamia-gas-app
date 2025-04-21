@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import AppBar from "@/components/AppBar";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
+
 export default function Index() {
   let navigate;
   try {
@@ -20,26 +22,46 @@ export default function Index() {
     };
   }
   const [isLoading, setIsLoading] = useState(false);
-  return <>
+
+  return (
+    <>
       <Helmet>
         <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
-        <meta name="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices in Kampala, Wakiso & Mukono." />
-        <meta name="keywords" content="best gas delivery service in Uganda, fastest gas delivery Kampala, same-day gas cylinder delivery, free gas delivery near me, gas cylinder home delivery, LPG gas delivery service, best gas app Uganda, Total gas delivery, Shell gas delivery, Stabex gas delivery, Hass gas delivery, Oryx gas delivery, Ultimate gas delivery, C gas delivery, alternative to Fumbaa gas" />
-        
+        <meta
+          name="description"
+          content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices in Kampala, Wakiso & Mukono."
+        />
+        <meta
+          name="keywords"
+          content="best gas delivery service in Uganda, fastest gas delivery Kampala, same-day gas cylinder delivery, free gas delivery near me, gas cylinder home delivery, LPG gas delivery service, best gas app Uganda, Total gas delivery, Shell gas delivery, Stabex gas delivery, Hass gas delivery, Oryx gas delivery, Ultimate gas delivery, C gas delivery, alternative to Fumbaa gas"
+        />
+
         <meta name="geo.region" content="UG" />
         <meta name="geo.placename" content="Kampala" />
         <meta name="geo.position" content="0.347596;32.582520" />
         <meta name="ICBM" content="0.347596, 32.582520" />
         <meta name="og:locale" content="en_UG" />
         <meta name="og:type" content="website" />
-        <meta name="og:title" content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery" />
-        <meta name="og:description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas at cheapest prices. Faster than Fumbaa gas!" />
+        <meta
+          name="og:title"
+          content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery"
+        />
+        <meta
+          name="og:description"
+          content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas at cheapest prices. Faster than Fumbaa gas!"
+        />
         <meta name="og:url" content="https://flamia.store/" />
         <meta name="og:site_name" content="Flamia Gas Delivery" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery" />
-        <meta name="twitter:description" content="Fastest gas delivery service in Uganda with free same-day delivery. Better than Fumbaa gas with lower prices and faster service." />
-        
+        <meta
+          name="twitter:title"
+          content="Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery"
+        />
+        <meta
+          name="twitter:description"
+          content="Fastest gas delivery service in Uganda with free same-day delivery. Better than Fumbaa gas with lower prices and faster service."
+        />
+
         <meta name="content-language" content="en" />
         <meta http-equiv="content-language" content="en" />
         <meta name="rating" content="general" />
@@ -47,10 +69,10 @@ export default function Index() {
         <meta name="target" content="all" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        
+
         <meta name="format-detection" content="telephone=yes" />
         <meta name="format-detection" content="address=yes" />
-        
+
         <meta name="author" content="Flamia Gas Delivery" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="googlebot" content="index, follow" />
@@ -63,8 +85,11 @@ export default function Index() {
         <meta name="apple-mobile-web-app-title" content="Flamia Gas" />
 
         <meta itemProp="name" content="Flamia - Best Gas Delivery Service in Uganda" />
-        <meta itemProp="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices." />
-        
+        <meta
+          itemProp="description"
+          content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices."
+        />
+
         <link rel="preload" as="image" href="/images/oryx 6KG.png" />
         <link rel="preload" as="image" href="/images/hass 6KG.png" />
         <link rel="preload" as="image" href="/images/total 6KG.png" />
@@ -80,10 +105,16 @@ export default function Index() {
           <div className="sticky top-16">
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
               <h3 className="text-base font-medium mb-1">Need Help?</h3>
-              <p className="text-xs text-gray-600 mb-2">Contact our gas experts for personalized recommendations.</p>
-              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
-              window.open('https://wa.me/256789572007', '_blank');
-            }}>
+              <p className="text-xs text-gray-600 mb-2">
+                Contact our gas experts for personalized recommendations.
+              </p>
+              <Button
+                size="sm"
+                className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                onClick={() => {
+                  window.open("https://wa.me/256789572007", "_blank");
+                }}
+              >
                 Chat with Gas Expert
               </Button>
             </div>
@@ -92,39 +123,53 @@ export default function Index() {
 
         {/* Main Content Area */}
         <div className="flex-1 w-full lg:w-1/2 xl:w-3/5">
-          <div className="container px-2 py-2 md:py-3">
+          <div className="container px-0 py-0 md:py-0">
             <div className="flex flex-col gap-3 md:gap-4">
               <HeaderSection />
-              
-              <div className="md:px-3 lg:px-6">
-                {/* ImageCarousel before PopularBrands */}
+
+              <div className="md:px-0 lg:px-0">
+                {/* ImageCarousel before PromotionsSection */}
                 <ImageCarousel />
-                <PopularBrands />
                 <PromotionsSection />
+                <PopularBrands />
               </div>
-              
+
               <section className="space-y-3 md:space-y-3">
                 <div className="text-center">
-                  <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">Best Gas Delivery Service in Uganda</h2>
-                  <p className="text-sm text-muted-foreground mb-3">Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe</p>
+                  <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">
+                    Best Gas Delivery Service in Uganda
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe
+                  </p>
                 </div>
 
                 <div className="px-1">
-                  {isLoading ? <div className="flex justify-center py-6">
+                  {isLoading ? (
+                    <div className="flex justify-center py-6">
                       <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
-                    </div> : <BrandsGrid brands={[]} />}
+                    </div>
+                  ) : (
+                    <BrandsGrid brands={[]} />
+                  )}
                 </div>
               </section>
-              
+
               <div className="py-3 md:hidden">
                 <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
-                  <h3 className="text-base sm:text-lg font-bold mb-1">Can't decide which cylinder to buy?</h3>
+                  <h3 className="text-base sm:text-lg font-bold mb-1">
+                    Can't decide which cylinder to buy?
+                  </h3>
                   <p className="mb-2 text-xs">
                     Contact our gas experts for personalized recommendations based on your household needs.
                   </p>
-                  <Button size="sm" className="bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
-                  window.open('https://wa.me/256789572007', '_blank');
-                }}>
+                  <Button
+                    size="sm"
+                    className="bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                    onClick={() => {
+                      window.open("https://wa.me/256789572007", "_blank");
+                    }}
+                  >
                     Chat with Gas Expert
                   </Button>
                 </div>
@@ -132,30 +177,37 @@ export default function Index() {
             </div>
           </div>
         </div>
-        
+
         {/* Right sidebar with carousel */}
         <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-l border-gray-200 bg-gray-50 py-2 px-2">
           <div className="sticky top-16 pt-2">
             <ImageCarousel />
-            
+
             {/* Additional content for the right sidebar */}
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
               <h3 className="text-base font-medium mb-1">Quick Order</h3>
-              <p className="text-xs text-gray-600 mb-2">Order your favorite gas cylinder with just one click.</p>
-              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
-              try {
-                navigate('/order');
-              } catch (error) {
-                window.location.href = '/order';
-              }
-            }}>
+              <p className="text-xs text-gray-600 mb-2">
+                Order your favorite gas cylinder with just one click.
+              </p>
+              <Button
+                size="sm"
+                className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                onClick={() => {
+                  try {
+                    navigate("/order");
+                  } catch (error) {
+                    window.location.href = "/order";
+                  }
+                }}
+              >
                 Order Now
               </Button>
             </div>
           </div>
         </div>
       </div>
-      
+
       <Footer />
-    </>;
+    </>
+  );
 }
