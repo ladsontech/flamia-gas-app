@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -9,16 +8,15 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 import { accessories } from "@/components/accessories/AccessoriesData";
 import AppBar from "@/components/AppBar";
-
 const Accessories = () => {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-  
   const handleOrder = (accessoryId: string) => {
     navigate(`/order?accessory=${accessoryId}`);
   };
-
   if (loading) {
     return <div className="container mx-auto px-2 py-3">
         <div className="flex items-center justify-center min-h-[200px]">
@@ -26,7 +24,6 @@ const Accessories = () => {
         </div>
       </div>;
   }
-
   return <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Gas Accessories - Flamia</title>
@@ -58,7 +55,7 @@ const Accessories = () => {
       </Helmet>
       
       <AppBar />
-      <div className="container mx-auto px-2 py-3 flex-grow pt-20">
+      <div className="container mx-auto px-2 flex-grow pt-20 py-0">
         <h1 className="text-lg sm:text-xl font-bold mb-3">Shop Accessories</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {accessories.map(accessory => <motion.div key={accessory.id} initial={{
@@ -100,5 +97,4 @@ const Accessories = () => {
       <Footer />
     </div>;
 };
-
 export default Accessories;
