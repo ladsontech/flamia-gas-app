@@ -12,7 +12,16 @@ import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
 
 export default function Index() {
-  const navigate = useNavigate();
+  let navigate;
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    // If useNavigate fails, use a fallback function
+    navigate = () => {
+      console.warn("Navigation attempted outside Router context");
+    };
+  }
+  
   const [isLoading, setIsLoading] = useState(false);
   
   return (
@@ -93,7 +102,7 @@ export default function Index() {
               <HeaderSection />
               
               <div className="md:px-3 lg:px-6">
-                {/* Move ImageCarousel here, before PopularBrands */}
+                {/* ImageCarousel before PopularBrands */}
                 <ImageCarousel />
                 <PopularBrands />
                 <PromotionsSection />
@@ -138,15 +147,19 @@ export default function Index() {
             <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
               <h3 className="text-base font-medium mb-1">Quick Order</h3>
               <p className="text-xs text-gray-600 mb-2">Order your favorite gas cylinder with just one click.</p>
-              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => navigate('/order')}>
+              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
+                try {
+                  navigate('/order');
+                } catch (error) {
+                  window.location.href = '/order';
+                }
+              }}>
                 Order Now
               </Button>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Remove the mobile carousel section as it's now in the main content area */}
       
       <Footer />
     </>
