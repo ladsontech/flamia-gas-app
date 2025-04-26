@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -83,20 +82,19 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
       transition={{ duration: 0.5 }}
       className="h-full"
     >
-      <Card className="bg-white shadow-lg p-2 sm:p-3 hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-        <div className="relative w-full pb-[100%] mb-2 rounded-md overflow-hidden bg-gray-50">
+      <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-md p-3 sm:p-4 transition-all duration-300 overflow-hidden h-full flex flex-col">
+        <div className="relative w-full pb-[100%] mb-3 rounded-lg overflow-hidden bg-gray-50/80">
           {!isImageLoaded && !imageError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
               <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>
             </div>
           )}
           <img
             src={imageError ? fallbackImage : image}
             alt={`${brand} ${size} gas cylinder for sale in Uganda - ${finalDescription}`}
-            className={`absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500 ${
+              isImageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
             loading="lazy"
             width="400"
             height="400"
@@ -107,23 +105,25 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
             }}
           />
         </div>
-        <h3 className="text-sm sm:text-base font-semibold mb-1">{brand} Gas</h3>
-        <p className="text-xs sm:text-sm font-medium text-accent mb-1">{size} Cylinder</p>
-        <p className="text-muted-foreground mb-2 text-xs sm:text-sm line-clamp-2">
-          {finalDescription}
-        </p>
-        <div className="space-y-1 mb-2">
-          <div className="flex justify-between items-center">
-            <span className="text-xs sm:text-sm font-medium">Price</span>
-            <span className="text-xs sm:text-sm font-semibold text-accent">{price}</span>
-          </div>
+        <div className="flex-grow">
+          <h3 className="text-sm sm:text-base font-semibold mb-1 text-gray-900">{brand} Gas</h3>
+          <p className="text-xs sm:text-sm font-medium text-accent mb-1.5">{size} Cylinder</p>
+          <p className="text-muted-foreground mb-3 text-xs sm:text-sm line-clamp-2">
+            {finalDescription}
+          </p>
         </div>
-        <Button
-          onClick={handleOrder}
-          className="w-full bg-accent text-white hover:bg-accent/90 text-xs py-1 h-auto mt-auto"
-        >
-          Order Now
-        </Button>
+        <div className="pt-2 border-t border-gray-100">
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="text-xs sm:text-sm font-medium text-gray-600">Price</span>
+            <span className="text-sm sm:text-base font-semibold text-accent">{price}</span>
+          </div>
+          <Button
+            onClick={handleOrder}
+            className="w-full bg-accent text-white hover:bg-accent/90 text-xs sm:text-sm py-2 h-9 rounded-lg"
+          >
+            Order Now
+          </Button>
+        </div>
       </Card>
     </motion.div>
   );

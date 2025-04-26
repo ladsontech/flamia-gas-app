@@ -89,12 +89,12 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row py-0 px-3 md:px-6">
-        <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-r border-gray-200 bg-gray-50 py-2 px-2">
+      <div className="flex-grow flex flex-col lg:flex-row px-3 md:px-6">
+        <div className="hidden lg:block lg:w-64 xl:w-72 border-r border-gray-100 bg-gray-50/50 py-2 px-3">
           <div className="sticky top-16">
-            <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
-              <h3 className="text-base font-medium mb-1">Need Help?</h3>
-              <p className="text-xs text-gray-600 mb-2">
+            <div className="mt-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-base font-medium mb-2">Need Help?</h3>
+              <p className="text-sm text-gray-600 mb-3">
                 Contact our gas experts for personalized recommendations.
               </p>
               <Button
@@ -110,18 +110,18 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="flex-1 w-full lg:w-1/2 xl:w-3/5">
-          <div className="container px-0 py-0 md:py-0">
-            <div className="flex flex-col gap-3 md:gap-4">
+        <div className="flex-1 w-full lg:w-auto max-w-[1200px] mx-auto">
+          <div className="container px-0">
+            <div className="flex flex-col gap-4 md:gap-6">
               <HeaderSection />
 
-              <div className="md:px-0 lg:px-0">
+              <div className="md:px-0">
                 <ImageCarousel />
                 <PromotionsSection />
                 <PopularBrands />
               </div>
 
-              <section className="space-y-3 md:space-y-3">
+              <section className="space-y-4">
                 <div className="text-center">
                   <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">
                     Best Gas Delivery Service in Uganda
@@ -131,7 +131,7 @@ export default function Index() {
                   </p>
                 </div>
 
-                <div className="px-1">
+                <div className="px-0">
                   {isLoading ? (
                     <div className="flex justify-center py-6">
                       <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
@@ -165,13 +165,13 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="hidden lg:block lg:w-1/4 xl:w-1/5 border-l border-gray-200 bg-gray-50 py-2 px-2">
+        <div className="hidden lg:block lg:w-64 xl:w-72 border-l border-gray-100 bg-gray-50/50 py-2 px-3">
           <div className="sticky top-16 pt-2">
             <ImageCarousel />
 
-            <div className="mt-3 bg-white p-3 rounded-lg shadow-sm">
-              <h3 className="text-base font-medium mb-1">Quick Order</h3>
-              <p className="text-xs text-gray-600 mb-2">
+            <div className="mt-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-base font-medium mb-2">Quick Order</h3>
+              <p className="text-sm text-gray-600 mb-3">
                 Order your favorite gas cylinder with just one click.
               </p>
               <Button
