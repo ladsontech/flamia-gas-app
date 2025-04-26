@@ -20,23 +20,18 @@ const PopularBrands = () => {
       setIsMobile(window.innerWidth < 768);
     };
     
-    // Check on initial load
     checkScreenSize();
-    
-    // Add event listener for window resize
     window.addEventListener('resize', checkScreenSize);
     
-    // Cleanup
     return () => {
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
 
-  // Select a subset of popular brands to display
   const popularBrands = staticBrands.slice(0, 5);
 
   return (
-    <section className="mb-4">
+    <section className="mb-4 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg md:text-xl font-bold">Popular Gas Brands</h2>
         <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs">
@@ -57,7 +52,7 @@ const PopularBrands = () => {
             <CarouselItem key={brand.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
               <Card className="overflow-hidden flex flex-col h-full shadow-sm">
                 <div className="relative p-2 pb-1">
-                  <div className="h-24 sm:h-28 md:h-32 bg-gray-50 rounded-md flex items-center justify-center mb-2">
+                  <div className="h-20 sm:h-24 md:h-28 bg-gray-50 rounded-md flex items-center justify-center mb-2">
                     <img 
                       src={brand.image_url_6kg || ''} 
                       alt={brand.name} 
