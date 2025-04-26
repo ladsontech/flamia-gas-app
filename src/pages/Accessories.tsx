@@ -17,14 +17,17 @@ const Accessories = () => {
   const handleOrder = (accessoryId: string) => {
     navigate(`/order?accessory=${accessoryId}`);
   };
+
   if (loading) {
-    return <div className="container mx-auto px-2 py-3">
-        <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-center text-muted-foreground">Loading accessories...</p>
-        </div>
-      </div>;
+    return <div className="container mx-auto px-2 py-3 mt-24">
+      <div className="flex items-center justify-center min-h-[200px]">
+        <p className="text-center text-muted-foreground">Loading accessories...</p>
+      </div>
+    </div>;
   }
-  return <div className="min-h-screen flex flex-col">
+
+  return (
+    <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Gas Accessories - Flamia</title>
         <meta name="description" content="Shop for gas accessories including regulators, pipes, stoves, and more. Free delivery in Kampala." />
@@ -52,7 +55,7 @@ const Accessories = () => {
       </Helmet>
       
       <AppBar />
-      <div className="container mx-auto px-3 md:px-6 flex-grow py-0">
+      <div className="container mx-auto px-3 md:px-6 flex-grow py-0 mt-24">
         <h1 className="text-lg sm:text-xl font-bold mb-3">Shop Accessories</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {accessories.map(accessory => (
@@ -93,7 +96,8 @@ const Accessories = () => {
           ))}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default Accessories;
