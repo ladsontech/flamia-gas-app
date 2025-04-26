@@ -89,7 +89,7 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row px-3 md:px-6">
+      <div className="flex-grow flex flex-col lg:flex-row px-3 md:px-6 mt-24">
         <div className="hidden lg:block lg:w-64 xl:w-72 border-r border-gray-100 bg-gray-50/50 py-2 px-3">
           <div className="sticky top-16">
             <div className="mt-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
