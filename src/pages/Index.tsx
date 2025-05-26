@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,13 @@ import AppBar from "@/components/AppBar";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
+
 export default function Index() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  return <>
+
+  return (
+    <>
       <Helmet>
         <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
         <meta name="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices in Kampala, Wakiso & Mukono." />
@@ -65,7 +69,7 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="min-h-screen flex flex-col lg:flex-row mt-24">
+      <div className="min-h-screen flex flex-col lg:flex-row mt-16">
         {/* Left Sidebar - Desktop Only */}
         <div className="hidden lg:block lg:w-56 xl:w-64 border-r border-gray-100 bg-gray-50/30 py-4 px-3">
           <div className="sticky top-20">
@@ -74,9 +78,13 @@ export default function Index() {
               <p className="text-xs text-gray-600 mb-3">
                 Contact our gas experts for personalized recommendations.
               </p>
-              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1.5 h-7" onClick={() => {
-              window.open("https://wa.me/256789572007", "_blank");
-            }}>
+              <Button
+                size="sm"
+                className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1.5 h-7"
+                onClick={() => {
+                  window.open("https://wa.me/256789572007", "_blank");
+                }}
+              >
                 Chat with Expert
               </Button>
             </div>
@@ -85,7 +93,7 @@ export default function Index() {
 
         {/* Main Content Area */}
         <div className="flex-1 w-full max-w-4xl mx-auto px-3 md:px-6 lg:px-4">
-          <div className="flex flex-col gap-4 md:gap-5 my-0 py-0 rounded">
+          <div className="flex flex-col gap-4 md:gap-5 my-0 py-2 rounded">
             <HeaderSection />
 
             {/* Mobile/Tablet Components */}
@@ -106,9 +114,13 @@ export default function Index() {
               </div>
 
               <div className="max-w-5xl mx-auto">
-                {isLoading ? <div className="flex justify-center py-6">
+                {isLoading ? (
+                  <div className="flex justify-center py-6">
                     <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
-                  </div> : <BrandsGrid brands={[]} />}
+                  </div>
+                ) : (
+                  <BrandsGrid brands={[]} />
+                )}
               </div>
             </section>
 
@@ -121,9 +133,13 @@ export default function Index() {
                 <p className="mb-2 text-xs">
                   Contact our gas experts for personalized recommendations based on your household needs.
                 </p>
-                <Button size="sm" className="bg-accent hover:bg-accent/90 text-white py-1 h-8" onClick={() => {
-                window.open("https://wa.me/256789572007", "_blank");
-              }}>
+                <Button
+                  size="sm"
+                  className="bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                  onClick={() => {
+                    window.open("https://wa.me/256789572007", "_blank");
+                  }}
+                >
                   Chat with Gas Expert
                 </Button>
               </div>
@@ -141,14 +157,19 @@ export default function Index() {
               <p className="text-xs text-gray-600 mb-3">
                 Order your favorite gas cylinder with just one click.
               </p>
-              <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1.5 h-7" onClick={() => {
-              navigate("/order");
-            }}>
+              <Button
+                size="sm"
+                className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1.5 h-7"
+                onClick={() => {
+                  navigate("/order");
+                }}
+              >
                 Order Now
               </Button>
             </div>
           </div>
         </div>
       </div>
-    </>;
+    </>
+  );
 }
