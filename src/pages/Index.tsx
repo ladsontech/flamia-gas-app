@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -89,94 +90,97 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="flex-grow flex flex-col lg:flex-row px-3 md:px-6 mt-24">
-        <div className="hidden lg:block lg:w-64 xl:w-72 border-r border-gray-100 bg-gray-50/50 py-2 px-3">
-          <div className="sticky top-16">
-            <div className="mt-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="text-base font-medium mb-2">Need Help?</h3>
-              <p className="text-sm text-gray-600 mb-3">
+      <div className="min-h-screen flex flex-col lg:flex-row mt-24">
+        {/* Left Sidebar - Desktop Only */}
+        <div className="hidden lg:block lg:w-56 xl:w-64 border-r border-gray-100 bg-gray-50/30 py-4 px-3">
+          <div className="sticky top-20">
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-sm font-medium mb-2">Need Help?</h3>
+              <p className="text-xs text-gray-600 mb-3">
                 Contact our gas experts for personalized recommendations.
               </p>
               <Button
                 size="sm"
-                className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1.5 h-7"
                 onClick={() => {
                   window.open("https://wa.me/256789572007", "_blank");
                 }}
               >
-                Chat with Gas Expert
+                Chat with Expert
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 w-full lg:w-auto max-w-[1200px] mx-auto">
-          <div className="container px-0">
-            <div className="flex flex-col gap-4 md:gap-6">
-              <HeaderSection />
+        {/* Main Content Area */}
+        <div className="flex-1 w-full max-w-4xl mx-auto px-3 md:px-6 lg:px-4">
+          <div className="flex flex-col gap-4 md:gap-5">
+            <HeaderSection />
 
-              <div className="md:px-0">
-                <ImageCarousel />
-                <PromotionsSection />
-                <PopularBrands />
+            {/* Mobile/Tablet Components */}
+            <div className="lg:hidden">
+              <ImageCarousel />
+              <PromotionsSection />
+              <PopularBrands />
+            </div>
+
+            <section className="space-y-4">
+              <div className="text-center">
+                <h2 className="text-xl md:text-2xl lg:text-xl font-bold text-primary mb-2">
+                  Best Gas Delivery Service in Uganda
+                </h2>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe
+                </p>
               </div>
 
-              <section className="space-y-4">
-                <div className="text-center">
-                  <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">
-                    Best Gas Delivery Service in Uganda
-                  </h2>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Free same-day gas delivery in Kampala, Wakiso, Mukono and Entebbe
-                  </p>
-                </div>
+              <div className="max-w-5xl mx-auto">
+                {isLoading ? (
+                  <div className="flex justify-center py-6">
+                    <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
+                  </div>
+                ) : (
+                  <BrandsGrid brands={[]} />
+                )}
+              </div>
+            </section>
 
-                <div className="px-0">
-                  {isLoading ? (
-                    <div className="flex justify-center py-6">
-                      <div className="animate-spin h-6 w-6 border-3 border-accent rounded-full border-t-transparent"></div>
-                    </div>
-                  ) : (
-                    <BrandsGrid brands={[]} />
-                  )}
-                </div>
-              </section>
-
-              <div className="py-3 md:hidden">
-                <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
-                  <h3 className="text-base sm:text-lg font-bold mb-1">
-                    Can't decide which cylinder to buy?
-                  </h3>
-                  <p className="mb-2 text-xs">
-                    Contact our gas experts for personalized recommendations based on your household needs.
-                  </p>
-                  <Button
-                    size="sm"
-                    className="bg-accent hover:bg-accent/90 text-white py-1 h-8"
-                    onClick={() => {
-                      window.open("https://wa.me/256789572007", "_blank");
-                    }}
-                  >
-                    Chat with Gas Expert
-                  </Button>
-                </div>
+            {/* Mobile Help Section */}
+            <div className="py-3 md:hidden">
+              <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-lg p-3 text-center">
+                <h3 className="text-base sm:text-lg font-bold mb-1">
+                  Can't decide which cylinder to buy?
+                </h3>
+                <p className="mb-2 text-xs">
+                  Contact our gas experts for personalized recommendations based on your household needs.
+                </p>
+                <Button
+                  size="sm"
+                  className="bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                  onClick={() => {
+                    window.open("https://wa.me/256789572007", "_blank");
+                  }}
+                >
+                  Chat with Gas Expert
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="hidden lg:block lg:w-64 xl:w-72 border-l border-gray-100 bg-gray-50/50 py-2 px-3">
-          <div className="sticky top-16 pt-2">
+        {/* Right Sidebar - Desktop Only */}
+        <div className="hidden lg:block lg:w-56 xl:w-64 border-l border-gray-100 bg-gray-50/30 py-4 px-3">
+          <div className="sticky top-20 space-y-3">
             <ImageCarousel />
 
-            <div className="mt-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="text-base font-medium mb-2">Quick Order</h3>
-              <p className="text-sm text-gray-600 mb-3">
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-sm font-medium mb-2">Quick Order</h3>
+              <p className="text-xs text-gray-600 mb-3">
                 Order your favorite gas cylinder with just one click.
               </p>
               <Button
                 size="sm"
-                className="w-full bg-accent hover:bg-accent/90 text-white py-1 h-8"
+                className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1.5 h-7"
                 onClick={() => {
                   navigate("/order");
                 }}
