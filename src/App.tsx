@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -171,15 +170,13 @@ const App = () => {
   }));
 
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <TooltipProvider>
-            <AppContent />
-          </TooltipProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <TooltipProvider>
+          <AppContent />
+        </TooltipProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
