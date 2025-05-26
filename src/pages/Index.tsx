@@ -97,9 +97,7 @@ export default function Index() {
 
             <section className="space-y-4">
               <div className="text-center">
-                <h2 className="text-xl md:text-2xl lg:text-xl font-bold text-primary mb-2">
-                  Best Gas Delivery Service in Uganda
-                </h2>
+                <h2 className="text-xl md:text-2xl lg:text-xl font-bold mb-2 text-slate-950">Gas full kits</h2>
                 <p className="text-sm text-muted-foreground mb-3 text-center">Free  gas delivery around Kampala for all orders</p>
               </div>
 
