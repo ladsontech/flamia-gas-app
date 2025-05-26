@@ -16,7 +16,7 @@ const GasSafety = () => {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-flame-inner">Gas Safety Tips</h1>
-          <p className="text-muted-foreground">Essential tips for using cooking gas safely at home</p>
+          <p className="text-muted-foreground py-0 my-0">Essential tips for using cooking gas safely at home</p>
         </div>
 
         <Separator className="my-4" />
