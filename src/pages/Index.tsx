@@ -85,7 +85,7 @@ export default function Index() {
 
         {/* Main Content Area */}
         <div className="flex-1 w-full max-w-4xl mx-auto px-3 md:px-6 lg:px-4">
-          <div className="flex flex-col gap-4 md:gap-5 my-0 py-0">
+          <div className="flex flex-col gap-4 md:gap-5 my-0 py-0 rounded">
             <HeaderSection />
 
             {/* Mobile/Tablet Components */}
