@@ -107,7 +107,7 @@ const Refill = () => {
       
       <div className="container px-3 md:px-6 sm:py-6 flex-grow pt-0 py-0 my-[50px]">
         <div className="text-center mb-6 sm:mb-8">
-          <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100">
+          <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100 my-[30px]">
             <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
               Select Gas Brand
             </Label>
