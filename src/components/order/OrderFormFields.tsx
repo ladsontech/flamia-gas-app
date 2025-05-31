@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { Truck, Info } from "lucide-react";
-import { staticBrands, refillBrands } from "../home/BrandsData"; // Import the refillBrands data
+import { staticBrands, refillBrands } from "../home/BrandsData";
+import { LocationPicker } from "./LocationPicker";
 
 interface OrderFormFieldsProps {
   formData: {
@@ -21,6 +22,7 @@ interface OrderFormFieldsProps {
     contact?: string;
     brand?: string;
     type?: string;
+    location?: { lat: number; lng: number; address: string };
   };
   setFormData: (data: any) => void;
   selectedBrand?: string;
@@ -73,6 +75,14 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
         });
       }
     }
+  };
+
+  const handleLocationSelect = (location: { lat: number; lng: number; address: string }) => {
+    setFormData(prev => ({
+      ...prev,
+      location: location,
+      address: location.address // Also update the address field
+    }));
   };
 
   // Gas brands list
@@ -237,15 +247,21 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
         />
       </motion.div>
 
+      <motion.div variants={itemVariants}>
+        <LocationPicker
+          onLocationSelect={handleLocationSelect}
+          selectedLocation={formData.location}
+        />
+      </motion.div>
+
       <motion.div variants={itemVariants} className="space-y-1">
-        <Label htmlFor="address" className="text-sm">Delivery Address</Label>
+        <Label htmlFor="address" className="text-sm">Delivery Address (Optional)</Label>
         <Input
           id="address"
           name="address"
           value={formData.address}
           onChange={handleInputChange}
-          required
-          placeholder="Enter your delivery address"
+          placeholder="Enter additional address details"
           className={`border-accent/20 focus:border-accent/40 h-8 text-sm ${
             formData.type === "fullset" ? "bg-white/90" : "bg-white"
           }`}

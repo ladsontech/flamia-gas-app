@@ -68,7 +68,8 @@ const Order = () => {
     quantity: 1,
     contact: "",
     accessory_id: accessoryId || undefined,
-    brand: selectedBrand || (accessoryData ? "" : "Total")
+    brand: selectedBrand || (accessoryData ? "" : "Total"),
+    location: undefined as { lat: number; lng: number; address: string } | undefined
   });
 
   const getPrice = () => {
@@ -108,7 +109,8 @@ const Order = () => {
 *Quantity:* ${formData.quantity}
 *Total Amount:* UGX ${(accessoryData.price * formData.quantity).toLocaleString()}
 *Contact:* ${formData.contact}
-*Address:* ${formData.address}
+*Address:* ${formData.address}${formData.location ? `
+*Location:* https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
 *Free Delivery:* Within Kampala
 ------------------------`;
       } else {
@@ -124,7 +126,8 @@ const Order = () => {
 *Price:* ${price}
 *Quantity:* ${formData.quantity}
 *Contact:* ${formData.contact}
-*Address:* ${formData.address}
+*Address:* ${formData.address}${formData.location ? `
+*Location:* https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
 *Free Delivery:* Within Kampala
 ------------------------`;
       }
