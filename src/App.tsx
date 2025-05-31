@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,7 @@ import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
+import Delivery from "./pages/Delivery";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
@@ -48,7 +48,7 @@ const AppContent = () => {
     }
   }, [searchParams]);
 
-  const showBottomNav = !showPlaceScreen && !['/admin', '/login'].includes(location.pathname);
+  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery'].includes(location.pathname);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -125,6 +125,11 @@ const AppContent = () => {
             duration: 0.2
           }}>
                 <GasSafety />
+              </motion.div>} />
+            <Route path="/delivery" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Delivery />
               </motion.div>} />
             <Route path="/admin" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
             duration: 0.2
