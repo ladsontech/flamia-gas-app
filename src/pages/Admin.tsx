@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
-import { fetchOrders, verifyAdminPassword } from "@/services/database";
+import { fetchOrders, fetchDeliveryMen, verifyAdminPassword } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 
 const Admin = () => {
@@ -22,6 +22,16 @@ const Admin = () => {
   } = useQuery({
     queryKey: ['orders'],
     queryFn: fetchOrders,
+    enabled: authenticated,
+  });
+
+  const { 
+    data: deliveryMen = [], 
+    isLoading: deliveryMenLoading,
+    refetch: refetchDeliveryMen
+  } = useQuery({
+    queryKey: ['deliveryMen'],
+    queryFn: fetchDeliveryMen,
     enabled: authenticated,
   });
 
@@ -66,6 +76,11 @@ const Admin = () => {
     }
   };
 
+  const handleRefresh = () => {
+    refetchOrders();
+    refetchDeliveryMen();
+  };
+
   const renderContent = () => {
     if (!authenticated) {
       return (
@@ -93,16 +108,17 @@ const Admin = () => {
 
     return (
       <div className="space-y-6">
-        <AdminNav onRefresh={refetchOrders} />
+        <AdminNav onRefresh={handleRefresh} />
         
-        {ordersLoading ? (
+        {ordersLoading || deliveryMenLoading ? (
           <Card className="p-6">
-            <p className="text-center text-muted-foreground">Loading orders...</p>
+            <p className="text-center text-muted-foreground">Loading...</p>
           </Card>
         ) : (
           <AdminOrdersView 
             orders={orders} 
-            onOrdersUpdate={() => refetchOrders()} 
+            deliveryMen={deliveryMen}
+            onOrdersUpdate={handleRefresh} 
           />
         )}
       </div>

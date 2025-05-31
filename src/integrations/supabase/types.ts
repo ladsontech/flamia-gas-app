@@ -9,30 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      orders: {
+      delivery_men: {
         Row: {
           created_at: string
-          description: string
+          email: string
           id: string
+          name: string
+          password_hash: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
-          description: string
+          email: string
           id?: string
+          name: string
+          password_hash: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
-          description?: string
+          email?: string
           id?: string
+          name?: string
+          password_hash?: string
+          updated_at?: string
         }
         Relationships: []
+      }
+      orders: {
+        Row: {
+          assigned_at: string | null
+          created_at: string
+          delivery_man_id: string | null
+          description: string
+          id: string
+          status: string | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          created_at?: string
+          delivery_man_id?: string | null
+          description: string
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          assigned_at?: string | null
+          created_at?: string
+          delivery_man_id?: string | null
+          description?: string
+          id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_delivery_man_id_fkey"
+            columns: ["delivery_man_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_men"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      authenticate_delivery_man: {
+        Args: { email_input: string; password_input: string }
+        Returns: {
+          id: string
+          name: string
+          email: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

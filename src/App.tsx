@@ -11,6 +11,7 @@ import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
 import Delivery from "./pages/Delivery";
+import DeliveryLogin from "./pages/DeliveryLogin";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
@@ -48,7 +49,7 @@ const AppContent = () => {
     }
   }, [searchParams]);
 
-  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery'].includes(location.pathname);
+  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery', '/delivery-login'].includes(location.pathname);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -130,6 +131,11 @@ const AppContent = () => {
             duration: 0.2
           }}>
                 <Delivery />
+              </motion.div>} />
+            <Route path="/delivery-login" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <DeliveryLogin />
               </motion.div>} />
             <Route path="/admin" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
             duration: 0.2
