@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,17 +12,15 @@ import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import PlaceScreen from "./components/PlaceScreen";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
 import ShareTargetHandler from "./components/ShareTargetHandler";
-
-// Lazy load the update notification component 
-const UpdateNotification = lazy(() => import('./components/UpdateNotification'));
-const InstallPWA = lazy(() => import('./components/InstallPWA'));
+import UpdateNotification from './components/UpdateNotification';
+import InstallPWA from './components/InstallPWA';
 
 const AppContent = () => {
   const location = useLocation();
@@ -93,60 +92,54 @@ const AppContent = () => {
       {showShareHandler && <ShareTargetHandler />}
 
       {/* PWA Updates and Installation */}
-      <Suspense fallback={null}>
-        <UpdateNotification onUpdate={handleUpdate} />
-        <InstallPWA />
-      </Suspense>
+      <UpdateNotification onUpdate={handleUpdate} />
+      <InstallPWA />
 
       {/* Online/Offline Status Monitor */}
       <OnlineStatusMonitor />
 
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-        </div>}>
-        <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <Index />
-                </motion.div>} />
-              <Route path="/order" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <Order />
-                </motion.div>} />
-              <Route path="/refill" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <Refill />
-                </motion.div>} />
-              <Route path="/accessories" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <Accessories />
-                </motion.div>} />
-              <Route path="/safety" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <GasSafety />
-                </motion.div>} />
-              <Route path="/admin" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <Admin />
-                </motion.div>} />
-              <Route path="/login" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-              duration: 0.2
-            }}>
-                  <Login />
-                </motion.div>} />
-            </Routes>
-          </AnimatePresence>
-        </div>
-        {showBottomNav && <BottomNav isAdmin={isAdmin} />}
-      </Suspense>
+      <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Index />
+              </motion.div>} />
+            <Route path="/order" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Order />
+              </motion.div>} />
+            <Route path="/refill" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Refill />
+              </motion.div>} />
+            <Route path="/accessories" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Accessories />
+              </motion.div>} />
+            <Route path="/safety" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <GasSafety />
+              </motion.div>} />
+            <Route path="/admin" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Admin />
+              </motion.div>} />
+            <Route path="/login" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Login />
+              </motion.div>} />
+          </Routes>
+        </AnimatePresence>
+      </div>
+      {showBottomNav && <BottomNav isAdmin={isAdmin} />}
       
       {/* Toast components */}
       <Toaster />
