@@ -133,12 +133,22 @@ const Order = () => {
       }
 
       await createOrder(message);
-
-      window.open(`https://wa.me/+256787899483?text=${encodeURIComponent(message)}`, '_blank');
       
       toast({
-        title: "Order Initiated",
-        description: "Your order has been saved and sent to WhatsApp. Please complete the conversation there.",
+        title: "Order Submitted",
+        description: "Your order has been received and will be processed by our admin team.",
+      });
+
+      // Reset form
+      setFormData({
+        address: "",
+        type: orderType,
+        size: size,
+        quantity: 1,
+        contact: "",
+        accessory_id: accessoryId || undefined,
+        brand: selectedBrand || (accessoryData ? "" : "Total"),
+        location: undefined
       });
     } catch (error) {
       console.error("Order submission error:", error);
@@ -286,7 +296,7 @@ const Order = () => {
                   disabled={loading}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? "Processing..." : "Order Now"}
+                    {loading ? "Processing..." : "Submit Order"}
                     <Flame className="w-4 h-4 transition-transform group-hover:rotate-12" />
                   </span>
                   <div className={`absolute inset-0 ${
