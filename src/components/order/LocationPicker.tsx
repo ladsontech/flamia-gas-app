@@ -22,7 +22,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
     const initMap = () => {
       if (!mapRef.current) return;
 
-      const mapInstance = new google.maps.Map(mapRef.current, {
+      const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
         zoom: 13,
         mapTypeControl: false,
@@ -61,7 +61,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       if (marker) {
         marker.setPosition({ lat, lng });
       } else if (map) {
-        const newMarker = new google.maps.Marker({
+        const newMarker = new window.google.maps.Marker({
           position: { lat, lng },
           map: map,
           title: 'Delivery Location',
@@ -70,7 +70,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       }
 
       // Get address from coordinates
-      const geocoder = new google.maps.Geocoder();
+      const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ location: { lat, lng } }, (results, status) => {
         if (status === 'OK' && results && results[0]) {
           const address = results[0].formatted_address;
