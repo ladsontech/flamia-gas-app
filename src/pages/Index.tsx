@@ -144,9 +144,7 @@ export default function Index() {
                   Fast, reliable, and affordable gas delivery to your doorstep in Kampala, Wakiso, and Mukono
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-xl shadow-lg font-semibold" onClick={() => navigate("/order")}>
-                    Order Gas Now
-                  </Button>
+                  
                   <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
                     Get Help
                   </Button>
