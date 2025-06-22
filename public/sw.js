@@ -1,5 +1,5 @@
 // Cache names
-const CACHE_NAME = 'flamia-cache-v1';
+const CACHE_NAME = 'flamia-cache-v2';
 const OFFLINE_PAGE = '/offline.html';
 
 // Import workbox
@@ -7,9 +7,9 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox
 
 // Version info for update notifications
 const APP_VERSION = {
-  version: '1.4.0',
+  version: '1.5.0',
   buildDate: new Date().toISOString(),
-  features: ['File handlers support', 'Share target integration', 'Enhanced Widget support', 'Improved offline support']
+  features: ['Enhanced deep linking', 'Improved PWA compliance', 'Better navigation handling']
 };
 
 self.addEventListener('install', event => {
@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
       .then(cache => cache.add(OFFLINE_PAGE))
       .then(() => self.skipWaiting())
   );
-  console.log('Service Worker installed - cache version v1');
+  console.log('Service Worker installed - cache version v2');
 });
 
 self.addEventListener('activate', event => {
@@ -54,17 +54,34 @@ if (workbox.navigationPreload.isSupported()) {
 // Default page caching strategy
 workbox.routing.registerRoute(
   ({ request }) => request.mode === 'navigate',
-  new workbox.strategies.NetworkFirst({
-    cacheName: 'pages-cache',
-    plugins: [
-      new workbox.expiration.ExpirationPlugin({
-        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-      }),
-      new workbox.cacheableResponse.CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-    ],
-  })
+  async ({ event }) => {
+    try {
+      // Try to get from network first
+      const response = await fetch(event.request);
+      
+      // Log navigation for debugging
+      console.log('Navigation request:', event.request.url);
+      
+      return response;
+    } catch (error) {
+      console.log('Network navigation failed, trying cache:', error);
+      
+      // If network fails, try cache
+      const cachedResponse = await caches.match(event.request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      
+      // If both fail, return index.html for SPA routing
+      const indexResponse = await caches.match('/');
+      if (indexResponse) {
+        return indexResponse;
+      }
+      
+      // Final fallback to offline page
+      return caches.match(OFFLINE_PAGE);
+    }
+  }
 );
 
 // Cache CSS, JS, and Web Worker requests with a Stale-While-Revalidate strategy
@@ -107,11 +124,13 @@ workbox.routing.setCatchHandler(({ event }) => {
   return Response.error();
 });
 
-// Handle share target requests
+// Enhanced share target handling with better error handling
 workbox.routing.registerRoute(
   ({ url }) => url.pathname.startsWith('/share-target/'),
   async ({ url, request }) => {
     try {
+      console.log('Share target request received:', url.href);
+      
       const clientUrl = new URL('/', url.origin);
       
       // Get the shared data from the URL
@@ -127,6 +146,8 @@ workbox.routing.registerRoute(
       // Add a special param to indicate this is from share
       clientUrl.searchParams.set('source', 'share-target');
       
+      console.log('Redirecting to:', clientUrl.toString());
+      
       // Open a window to the client with the shared data
       const clients = await self.clients.matchAll({
         type: 'window',
@@ -136,10 +157,11 @@ workbox.routing.registerRoute(
       // If we have an existing client, use it
       for (const client of clients) {
         if (client.url.includes(self.registration.scope)) {
-          return client.navigate(clientUrl.toString()).then(() => new Response('', {
+          await client.navigate(clientUrl.toString());
+          return new Response('', {
             status: 303,
             headers: { Location: clientUrl.toString() }
-          }));
+          });
         }
       }
       
@@ -147,16 +169,22 @@ workbox.routing.registerRoute(
       await self.clients.openWindow(clientUrl.toString());
       
       return new Response('', {
-        status: 200
+        status: 303,
+        headers: { Location: clientUrl.toString() }
       });
     } catch (error) {
       console.error('Share target error:', error);
-      return new Response('Share target processing error', { status: 500 });
+      
+      // Fallback: redirect to home page
+      return new Response('', {
+        status: 303,
+        headers: { Location: '/' }
+      });
     }
   }
 );
 
-// Handle file_handlers
+// Enhanced file handler with better error handling
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
@@ -165,16 +193,20 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       (async () => {
         try {
+          console.log('File handler request received');
+          
           // Get the file from the request
           const formData = await event.request.formData();
           const file = formData.get('file');
           
           if (!file) {
+            console.error('No file provided in file handler');
             return new Response('No file provided', { status: 400 });
           }
           
           // Process the file contents
           const text = await file.text();
+          console.log('File processed:', file.name, file.type, file.size);
           
           // Store file data in IndexedDB for the client to access
           const db = await openDB();
@@ -191,13 +223,16 @@ self.addEventListener('fetch', event => {
           };
           
           await store.add(fileData);
+          console.log('File data stored with ID:', fileData.id);
           
           // Redirect to the order page with a reference to the file
-          const redirectUrl = `/order?fileId=${fileData.id}`;
+          const redirectUrl = `/order?fileId=${fileData.id}&source=file-handler`;
           return Response.redirect(redirectUrl, 303);
         } catch (error) {
           console.error('File handler error:', error);
-          return new Response('File processing error', { status: 500 });
+          
+          // Fallback: redirect to order page without file
+          return Response.redirect('/order?error=file-processing-failed', 303);
         }
       })()
     );
@@ -387,10 +422,13 @@ self.addEventListener('periodicsync', event => {
 
 // Register action saving method for client pages
 self.addEventListener('message', event => {
+  console.log('Service worker received message:', event.data);
+  
   if (event.data && event.data.type === 'SAVE_OFFLINE_ACTION') {
     event.waitUntil(
       storeAction(event.data.action)
         .then(success => {
+          console.log('Action storage result:', success);
           // Notify the client of the result
           event.source.postMessage({
             type: 'ACTION_SAVED',
@@ -402,10 +440,12 @@ self.addEventListener('message', event => {
   }
 
   if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Skipping waiting for new service worker');
     self.skipWaiting();
   }
   
   if (event.data && event.data.type === 'GET_VERSION') {
+    console.log('Version requested, sending:', APP_VERSION);
     event.source.postMessage({
       type: 'VERSION_INFO',
       version: APP_VERSION

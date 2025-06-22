@@ -1,3 +1,4 @@
+
 {
   "name": "Flamia - Gas Delivery Service",
   "short_name": "Flamia Gas",
@@ -6,8 +7,8 @@
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#FFFFFF",
-  "theme_color": "#FF4D00",
-  "orientation": "portrait",
+  "theme_color": "#00b341",
+  "orientation": "portrait-primary",
   "categories": ["shopping", "utilities", "business"],
   "icons": [
     {
@@ -33,24 +34,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "/lovable-uploads/icon.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/lovable-uploads/icon.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/lovable-uploads/icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
     }
   ],
   "screenshots": [
@@ -65,12 +48,12 @@
   "shortcuts": [
     {
       "name": "Order Gas",
-      "url": "/order",
+      "url": "/order?source=shortcut",
       "icons": [{ "src": "/lovable-uploads/icon.png", "sizes": "96x96" }]
     },
     {
       "name": "Gas Refill",
-      "url": "/refill",
+      "url": "/refill?source=shortcut", 
       "icons": [{ "src": "/lovable-uploads/icon.png", "sizes": "96x96" }]
     }
   ],
@@ -78,16 +61,8 @@
   "prefer_related_applications": false,
   "protocol_handlers": [
     {
-      "protocol": "web+gas",
+      "protocol": "web+flamia",
       "url": "/order?type=%s"
-    }
-  ],
-  "scope_extensions": [
-    {
-      "origin": "https://*.flamiagas.com"
-    },
-    {
-      "origin": "https://*.lovableproject.com"
     }
   ],
   "file_handlers": [
@@ -97,14 +72,7 @@
         "text/csv": [".csv"],
         "application/json": [".json"]
       },
-      "name": "Order from file",
-      "icons": [
-        {
-          "src": "/lovable-uploads/icon.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "name": "Order from file"
     }
   ],
   "share_target": {
@@ -117,79 +85,16 @@
       "url": "url"
     }
   },
-  "widgets": [
-    {
-      "name": "Quick Gas Order",
-      "short_name": "Gas Order",
-      "description": "Quickly order gas cylinders and refills with current pricing",
-      "tag": "quick-order",
-      "template": "quick-order-template",
-      "ms_ac_template": "widgets/quick-order.json",
-      "data": {
-        "source": "/widgets/quick-order-data.json",
-        "updatePeriod": 86400
-      },
-      "screenshots": [
-        {
-          "src": "/lovable-uploads/icon.png",
-          "sizes": "320x240",
-          "label": "Quick Order Widget"
-        }
-      ],
-      "icons": [
-        {
-          "src": "/lovable-uploads/icon.png",
-          "sizes": "96x96"
-        }
-      ],
-      "auth": false,
-      "update": 86400,
-      "multiple": false,
-      "availability": {
-        "default": true,
-        "system": true,
-        "lockScreen": true
-      },
-      "permissions": [],
-      "platforms": ["android", "ios", "windows", "macos", "web"],
-      "settings": {
-        "refreshOnOpen": true
-      }
-    }
-  ],
   "capture_links": "existing-client-navigate",
   "scope": "/",
   "id": "flamia-gas-delivery-pwa",
   "lang": "en",
   "dir": "ltr",
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "edge_side_panel": {
     "preferred_width": 400
   },
-  "handle_links": "prefer-native",
+  "handle_links": "auto",
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
-  },
-  "offline_enabled": true,
-  "permissions_policy": {
-    "geolocation": ["self"],
-    "notifications": ["self"]
-  },
-  "permissions": ["notifications", "geolocation"],
-  "install_experience": {
-    "prefer_related_applications": false
-  },
-  "install_provider": "browser",
-  "browser_action": {
-    "default_icon": "/lovable-uploads/icon.png",
-    "default_title": "Install Flamia Gas Delivery"
-  },
-  "app": {
-    "background": {
-      "scripts": ["/sw.js"]
-    }
-  },
-  "apple_mobile_web_app_capable": "yes",
-  "apple_mobile_web_app_status_bar_style": "black-translucent",
-  "apple_mobile_web_app_title": "Flamia Gas"
+  }
 }

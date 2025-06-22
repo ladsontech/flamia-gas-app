@@ -22,6 +22,7 @@ import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
 import ShareTargetHandler from "./components/ShareTargetHandler";
 import UpdateNotification from './components/UpdateNotification';
 import InstallPWA from './components/InstallPWA';
+import TestingHelper from "./components/TestingHelper";
 
 const AppContent = () => {
   const location = useLocation();
@@ -151,6 +152,9 @@ const AppContent = () => {
         </AnimatePresence>
       </div>
       {showBottomNav && <BottomNav isAdmin={isAdmin} />}
+      
+      {/* Testing Helper - only shows in dev or with ?testing param */}
+      <TestingHelper />
       
       {/* Toast components */}
       <Toaster />
