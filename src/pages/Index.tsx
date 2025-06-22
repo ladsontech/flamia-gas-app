@@ -140,9 +140,7 @@ export default function Index() {
                 <h1 className="text-4xl xl:text-5xl font-bold mb-4 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
                   Uganda's #1 Gas Delivery Service
                 </h1>
-                <p className="text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
-                  Fast, reliable, and affordable gas delivery to your doorstep in Kampala, Wakiso, and Mukono
-                </p>
+                <p className="text-xl text-gray-700 mb-6 max-w-2xl mx-auto">Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby ar</p>
                 <div className="flex flex-wrap justify-center gap-4">
                   
                   <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
