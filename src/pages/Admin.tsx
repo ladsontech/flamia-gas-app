@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
+import { OrderNotifications } from "@/components/admin/OrderNotifications";
 import { fetchOrders, fetchDeliveryMen, verifyAdminPassword } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 
@@ -81,6 +82,11 @@ const Admin = () => {
     refetchDeliveryMen();
   };
 
+  const handleNewOrder = () => {
+    // Refresh orders when a new order comes in
+    refetchOrders();
+  };
+
   const renderContent = () => {
     if (!authenticated) {
       return (
@@ -108,7 +114,10 @@ const Admin = () => {
 
     return (
       <div className="space-y-6">
-        <AdminNav onRefresh={handleRefresh} />
+        <div className="flex items-center justify-between">
+          <AdminNav onRefresh={handleRefresh} />
+          <OrderNotifications onNewOrder={handleNewOrder} />
+        </div>
         
         {ordersLoading || deliveryMenLoading ? (
           <Card className="p-6">

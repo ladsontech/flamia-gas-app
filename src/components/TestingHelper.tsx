@@ -3,21 +3,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, Info } from 'lucide-react';
+
 interface TestResult {
   name: string;
   status: 'pass' | 'fail' | 'info';
   message: string;
 }
+
 const TestingHelper = () => {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Show testing helper only in development or when specifically requested
+  // Only show testing helper when explicitly requested with ?testing=true
   useEffect(() => {
-    const isDev = import.meta.env.DEV;
-    const showTesting = new URLSearchParams(window.location.search).has('testing');
-    setIsVisible(isDev || showTesting);
+    const showTesting = new URLSearchParams(window.location.search).get('testing') === 'true';
+    setIsVisible(showTesting);
   }, []);
+
   const runTests = async () => {
     const results: TestResult[] = [];
 
@@ -122,6 +124,7 @@ const TestingHelper = () => {
     }
     setTestResults(results);
   };
+
   const testDeepLinks = () => {
     const testLinks = ['/?source=pwa', '/order?source=shortcut', '/refill?action=refill', '/order?type=gas&source=protocol', '/?source=share-target&title=Test&text=Testing'];
     testLinks.forEach((link, index) => {
@@ -132,15 +135,45 @@ const TestingHelper = () => {
       }, index * 1000);
     });
   };
+
   if (!isVisible) return null;
-  return <Card className="fixed bottom-4 right-4 w-96 max-h-96 overflow-y-auto z-50 bg-white border shadow-lg">
+
+  return (
+    <Card className="fixed bottom-4 right-4 w-96 max-h-96 overflow-y-auto z-50 bg-white border shadow-lg">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm">App Testing Helper</CardTitle>
         <CardDescription className="text-xs">
           For Google Play testing and debugging
         </CardDescription>
       </CardHeader>
-      
-    </Card>;
+      <CardContent className="space-y-3">
+        <div className="flex gap-2">
+          <Button onClick={runTests} size="sm" className="text-xs">
+            Run Tests
+          </Button>
+          <Button onClick={testDeepLinks} size="sm" variant="outline" className="text-xs">
+            Test Deep Links
+          </Button>
+        </div>
+        
+        {testResults.length > 0 && (
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {testResults.map((result, index) => (
+              <div key={index} className="flex items-start gap-2 p-2 bg-muted/50 rounded text-xs">
+                {result.status === 'pass' && <CheckCircle className="h-3 w-3 text-green-600 mt-0.5 flex-shrink-0" />}
+                {result.status === 'fail' && <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />}
+                {result.status === 'info' && <Info className="h-3 w-3 text-blue-600 mt-0.5 flex-shrink-0" />}
+                <div className="min-w-0">
+                  <div className="font-medium">{result.name}</div>
+                  <div className="text-muted-foreground break-words">{result.message}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 };
+
 export default TestingHelper;
