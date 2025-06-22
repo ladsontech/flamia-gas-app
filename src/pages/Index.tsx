@@ -9,17 +9,22 @@ import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
 import { Sparkles, Zap, Shield, Clock } from "lucide-react";
-
 export default function Index() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-
-  const features = [
-    { icon: Zap, title: "Lightning Fast", desc: "Same-day delivery" },
-    { icon: Shield, title: "Guaranteed Quality", desc: "Certified gas suppliers" },
-    { icon: Clock, title: "24/7 Support", desc: "Always here to help" },
-  ];
-
+  const features = [{
+    icon: Zap,
+    title: "Lightning Fast",
+    desc: "Same-day delivery"
+  }, {
+    icon: Shield,
+    title: "Guaranteed Quality",
+    desc: "Certified gas suppliers"
+  }, {
+    icon: Clock,
+    title: "24/7 Support",
+    desc: "Always here to help"
+  }];
   return <>
       <Helmet>
         <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
@@ -96,8 +101,7 @@ export default function Index() {
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
               <div className="space-y-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                {features.map((feature, index) => <div key={index} className="flex items-start gap-3">
                     <div className="bg-accent/10 p-2 rounded-xl">
                       <feature.icon size={20} className="text-accent" />
                     </div>
@@ -105,8 +109,7 @@ export default function Index() {
                       <h4 className="font-semibold text-sm text-gray-900">{feature.title}</h4>
                       <p className="text-xs text-gray-600">{feature.desc}</p>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
 
@@ -120,10 +123,7 @@ export default function Index() {
                 <p className="text-sm text-gray-600 mb-4">
                   Get personalized gas cylinder recommendations from our experts
                 </p>
-                <Button 
-                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg"
-                  onClick={() => window.open("https://wa.me/256789572007", "_blank")}
-                >
+                <Button className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
                   Chat with Gas Expert
                 </Button>
               </div>
@@ -144,19 +144,10 @@ export default function Index() {
                   Fast, reliable, and affordable gas delivery to your doorstep in Kampala, Wakiso, and Mukono
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <Button 
-                    size="lg" 
-                    className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-xl shadow-lg font-semibold"
-                    onClick={() => navigate("/order")}
-                  >
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-xl shadow-lg font-semibold" onClick={() => navigate("/order")}>
                     Order Gas Now
                   </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold"
-                    onClick={() => window.open("https://wa.me/256789572007", "_blank")}
-                  >
+                  <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
                     Get Help
                   </Button>
                 </div>
@@ -186,13 +177,9 @@ export default function Index() {
               </div>
 
               <div className="max-w-7xl mx-auto">
-                {isLoading ? (
-                  <div className="flex justify-center py-12">
+                {isLoading ? <div className="flex justify-center py-12">
                     <div className="animate-spin h-8 w-8 border-4 border-accent rounded-full border-t-transparent"></div>
-                  </div>
-                ) : (
-                  <BrandsGrid brands={[]} />
-                )}
+                  </div> : <BrandsGrid brands={[]} />}
               </div>
             </section>
 
@@ -205,10 +192,7 @@ export default function Index() {
                 <p className="mb-3 text-sm">
                   Contact our gas experts for personalized recommendations based on your household needs.
                 </p>
-                <Button 
-                  className="bg-accent hover:bg-accent/90 text-white py-2 px-6 rounded-lg font-semibold"
-                  onClick={() => window.open("https://wa.me/256789572007", "_blank")}
-                >
+                <Button className="bg-accent hover:bg-accent/90 text-white py-2 px-6 rounded-lg font-semibold" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
                   Chat with Gas Expert
                 </Button>
               </div>
@@ -217,78 +201,7 @@ export default function Index() {
         </div>
 
         {/* Right Sidebar - Desktop Only */}
-        <div className="hidden lg:block lg:w-80 xl:w-96 border-l border-gray-100 bg-gradient-to-b from-gray-50/50 to-white py-6 px-4">
-          <div className="sticky top-20 space-y-6">
-            {/* Quick Order */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-primary to-accent p-4">
-                <h3 className="font-bold text-lg text-white">Quick Order</h3>
-                <p className="text-white/90 text-sm">Skip the browse, order instantly</p>
-              </div>
-              <div className="p-6">
-                <p className="text-sm text-gray-600 mb-4">
-                  Get your favorite gas cylinder delivered in just one click
-                </p>
-                <Button 
-                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg"
-                  onClick={() => navigate("/order")}
-                >
-                  Order Now
-                </Button>
-              </div>
-            </div>
-
-            {/* Promotions */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <h3 className="font-bold text-lg mb-4 text-gray-900">Special Offers</h3>
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                      FREE
-                    </div>
-                    <span className="font-semibold text-sm">Delivery</span>
-                  </div>
-                  <p className="text-xs text-gray-600">
-                    Free same-day delivery on all orders within Kampala
-                  </p>
-                </div>
-                
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 border border-orange-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                      HOT
-                    </div>
-                    <span className="font-semibold text-sm">Best Prices</span>
-                  </div>
-                  <p className="text-xs text-gray-600">
-                    Guaranteed lowest prices in Uganda
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <h3 className="font-bold text-lg mb-4 text-gray-900">Trusted by 1000+</h3>
-              <div className="text-center">
-                <div className="flex justify-center mb-3">
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 bg-accent rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-primary rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-green-500 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold">
-                      +
-                    </div>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Join thousands of satisfied customers across Uganda
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </>;
 }
