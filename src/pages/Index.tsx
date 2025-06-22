@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,23 +10,31 @@ import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
 import { Sparkles, Zap, Shield, Clock } from "lucide-react";
+
 export default function Index() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const features = [{
-    icon: Zap,
-    title: "Lightning Fast",
-    desc: "Same-day delivery"
-  }, {
-    icon: Shield,
-    title: "Guaranteed Quality",
-    desc: "Certified gas suppliers"
-  }, {
-    icon: Clock,
-    title: "24/7 Support",
-    desc: "Always here to help"
-  }];
-  return <>
+
+  const features = [
+    {
+      icon: Zap,
+      title: "Lightning Fast",
+      desc: "Same-day delivery"
+    },
+    {
+      icon: Shield,
+      title: "Guaranteed Quality",
+      desc: "Certified gas suppliers"
+    },
+    {
+      icon: Clock,
+      title: "24/7 Support",
+      desc: "Always here to help"
+    }
+  ];
+
+  return (
+    <>
       <Helmet>
         <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
         <meta name="description" content="Best gas delivery service in Uganda with free same-day delivery. Order Total, Shell, Oryx, Stabex & Hass gas cylinders at cheapest prices in Kampala, Wakiso & Mukono." />
@@ -81,11 +90,11 @@ export default function Index() {
 
       <div className="min-h-screen flex flex-col lg:flex-row mt-16">
         {/* Left Sidebar - Desktop Only */}
-        <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gradient-to-b from-gray-50/50 to-white py-6 px-4">
+        <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gray-50 py-6 px-4">
           <div className="sticky top-20 space-y-6">
             {/* Featured Carousel */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-accent to-primary p-4">
+              <div className="bg-accent p-4">
                 <div className="flex items-center gap-2 text-white">
                   <Sparkles size={20} />
                   <h3 className="font-bold text-lg">Featured Deals</h3>
@@ -101,7 +110,8 @@ export default function Index() {
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
               <div className="space-y-4">
-                {features.map((feature, index) => <div key={index} className="flex items-start gap-3">
+                {features.map((feature, index) => (
+                  <div key={index} className="flex items-start gap-3">
                     <div className="bg-accent/10 p-2 rounded-xl">
                       <feature.icon size={20} className="text-accent" />
                     </div>
@@ -109,12 +119,13 @@ export default function Index() {
                       <h4 className="font-semibold text-sm text-gray-900">{feature.title}</h4>
                       <p className="text-xs text-gray-600">{feature.desc}</p>
                     </div>
-                  </div>)}
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Contact Expert */}
-            <div className="bg-gradient-to-br from-accent/10 via-primary/5 to-accent/10 rounded-2xl p-6 border border-accent/20">
+            <div className="bg-accent/10 rounded-2xl p-6 border border-accent/20">
               <div className="text-center">
                 <div className="bg-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 shadow-sm">
                   <Sparkles className="text-accent" size={24} />
@@ -123,7 +134,10 @@ export default function Index() {
                 <p className="text-sm text-gray-600 mb-4">
                   Get personalized gas cylinder recommendations from our experts
                 </p>
-                <Button className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
+                <Button 
+                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg"
+                  onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                >
                   Chat with Gas Expert
                 </Button>
               </div>
@@ -135,15 +149,21 @@ export default function Index() {
         <div className="flex-1 w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-6">
           <div className="flex flex-col gap-4 md:gap-6 my-0 py-4 rounded">
             {/* Hero Section - Enhanced for Desktop */}
-            <div className="hidden lg:block bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 rounded-3xl p-8 mb-6 border border-accent/20">
+            <div className="hidden lg:block bg-accent/10 rounded-3xl p-8 mb-6 border border-accent/20">
               <div className="text-center max-w-4xl mx-auto">
-                <h1 className="text-4xl xl:text-5xl font-bold mb-4 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                <h1 className="text-4xl xl:text-5xl font-bold mb-4 text-accent">
                   Uganda's #1 Gas Delivery Service
                 </h1>
-                <p className="text-xl text-gray-700 mb-6 max-w-2xl mx-auto">Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby ar</p>
+                <p className="text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
+                  Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
+                </p>
                 <div className="flex flex-wrap justify-center gap-4">
-                  
-                  <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold"
+                    onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                  >
                     Get Help
                   </Button>
                 </div>
@@ -173,22 +193,29 @@ export default function Index() {
               </div>
 
               <div className="max-w-7xl mx-auto">
-                {isLoading ? <div className="flex justify-center py-12">
+                {isLoading ? (
+                  <div className="flex justify-center py-12">
                     <div className="animate-spin h-8 w-8 border-4 border-accent rounded-full border-t-transparent"></div>
-                  </div> : <BrandsGrid brands={[]} />}
+                  </div>
+                ) : (
+                  <BrandsGrid brands={[]} />
+                )}
               </div>
             </section>
 
             {/* Mobile Help Section */}
             <div className="py-4 md:hidden">
-              <div className="bg-gradient-to-r from-primary/20 to-primary/40 rounded-xl p-4 text-center">
+              <div className="bg-primary/20 rounded-xl p-4 text-center">
                 <h3 className="text-lg font-bold mb-2">
                   Can't decide which cylinder to buy?
                 </h3>
                 <p className="mb-3 text-sm">
                   Contact our gas experts for personalized recommendations based on your household needs.
                 </p>
-                <Button className="bg-accent hover:bg-accent/90 text-white py-2 px-6 rounded-lg font-semibold" onClick={() => window.open("https://wa.me/256789572007", "_blank")}>
+                <Button 
+                  className="bg-accent hover:bg-accent/90 text-white py-2 px-6 rounded-lg font-semibold"
+                  onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                >
                   Chat with Gas Expert
                 </Button>
               </div>
@@ -199,5 +226,6 @@ export default function Index() {
         {/* Right Sidebar - Desktop Only */}
         
       </div>
-    </>;
+    </>
+  );
 }
