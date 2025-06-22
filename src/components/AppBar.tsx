@@ -1,15 +1,40 @@
-import { Flame, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+
+import { Flame, ChevronRight, User, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import UpdateNotification from "./UpdateNotification";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "./ui/navigation-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+
 const AppBar = () => {
-  // State for showing update notification
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [showUpdateNotice, setShowUpdateNotice] = useState(false);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Get current user
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getCurrentUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   useEffect(() => {
     // Check if we should show monthly update notification
     const checkMonthlyUpdate = () => {
@@ -30,6 +55,24 @@ const AppBar = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem('userRole');
+      navigate('/');
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
   // Handle dismissing the update notice
   const dismissUpdate = () => {
     setShowUpdateNotice(false);
@@ -39,6 +82,14 @@ const AppBar = () => {
   const handleAppUpdate = () => {
     window.location.reload();
   };
+
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.name) return user.user_metadata.name;
+    if (user?.phone) return user.phone;
+    if (user?.email) return user.email;
+    return 'Account';
+  };
+
   return <>
       <div className="fixed top-0 left-0 right-0 z-50 w-full px-3 py-2 bg-white/95 backdrop-blur-sm shadow-sm border-b flex flex-col">
         <div className="flex items-center justify-between">
@@ -49,57 +100,89 @@ const AppBar = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation - Only visible on md and up screens */}
-          <div className="hidden md:block">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <Link to="/">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Home
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link to="/refill">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Refill
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link to="/accessories">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Accessories
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link to="/safety">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Safety
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  
-                  <NavigationMenuContent>
-                    <div className="p-4 w-[200px]">
-                      <div className="flex flex-col gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => window.open('https://wa.me/256789572007', '_blank')} className="flex items-center justify-start text-sm">
-                          <span>Chat with Expert</span>
-                          <ChevronRight className="ml-auto h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="flex items-center justify-start text-sm">
-                          <span>FAQs</span>
-                          <ChevronRight className="ml-auto h-4 w-4" />
-                        </Button>
+          <div className="flex items-center gap-4">
+            {/* Desktop Navigation - Only visible on md and up screens */}
+            <div className="hidden md:block">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <Link to="/">
+                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        Home
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link to="/refill">
+                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        Refill
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link to="/accessories">
+                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        Accessories
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link to="/safety">
+                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        Safety
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Support</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="p-4 w-[200px]">
+                        <div className="flex flex-col gap-2">
+                          <Button variant="ghost" size="sm" onClick={() => window.open('https://wa.me/256789572007', '_blank')} className="flex items-center justify-start text-sm">
+                            <span>Chat with Expert</span>
+                            <ChevronRight className="ml-auto h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center justify-start text-sm">
+                            <span>FAQs</span>
+                            <ChevronRight className="ml-auto h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
+
+            {/* Account Section */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">{getUserDisplayName()}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate('/orders')}>
+                    My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    Profile Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/login')} className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign In</span>
+              </Button>
+            )}
           </div>
         </div>
         
