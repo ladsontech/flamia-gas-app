@@ -1,16 +1,13 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, Info } from 'lucide-react';
-
 interface TestResult {
   name: string;
   status: 'pass' | 'fail' | 'info';
   message: string;
 }
-
 const TestingHelper = () => {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isVisible, setIsVisible] = useState(false);
@@ -21,7 +18,6 @@ const TestingHelper = () => {
     const showTesting = new URLSearchParams(window.location.search).has('testing');
     setIsVisible(isDev || showTesting);
   }, []);
-
   const runTests = async () => {
     const results: TestResult[] = [];
 
@@ -68,16 +64,11 @@ const TestingHelper = () => {
 
     // Test 3: Deep Links
     const currentUrl = new URL(window.location.href);
-    const hasDeepLinkParams = currentUrl.searchParams.has('source') || 
-                             currentUrl.searchParams.has('action') || 
-                             currentUrl.searchParams.has('type');
-    
+    const hasDeepLinkParams = currentUrl.searchParams.has('source') || currentUrl.searchParams.has('action') || currentUrl.searchParams.has('type');
     results.push({
       name: 'Deep Link Handling',
       status: 'info',
-      message: hasDeepLinkParams ? 
-        `Deep link detected: ${Array.from(currentUrl.searchParams.entries()).map(([k,v]) => `${k}=${v}`).join(', ')}` :
-        'No deep link parameters in current URL'
+      message: hasDeepLinkParams ? `Deep link detected: ${Array.from(currentUrl.searchParams.entries()).map(([k, v]) => `${k}=${v}`).join(', ')}` : 'No deep link parameters in current URL'
     });
 
     // Test 4: Offline Support
@@ -107,11 +98,10 @@ const TestingHelper = () => {
     // Test 6: Display Mode
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const isIOS = (window.navigator as any).standalone === true;
-    
     results.push({
       name: 'PWA Install Status',
-      status: (isStandalone || isIOS) ? 'pass' : 'info',
-      message: (isStandalone || isIOS) ? 'Running as installed PWA' : 'Running in browser'
+      status: isStandalone || isIOS ? 'pass' : 'info',
+      message: isStandalone || isIOS ? 'Running as installed PWA' : 'Running in browser'
     });
 
     // Test 7: Storage
@@ -130,19 +120,10 @@ const TestingHelper = () => {
         message: 'Local storage not available'
       });
     }
-
     setTestResults(results);
   };
-
   const testDeepLinks = () => {
-    const testLinks = [
-      '/?source=pwa',
-      '/order?source=shortcut',
-      '/refill?action=refill',
-      '/order?type=gas&source=protocol',
-      '/?source=share-target&title=Test&text=Testing'
-    ];
-
+    const testLinks = ['/?source=pwa', '/order?source=shortcut', '/refill?action=refill', '/order?type=gas&source=protocol', '/?source=share-target&title=Test&text=Testing'];
     testLinks.forEach((link, index) => {
       setTimeout(() => {
         console.log(`Testing deep link: ${link}`);
@@ -151,51 +132,15 @@ const TestingHelper = () => {
       }, index * 1000);
     });
   };
-
   if (!isVisible) return null;
-
-  return (
-    <Card className="fixed bottom-4 right-4 w-96 max-h-96 overflow-y-auto z-50 bg-white border shadow-lg">
+  return <Card className="fixed bottom-4 right-4 w-96 max-h-96 overflow-y-auto z-50 bg-white border shadow-lg">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm">App Testing Helper</CardTitle>
         <CardDescription className="text-xs">
           For Google Play testing and debugging
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex gap-2">
-          <Button size="sm" onClick={runTests} className="text-xs">
-            Run Tests
-          </Button>
-          <Button size="sm" variant="outline" onClick={testDeepLinks} className="text-xs">
-            Test Deep Links
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => setIsVisible(false)} className="text-xs">
-            Hide
-          </Button>
-        </div>
-        
-        {testResults.length > 0 && (
-          <div className="space-y-2">
-            {testResults.map((result, index) => (
-              <div key={index} className="flex items-start gap-2 text-xs">
-                {result.status === 'pass' && <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />}
-                {result.status === 'fail' && <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />}
-                {result.status === 'info' && <Info className="w-4 h-4 text-blue-500 mt-0.5" />}
-                <div className="flex-1">
-                  <div className="font-medium">{result.name}</div>
-                  <div className="text-gray-600">{result.message}</div>
-                </div>
-                <Badge variant={result.status === 'pass' ? 'default' : result.status === 'fail' ? 'destructive' : 'secondary'} className="text-xs">
-                  {result.status}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+      
+    </Card>;
 };
-
 export default TestingHelper;
