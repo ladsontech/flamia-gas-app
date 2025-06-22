@@ -1,3 +1,5 @@
+
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +15,7 @@ import GasSafety from "./pages/GasSafety";
 import Delivery from "./pages/Delivery";
 import DeliveryLogin from "./pages/DeliveryLogin";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomNav } from "./components/BottomNav";
 import PlaceScreen from "./components/PlaceScreen";
 import Admin from "./pages/Admin";
@@ -23,6 +25,7 @@ import ShareTargetHandler from "./components/ShareTargetHandler";
 import UpdateNotification from './components/UpdateNotification';
 import InstallPWA from './components/InstallPWA';
 import TestingHelper from "./components/TestingHelper";
+import DeepLinkHandler from "./components/DeepLinkHandler";
 
 const AppContent = () => {
   const location = useLocation();
@@ -87,6 +90,9 @@ const AppContent = () => {
         <link rel="canonical" href={window.location.href} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
+
+      {/* Deep Link Handler */}
+      <DeepLinkHandler />
 
       {showPlaceScreen && <PlaceScreen />}
 
@@ -164,7 +170,7 @@ const AppContent = () => {
 };
 
 const App = () => {
-  const [queryClient] = React.useState(() => new QueryClient({
+  const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 5, // 5 minutes

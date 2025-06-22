@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
@@ -216,5 +217,5 @@ declare global {
 
 const root = createRoot(container);
 
-// Render the app directly without StrictMode to avoid potential issues with hooks
+// Render the app with proper React context
 root.render(<App />);
