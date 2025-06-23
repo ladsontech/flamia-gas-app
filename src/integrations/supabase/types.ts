@@ -71,6 +71,27 @@ export type Database = {
           },
         ]
       }
+      phone_verifications: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          phone_number: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          phone_number: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          phone_number?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
