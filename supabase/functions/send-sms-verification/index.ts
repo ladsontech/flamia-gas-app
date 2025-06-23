@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,9 +12,6 @@ interface SMSRequest {
   action: 'send' | 'verify';
   code?: string;
 }
-
-// In-memory storage for verification codes (in production, use a database)
-const verificationCodes = new Map<string, { code: string; expiresAt: number }>();
 
 const generateVerificationCode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -75,6 +73,11 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Initialize Supabase client
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   try {
     const requestBody = await req.text();
     console.log('Request body:', requestBody);
@@ -113,11 +116,26 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (action === 'send') {
-      // Generate and send verification code
+      // Generate and store verification code in database
       const verificationCode = generateVerificationCode();
-      const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
       
-      verificationCodes.set(phoneNumber, { code: verificationCode, expiresAt });
+      console.log(`Storing verification code for ${phoneNumber}: ${verificationCode}`);
+      
+      // Store or update verification code in database
+      const { error: dbError } = await supabase
+        .from('phone_verifications')
+        .upsert({ 
+          phone_number: phoneNumber, 
+          code: verificationCode, 
+          expires_at: expiresAt.toISOString(),
+          created_at: new Date().toISOString()
+        });
+
+      if (dbError) {
+        console.error('Database error storing verification code:', dbError);
+        throw new Error(`Database error: ${dbError.message}`);
+      }
       
       const message = `Your Flamia verification code is: ${verificationCode}. This code expires in 10 minutes.`;
       
@@ -138,11 +156,15 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     } else if (action === 'verify') {
-      // Verify the code
-      const stored = verificationCodes.get(phoneNumber);
+      // Verify the code from database
+      const { data: stored, error: fetchError } = await supabase
+        .from('phone_verifications')
+        .select('*')
+        .eq('phone_number', phoneNumber)
+        .single();
       
-      if (!stored) {
-        console.log(`No verification code found for ${phoneNumber}`);
+      if (fetchError || !stored) {
+        console.log(`No verification code found for ${phoneNumber}`, fetchError);
         return new Response(
           JSON.stringify({ success: false, error: 'No verification code found for this number' }),
           {
@@ -155,9 +177,15 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
       
-      if (Date.now() > stored.expiresAt) {
+      const expiresAt = new Date(stored.expires_at);
+      if (Date.now() > expiresAt.getTime()) {
         console.log(`Verification code expired for ${phoneNumber}`);
-        verificationCodes.delete(phoneNumber);
+        // Clean up expired code
+        await supabase
+          .from('phone_verifications')
+          .delete()
+          .eq('phone_number', phoneNumber);
+        
         return new Response(
           JSON.stringify({ success: false, error: 'Verification code has expired' }),
           {
@@ -184,8 +212,11 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
       
-      // Code is valid, remove it from storage
-      verificationCodes.delete(phoneNumber);
+      // Code is valid, remove it from database
+      await supabase
+        .from('phone_verifications')
+        .delete()
+        .eq('phone_number', phoneNumber);
       
       console.log(`Phone number ${phoneNumber} verified successfully`);
       
