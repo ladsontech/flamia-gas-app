@@ -7,19 +7,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Phone, Mail } from "lucide-react";
+import { PhoneVerification } from "@/components/PhoneVerification";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [name, setName] = useState('');
-  const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -40,60 +35,39 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const handlePhoneAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const handlePhoneVerificationComplete = async (phoneNumber: string) => {
     try {
-      if (!isOtpSent) {
-        // Send OTP
-        const { error } = await supabase.auth.signInWithOtp({
-          phone: phoneNumber,
-          options: {
-            data: {
-              name: name
-            }
+      // Create a temporary email based on phone number for Supabase auth
+      const tempEmail = `${phoneNumber.replace(/[^0-9]/g, '')}@temp.flamia.com`;
+      const tempPassword = Math.random().toString(36).substring(2, 15);
+      
+      // Sign up the user with temporary email and password
+      const { error } = await supabase.auth.signUp({
+        email: tempEmail,
+        password: tempPassword,
+        options: {
+          data: {
+            phone: phoneNumber,
+            phone_verified: true
           }
-        });
+        }
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        setIsOtpSent(true);
-        toast({
-          title: "OTP Sent",
-          description: "Please check your phone for the verification code",
-        });
-      } else {
-        // Verify OTP
-        const { error } = await supabase.auth.verifyOtp({
-          phone: phoneNumber,
-          token: otp,
-          type: 'sms'
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Success",
-          description: "Phone number verified successfully",
-        });
-      }
+      toast({
+        title: "Success",
+        description: "Account created successfully with verified phone number",
+      });
+      
+      setShowPhoneVerification(false);
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const resetPhoneAuth = () => {
-    setIsOtpSent(false);
-    setOtp('');
-    setPhoneNumber('');
-    setName('');
   };
 
   return (
@@ -102,10 +76,16 @@ const Login = () => {
         <Button 
           variant="ghost" 
           className="mb-4" 
-          onClick={() => navigate('/')}
+          onClick={() => {
+            if (showPhoneVerification) {
+              setShowPhoneVerification(false);
+            } else {
+              navigate('/');
+            }
+          }}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
+          {showPhoneVerification ? 'Back to Login' : 'Back to Home'}
         </Button>
         
         <div className="text-center mb-6">
@@ -114,113 +94,69 @@ const Login = () => {
         </div>
 
         <Card className="p-6">
-          <Tabs defaultValue="phone" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="phone" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                Phone
-              </TabsTrigger>
-              <TabsTrigger value="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="phone" className="mt-6">
-              <form onSubmit={handlePhoneAuth} className="space-y-4">
-                {!isOtpSent ? (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="Enter your full name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+256789123456"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Include country code (e.g., +256 for Uganda)
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-2">
-                    <Label htmlFor="otp">Verification Code</Label>
-                    <Input
-                      id="otp"
-                      type="text"
-                      placeholder="Enter 6-digit code"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      maxLength={6}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Code sent to {phoneNumber}
-                    </p>
-                  </div>
-                )}
-                
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Processing..." : isOtpSent ? "Verify Code" : "Send Code"}
-                </Button>
-                
-                {isOtpSent && (
+          {showPhoneVerification ? (
+            <PhoneVerification
+              onVerificationComplete={handlePhoneVerificationComplete}
+              onCancel={() => setShowPhoneVerification(false)}
+            />
+          ) : (
+            <Tabs defaultValue="phone" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="phone" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  Phone
+                </TabsTrigger>
+                <TabsTrigger value="email" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="phone" className="mt-6">
+                <div className="text-center space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Sign up or sign in with your phone number
+                  </p>
                   <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={resetPhoneAuth}
+                    onClick={() => setShowPhoneVerification(true)}
+                    className="w-full"
                   >
-                    Use Different Number
+                    Continue with Phone Number
                   </Button>
-                )}
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="email" className="mt-6">
-              <Auth
-                supabaseClient={supabase}
-                appearance={{
-                  theme: ThemeSupa,
-                  style: {
-                    button: { background: 'hsl(142, 70%, 45%)', color: 'white' },
-                    anchor: { color: 'hsl(142, 70%, 45%)' },
-                  },
-                  variables: {
-                    default: {
-                      colors: {
-                        brand: 'hsl(142, 70%, 45%)',
-                        brandAccent: 'hsl(142, 70%, 40%)',
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="email" className="mt-6">
+                <Auth
+                  supabaseClient={supabase}
+                  appearance={{
+                    theme: ThemeSupa,
+                    style: {
+                      button: { background: 'hsl(142, 70%, 45%)', color: 'white' },
+                      anchor: { color: 'hsl(142, 70%, 45%)' },
+                    },
+                    variables: {
+                      default: {
+                        colors: {
+                          brand: 'hsl(142, 70%, 45%)',
+                          brandAccent: 'hsl(142, 70%, 40%)',
+                        },
                       },
                     },
-                  },
-                }}
-                providers={[]}
-                localization={{
-                  variables: {
-                    sign_up: {
-                      password_label: 'Password (minimum 6 characters)',
-                      password_input_placeholder: 'Enter a strong password (min. 6 characters)',
+                  }}
+                  providers={[]}
+                  localization={{
+                    variables: {
+                      sign_up: {
+                        password_label: 'Password (minimum 6 characters)',
+                        password_input_placeholder: 'Enter a strong password (min. 6 characters)',
+                      },
                     },
-                  },
-                }}
-              />
-            </TabsContent>
-          </Tabs>
+                  }}
+                />
+              </TabsContent>
+            </Tabs>
+          )}
         </Card>
       </div>
     </div>
