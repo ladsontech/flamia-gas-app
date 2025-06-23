@@ -91,7 +91,7 @@ const AppContent = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
 
-      {/* Deep Link Handler */}
+      {/* Deep Link Handler - now inside Router context */}
       <DeepLinkHandler />
 
       {showPlaceScreen && <PlaceScreen />}
@@ -99,7 +99,7 @@ const AppContent = () => {
       {/* Share Target Handler */}
       {showShareHandler && <ShareTargetHandler />}
 
-      {/* PWA Updates and Installation */}
+      {/* PWA Updates and Installation - now inside React context */}
       <UpdateNotification onUpdate={handleUpdate} />
       <InstallPWA />
 
