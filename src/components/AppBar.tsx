@@ -9,7 +9,6 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { LionFlameLogo } from "./ui/LionFlameLogo";
 
 const AppBar = () => {
   const navigate = useNavigate();
@@ -94,7 +93,11 @@ const AppBar = () => {
       <div className="fixed top-0 left-0 right-0 z-50 w-full px-3 py-2 bg-white/95 backdrop-blur-sm shadow-sm border-b flex flex-col">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-1.5">
-            <LionFlameLogo size={28} className="animate-pulse" />
+            <img 
+              src="/icon.png" 
+              alt="Flamia Logo" 
+              className="w-7 h-7 animate-pulse" 
+            />
             <span className="font-bold text-2xl sm:text-4xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent font-serif tracking-wide">
               Flamia
             </span>

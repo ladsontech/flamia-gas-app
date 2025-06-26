@@ -1,5 +1,5 @@
+
 import { motion } from "framer-motion";
-import { LionFlameLogo } from "./ui/LionFlameLogo";
 
 const PlaceScreen = () => {
   return (
@@ -15,7 +15,11 @@ const PlaceScreen = () => {
           animate={{ opacity: [0, 1, 0.8, 1] }}
           transition={{ times: [0, 0.4, 0.7, 1], duration: 3, repeat: Infinity, repeatDelay: 1 }}
         >
-          <LionFlameLogo size={128} />
+          <img 
+            src="/icon.png" 
+            alt="Flamia Logo" 
+            className="w-32 h-32" 
+          />
         </motion.div>
         
         <motion.h1 
