@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
@@ -21,6 +20,20 @@ const isAppInstalled = () => {
   const standaloneMode = window.matchMedia('(display-mode: standalone)').matches;
   
   return standaloneSafari || standaloneMode;
+};
+
+// Check if we're in a development environment that doesn't support Service Workers
+const isServiceWorkerSupported = () => {
+  // Check if Service Workers are supported by the browser
+  if (!('serviceWorker' in navigator)) {
+    return false;
+  }
+  
+  // Check if we're in StackBlitz or similar environment
+  const hostname = window.location.hostname;
+  const isStackBlitz = hostname.includes('stackblitz') || hostname.includes('webcontainer');
+  
+  return !isStackBlitz;
 };
 
 // IndexedDB helper for offline storage
@@ -51,7 +64,7 @@ const openDatabase = () => {
 // Helper to save offline action
 const saveOfflineAction = async (action: any): Promise<boolean> => {
   // First try to use the service worker if available
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  if (isServiceWorkerSupported() && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
     return new Promise((resolve) => {
       // Create a message channel to receive the response
       const messageChannel = new MessageChannel();
@@ -94,8 +107,8 @@ const saveOfflineAction = async (action: any): Promise<boolean> => {
   }
 };
 
-// Register Service Worker
-if ('serviceWorker' in navigator) {
+// Register Service Worker only if supported
+if (isServiceWorkerSupported()) {
   window.addEventListener('load', async () => {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
@@ -157,7 +170,7 @@ if ('serviceWorker' in navigator) {
       
       console.log('SW registered:', registration);
     } catch (error) {
-      console.error('SW registration failed:', error);
+      console.log('Service Worker registration skipped - not supported in this environment');
     }
   });
 
@@ -187,6 +200,32 @@ if ('serviceWorker' in navigator) {
   });
 
   // Make the saveOfflineAction function available globally
+  window.saveOfflineAction = saveOfflineAction;
+} else {
+  console.log('Service Worker not supported in this environment - PWA features will be limited');
+  
+  // Still initialize IndexedDB for offline storage even without service worker
+  window.addEventListener('load', async () => {
+    try {
+      await openDatabase();
+      console.log('Offline database initialized (without service worker)');
+    } catch (error) {
+      console.error('Failed to initialize offline database:', error);
+    }
+  });
+
+  // Handle offline/online status even without service worker
+  window.addEventListener('online', () => {
+    console.log('Application is online');
+    document.dispatchEvent(new CustomEvent('app-status', { detail: { isOnline: true } }));
+  });
+
+  window.addEventListener('offline', () => {
+    console.log('Application is offline');
+    document.dispatchEvent(new CustomEvent('app-status', { detail: { isOnline: false } }));
+  });
+
+  // Provide a fallback saveOfflineAction function
   window.saveOfflineAction = saveOfflineAction;
 }
 
