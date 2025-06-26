@@ -4,17 +4,14 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Phone, Mail } from "lucide-react";
-import { PhoneVerification } from "@/components/PhoneVerification";
+import { ArrowLeft, Mail, Lock, UserPlus } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -28,47 +25,19 @@ const Login = () => {
           }
         }
       }
+      
+      if (event === 'PASSWORD_RECOVERY') {
+        toast({
+          title: "Password Reset",
+          description: "Check your email for password reset instructions",
+        });
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
-
-  const handlePhoneVerificationComplete = async (phoneNumber: string) => {
-    try {
-      // Create a temporary email based on phone number for Supabase auth
-      const tempEmail = `${phoneNumber.replace(/[^0-9]/g, '')}@temp.flamia.com`;
-      const tempPassword = Math.random().toString(36).substring(2, 15);
-      
-      // Sign up the user with temporary email and password
-      const { error } = await supabase.auth.signUp({
-        email: tempEmail,
-        password: tempPassword,
-        options: {
-          data: {
-            phone: phoneNumber,
-            phone_verified: true
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Account created successfully with verified phone number",
-      });
-      
-      setShowPhoneVerification(false);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  };
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-primary/20 to-background p-4">
@@ -76,88 +45,109 @@ const Login = () => {
         <Button 
           variant="ghost" 
           className="mb-4" 
-          onClick={() => {
-            if (showPhoneVerification) {
-              setShowPhoneVerification(false);
-            } else {
-              navigate('/');
-            }
-          }}
+          onClick={() => navigate('/')}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          {showPhoneVerification ? 'Back to Login' : 'Back to Home'}
+          Back to Home
         </Button>
         
         <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/images/icon.png" 
+              alt="Flamia Logo" 
+              className="w-16 h-16" 
+            />
+          </div>
           <h2 className="text-2xl font-bold">Welcome to Flamia</h2>
-          <p className="text-muted-foreground mt-2">Sign in or create your account</p>
+          <p className="text-muted-foreground mt-2">Sign in to your account or create a new one</p>
         </div>
 
         <Card className="p-6">
-          {showPhoneVerification ? (
-            <PhoneVerification
-              onVerificationComplete={handlePhoneVerificationComplete}
-              onCancel={() => setShowPhoneVerification(false)}
-            />
-          ) : (
-            <Tabs defaultValue="phone" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="phone" className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  Phone
-                </TabsTrigger>
-                <TabsTrigger value="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="phone" className="mt-6">
-                <div className="text-center space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Sign up or sign in with your phone number
-                  </p>
-                  <Button 
-                    onClick={() => setShowPhoneVerification(true)}
-                    className="w-full"
-                  >
-                    Continue with Phone Number
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="email" className="mt-6">
-                <Auth
-                  supabaseClient={supabase}
-                  appearance={{
-                    theme: ThemeSupa,
-                    style: {
-                      button: { background: 'hsl(142, 70%, 45%)', color: 'white' },
-                      anchor: { color: 'hsl(142, 70%, 45%)' },
-                    },
-                    variables: {
-                      default: {
-                        colors: {
-                          brand: 'hsl(142, 70%, 45%)',
-                          brandAccent: 'hsl(142, 70%, 40%)',
-                        },
-                      },
-                    },
-                  }}
-                  providers={[]}
-                  localization={{
-                    variables: {
-                      sign_up: {
-                        password_label: 'Password (minimum 6 characters)',
-                        password_input_placeholder: 'Enter a strong password (min. 6 characters)',
-                      },
-                    },
-                  }}
-                />
-              </TabsContent>
-            </Tabs>
-          )}
+          <div className="flex items-center justify-center gap-2 mb-6 text-primary">
+            <Mail className="h-5 w-5" />
+            <span className="font-medium">Email Authentication</span>
+          </div>
+          
+          <Auth
+            supabaseClient={supabase}
+            appearance={{
+              theme: ThemeSupa,
+              style: {
+                button: { 
+                  background: 'hsl(142, 70%, 45%)', 
+                  color: 'white',
+                  borderRadius: '6px',
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500'
+                },
+                anchor: { color: 'hsl(142, 70%, 45%)' },
+                input: {
+                  borderRadius: '6px',
+                  padding: '8px 12px',
+                  border: '1px solid #d1d5db',
+                  fontSize: '14px'
+                },
+                label: {
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }
+              },
+              variables: {
+                default: {
+                  colors: {
+                    brand: 'hsl(142, 70%, 45%)',
+                    brandAccent: 'hsl(142, 70%, 40%)',
+                  },
+                },
+              },
+            }}
+            providers={[]}
+            redirectTo={`${window.location.origin}/`}
+            localization={{
+              variables: {
+                sign_up: {
+                  email_label: 'Email address',
+                  password_label: 'Create password (minimum 6 characters)',
+                  email_input_placeholder: 'Your email address',
+                  password_input_placeholder: 'Create a strong password',
+                  button_label: 'Create Account',
+                  loading_button_label: 'Creating account...',
+                  social_provider_text: 'Sign up with {{provider}}',
+                  link_text: "Don't have an account? Sign up",
+                  confirmation_text: 'Check your email for the confirmation link'
+                },
+                sign_in: {
+                  email_label: 'Email address',
+                  password_label: 'Password',
+                  email_input_placeholder: 'Your email address',
+                  password_input_placeholder: 'Your password',
+                  button_label: 'Sign In',
+                  loading_button_label: 'Signing in...',
+                  social_provider_text: 'Sign in with {{provider}}',
+                  link_text: 'Already have an account? Sign in'
+                },
+                forgotten_password: {
+                  email_label: 'Email address',
+                  password_label: 'Password',
+                  email_input_placeholder: 'Your email address',
+                  button_label: 'Send reset instructions',
+                  loading_button_label: 'Sending reset instructions...',
+                  link_text: 'Forgot your password?',
+                  confirmation_text: 'Check your email for the password reset link'
+                }
+              },
+            }}
+          />
         </Card>
+
+        <div className="mt-6 text-center">
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Lock className="h-4 w-4" />
+            <span>Secure authentication powered by Supabase</span>
+          </div>
+        </div>
       </div>
     </div>
   );

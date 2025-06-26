@@ -84,17 +84,17 @@ const AppBar = () => {
 
   const getUserDisplayName = () => {
     if (user?.user_metadata?.name) return user.user_metadata.name;
-    if (user?.phone) return user.phone;
-    if (user?.email) return user.email;
+    if (user?.email) return user.email.split('@')[0];
     return 'Account';
   };
 
-  return <>
+  return (
+    <>
       <div className="fixed top-0 left-0 right-0 z-50 w-full px-3 py-2 bg-white/95 backdrop-blur-sm shadow-sm border-b flex flex-col">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-1.5">
             <img 
-              src="/icon.png" 
+              src="/images/icon.png" 
               alt="Flamia Logo" 
               className="w-7 h-7 animate-pulse" 
             />
@@ -243,6 +243,8 @@ const AppBar = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>;
+    </>
+  );
 };
+
 export default AppBar;

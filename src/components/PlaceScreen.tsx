@@ -16,7 +16,7 @@ const PlaceScreen = () => {
           transition={{ times: [0, 0.4, 0.7, 1], duration: 3, repeat: Infinity, repeatDelay: 1 }}
         >
           <img 
-            src="/icon.png" 
+            src="/images/icon.png" 
             alt="Flamia Logo" 
             className="w-32 h-32" 
           />

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,6 +8,7 @@ import { Routes, Route, useLocation, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
+import Orders from "./pages/Orders";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
@@ -93,7 +93,7 @@ const AppContent = () => {
     }
   }, [searchParams]);
 
-  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery', '/delivery-login'].includes(location.pathname);
+  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery', '/delivery-login', '/orders'].includes(location.pathname);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -158,6 +158,11 @@ const AppContent = () => {
             duration: 0.2
           }}>
                 <Order />
+              </motion.div>} />
+            <Route path="/orders" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
+            duration: 0.2
+          }}>
+                <Orders />
               </motion.div>} />
             <Route path="/refill" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
             duration: 0.2
