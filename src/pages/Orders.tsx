@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +16,6 @@ interface Order {
   delivery_man_id?: string | null;
   status: 'pending' | 'assigned' | 'in_progress' | 'completed';
   assigned_at?: string | null;
-  user_id?: string;
 }
 
 const Orders = () => {
@@ -34,41 +34,40 @@ const Orders = () => {
         return;
       }
       setUser(user);
-      await fetchOrders(user.id);
+      await fetchOrders();
     };
 
     checkUser();
   }, [navigate]);
 
-  const fetchOrders = async (userId: string) => {
+  const fetchOrders = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from('orders')
-        .select('*')
-        .eq('user_id', userId)
+        .select('id, created_at, description, delivery_man_id, status, assigned_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       
-      // Transform database orders with explicit type casting
+      // Transform database orders with simple mapping
       const transformedOrders: Order[] = [];
       
       if (data) {
-        for (const dbOrder of data) {
+        data.forEach((dbOrder) => {
+          const validStatuses = ['assigned', 'in_progress', 'completed'];
           const order: Order = {
             id: dbOrder.id,
             created_at: dbOrder.created_at,
             description: dbOrder.description,
             delivery_man_id: dbOrder.delivery_man_id,
-            status: (['assigned', 'in_progress', 'completed'].includes(dbOrder.status)) 
+            status: validStatuses.includes(dbOrder.status) 
               ? dbOrder.status as 'assigned' | 'in_progress' | 'completed'
               : 'pending',
-            assigned_at: dbOrder.assigned_at,
-            user_id: dbOrder.user_id
+            assigned_at: dbOrder.assigned_at
           };
           transformedOrders.push(order);
-        }
+        });
       }
       
       setOrders(transformedOrders);
