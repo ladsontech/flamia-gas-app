@@ -1,6 +1,5 @@
-
 import { motion } from "framer-motion";
-import { Flame } from "lucide-react";
+import { LionFlameLogo } from "./ui/LionFlameLogo";
 
 const PlaceScreen = () => {
   return (
@@ -16,7 +15,7 @@ const PlaceScreen = () => {
           animate={{ opacity: [0, 1, 0.8, 1] }}
           transition={{ times: [0, 0.4, 0.7, 1], duration: 3, repeat: Infinity, repeatDelay: 1 }}
         >
-          <Flame className="w-32 h-32 text-accent" />
+          <LionFlameLogo size={128} />
         </motion.div>
         
         <motion.h1 
