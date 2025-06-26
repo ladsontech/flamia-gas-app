@@ -3,9 +3,10 @@ export interface Order {
   id: string;
   created_at: string;
   description: string;
-  delivery_man_id?: string;
-  status?: 'pending' | 'assigned' | 'in_progress' | 'completed';
-  assigned_at?: string;
+  delivery_man_id?: string | null;
+  status?: 'pending' | 'assigned' | 'in_progress' | 'completed' | null;
+  assigned_at?: string | null;
+  user_id?: string;
 }
 
 export interface OrderFormData {

@@ -8,7 +8,26 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import AppBar from "@/components/AppBar";
-import { Order } from "@/types/order";
+
+interface DatabaseOrder {
+  id: string;
+  created_at: string;
+  description: string;
+  delivery_man_id?: string | null;
+  status?: string | null;
+  assigned_at?: string | null;
+  user_id?: string;
+}
+
+interface Order {
+  id: string;
+  created_at: string;
+  description: string;
+  delivery_man_id?: string | null;
+  status?: 'pending' | 'assigned' | 'in_progress' | 'completed' | null;
+  assigned_at?: string | null;
+  user_id?: string;
+}
 
 const Orders = () => {
   const navigate = useNavigate();
@@ -42,7 +61,14 @@ const Orders = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setOrders(data || []);
+      
+      // Transform database orders to our Order type
+      const transformedOrders: Order[] = (data || []).map((dbOrder: DatabaseOrder) => ({
+        ...dbOrder,
+        status: dbOrder.status as Order['status'] || 'pending'
+      }));
+      
+      setOrders(transformedOrders);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -54,7 +80,7 @@ const Orders = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string | null | undefined) => {
     switch (status) {
       case 'pending':
         return <Clock className="h-4 w-4 text-yellow-500" />;
@@ -67,7 +93,7 @@ const Orders = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | null | undefined) => {
     switch (status) {
       case 'pending':
         return 'text-yellow-600 bg-yellow-50';
@@ -138,8 +164,8 @@ const Orders = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        {getStatusIcon(order.status || 'pending')}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status || 'pending')}`}>
+                        {getStatusIcon(order.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                           {(order.status || 'pending').charAt(0).toUpperCase() + (order.status || 'pending').slice(1)}
                         </span>
                         <span className="text-sm text-muted-foreground">
