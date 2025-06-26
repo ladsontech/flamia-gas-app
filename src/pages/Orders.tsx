@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,14 +8,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import AppBar from "@/components/AppBar";
-import { Order } from "@/types/order";
 
-interface DatabaseOrder {
+interface Order {
   id: string;
   created_at: string;
   description: string;
   delivery_man_id?: string | null;
-  status?: string | null;
+  status: 'pending' | 'assigned' | 'in_progress' | 'completed';
   assigned_at?: string | null;
   user_id?: string;
 }
@@ -52,22 +52,17 @@ const Orders = () => {
 
       if (error) throw error;
       
-      // Transform database orders to our Order type with proper status handling
-      const transformedOrders: Order[] = (data || []).map((dbOrder: DatabaseOrder) => {
-        const validStatuses: Array<'pending' | 'assigned' | 'in_progress' | 'completed'> = ['pending', 'assigned', 'in_progress', 'completed'];
-        const status = validStatuses.includes(dbOrder.status as any) 
-          ? (dbOrder.status as 'pending' | 'assigned' | 'in_progress' | 'completed')
-          : 'pending';
-        
+      // Transform database orders to our Order type
+      const transformedOrders = (data || []).map((dbOrder: any) => {
         return {
           id: dbOrder.id,
           created_at: dbOrder.created_at,
           description: dbOrder.description,
           delivery_man_id: dbOrder.delivery_man_id,
-          status: status,
+          status: dbOrder.status || 'pending',
           assigned_at: dbOrder.assigned_at,
           user_id: dbOrder.user_id
-        };
+        } as Order;
       });
       
       setOrders(transformedOrders);
@@ -82,7 +77,7 @@ const Orders = () => {
     }
   };
 
-  const getStatusIcon = (status: string | null | undefined) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
         return <Clock className="h-4 w-4 text-yellow-500" />;
@@ -95,7 +90,7 @@ const Orders = () => {
     }
   };
 
-  const getStatusColor = (status: string | null | undefined) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
         return 'text-yellow-600 bg-yellow-50';
@@ -168,7 +163,7 @@ const Orders = () => {
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusIcon(order.status)}
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                          {(order.status || 'pending').charAt(0).toUpperCase() + (order.status || 'pending').slice(1)}
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
                         <span className="text-sm text-muted-foreground">
                           {format(new Date(order.created_at), 'MMM d, yyyy at h:mm a')}

@@ -26,6 +26,7 @@ import UpdateNotification from './components/UpdateNotification';
 import InstallPWA from './components/InstallPWA';
 import TestingHelper from "./components/TestingHelper";
 import DeepLinkHandler from "./components/DeepLinkHandler";
+import { supabase } from './supabase';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
@@ -71,6 +72,7 @@ const AppContent = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(false);
+  const [user, setUser] = useState<any>(null);
   const [showPlaceScreen, setShowPlaceScreen] = useState(true);
   const [showShareHandler, setShowShareHandler] = useState(false);
 
@@ -83,6 +85,23 @@ const AppContent = () => {
   useEffect(() => {
     const userRole = localStorage.getItem('userRole');
     setIsAdmin(userRole === 'admin');
+  }, []);
+
+  useEffect(() => {
+    // Get current user
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getCurrentUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -202,7 +221,7 @@ const AppContent = () => {
           </Routes>
         </AnimatePresence>
       </div>
-      {showBottomNav && <BottomNav isAdmin={isAdmin} />}
+      {showBottomNav && <BottomNav isAdmin={isAdmin} user={user} />}
       
       {/* Testing Helper - only shows in dev or with ?testing param */}
       <TestingHelper />

@@ -1,4 +1,4 @@
-import { Flame, ChevronRight, User, LogOut } from "lucide-react";
+import { Flame, ChevronRight, User, LogOut, Bell, Package } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
@@ -157,13 +157,20 @@ const AppBar = () => {
               </NavigationMenu>
             </div>
 
-            {/* Account Section */}
+            {/* Mobile Notifications Button - Only visible on mobile when user is authenticated */}
+            {user && (
+              <Button variant="ghost" size="sm" className="md:hidden">
+                <Bell className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* Account/Orders Section */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">{getUserDisplayName()}</span>
+                    <Package className="h-4 w-4" />
+                    <span className="hidden sm:inline">Orders</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">

@@ -83,10 +83,17 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
 };
 
 export const createOrder = async (orderDetails: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    throw new Error('User must be authenticated to create an order');
+  }
+
   const { error } = await supabase
     .from('orders')
     .insert([{
-      description: orderDetails
+      description: orderDetails,
+      user_id: user.id
     }]);
   
   if (error) {
