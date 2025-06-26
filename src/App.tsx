@@ -26,7 +26,7 @@ import UpdateNotification from './components/UpdateNotification';
 import InstallPWA from './components/InstallPWA';
 import TestingHelper from "./components/TestingHelper";
 import DeepLinkHandler from "./components/DeepLinkHandler";
-import { supabase } from './supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<

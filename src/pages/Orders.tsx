@@ -52,17 +52,23 @@ const Orders = () => {
 
       if (error) throw error;
       
-      // Transform database orders to our Order type
-      const transformedOrders = (data || []).map((dbOrder: any) => {
+      // Transform database orders to our Order type with explicit status handling
+      const transformedOrders: Order[] = (data || []).map((dbOrder: any) => {
+        let orderStatus: 'pending' | 'assigned' | 'in_progress' | 'completed' = 'pending';
+        
+        if (dbOrder.status === 'assigned' || dbOrder.status === 'in_progress' || dbOrder.status === 'completed') {
+          orderStatus = dbOrder.status;
+        }
+        
         return {
           id: dbOrder.id,
           created_at: dbOrder.created_at,
           description: dbOrder.description,
           delivery_man_id: dbOrder.delivery_man_id,
-          status: dbOrder.status || 'pending',
+          status: orderStatus,
           assigned_at: dbOrder.assigned_at,
           user_id: dbOrder.user_id
-        } as Order;
+        };
       });
       
       setOrders(transformedOrders);
