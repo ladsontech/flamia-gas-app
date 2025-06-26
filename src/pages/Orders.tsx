@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,20 +51,16 @@ const Orders = () => {
 
       if (error) throw error;
       
-      // Transform database orders to our Order type with explicit status handling
-      const transformedOrders: Order[] = (data || []).map((dbOrder: any) => {
-        let orderStatus: 'pending' | 'assigned' | 'in_progress' | 'completed' = 'pending';
-        
-        if (dbOrder.status === 'assigned' || dbOrder.status === 'in_progress' || dbOrder.status === 'completed') {
-          orderStatus = dbOrder.status;
-        }
-        
+      // Transform database orders with simplified type handling
+      const transformedOrders = (data || []).map((dbOrder: any): Order => {
         return {
           id: dbOrder.id,
           created_at: dbOrder.created_at,
           description: dbOrder.description,
           delivery_man_id: dbOrder.delivery_man_id,
-          status: orderStatus,
+          status: dbOrder.status === 'assigned' || dbOrder.status === 'in_progress' || dbOrder.status === 'completed' 
+            ? dbOrder.status 
+            : 'pending',
           assigned_at: dbOrder.assigned_at,
           user_id: dbOrder.user_id
         };
