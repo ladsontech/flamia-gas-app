@@ -9,31 +9,36 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-
 const AppBar = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [showUpdateNotice, setShowUpdateNotice] = useState(false);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [user, setUser] = useState<any>(null);
-
   useEffect(() => {
     // Get current user
     const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       setUser(user);
     };
-
     getCurrentUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: {
+        subscription
+      }
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
-
   useEffect(() => {
     // Check if we should show monthly update notification
     const checkMonthlyUpdate = () => {
@@ -53,7 +58,6 @@ const AppBar = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -81,23 +85,16 @@ const AppBar = () => {
   const handleAppUpdate = () => {
     window.location.reload();
   };
-
   const getUserDisplayName = () => {
     if (user?.user_metadata?.name) return user.user_metadata.name;
     if (user?.email) return user.email.split('@')[0];
     return 'Account';
   };
-
-  return (
-    <>
+  return <>
       <div className="fixed top-0 left-0 right-0 z-50 w-full px-3 py-2 bg-white/95 backdrop-blur-sm shadow-sm border-b flex flex-col">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-1.5">
-            <img 
-              src="/images/icon.png" 
-              alt="Flamia Logo" 
-              className="w-7 h-7 animate-pulse" 
-            />
+            <img src="/images/icon.png" alt="Flamia Logo" className="w-7 h-7 animate-pulse" />
             <span className="font-bold text-2xl sm:text-4xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent font-serif tracking-wide">
               Flamia
             </span>
@@ -137,7 +134,7 @@ const AppBar = () => {
                     </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>Support</NavigationMenuTrigger>
+                    
                     <NavigationMenuContent>
                       <div className="p-4 w-[200px]">
                         <div className="flex flex-col gap-2">
@@ -158,15 +155,12 @@ const AppBar = () => {
             </div>
 
             {/* Mobile Notifications Button - Only visible on mobile when user is authenticated */}
-            {user && (
-              <Button variant="ghost" size="sm" className="md:hidden">
+            {user && <Button variant="ghost" size="sm" className="md:hidden">
                 <Bell className="h-4 w-4" />
-              </Button>
-            )}
+              </Button>}
 
             {/* Account/Orders Section */}
-            {user ? (
-              <DropdownMenu>
+            {user ? <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <Package className="h-4 w-4" />
@@ -186,13 +180,10 @@ const AppBar = () => {
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button variant="ghost" size="sm" onClick={() => navigate('/login')} className="flex items-center gap-2">
+              </DropdownMenu> : <Button variant="ghost" size="sm" onClick={() => navigate('/login')} className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">Sign In</span>
-              </Button>
-            )}
+              </Button>}
           </div>
         </div>
         
@@ -250,8 +241,6 @@ const AppBar = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
-  );
+    </>;
 };
-
 export default AppBar;
