@@ -52,11 +52,23 @@ const Orders = () => {
 
       if (error) throw error;
       
-      // Transform database orders to our Order type
-      const transformedOrders: Order[] = (data || []).map((dbOrder: DatabaseOrder) => ({
-        ...dbOrder,
-        status: dbOrder.status as Order['status'] || 'pending'
-      }));
+      // Transform database orders to our Order type with proper status handling
+      const transformedOrders: Order[] = (data || []).map((dbOrder: DatabaseOrder) => {
+        const validStatuses: Array<'pending' | 'assigned' | 'in_progress' | 'completed'> = ['pending', 'assigned', 'in_progress', 'completed'];
+        const status = validStatuses.includes(dbOrder.status as any) 
+          ? (dbOrder.status as 'pending' | 'assigned' | 'in_progress' | 'completed')
+          : 'pending';
+        
+        return {
+          id: dbOrder.id,
+          created_at: dbOrder.created_at,
+          description: dbOrder.description,
+          delivery_man_id: dbOrder.delivery_man_id,
+          status: status,
+          assigned_at: dbOrder.assigned_at,
+          user_id: dbOrder.user_id
+        };
+      });
       
       setOrders(transformedOrders);
     } catch (error: any) {
