@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import AppBar from "@/components/AppBar";
 import { Flame, ArrowRight, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -104,8 +103,6 @@ const Refill = () => {
         <meta name="keywords" content="gas refill prices Uganda, cheap cooking gas, LPG refill near me, Stabex gas refill price, Total gas refill, Shell gas cylinder refill, Hass gas refill Wakiso, affordable gas refill Kampala, best gas refill service Uganda" />
         <link rel="canonical" href="https://flamia.store/refill" />
       </Helmet>
-      
-      <AppBar />
       
       <div className="container px-3 md:px-6 sm:py-6 flex-grow pt-6 py-6">
         <div className="text-center mb-6 sm:mb-8">

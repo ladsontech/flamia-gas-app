@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Helmet } from "react-helmet";
 import { accessories } from "@/components/accessories/AccessoriesData";
-import AppBar from "@/components/AppBar";
 
 const Accessories = () => {
   const [loading, setLoading] = useState(false);
@@ -20,7 +19,6 @@ const Accessories = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppBar />
         <div className="container mx-auto px-2 py-3">
           <div className="flex items-center justify-center min-h-[200px]">
             <p className="text-center text-muted-foreground">Loading accessories...</p>
@@ -57,8 +55,6 @@ const Accessories = () => {
         <link rel="preload" as="image" href="/images/regulator.jpeg" />
         <link rel="preload" as="image" href="/images/horse_pipe.jpeg" />
       </Helmet>
-      
-      <AppBar />
       
       <div className="container mx-auto px-3 md:px-6 flex-grow py-6">
         <h1 className="text-lg sm:text-xl font-bold mb-3">Shop Accessories</h1>

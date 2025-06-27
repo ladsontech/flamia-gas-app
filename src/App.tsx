@@ -16,7 +16,6 @@ import Delivery from "./pages/Delivery";
 import DeliveryLogin from "./pages/DeliveryLogin";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from 'react';
-import { BottomNav } from "./components/BottomNav";
 import PlaceScreen from "./components/PlaceScreen";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
@@ -27,6 +26,8 @@ import InstallPWA from './components/InstallPWA';
 import TestingHelper from "./components/TestingHelper";
 import DeepLinkHandler from "./components/DeepLinkHandler";
 import { supabase } from '@/integrations/supabase/client';
+import AppBar from "./components/AppBar";
+import { BottomNav } from "./components/BottomNav";
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
@@ -78,7 +79,6 @@ const AppContent = () => {
 
   // Handle service worker updates
   const handleUpdate = () => {
-    // Reload the page to activate the new service worker
     window.location.reload();
   };
 
@@ -112,7 +112,8 @@ const AppContent = () => {
     }
   }, [searchParams]);
 
-  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery', '/delivery-login', '/orders'].includes(location.pathname);
+  // Determine which pages should show bottom nav (mobile only)
+  const showBottomNav = !showPlaceScreen && !['/admin', '/login', '/delivery', '/delivery-login'].includes(location.pathname);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -122,18 +123,9 @@ const AppContent = () => {
   }, []);
 
   const pageVariants = {
-    initial: {
-      opacity: 0,
-      y: 3
-    },
-    animate: {
-      opacity: 1,
-      y: 0
-    },
-    exit: {
-      opacity: 0,
-      y: -3
-    }
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 }
   };
 
   return (
@@ -150,7 +142,7 @@ const AppContent = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
 
-      {/* Deep Link Handler - now inside Router context */}
+      {/* Deep Link Handler */}
       <DeepLinkHandler />
 
       {showPlaceScreen && <PlaceScreen />}
@@ -158,15 +150,18 @@ const AppContent = () => {
       {/* Share Target Handler */}
       {showShareHandler && <ShareTargetHandler />}
 
-      {/* PWA Updates and Installation - now inside React context */}
+      {/* PWA Updates and Installation */}
       <UpdateNotification onUpdate={handleUpdate} />
       <InstallPWA />
 
       {/* Online/Offline Status Monitor */}
       <OnlineStatusMonitor />
 
-      {/* Clean layout structure */}
-      <div className="min-h-screen pt-14 pb-16 md:pb-0">
+      {/* Fixed AppBar - Always visible */}
+      <AppBar />
+
+      {/* Main Content Area with proper spacing */}
+      <main className="pt-14 pb-16 md:pb-0 min-h-screen">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={
@@ -281,12 +276,16 @@ const AppContent = () => {
             } />
           </Routes>
         </AnimatePresence>
-      </div>
+      </main>
 
-      {/* Bottom Navigation */}
-      {showBottomNav && <BottomNav isAdmin={isAdmin} user={user} />}
+      {/* Bottom Navigation - Mobile only */}
+      {showBottomNav && (
+        <div className="md:hidden">
+          <BottomNav isAdmin={isAdmin} user={user} />
+        </div>
+      )}
       
-      {/* Testing Helper - only shows in dev or with ?testing param */}
+      {/* Testing Helper */}
       <TestingHelper />
       
       {/* Toast components */}
@@ -301,7 +300,7 @@ const App = () => {
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 5, // 5 minutes
-        gcTime: 1000 * 60 * 60 * 24, // 24 hours (replacing cacheTime)
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours
         retry: 3,
         refetchOnWindowFocus: false,
         refetchOnMount: false,

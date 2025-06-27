@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import { Helmet } from "react-helmet";
-import AppBar from "@/components/AppBar";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
@@ -84,8 +83,6 @@ export default function Index() {
         <link rel="preload" as="image" href="/images/shell 6KG.png" />
         <link rel="preload" as="image" href="/images/stabex 6KG.png" />
       </Helmet>
-
-      <AppBar />
 
       <div className="min-h-screen flex flex-col lg:flex-row">
         {/* Left Sidebar - Desktop Only */}

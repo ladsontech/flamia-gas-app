@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
 import { createOrder } from "@/services/database";
-import AppBar from "@/components/AppBar";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -169,8 +168,6 @@ const Order = () => {
 
   return (
     <div className={`min-h-screen ${formData.type === "fullset" ? "bg-gradient-to-b from-primary to-white" : "bg-gradient-to-b from-accent/5 to-white"}`}>
-      <AppBar />
-      
       <div className="container max-w-md px-3 py-6">
         <BackButton />
         

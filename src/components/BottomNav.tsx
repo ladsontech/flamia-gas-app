@@ -19,8 +19,8 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   const isOrdersActive = path === "/orders";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-lg">
-      <div className="flex items-center justify-around h-16 px-2 max-w-7xl mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
+      <div className="flex items-center justify-around h-16 px-2 max-w-md mx-auto">
         <NavItem
           to="/"
           icon={Home}
@@ -30,7 +30,7 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
         <NavItem
           to="/accessories"
           icon={ShoppingBag}
-          label="Accessories"
+          label="Shop"
           isActive={isAccessoriesActive}
         />
         <NavItem
