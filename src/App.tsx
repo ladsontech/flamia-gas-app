@@ -165,63 +165,133 @@ const AppContent = () => {
       {/* Online/Offline Status Monitor */}
       <OnlineStatusMonitor />
 
-      <div className="min-h-screen md:pl-16 pb-16 md:pb-0">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Index />
-              </motion.div>} />
-            <Route path="/order" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Order />
-              </motion.div>} />
-            <Route path="/orders" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Orders />
-              </motion.div>} />
-            <Route path="/refill" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Refill />
-              </motion.div>} />
-            <Route path="/accessories" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Accessories />
-              </motion.div>} />
-            <Route path="/safety" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <GasSafety />
-              </motion.div>} />
-            <Route path="/delivery" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Delivery />
-              </motion.div>} />
-            <Route path="/delivery-login" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <DeliveryLogin />
-              </motion.div>} />
-            <Route path="/admin" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Admin />
-              </motion.div>} />
-            <Route path="/login" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{
-            duration: 0.2
-          }}>
-                <Login />
-              </motion.div>} />
-          </Routes>
-        </AnimatePresence>
+      {/* Main App Layout with stable structure */}
+      <div className="min-h-screen flex flex-col">
+        {/* Content area with proper spacing for fixed header */}
+        <main className="flex-1 pt-20 md:pt-24 pb-16 md:pb-0">
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Index />
+                </motion.div>
+              } />
+              <Route path="/order" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Order />
+                </motion.div>
+              } />
+              <Route path="/orders" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Orders />
+                </motion.div>
+              } />
+              <Route path="/refill" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Refill />
+                </motion.div>
+              } />
+              <Route path="/accessories" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Accessories />
+                </motion.div>
+              } />
+              <Route path="/safety" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <GasSafety />
+                </motion.div>
+              } />
+              <Route path="/delivery" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Delivery />
+                </motion.div>
+              } />
+              <Route path="/delivery-login" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <DeliveryLogin />
+                </motion.div>
+              } />
+              <Route path="/admin" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Admin />
+                </motion.div>
+              } />
+              <Route path="/login" element={
+                <motion.div 
+                  variants={pageVariants} 
+                  initial="initial" 
+                  animate="animate" 
+                  exit="exit" 
+                  transition={{ duration: 0.2 }}
+                >
+                  <Login />
+                </motion.div>
+              } />
+            </Routes>
+          </AnimatePresence>
+        </main>
+
+        {/* Bottom Navigation - Fixed at bottom */}
+        {showBottomNav && (
+          <div className="fixed bottom-0 left-0 right-0 z-50">
+            <BottomNav isAdmin={isAdmin} user={user} />
+          </div>
+        )}
       </div>
-      {showBottomNav && <BottomNav isAdmin={isAdmin} user={user} />}
       
       {/* Testing Helper - only shows in dev or with ?testing param */}
       <TestingHelper />

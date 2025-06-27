@@ -91,123 +91,122 @@ const AppBar = () => {
 
   return (
     <>
-      {/* Fixed AppBar with proper z-index and backdrop */}
-      <header className="fixed top-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-        <div className="w-full px-4 py-3">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-            {/* Logo Section - Made larger */}
-            <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <img 
-                src="/images/icon.png" 
-                alt="Flamia Logo" 
-                className="w-12 h-12 md:w-14 md:h-14" 
-              />
-              <span className="font-bold text-3xl md:text-4xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent font-serif tracking-wide">
-                Flamia
-              </span>
-            </Link>
+      {/* Fixed AppBar with stable positioning */}
+      <div className="fixed top-0 left-0 right-0 z-[9999] isolate">
+        <header className="w-full bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="w-full px-4 py-3">
+            <div className="flex items-center justify-between max-w-7xl mx-auto">
+              {/* Logo Section - Made larger and more stable */}
+              <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
+                <img 
+                  src="/images/icon.png" 
+                  alt="Flamia Logo" 
+                  className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" 
+                />
+                <span className="font-bold text-3xl md:text-4xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent font-serif tracking-wide whitespace-nowrap">
+                  Flamia
+                </span>
+              </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
-              <NavigationMenu>
-                <NavigationMenuList className="gap-2">
-                  <NavigationMenuItem>
-                    <Link to="/">
-                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        Home
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/refill">
-                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        Refill
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/accessories">
-                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        Accessories
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/safety">
-                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        Safety
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center gap-6 flex-shrink-0">
+                <NavigationMenu>
+                  <NavigationMenuList className="gap-2">
+                    <NavigationMenuItem>
+                      <Link to="/">
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                          Home
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <Link to="/refill">
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                          Refill
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <Link to="/accessories">
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                          Accessories
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <Link to="/safety">
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                          Safety
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </div>
+
+              {/* Right Side Actions */}
+              <div className="flex items-center gap-3 flex-shrink-0">
+                {/* Account/Orders Section */}
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        <span className="hidden sm:inline">Orders</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => navigate('/orders')}>
+                        My Orders
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        Admin Panel
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => navigate('/login')} 
+                    className="flex items-center gap-2"
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">Sign In</span>
+                  </Button>
+                )}
+              </div>
             </div>
-
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-3">
-              {/* Account/Orders Section */}
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                      <Package className="h-4 w-4" />
-                      <span className="hidden sm:inline">Orders</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => navigate('/orders')}>
-                      My Orders
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/admin')}>
-                      Admin Panel
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
+            
+            {/* Monthly update notification */}
+            {showUpdateNotice && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="w-full mt-3 p-3 bg-accent/10 rounded-md flex items-center justify-between text-sm max-w-7xl mx-auto"
+              >
+                <p className="text-accent font-medium">
+                  New gas prices and products available for this month!
+                </p>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => navigate('/login')} 
-                  className="flex items-center gap-2"
+                  className="h-7 px-2 hover:bg-accent/20" 
+                  onClick={dismissUpdate}
                 >
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">Sign In</span>
+                  Dismiss
                 </Button>
-              )}
-            </div>
+              </motion.div>
+            )}
           </div>
-          
-          {/* Monthly update notification */}
-          {showUpdateNotice && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="w-full mt-3 p-3 bg-accent/10 rounded-md flex items-center justify-between text-sm max-w-7xl mx-auto"
-            >
-              <p className="text-accent font-medium">
-                New gas prices and products available for this month!
-              </p>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2 hover:bg-accent/20" 
-                onClick={dismissUpdate}
-              >
-                Dismiss
-              </Button>
-            </motion.div>
-          )}
-        </div>
-      </header>
-
-      {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-20 md:h-24" />
+        </header>
+      </div>
 
       {/* Install PWA Dialog */}
       <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
