@@ -87,10 +87,11 @@ export default function Index() {
 
       <AppBar />
 
+      {/* Main content with stable positioning - no margin top needed */}
       <div className="min-h-screen flex flex-col lg:flex-row">
         {/* Left Sidebar - Desktop Only */}
         <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gray-50 py-6 px-4">
-          <div className="sticky top-24 space-y-6">
+          <div className="sticky top-32 space-y-6">
             {/* Featured Carousel */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
               <div className="bg-accent p-4">
@@ -146,7 +147,7 @@ export default function Index() {
 
         {/* Main Content Area */}
         <div className="flex-1 w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-6">
-          <div className="flex flex-col gap-4 md:gap-6 my-0 py-4 rounded">
+          <div className="flex flex-col gap-4 md:gap-6 py-4 rounded">
             {/* Hero Section - Enhanced for Desktop */}
             <div className="hidden lg:block bg-accent/10 rounded-3xl p-8 mb-6 border border-accent/20">
               <div className="text-center max-w-4xl mx-auto">

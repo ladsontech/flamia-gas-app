@@ -165,10 +165,28 @@ const AppContent = () => {
       {/* Online/Offline Status Monitor */}
       <OnlineStatusMonitor />
 
-      {/* Main App Layout with stable structure */}
-      <div className="min-h-screen flex flex-col">
-        {/* Content area with proper spacing for fixed header */}
-        <main className="flex-1 pt-20 md:pt-24 pb-16 md:pb-0">
+      {/* Main App Layout with completely stable structure */}
+      <div 
+        className="min-h-screen"
+        style={{
+          position: 'relative',
+          minHeight: '100vh',
+          paddingTop: '88px', // Fixed padding for AppBar
+          paddingBottom: showBottomNav ? '64px' : '0', // Fixed padding for BottomNav
+          transform: 'translateZ(0)', // Force hardware acceleration
+          backfaceVisibility: 'hidden' // Prevent flickering
+        }}
+      >
+        {/* Content area with stable positioning */}
+        <main 
+          className="w-full"
+          style={{
+            position: 'relative',
+            width: '100%',
+            minHeight: 'calc(100vh - 88px)',
+            transform: 'translateZ(0)'
+          }}
+        >
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={
@@ -285,9 +303,20 @@ const AppContent = () => {
           </AnimatePresence>
         </main>
 
-        {/* Bottom Navigation - Fixed at bottom */}
+        {/* Bottom Navigation - Completely stable positioning */}
         {showBottomNav && (
-          <div className="fixed bottom-0 left-0 right-0 z-50">
+          <div 
+            className="fixed bottom-0 left-0 right-0 z-[9998]"
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 9998,
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden'
+            }}
+          >
             <BottomNav isAdmin={isAdmin} user={user} />
           </div>
         )}

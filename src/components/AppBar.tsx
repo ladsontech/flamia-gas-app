@@ -91,24 +91,54 @@ const AppBar = () => {
 
   return (
     <>
-      {/* Fixed AppBar with stable positioning */}
-      <div className="fixed top-0 left-0 right-0 z-[9999] isolate">
-        <header className="w-full bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-          <div className="w-full px-4 py-3">
+      {/* Completely isolated AppBar with maximum stability */}
+      <div 
+        className="fixed top-0 left-0 right-0 z-[99999] pointer-events-auto"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 99999,
+          transform: 'translateZ(0)', // Force hardware acceleration
+          backfaceVisibility: 'hidden', // Prevent flickering
+          willChange: 'auto' // Optimize for stability
+        }}
+      >
+        <header className="w-full bg-white/98 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="w-full px-4 py-4">
             <div className="flex items-center justify-between max-w-7xl mx-auto">
-              {/* Logo Section - Made larger and more stable */}
-              <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
+              {/* Logo Section - Completely stable */}
+              <Link 
+                to="/" 
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-200 flex-shrink-0"
+                style={{ transform: 'translateZ(0)' }}
+              >
                 <img 
                   src="/images/icon.png" 
                   alt="Flamia Logo" 
-                  className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" 
+                  className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0" 
+                  style={{ 
+                    display: 'block',
+                    width: '56px',
+                    height: '56px',
+                    minWidth: '56px',
+                    minHeight: '56px'
+                  }}
                 />
-                <span className="font-bold text-3xl md:text-4xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent font-serif tracking-wide whitespace-nowrap">
+                <span 
+                  className="font-bold text-4xl md:text-5xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent font-serif tracking-wide"
+                  style={{ 
+                    whiteSpace: 'nowrap',
+                    lineHeight: '1',
+                    transform: 'translateZ(0)'
+                  }}
+                >
                   Flamia
                 </span>
               </Link>
 
-              {/* Desktop Navigation */}
+              {/* Desktop Navigation - Stable positioning */}
               <div className="hidden md:flex items-center gap-6 flex-shrink-0">
                 <NavigationMenu>
                   <NavigationMenuList className="gap-2">
@@ -144,9 +174,8 @@ const AppBar = () => {
                 </NavigationMenu>
               </div>
 
-              {/* Right Side Actions */}
+              {/* Right Side Actions - Stable positioning */}
               <div className="flex items-center gap-3 flex-shrink-0">
-                {/* Account/Orders Section */}
                 {user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -183,13 +212,14 @@ const AppBar = () => {
               </div>
             </div>
             
-            {/* Monthly update notification */}
+            {/* Monthly update notification - Stable positioning */}
             {showUpdateNotice && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="w-full mt-3 p-3 bg-accent/10 rounded-md flex items-center justify-between text-sm max-w-7xl mx-auto"
+                style={{ transform: 'translateZ(0)' }}
               >
                 <p className="text-accent font-medium">
                   New gas prices and products available for this month!
@@ -218,7 +248,6 @@ const AppBar = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {/* iOS Safari Instructions */}
           <div className="py-4 space-y-4">
             <div className="flex items-start gap-2">
               <div className="bg-accent rounded-full w-6 h-6 flex items-center justify-center text-white shrink-0">1</div>
