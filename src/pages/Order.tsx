@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
-import { createOrder } from "@/services/database";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -132,11 +130,13 @@ const Order = () => {
 ------------------------`;
       }
 
-      await createOrder(message);
+      // Open WhatsApp with the order message
+      const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
       
       toast({
-        title: "Order Submitted",
-        description: "Your order has been received and will be processed by our admin team.",
+        title: "Order Ready",
+        description: "Your order has been prepared. Complete it via WhatsApp.",
       });
 
       // Reset form
@@ -151,10 +151,10 @@ const Order = () => {
         location: undefined
       });
     } catch (error) {
-      console.error("Order submission error:", error);
+      console.error("Order preparation error:", error);
       toast({
         title: "Error",
-        description: "Failed to process your order. Please try again.",
+        description: "Failed to prepare your order. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -296,7 +296,7 @@ const Order = () => {
                   disabled={loading}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? "Processing..." : "Submit Order"}
+                    {loading ? "Preparing..." : "Order via WhatsApp"}
                     <Flame className="w-4 h-4 transition-transform group-hover:rotate-12" />
                   </span>
                   <div className={`absolute inset-0 ${
