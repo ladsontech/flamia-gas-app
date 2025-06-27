@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -88,10 +87,10 @@ export default function Index() {
 
       <AppBar />
 
-      <div className="min-h-screen flex flex-col lg:flex-row mt-16">
+      <div className="min-h-screen flex flex-col lg:flex-row">
         {/* Left Sidebar - Desktop Only */}
         <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gray-50 py-6 px-4">
-          <div className="sticky top-20 space-y-6">
+          <div className="sticky top-24 space-y-6">
             {/* Featured Carousel */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
               <div className="bg-accent p-4">
@@ -222,9 +221,6 @@ export default function Index() {
             </div>
           </div>
         </div>
-
-        {/* Right Sidebar - Desktop Only */}
-        
       </div>
     </>
   );
