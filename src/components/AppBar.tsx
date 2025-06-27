@@ -1,4 +1,4 @@
-import { Flame, ChevronRight, Bell, Package } from "lucide-react";
+import { Flame, ChevronRight, User, LogOut, Bell, Package } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
@@ -6,11 +6,33 @@ import { motion } from "framer-motion";
 import UpdateNotification from "./UpdateNotification";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "./ui/navigation-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const AppBar = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showUpdateNotice, setShowUpdateNotice] = useState(false);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Get current user
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getCurrentUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     // Check if we should show monthly update notification
@@ -32,6 +54,24 @@ const AppBar = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem('userRole');
+      navigate('/');
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
   // Handle dismissing the update notice
   const dismissUpdate = () => {
     setShowUpdateNotice(false);
@@ -40,6 +80,12 @@ const AppBar = () => {
   // Handle app update
   const handleAppUpdate = () => {
     window.location.reload();
+  };
+
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.name) return user.user_metadata.name;
+    if (user?.email) return user.email.split('@')[0];
+    return 'Account';
   };
 
   return (
@@ -107,16 +153,42 @@ const AppBar = () => {
               </NavigationMenu>
             </div>
 
-            {/* Contact Button */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => window.open('https://wa.me/256789572007', '_blank')}
-              className="flex items-center gap-2"
-            >
-              <Package className="h-4 w-4" />
-              <span className="hidden sm:inline">Contact</span>
-            </Button>
+            {/* Mobile Notifications Button - Only visible on mobile when user is authenticated */}
+            {user && (
+              <Button variant="ghost" size="sm" className="md:hidden">
+                <Bell className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* Account/Orders Section */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    <span className="hidden sm:inline">Orders</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate('/orders')}>
+                    My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    Profile Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/login')} className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign In</span>
+              </Button>
+            )}
           </div>
         </div>
         

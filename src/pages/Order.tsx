@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
+import { createOrder } from "@/services/database";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -130,13 +131,16 @@ const Order = () => {
 ------------------------`;
       }
 
-      // Open WhatsApp with the order message
+      // Save order to database for admin/rider management
+      await createOrder(message);
+
+      // Also open WhatsApp for customer convenience
       const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
       
       toast({
-        title: "Order Ready",
-        description: "Your order has been prepared. Complete it via WhatsApp.",
+        title: "Order Submitted",
+        description: "Your order has been saved and WhatsApp opened for direct contact.",
       });
 
       // Reset form
@@ -151,10 +155,10 @@ const Order = () => {
         location: undefined
       });
     } catch (error) {
-      console.error("Order preparation error:", error);
+      console.error("Order submission error:", error);
       toast({
         title: "Error",
-        description: "Failed to prepare your order. Please try again.",
+        description: "Failed to process your order. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -296,7 +300,7 @@ const Order = () => {
                   disabled={loading}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? "Preparing..." : "Order via WhatsApp"}
+                    {loading ? "Processing..." : "Submit Order"}
                     <Flame className="w-4 h-4 transition-transform group-hover:rotate-12" />
                   </span>
                   <div className={`absolute inset-0 ${
