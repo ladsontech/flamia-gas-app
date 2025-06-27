@@ -87,11 +87,10 @@ export default function Index() {
 
       <AppBar />
 
-      {/* Main content with stable positioning - no margin top needed */}
       <div className="min-h-screen flex flex-col lg:flex-row">
         {/* Left Sidebar - Desktop Only */}
         <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gray-50 py-6 px-4">
-          <div className="sticky top-32 space-y-6">
+          <div className="sticky top-20 space-y-6">
             {/* Featured Carousel */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
               <div className="bg-accent p-4">

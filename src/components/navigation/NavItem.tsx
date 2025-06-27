@@ -1,4 +1,3 @@
-
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -10,17 +9,17 @@ interface NavItemProps {
 }
 
 export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
-  const navItemClass = `
-    relative flex flex-col items-center justify-center w-12 h-12
-    ${isActive ? "text-flame-inner font-medium" : "text-muted-foreground"}
-    ${isActive ? "after:content-[''] after:absolute after:w-[120%] after:h-[120%] after:rounded-full after:bg-transparent after:-z-10 after:animate-flame" : ""}
-    transition-colors duration-200 hover:text-flame-middle group
-  `;
-
   return (
-    <Link to={to} className={navItemClass}>
-      <Icon className="h-3.5 w-3.5 mb-0.5" />
-      <span className="text-[10px] leading-none">{label}</span>
+    <Link 
+      to={to} 
+      className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors duration-200 ${
+        isActive 
+          ? "text-accent bg-accent/10" 
+          : "text-gray-500 hover:text-accent hover:bg-accent/5"
+      }`}
+    >
+      <Icon className="h-5 w-5 mb-1" />
+      <span className="text-xs font-medium">{label}</span>
     </Link>
   );
 };

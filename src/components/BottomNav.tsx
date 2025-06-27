@@ -19,47 +19,49 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   const isOrdersActive = path === "/orders";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around bg-background border-t border-border h-16 px-2">
-      <NavItem
-        to="/"
-        icon={Home}
-        label="Home"
-        isActive={isHomeActive}
-      />
-      <NavItem
-        to="/accessories"
-        icon={ShoppingBag}
-        label="Accessories"
-        isActive={isAccessoriesActive}
-      />
-      <NavItem
-        to="/refill"
-        icon={RotateCw}
-        label="Refill"
-        isActive={isRefillActive}
-      />
-      {isAdmin ? (
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-lg">
+      <div className="flex items-center justify-around h-16 px-2 max-w-7xl mx-auto">
         <NavItem
-          to="/admin"
-          icon={Flame}
-          label="Admin"
-          isActive={false}
+          to="/"
+          icon={Home}
+          label="Home"
+          isActive={isHomeActive}
         />
-      ) : user ? (
         <NavItem
-          to="/orders"
-          icon={Package}
-          label="Orders"
-          isActive={isOrdersActive}
+          to="/accessories"
+          icon={ShoppingBag}
+          label="Accessories"
+          isActive={isAccessoriesActive}
         />
-      ) : (
         <NavItem
-          to="/safety"
-          icon={Flame}
-          label="Safety"
-          isActive={isSafetyActive}
+          to="/refill"
+          icon={RotateCw}
+          label="Refill"
+          isActive={isRefillActive}
         />
-      )}
+        {isAdmin ? (
+          <NavItem
+            to="/admin"
+            icon={Flame}
+            label="Admin"
+            isActive={false}
+          />
+        ) : user ? (
+          <NavItem
+            to="/orders"
+            icon={Package}
+            label="Orders"
+            isActive={isOrdersActive}
+          />
+        ) : (
+          <NavItem
+            to="/safety"
+            icon={Flame}
+            label="Safety"
+            isActive={isSafetyActive}
+          />
+        )}
+      </div>
     </nav>
   );
 };

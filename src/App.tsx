@@ -165,162 +165,126 @@ const AppContent = () => {
       {/* Online/Offline Status Monitor */}
       <OnlineStatusMonitor />
 
-      {/* Main App Layout with completely stable structure */}
-      <div 
-        className="min-h-screen"
-        style={{
-          position: 'relative',
-          minHeight: '100vh',
-          paddingTop: '88px', // Fixed padding for AppBar
-          paddingBottom: showBottomNav ? '64px' : '0', // Fixed padding for BottomNav
-          transform: 'translateZ(0)', // Force hardware acceleration
-          backfaceVisibility: 'hidden' // Prevent flickering
-        }}
-      >
-        {/* Content area with stable positioning */}
-        <main 
-          className="w-full"
-          style={{
-            position: 'relative',
-            width: '100%',
-            minHeight: 'calc(100vh - 88px)',
-            transform: 'translateZ(0)'
-          }}
-        >
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Index />
-                </motion.div>
-              } />
-              <Route path="/order" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Order />
-                </motion.div>
-              } />
-              <Route path="/orders" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Orders />
-                </motion.div>
-              } />
-              <Route path="/refill" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Refill />
-                </motion.div>
-              } />
-              <Route path="/accessories" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Accessories />
-                </motion.div>
-              } />
-              <Route path="/safety" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <GasSafety />
-                </motion.div>
-              } />
-              <Route path="/delivery" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Delivery />
-                </motion.div>
-              } />
-              <Route path="/delivery-login" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <DeliveryLogin />
-                </motion.div>
-              } />
-              <Route path="/admin" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Admin />
-                </motion.div>
-              } />
-              <Route path="/login" element={
-                <motion.div 
-                  variants={pageVariants} 
-                  initial="initial" 
-                  animate="animate" 
-                  exit="exit" 
-                  transition={{ duration: 0.2 }}
-                >
-                  <Login />
-                </motion.div>
-              } />
-            </Routes>
-          </AnimatePresence>
-        </main>
-
-        {/* Bottom Navigation - Completely stable positioning */}
-        {showBottomNav && (
-          <div 
-            className="fixed bottom-0 left-0 right-0 z-[9998]"
-            style={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 9998,
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden'
-            }}
-          >
-            <BottomNav isAdmin={isAdmin} user={user} />
-          </div>
-        )}
+      {/* Clean layout structure */}
+      <div className="min-h-screen pt-14 pb-16 md:pb-0">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Index />
+              </motion.div>
+            } />
+            <Route path="/order" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Order />
+              </motion.div>
+            } />
+            <Route path="/orders" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Orders />
+              </motion.div>
+            } />
+            <Route path="/refill" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Refill />
+              </motion.div>
+            } />
+            <Route path="/accessories" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Accessories />
+              </motion.div>
+            } />
+            <Route path="/safety" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <GasSafety />
+              </motion.div>
+            } />
+            <Route path="/delivery" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Delivery />
+              </motion.div>
+            } />
+            <Route path="/delivery-login" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <DeliveryLogin />
+              </motion.div>
+            } />
+            <Route path="/admin" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Admin />
+              </motion.div>
+            } />
+            <Route path="/login" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Login />
+              </motion.div>
+            } />
+          </Routes>
+        </AnimatePresence>
       </div>
+
+      {/* Bottom Navigation */}
+      {showBottomNav && <BottomNav isAdmin={isAdmin} user={user} />}
       
       {/* Testing Helper - only shows in dev or with ?testing param */}
       <TestingHelper />
