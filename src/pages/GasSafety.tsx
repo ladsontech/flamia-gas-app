@@ -279,7 +279,10 @@ const GasSafety = () => {
                       <CardHeader>
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${safetyTips[selectedTip].color} flex items-center justify-center`}>
-                            <safetyTips[selectedTip].icon className="w-6 h-6 text-white" />
+                            {(() => {
+                              const CurrentIcon = safetyTips[selectedTip].icon;
+                              return <CurrentIcon className="w-6 h-6 text-white" />;
+                            })()}
                           </div>
                           <div>
                             <CardTitle className="text-xl">{safetyTips[selectedTip].title}</CardTitle>
