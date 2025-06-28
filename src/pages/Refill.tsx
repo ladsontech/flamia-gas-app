@@ -18,6 +18,7 @@ const Refill = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -87,6 +88,15 @@ const Refill = () => {
   const handleBrandSelect = (brand: string) => {
     setSelectedBrand(brand);
     setSearchTerm(""); // Clear search when brand is selected
+    setIsDropdownOpen(false); // Close dropdown after selection
+  };
+
+  // Clear search when clicking outside or when dropdown closes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    if (value === "") {
+      setIsDropdownOpen(false);
+    }
   };
 
   return (
@@ -120,7 +130,7 @@ const Refill = () => {
           </p>
         </motion.div>
 
-        {/* Mobile: Dropdown Selection */}
+        {/* Mobile: Enhanced Search and Dropdown Selection */}
         <div className="lg:hidden mb-8">
           <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
             <div className="space-y-4">
@@ -130,15 +140,17 @@ const Refill = () => {
                 <Input
                   placeholder="Search gas brands..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10 h-12 border-2 border-gray-200 focus:border-accent"
                 />
               </div>
               
-              {/* Enhanced Select Dropdown - Full Height */}
+              {/* Enhanced Select Dropdown - Full Height with Search Results */}
               <Select 
                 value={selectedBrand} 
                 onValueChange={handleBrandSelect}
+                open={isDropdownOpen}
+                onOpenChange={setIsDropdownOpen}
               >
                 <SelectTrigger className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white">
                   <SelectValue placeholder="Select your gas brand" />
@@ -151,7 +163,8 @@ const Refill = () => {
                   }}
                 >
                   <div className="max-h-full overflow-y-auto">
-                    {filteredBrands.map(brand => (
+                    {/* Show filtered brands if there's a search term, otherwise show all */}
+                    {(searchTerm ? filteredBrands : staticBrands).map(brand => (
                       <SelectItem 
                         key={brand} 
                         value={brand} 
@@ -165,21 +178,65 @@ const Refill = () => {
                             <div className="font-semibold text-gray-900">{brand} Gas</div>
                             <div className="text-sm text-gray-500">Available for refill</div>
                           </div>
+                          {popularBrands.includes(brand) && (
+                            <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">
+                              <Star className="w-3 h-3 fill-current" />
+                              Popular
+                            </div>
+                          )}
                         </div>
                       </SelectItem>
                     ))}
-                    {filteredBrands.length === 0 && (
+                    
+                    {/* Show no results message when search has no matches */}
+                    {searchTerm && filteredBrands.length === 0 && (
                       <div className="p-6 text-center text-gray-500">
                         <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                           <Search className="w-6 h-6 text-gray-400" />
                         </div>
                         <p className="font-medium">No brands found</p>
-                        <p className="text-sm">Try searching for a different brand name</p>
+                        <p className="text-sm">Try searching for "{searchTerm}" or clear the search</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => {
+                            setSearchTerm("");
+                            setIsDropdownOpen(true);
+                          }}
+                        >
+                          Clear Search
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {/* Show all brands message when no search term */}
+                    {!searchTerm && staticBrands.length > 0 && (
+                      <div className="p-3 text-center text-xs text-gray-500 border-t border-gray-100 bg-gray-50">
+                        Showing all {staticBrands.length} available gas brands
                       </div>
                     )}
                   </div>
                 </SelectContent>
               </Select>
+              
+              {/* Quick search suggestions */}
+              {searchTerm && filteredBrands.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs text-gray-500">Quick select:</span>
+                  {filteredBrands.slice(0, 3).map(brand => (
+                    <Button
+                      key={brand}
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => handleBrandSelect(brand)}
+                    >
+                      {brand}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           </Card>
         </div>
