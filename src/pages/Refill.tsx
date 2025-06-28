@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Flame, ArrowRight, Check } from "lucide-react";
+import { Flame, ArrowRight, Check, Zap, Shield, Clock, Star, Truck } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
@@ -17,14 +17,11 @@ const Refill = () => {
   const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [allBrandsLoaded, setAllBrandsLoaded] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      setAllBrandsLoaded(true);
-    }, 50);
+    }, 300);
     return () => clearTimeout(timer);
   }, []);
 
@@ -40,8 +37,6 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
 
-  const filteredBrands = staticBrands;
-
   const filteredPrices = selectedBrand ? refillBrands.filter(brand => brand.brand === selectedBrand).map(brand => {
     const prices = [];
     if (brand.refill_price_3kg) {
@@ -49,7 +44,9 @@ const Refill = () => {
         id: `${brand.id}-3kg`,
         weight: "3KG",
         price: parseInt(brand.refill_price_3kg.replace(/[^0-9]/g, '')),
-        description: "Small cylinder perfect for small households and students"
+        description: "Perfect for small households",
+        features: ["1-2 people", "2-3 weeks usage", "Compact size"],
+        popular: false
       });
     }
     if (brand.refill_price_6kg) {
@@ -57,7 +54,9 @@ const Refill = () => {
         id: `${brand.id}-6kg`,
         weight: "6KG",
         price: parseInt(brand.refill_price_6kg.replace(/[^0-9]/g, '')),
-        description: "Medium cylinder suitable for most households"
+        description: "Most popular choice for families",
+        features: ["3-5 people", "4-6 weeks usage", "Best value"],
+        popular: true
       });
     }
     if (brand.refill_price_12kg) {
@@ -65,7 +64,9 @@ const Refill = () => {
         id: `${brand.id}-12kg`,
         weight: "12KG",
         price: parseInt(brand.refill_price_12kg.replace(/[^0-9]/g, '')),
-        description: "Large cylinder ideal for big families and extended use"
+        description: "Ideal for large families",
+        features: ["6+ people", "8-12 weeks usage", "Maximum savings"],
+        popular: false
       });
     }
     return prices;
@@ -79,24 +80,30 @@ const Refill = () => {
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.3,
+        duration: 0.4,
         when: "beforeChildren",
-        staggerChildren: 0
+        staggerChildren: 0.1
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.5, ease: "easeOut" }
     }
   };
 
+  const features = [
+    { icon: Zap, title: "Same-Day Delivery", desc: "Get your refill within hours" },
+    { icon: Shield, title: "Quality Guaranteed", desc: "Certified gas suppliers only" },
+    { icon: Truck, title: "Free Delivery", desc: "No extra charges in Kampala" }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/40 to-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -104,119 +111,272 @@ const Refill = () => {
         <link rel="canonical" href="https://flamia.store/refill" />
       </Helmet>
       
-      <div className="container px-3 md:px-6 sm:py-6 flex-grow pt-6 py-6">
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="max-w-md mx-auto mb-6 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100">
-            <Label htmlFor="brand-select" className="text-sm font-medium mb-1.5 block text-left">
-              Select Gas Brand
-            </Label>
-            {allBrandsLoaded && (
-              <Select 
-                value={selectedBrand} 
-                onValueChange={setSelectedBrand} 
-                defaultOpen={true} 
-                onOpenChange={setIsDropdownOpen}
-              >
-                <SelectTrigger id="brand-select" className="w-full bg-white/90 backdrop-blur-sm border-accent/20 h-12 shadow-sm">
-                  <SelectValue placeholder="Select gas brand" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-accent/20 shadow-lg overflow-y-auto z-50 max-h-[400px]">
-                  {filteredBrands.map(brand => (
-                    <SelectItem key={brand} value={brand} className="hover:bg-accent/10 py-3">
-                      {brand} Gas
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+      <div className="container px-4 md:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8 lg:mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+            <Flame className="w-4 h-4" />
+            Gas Refill Service
           </div>
-        </div>
+          
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Quick & Reliable
+            <span className="block text-accent">Gas Refill Service</span>
+          </h1>
+          
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+            Get your gas cylinder refilled with guaranteed quality and same-day delivery across Kampala
+          </p>
 
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+                className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-sm"
+              >
+                <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                  <feature.icon className="w-5 h-5 text-accent" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold text-gray-900 text-sm">{feature.title}</h3>
+                  <p className="text-xs text-gray-600">{feature.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Brand Selection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="max-w-md mx-auto mb-8 lg:mb-12"
+        >
+          <Card className="p-6 bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+            <Label htmlFor="brand-select" className="text-base font-semibold mb-4 block text-center text-gray-900">
+              Choose Your Gas Brand
+            </Label>
+            <Select 
+              value={selectedBrand} 
+              onValueChange={setSelectedBrand}
+            >
+              <SelectTrigger 
+                id="brand-select" 
+                className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors"
+              >
+                <SelectValue placeholder="Select your preferred gas brand" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-2 border-gray-100 shadow-xl max-h-[300px]">
+                {staticBrands.map(brand => (
+                  <SelectItem 
+                    key={brand} 
+                    value={brand} 
+                    className="hover:bg-accent/10 py-3 text-base"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
+                        <Flame className="w-4 h-4 text-accent" />
+                      </div>
+                      {brand} Gas
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Card>
+        </motion.div>
+
+        {/* Loading State */}
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
+          <div className="flex justify-center items-center py-16">
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 animate-spin text-accent border-2 border-accent border-t-transparent rounded-full"></div>
-              <p className="mt-4 text-sm text-muted-foreground">Loading gas refill prices...</p>
+              <div className="w-12 h-12 animate-spin text-accent border-4 border-accent border-t-transparent rounded-full mb-4"></div>
+              <p className="text-lg text-gray-600">Loading refill options...</p>
             </div>
           </div>
         ) : (
-          <AnimatePresence>
-            {selectedBrand && (
+          <AnimatePresence mode="wait">
+            {selectedBrand ? (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mb-8"
+                key="selected-brand"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
               >
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Available Refill Options for <span className="text-accent">{selectedBrand}</span>
-                </h2>
+                {/* Brand Header */}
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    <span className="text-accent">{selectedBrand}</span> Refill Options
+                  </h2>
+                  <p className="text-gray-600">Choose the perfect size for your needs</p>
+                </div>
+
+                {/* Refill Options Grid */}
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {filteredPrices.length > 0 ? (
+                    filteredPrices.map((item, index) => (
+                      <motion.div 
+                        key={item.id} 
+                        variants={itemVariants}
+                        className="relative"
+                      >
+                        {item.popular && (
+                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                            <div className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                              <Star className="w-3 h-3 fill-current" />
+                              Most Popular
+                            </div>
+                          </div>
+                        )}
+                        
+                        <Card className={`relative overflow-hidden h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+                          item.popular 
+                            ? 'border-2 border-accent shadow-xl bg-gradient-to-br from-accent/5 to-white' 
+                            : 'border border-gray-200 shadow-lg bg-white hover:border-accent/30'
+                        }`}>
+                          <div className="p-6 lg:p-8">
+                            {/* Icon */}
+                            <div className="flex items-center justify-center mb-6">
+                              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                                item.popular ? 'bg-accent/20' : 'bg-gray-100'
+                              }`}>
+                                <Flame className={`w-8 h-8 ${item.popular ? 'text-accent' : 'text-gray-600'}`} />
+                              </div>
+                            </div>
+
+                            {/* Title & Description */}
+                            <div className="text-center mb-6">
+                              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                                {item.weight} Refill
+                              </h3>
+                              <p className="text-gray-600 text-sm mb-4">
+                                {item.description}
+                              </p>
+                            </div>
+
+                            {/* Features */}
+                            <div className="space-y-3 mb-6">
+                              {item.features.map((feature, idx) => (
+                                <div key={idx} className="flex items-center gap-3">
+                                  <Check className="w-4 h-4 text-accent flex-shrink-0" />
+                                  <span className="text-sm text-gray-700">{feature}</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Price */}
+                            <div className="text-center mb-6">
+                              <div className="text-3xl font-bold text-accent mb-1">
+                                UGX {item.price.toLocaleString()}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                Free delivery included
+                              </div>
+                            </div>
+
+                            {/* Order Button */}
+                            <Button
+                              onClick={() => handleOrder(item.weight, item.price)}
+                              className={`w-full h-12 text-base font-semibold transition-all duration-300 group ${
+                                item.popular
+                                  ? 'bg-accent hover:bg-accent/90 text-white shadow-lg hover:shadow-xl'
+                                  : 'bg-gray-900 hover:bg-accent text-white'
+                              }`}
+                            >
+                              Order {item.weight} Refill
+                              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                            </Button>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <motion.div 
+                      variants={itemVariants} 
+                      className="col-span-full text-center py-16"
+                    >
+                      <div className="max-w-md mx-auto">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Flame className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          No refill options available
+                        </h3>
+                        <p className="text-gray-600">
+                          Refill prices for {selectedBrand} are currently unavailable. Please try another brand.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="no-brand"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="text-center py-16"
+              >
+                <Card className="max-w-lg mx-auto p-8 bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+                  <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Flame className="w-10 h-10 text-accent" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Select Your Gas Brand
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Choose your preferred gas brand from the dropdown above to view available refill options and competitive prices.
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm text-accent">
+                    <Clock className="w-4 h-4" />
+                    <span>Same-day delivery available</span>
+                  </div>
+                </Card>
               </motion.div>
             )}
-            
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {filteredPrices.length > 0 ? (
-                filteredPrices.map(item => (
-                  <motion.div key={item.id} variants={itemVariants} className="h-full">
-                    <Card className="relative overflow-hidden p-5 sm:p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col border-accent/10">
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-white opacity-50" />
-                      <div className="relative z-10 flex flex-col h-full">
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-                            <Flame className="w-7 h-7 sm:w-8 sm:h-8 text-accent" />
-                          </div>
-                        </div>
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-center">{item.weight} Refill</h2>
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-4 flex-grow text-center">
-                          {item.description}
-                        </p>
-                        <div className="p-4 sm:p-5 bg-gradient-to-r from-accent/5 to-white rounded-lg mt-auto border border-accent/10 shadow-sm">
-                          <div className="flex items-center justify-center gap-2 mb-3">
-                            <ul className="text-xs space-y-1.5">
-                              <li className="flex items-center gap-1.5">
-                                <Check size={14} className="text-accent" />
-                                <span>Quality guaranteed</span>
-                              </li>
-                            </ul>
-                          </div>
-                          <p className="font-bold text-accent text-lg sm:text-xl mb-3 text-center">
-                            UGX {item.price.toLocaleString()}
-                          </p>
-                          <Button
-                            onClick={() => handleOrder(item.weight, item.price)}
-                            className="w-full group text-sm py-2 bg-accent hover:bg-accent/90"
-                          >
-                            Order Refill Now
-                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))
-              ) : selectedBrand ? (
-                <motion.div variants={itemVariants} className="col-span-full text-center py-8">
-                  <p className="text-muted-foreground">No gas refill prices available for this brand currently.</p>
-                </motion.div>
-              ) : (
-                <motion.div variants={itemVariants} className="col-span-full text-center py-8">
-                  <div className="p-6 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-100 shadow-sm max-w-xl mx-auto">
-                    <h3 className="text-lg font-medium mb-3">Select a Brand to View Prices</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Choose your preferred gas brand from the dropdown menu above to see available refill options and prices.
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </motion.div>
           </AnimatePresence>
         )}
+
+        {/* Bottom CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-16 text-center"
+        >
+          <Card className="max-w-4xl mx-auto p-8 bg-gradient-to-r from-accent/10 to-blue-50 border-0">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Need Help Choosing?
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Our gas experts are here to help you select the perfect cylinder size for your household needs.
+            </p>
+            <Button
+              onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-semibold"
+            >
+              Chat with Expert on WhatsApp
+            </Button>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
