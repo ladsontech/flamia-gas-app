@@ -1,56 +1,8 @@
-import { User, LogOut, Package, Menu, Home, ShoppingBag, RotateCw, Flame } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { Flame, Home, ShoppingBag, RotateCw } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const AppBar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    // Get current user
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    getCurrentUser();
-
-    // Check admin status
-    const userRole = localStorage.getItem('userRole');
-    setIsAdmin(userRole === 'admin');
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      localStorage.removeItem('userRole');
-      navigate('/');
-      toast({
-        title: "Signed out",
-        description: "You have been signed out successfully"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  };
 
   // Desktop navigation items
   const navItems = [
@@ -93,46 +45,8 @@ const AppBar = () => {
           ))}
         </nav>
 
-        {/* Right side actions */}
-        <div className="flex items-center gap-2">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-9 px-3">
-                  <Package className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Account</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate('/orders')}>
-                  <Package className="h-4 w-4 mr-2" />
-                  My Orders
-                </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate('/admin')}>
-                    <Flame className="h-4 w-4 mr-2" />
-                    Admin Panel
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => navigate('/login')}
-              className="h-9 px-3"
-            >
-              <User className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Sign In</span>
-            </Button>
-          )}
-        </div>
+        {/* Empty div to maintain layout balance */}
+        <div className="w-10"></div>
       </div>
     </header>
   );
