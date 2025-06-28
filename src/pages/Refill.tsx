@@ -43,6 +43,7 @@ const Refill = () => {
     brand.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Get prices for the selected brand
   const filteredPrices = selectedBrand ? refillBrands.filter(brand => brand.brand === selectedBrand).map(brand => {
     const prices = [];
     if (brand.refill_price_3kg) {
@@ -81,6 +82,12 @@ const Refill = () => {
   // Popular brands for priority display
   const popularBrands = ["Total", "Shell", "Stabex", "Hass", "Oryx"];
   const otherBrands = staticBrands.filter(brand => !popularBrands.includes(brand));
+
+  // Handle brand selection and clear search when brand is selected
+  const handleBrandSelect = (brand: string) => {
+    setSelectedBrand(brand);
+    setSearchTerm(""); // Clear search when brand is selected
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
@@ -131,7 +138,7 @@ const Refill = () => {
               {/* Enhanced Select Dropdown - Full Height */}
               <Select 
                 value={selectedBrand} 
-                onValueChange={setSelectedBrand}
+                onValueChange={handleBrandSelect}
               >
                 <SelectTrigger className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white">
                   <SelectValue placeholder="Select your gas brand" />
@@ -167,7 +174,7 @@ const Refill = () => {
                           <Search className="w-6 h-6 text-gray-400" />
                         </div>
                         <p className="font-medium">No brands found</p>
-                        <p className="text-sm">Try searching for "{searchTerm}"</p>
+                        <p className="text-sm">Try searching for a different brand name</p>
                       </div>
                     )}
                   </div>
@@ -204,7 +211,7 @@ const Refill = () => {
                         ? 'border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl shadow-accent/20'
                         : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10'
                     }`}
-                    onClick={() => setSelectedBrand(brand)}
+                    onClick={() => handleBrandSelect(brand)}
                   >
                     {/* Popular Badge */}
                     <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
@@ -260,7 +267,7 @@ const Refill = () => {
                         ? 'border-accent bg-accent/10 shadow-lg'
                         : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
                     }`}
-                    onClick={() => setSelectedBrand(brand)}
+                    onClick={() => handleBrandSelect(brand)}
                   >
                     <div className="text-center">
                       <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center transition-all duration-300 ${
