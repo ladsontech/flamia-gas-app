@@ -189,7 +189,7 @@ const Refill = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Mobile: Enhanced Dropdown */}
+              {/* Mobile: Enhanced Dropdown with Full Height */}
               <div className="lg:hidden space-y-4">
                 {/* Search Input */}
                 <div className="relative">
@@ -202,7 +202,7 @@ const Refill = () => {
                   />
                 </div>
                 
-                {/* Enhanced Select Dropdown */}
+                {/* Enhanced Select Dropdown - Full Height */}
                 <Select 
                   value={selectedBrand} 
                   onValueChange={setSelectedBrand}
@@ -210,29 +210,41 @@ const Refill = () => {
                   <SelectTrigger className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white">
                     <SelectValue placeholder="Select your gas brand" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-2 border-gray-100 shadow-2xl max-h-[400px] w-full">
-                    {filteredBrands.map(brand => (
-                      <SelectItem 
-                        key={brand} 
-                        value={brand} 
-                        className="hover:bg-accent/10 py-3 text-base cursor-pointer"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
-                            <Flame className="w-4 h-4 text-accent" />
+                  <SelectContent 
+                    className="bg-white border-2 border-gray-100 shadow-2xl w-full"
+                    style={{
+                      maxHeight: 'calc(100vh - 200px)', // Use available viewport height minus some padding
+                      height: 'auto'
+                    }}
+                  >
+                    <div className="max-h-full overflow-y-auto">
+                      {filteredBrands.map(brand => (
+                        <SelectItem 
+                          key={brand} 
+                          value={brand} 
+                          className="hover:bg-accent/10 py-4 text-base cursor-pointer border-b border-gray-50 last:border-b-0"
+                        >
+                          <div className="flex items-center gap-3 w-full">
+                            <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
+                              <Flame className="w-5 h-5 text-accent" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-semibold text-gray-900">{brand} Gas</div>
+                              <div className="text-sm text-gray-500">Available for refill</div>
+                            </div>
                           </div>
-                          <div>
-                            <div className="font-medium">{brand} Gas</div>
-                            <div className="text-xs text-gray-500">Available for refill</div>
+                        </SelectItem>
+                      ))}
+                      {filteredBrands.length === 0 && (
+                        <div className="p-6 text-center text-gray-500">
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Search className="w-6 h-6 text-gray-400" />
                           </div>
+                          <p className="font-medium">No brands found</p>
+                          <p className="text-sm">Try searching for "{searchTerm}"</p>
                         </div>
-                      </SelectItem>
-                    ))}
-                    {filteredBrands.length === 0 && (
-                      <div className="p-4 text-center text-gray-500">
-                        No brands found matching "{searchTerm}"
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </SelectContent>
                 </Select>
               </div>
