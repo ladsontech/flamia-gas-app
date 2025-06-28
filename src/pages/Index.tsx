@@ -7,7 +7,7 @@ import { Helmet } from "react-helmet";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
-import { Sparkles, Zap, Shield, Clock, Star, Truck, MapPin, Phone } from "lucide-react";
+import { Sparkles, Zap, Shield, Clock, Star, Truck, MapPin, Phone, Flame } from "lucide-react";
 
 export default function Index() {
   const navigate = useNavigate();
