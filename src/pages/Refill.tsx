@@ -3,11 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Flame, ArrowRight, Check, Search, Star } from "lucide-react";
+import { Flame, ArrowRight, Check, Search, Star, Crown, Zap } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { refillBrands } from "@/components/home/BrandsData";
 
@@ -19,7 +18,6 @@ const Refill = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showHorizontalBrands, setShowHorizontalBrands] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -80,8 +78,9 @@ const Refill = () => {
     return prices;
   }).flat() : [];
 
-  // Popular brands for horizontal display
+  // Popular brands for priority display
   const popularBrands = ["Total", "Shell", "Stabex", "Hass", "Oryx"];
+  const otherBrands = staticBrands.filter(brand => !popularBrands.includes(brand));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
@@ -93,164 +92,202 @@ const Refill = () => {
       </Helmet>
       
       <div className="container px-4 md:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-        {/* PRIORITY: Brand Selection - First Thing Users See */}
+        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-8"
+          className="text-center mb-8"
         >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+            <Flame className="w-4 h-4" />
+            Gas Refill Service
+          </div>
+          
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Select Your Gas Brand
+          </h1>
+          
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Choose your preferred gas brand to see the best refill prices in Uganda
+          </p>
+        </motion.div>
+
+        {/* Mobile: Dropdown Selection */}
+        <div className="lg:hidden mb-8">
           <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            <div className="space-y-6">
-              <div className="text-center">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                  Select Gas Brand
-                </h1>
-                <p className="text-gray-600">
-                  Choose your gas brand to see refill prices
-                </p>
+            <div className="space-y-4">
+              {/* Search Input */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search gas brands..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 border-2 border-gray-200 focus:border-accent"
+                />
               </div>
-
-              {/* Desktop: Horizontal Brand Selection */}
-              <div className="hidden lg:block">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Popular Brands</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowHorizontalBrands(!showHorizontalBrands)}
-                    className="text-accent border-accent hover:bg-accent/10"
-                  >
-                    {showHorizontalBrands ? 'Show Popular' : 'View All'}
-                  </Button>
-                </div>
-
-                {/* Popular Brands Grid */}
-                <div className="grid grid-cols-5 gap-4 mb-6">
-                  {popularBrands.map((brand) => (
-                    <motion.div
-                      key={brand}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                        selectedBrand === brand
-                          ? 'border-accent bg-accent/10 shadow-lg'
-                          : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
-                      }`}
-                      onClick={() => setSelectedBrand(brand)}
-                    >
-                      <div className="text-center">
-                        <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${
-                          selectedBrand === brand ? 'bg-accent/20' : 'bg-gray-100'
-                        }`}>
-                          <Flame className={`w-6 h-6 ${
-                            selectedBrand === brand ? 'text-accent' : 'text-gray-600'
-                          }`} />
-                        </div>
-                        <h4 className="font-semibold text-sm text-gray-900">{brand}</h4>
-                        <p className="text-xs text-gray-500">Gas</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* All Brands Horizontal Scroll */}
-                <AnimatePresence>
-                  {showHorizontalBrands && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="border-t pt-4">
-                        <h4 className="text-md font-semibold text-gray-900 mb-3">All Brands</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {staticBrands.map((brand) => (
-                            <Button
-                              key={brand}
-                              variant={selectedBrand === brand ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setSelectedBrand(brand)}
-                              className={`${
-                                selectedBrand === brand
-                                  ? 'bg-accent hover:bg-accent/90 text-white'
-                                  : 'border-gray-300 hover:border-accent hover:text-accent'
-                              }`}
-                            >
-                              {brand}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Mobile: Enhanced Dropdown with Full Height */}
-              <div className="lg:hidden space-y-4">
-                {/* Search Input */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Search gas brands..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-12 border-2 border-gray-200 focus:border-accent"
-                  />
-                </div>
-                
-                {/* Enhanced Select Dropdown - Full Height */}
-                <Select 
-                  value={selectedBrand} 
-                  onValueChange={setSelectedBrand}
+              
+              {/* Enhanced Select Dropdown - Full Height */}
+              <Select 
+                value={selectedBrand} 
+                onValueChange={setSelectedBrand}
+              >
+                <SelectTrigger className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white">
+                  <SelectValue placeholder="Select your gas brand" />
+                </SelectTrigger>
+                <SelectContent 
+                  className="bg-white border-2 border-gray-100 shadow-2xl w-full"
+                  style={{
+                    maxHeight: 'calc(100vh - 200px)',
+                    height: 'auto'
+                  }}
                 >
-                  <SelectTrigger className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white">
-                    <SelectValue placeholder="Select your gas brand" />
-                  </SelectTrigger>
-                  <SelectContent 
-                    className="bg-white border-2 border-gray-100 shadow-2xl w-full"
-                    style={{
-                      maxHeight: 'calc(100vh - 200px)', // Use available viewport height minus some padding
-                      height: 'auto'
-                    }}
-                  >
-                    <div className="max-h-full overflow-y-auto">
-                      {filteredBrands.map(brand => (
-                        <SelectItem 
-                          key={brand} 
-                          value={brand} 
-                          className="hover:bg-accent/10 py-4 text-base cursor-pointer border-b border-gray-50 last:border-b-0"
-                        >
-                          <div className="flex items-center gap-3 w-full">
-                            <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                              <Flame className="w-5 h-5 text-accent" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-semibold text-gray-900">{brand} Gas</div>
-                              <div className="text-sm text-gray-500">Available for refill</div>
-                            </div>
+                  <div className="max-h-full overflow-y-auto">
+                    {filteredBrands.map(brand => (
+                      <SelectItem 
+                        key={brand} 
+                        value={brand} 
+                        className="hover:bg-accent/10 py-4 text-base cursor-pointer border-b border-gray-50 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-3 w-full">
+                          <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Flame className="w-5 h-5 text-accent" />
                           </div>
-                        </SelectItem>
-                      ))}
-                      {filteredBrands.length === 0 && (
-                        <div className="p-6 text-center text-gray-500">
-                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Search className="w-6 h-6 text-gray-400" />
+                          <div className="flex-1">
+                            <div className="font-semibold text-gray-900">{brand} Gas</div>
+                            <div className="text-sm text-gray-500">Available for refill</div>
                           </div>
-                          <p className="font-medium">No brands found</p>
-                          <p className="text-sm">Try searching for "{searchTerm}"</p>
                         </div>
+                      </SelectItem>
+                    ))}
+                    {filteredBrands.length === 0 && (
+                      <div className="p-6 text-center text-gray-500">
+                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Search className="w-6 h-6 text-gray-400" />
+                        </div>
+                        <p className="font-medium">No brands found</p>
+                        <p className="text-sm">Try searching for "{searchTerm}"</p>
+                      </div>
+                    )}
+                  </div>
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+        </div>
+
+        {/* Desktop: Brand Grid Display */}
+        <div className="hidden lg:block mb-12">
+          <Card className="p-8 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
+            {/* Popular Brands Section */}
+            <div className="mb-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Popular Brands</h2>
+                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+              </div>
+              
+              <div className="grid grid-cols-5 gap-6">
+                {popularBrands.map((brand, index) => (
+                  <motion.div
+                    key={brand}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.4 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      selectedBrand === brand
+                        ? 'border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl shadow-accent/20'
+                        : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10'
+                    }`}
+                    onClick={() => setSelectedBrand(brand)}
+                  >
+                    {/* Popular Badge */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                      <Star className="w-3 h-3 text-white fill-current" />
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                        selectedBrand === brand 
+                          ? 'bg-accent/20 shadow-lg' 
+                          : 'bg-gray-100 group-hover:bg-accent/10'
+                      }`}>
+                        <Flame className={`w-8 h-8 transition-colors duration-300 ${
+                          selectedBrand === brand ? 'text-accent' : 'text-gray-600'
+                        }`} />
+                      </div>
+                      <h3 className="font-bold text-lg text-gray-900 mb-1">{brand}</h3>
+                      <p className="text-sm text-gray-500">Premium Gas</p>
+                      {selectedBrand === brand && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="mt-3 w-2 h-2 bg-accent rounded-full mx-auto"
+                        />
                       )}
                     </div>
-                  </SelectContent>
-                </Select>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* All Other Brands Section */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">All Brands</h2>
+                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+              </div>
+              
+              <div className="grid grid-cols-6 gap-4">
+                {otherBrands.map((brand, index) => (
+                  <motion.div
+                    key={brand}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: (index + 5) * 0.05, duration: 0.3 }}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
+                      selectedBrand === brand
+                        ? 'border-accent bg-accent/10 shadow-lg'
+                        : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
+                    }`}
+                    onClick={() => setSelectedBrand(brand)}
+                  >
+                    <div className="text-center">
+                      <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                        selectedBrand === brand 
+                          ? 'bg-accent/20' 
+                          : 'bg-gray-100 hover:bg-accent/10'
+                      }`}>
+                        <Flame className={`w-6 h-6 transition-colors duration-300 ${
+                          selectedBrand === brand ? 'text-accent' : 'text-gray-600'
+                        }`} />
+                      </div>
+                      <h4 className="font-semibold text-sm text-gray-900">{brand}</h4>
+                      <p className="text-xs text-gray-500">Gas</p>
+                      {selectedBrand === brand && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="mt-2 w-1.5 h-1.5 bg-accent rounded-full mx-auto"
+                        />
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Refill Options - Only show after brand selection */}
         {!isLoading && (
