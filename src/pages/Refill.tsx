@@ -3,14 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Flame, ArrowRight, Check, Zap, Shield, Clock, Truck, AlertTriangle, Info, Search, Star, Award, Users } from "lucide-react";
+import { Flame, ArrowRight, Check, Zap, Shield, Clock, Truck, Search, Star, Award, Users, TrendingUp } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Helmet } from "react-helmet";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { refillBrands } from "@/components/home/BrandsData";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas"];
 
@@ -20,6 +19,7 @@ const Refill = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showHorizontalBrands, setShowHorizontalBrands] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,6 +83,9 @@ const Refill = () => {
     return prices;
   }).flat() : [];
 
+  // Popular brands for horizontal display
+  const popularBrands = ["Total", "Shell", "Stabex", "Hass", "Oryx"];
+
   // SEO metadata hidden in Helmet
   const pageTitle = "Gas Refill Prices Uganda Today | Best LPG Refill Service Kampala";
   const pageDescription = "Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex gas cylinders with free same-day delivery in Kampala, Wakiso, Mukono.";
@@ -112,27 +115,6 @@ const Refill = () => {
     { icon: Zap, title: "Lightning Fast", desc: "Same-day delivery", color: "text-yellow-600" },
     { icon: Shield, title: "Quality Guaranteed", desc: "Best prices guaranteed", color: "text-green-600" },
     { icon: Truck, title: "Free Delivery", desc: "No delivery charges", color: "text-blue-600" }
-  ];
-
-  const safetyTips = [
-    {
-      title: "Check for Leaks",
-      description: "Use soapy water to check connections. Never use a flame to check for leaks.",
-      icon: AlertTriangle,
-      color: "text-red-600"
-    },
-    {
-      title: "Proper Storage",
-      description: "Store cylinders upright in well-ventilated areas away from heat sources.",
-      icon: Shield,
-      color: "text-green-600"
-    },
-    {
-      title: "Regular Maintenance",
-      description: "Check regulators and hoses regularly. Replace if damaged or worn.",
-      icon: Info,
-      color: "text-blue-600"
-    }
   ];
 
   const testimonials = [
@@ -267,25 +249,104 @@ const Refill = () => {
               className="mb-8 lg:mb-12"
             >
               <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-                <div className="lg:flex lg:items-center lg:gap-6">
-                  <div className="lg:flex-1">
-                    <Label htmlFor="brand-select" className="text-lg font-semibold mb-2 block text-gray-900">
+                <div className="space-y-6">
+                  <div className="text-center lg:text-left">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
                       Choose Your Gas Brand
-                    </Label>
-                    <p className="text-sm text-gray-600 mb-4 lg:mb-0">
+                    </h2>
+                    <p className="text-gray-600">
                       We offer refills for all major gas brands in Uganda
                     </p>
                   </div>
-                  
-                  <div className="lg:flex-1 lg:max-w-md space-y-4">
-                    {/* Search Input - Desktop only */}
-                    <div className="hidden lg:block relative">
+
+                  {/* Desktop: Horizontal Brand Selection */}
+                  <div className="hidden lg:block">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Popular Brands</h3>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowHorizontalBrands(!showHorizontalBrands)}
+                        className="text-accent border-accent hover:bg-accent/10"
+                      >
+                        {showHorizontalBrands ? 'Show All Brands' : 'View More'}
+                      </Button>
+                    </div>
+
+                    {/* Popular Brands Grid */}
+                    <div className="grid grid-cols-5 gap-4 mb-6">
+                      {popularBrands.map((brand) => (
+                        <motion.div
+                          key={brand}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                            selectedBrand === brand
+                              ? 'border-accent bg-accent/10 shadow-lg'
+                              : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
+                          }`}
+                          onClick={() => setSelectedBrand(brand)}
+                        >
+                          <div className="text-center">
+                            <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${
+                              selectedBrand === brand ? 'bg-accent/20' : 'bg-gray-100'
+                            }`}>
+                              <Flame className={`w-6 h-6 ${
+                                selectedBrand === brand ? 'text-accent' : 'text-gray-600'
+                              }`} />
+                            </div>
+                            <h4 className="font-semibold text-sm text-gray-900">{brand}</h4>
+                            <p className="text-xs text-gray-500">Gas</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* All Brands Horizontal Scroll */}
+                    <AnimatePresence>
+                      {showHorizontalBrands && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t pt-4">
+                            <h4 className="text-md font-semibold text-gray-900 mb-3">All Brands</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {staticBrands.map((brand) => (
+                                <Button
+                                  key={brand}
+                                  variant={selectedBrand === brand ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setSelectedBrand(brand)}
+                                  className={`${
+                                    selectedBrand === brand
+                                      ? 'bg-accent hover:bg-accent/90 text-white'
+                                      : 'border-gray-300 hover:border-accent hover:text-accent'
+                                  }`}
+                                >
+                                  {brand}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Mobile: Enhanced Dropdown */}
+                  <div className="lg:hidden space-y-4">
+                    {/* Search Input */}
+                    <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                       <Input
                         placeholder="Search gas brands..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 h-10 border-2 border-gray-200 focus:border-accent"
+                        className="pl-10 h-12 border-2 border-gray-200 focus:border-accent"
                       />
                     </div>
                     
@@ -294,24 +355,10 @@ const Refill = () => {
                       value={selectedBrand} 
                       onValueChange={setSelectedBrand}
                     >
-                      <SelectTrigger 
-                        id="brand-select" 
-                        className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white"
-                      >
+                      <SelectTrigger className="w-full h-12 text-base border-2 border-gray-200 focus:border-accent transition-colors bg-white">
                         <SelectValue placeholder="Select your preferred gas brand" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 border-gray-100 shadow-2xl max-h-[400px] w-full">
-                        <div className="p-2 lg:hidden">
-                          <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <Input
-                              placeholder="Search brands..."
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                              className="pl-10 h-8 text-sm"
-                            />
-                          </div>
-                        </div>
                         {filteredBrands.map(brand => (
                           <SelectItem 
                             key={brand} 
@@ -486,7 +533,7 @@ const Refill = () => {
                         Select Your Gas Brand for Best Prices
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        Choose your preferred gas brand from the dropdown above to view the best refill prices in Uganda.
+                        Choose your preferred gas brand from the options above to view the best refill prices in Uganda.
                       </p>
                       <div className="space-y-3">
                         <div className="flex items-center justify-center gap-2 text-sm text-accent">
@@ -508,39 +555,6 @@ const Refill = () => {
           {/* Sidebar - Desktop only */}
           <div className="hidden lg:block lg:col-span-4">
             <div className="sticky top-20 space-y-6">
-              {/* Gas Safety Tips */}
-              <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-                <div className="flex items-center gap-2 mb-4">
-                  <Shield className="w-5 h-5 text-accent" />
-                  <h3 className="text-lg font-semibold text-gray-900">Gas Safety Tips</h3>
-                </div>
-                
-                <Accordion type="single" collapsible className="w-full">
-                  {safetyTips.map((tip, index) => (
-                    <AccordionItem key={index} value={`item-${index}`} className="border-gray-200">
-                      <AccordionTrigger className="text-left hover:no-underline">
-                        <div className="flex items-center gap-3">
-                          <tip.icon className={`w-4 h-4 ${tip.color}`} />
-                          <span className="font-medium text-sm">{tip.title}</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="text-sm text-gray-600 pl-7">
-                        {tip.description}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-                
-                <div className="mt-4 p-3 bg-accent/10 rounded-lg">
-                  <p className="text-xs text-gray-600">
-                    Need safety advice? Contact our gas experts at{" "}
-                    <a href="https://wa.me/256789572007" className="text-accent font-medium">
-                      +256 789 572 007
-                    </a>
-                  </p>
-                </div>
-              </Card>
-
               {/* Customer Testimonials */}
               <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
                 <div className="flex items-center gap-2 mb-4">
@@ -566,6 +580,33 @@ const Refill = () => {
                 </div>
               </Card>
 
+              {/* Price Comparison */}
+              <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-5 h-5 text-accent" />
+                  <h3 className="text-lg font-semibold text-gray-900">Why Choose Flamia?</h3>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="text-sm text-gray-700">Best prices guaranteed</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <Truck className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm text-gray-700">Free same-day delivery</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
+                    <Clock className="w-4 h-4 text-yellow-600" />
+                    <span className="text-sm text-gray-700">30-60 minute delivery</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                    <Shield className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm text-gray-700">Quality assurance</span>
+                  </div>
+                </div>
+              </Card>
+
               {/* Quick Contact */}
               <Card className="p-6 bg-gradient-to-r from-accent/10 to-blue-50 border-0">
                 <div className="text-center">
@@ -586,28 +627,6 @@ const Refill = () => {
               </Card>
             </div>
           </div>
-        </div>
-
-        {/* Mobile Safety Section */}
-        <div className="lg:hidden mt-12">
-          <Card className="p-6 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-accent" />
-              <h3 className="text-lg font-semibold text-gray-900">Gas Safety Tips</h3>
-            </div>
-            
-            <div className="grid gap-4">
-              {safetyTips.map((tip, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                  <tip.icon className={`w-5 h-5 ${tip.color} mt-0.5`} />
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-900 mb-1">{tip.title}</h4>
-                    <p className="text-xs text-gray-600">{tip.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
 
         {/* Contact Section */}
