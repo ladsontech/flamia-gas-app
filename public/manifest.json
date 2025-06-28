@@ -10,6 +10,41 @@
   "theme_color": "#00b341",
   "orientation": "portrait-primary",
   "categories": ["shopping", "utilities", "business"],
+  "iarc_rating_id": "e84b072d-71de-4d25-b5aa-cb41a3c26c6d",
+  "scope_extensions": [
+    {
+      "origin": "https://flamia.com"
+    },
+    {
+      "origin": "https://www.flamia.com"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "Quick Order",
+      "description": "Quickly order gas cylinders and refills",
+      "tag": "quick-order",
+      "template": "quick-order-template",
+      "ms_ac_template": "/widgets/quick-order-template.html",
+      "data": "/widgets/quick-order-data.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "/widgets/quick-order-screenshot.png",
+          "sizes": "512x512",
+          "label": "Quick order widget showing gas delivery options"
+        }
+      ],
+      "icons": [
+        {
+          "src": "/lovable-uploads/icon.png",
+          "sizes": "72x72"
+        }
+      ],
+      "auth": false,
+      "update": 3600000
+    }
+  ],
   "icons": [
     {
       "src": "/lovable-uploads/icon.png",
