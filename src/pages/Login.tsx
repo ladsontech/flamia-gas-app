@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -32,7 +33,7 @@ const Login = () => {
         }
       }
       
-      if (event === 'SIGNED_UP') {
+      if (event === 'USER_UPDATED') {
         toast({
           title: "Account Created!",
           description: "Welcome to Flamia! Your account has been created successfully.",
