@@ -1,4 +1,4 @@
-import { DivideIcon as LucideIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface NavItemProps {
@@ -12,21 +12,16 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
   return (
     <Link 
       to={to} 
-      className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-300 ${
+      className={`relative flex flex-col items-center justify-center py-2 px-3 transition-all duration-300 ${
         isActive 
-          ? "text-accent scale-105" 
+          ? "text-accent" 
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Blue Flame Ring for Active State */}
+      {/* Simple Circular Blue Ring for Active State */}
       {isActive && (
-        <div className="absolute inset-0 rounded-xl animate-pulse">
-          {/* Outer blue flame ring */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 opacity-30 blur-sm"></div>
-          {/* Inner blue flame ring */}
-          <div className="absolute inset-[2px] rounded-xl bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 opacity-40"></div>
-          {/* Core flame effect */}
-          <div className="absolute inset-[3px] rounded-xl bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400 opacity-20"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full border-2 border-blue-500 animate-pulse"></div>
         </div>
       )}
       
