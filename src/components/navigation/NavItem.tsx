@@ -14,7 +14,7 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
       to={to} 
       className={`relative flex flex-col items-center justify-center py-2 px-3 transition-all duration-300 ${
         isActive 
-          ? "text-white" 
+          ? "text-accent" 
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
@@ -23,44 +23,34 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
         <>
           {/* Main circular ring - positioned behind content */}
           <div className="absolute inset-0 flex items-center justify-center z-0">
-            <div className="w-14 h-14 rounded-full border-2 border-blue-500 animate-pulse bg-gradient-to-r from-blue-500/20 to-orange-500/20"></div>
+            <div className="w-12 h-12 rounded-full border-2 border-blue-500 animate-pulse"></div>
           </div>
           
-          {/* Inner flame glow - behind content */}
-          <div className="absolute inset-0 flex items-center justify-center z-0">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400/30 via-orange-400/30 to-red-400/30 animate-pulse blur-sm"></div>
-          </div>
-          
-          {/* Outer flame spread - behind content */}
-          <div className="absolute inset-0 flex items-center justify-center z-0">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-300/20 via-orange-300/20 to-red-300/20 animate-ping"></div>
-          </div>
-          
-          {/* Flame particles spreading outward from the ring - positioned outside the ring */}
-          <div className="absolute inset-0 flex items-center justify-center z-0">
-            {/* Top flame particle - positioned outside the ring */}
-            <div className="absolute -top-4 w-2 h-4 bg-gradient-to-t from-orange-500 to-red-500 rounded-full opacity-70 animate-bounce"></div>
+          {/* Flame particles spreading outward from the ring */}
+          <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+            {/* Top flame particle */}
+            <div className="absolute -top-6 w-3 h-6 bg-gradient-to-t from-orange-500 to-red-500 rounded-full opacity-70 animate-pulse"></div>
             
             {/* Top-right flame particle */}
-            <div className="absolute -top-3 -right-3 w-2 h-3 bg-gradient-to-tr from-orange-500 to-red-500 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="absolute -top-5 -right-5 w-3 h-5 bg-gradient-to-tr from-orange-500 to-red-500 rounded-full opacity-60 animate-pulse" style={{ animationDelay: '0.1s' }}></div>
             
-            {/* Right flame particle - positioned outside the ring */}
-            <div className="absolute -right-4 w-4 h-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full opacity-70 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            {/* Right flame particle */}
+            <div className="absolute -right-6 w-6 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full opacity-70 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
             
             {/* Bottom-right flame particle */}
-            <div className="absolute -bottom-3 -right-3 w-2 h-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+            <div className="absolute -bottom-5 -right-5 w-3 h-5 bg-gradient-to-br from-orange-500 to-red-500 rounded-full opacity-60 animate-pulse" style={{ animationDelay: '0.3s' }}></div>
             
-            {/* Bottom flame particle - positioned outside the ring */}
-            <div className="absolute -bottom-4 w-2 h-4 bg-gradient-to-b from-orange-500 to-red-500 rounded-full opacity-70 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            {/* Bottom flame particle */}
+            <div className="absolute -bottom-6 w-3 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full opacity-70 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
             
             {/* Bottom-left flame particle */}
-            <div className="absolute -bottom-3 -left-3 w-2 h-3 bg-gradient-to-bl from-orange-500 to-red-500 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute -bottom-5 -left-5 w-3 h-5 bg-gradient-to-bl from-orange-500 to-red-500 rounded-full opacity-60 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
             
-            {/* Left flame particle - positioned outside the ring */}
-            <div className="absolute -left-4 w-4 h-2 bg-gradient-to-l from-orange-500 to-red-500 rounded-full opacity-70 animate-bounce" style={{ animationDelay: '0.6s' }}></div>
+            {/* Left flame particle */}
+            <div className="absolute -left-6 w-6 h-3 bg-gradient-to-l from-orange-500 to-red-500 rounded-full opacity-70 animate-pulse" style={{ animationDelay: '0.6s' }}></div>
             
             {/* Top-left flame particle */}
-            <div className="absolute -top-3 -left-3 w-2 h-3 bg-gradient-to-tl from-orange-500 to-red-500 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0.7s' }}></div>
+            <div className="absolute -top-5 -left-5 w-3 h-5 bg-gradient-to-tl from-orange-500 to-red-500 rounded-full opacity-60 animate-pulse" style={{ animationDelay: '0.7s' }}></div>
           </div>
         </>
       )}
