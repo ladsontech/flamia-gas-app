@@ -141,11 +141,11 @@ const Refill = () => {
                   placeholder="Search gas brands..."
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10 h-12 border-2 border-gray-200 focus:border-accent"
+                  className="pl-10 h-12 border-2 border-gray-200 focus:border-accent text-base"
                 />
               </div>
               
-              {/* Enhanced Select Dropdown - Full Height with Search Results */}
+              {/* Enhanced Select Dropdown - Full Height with Mobile Optimized Text */}
               <Select 
                 value={selectedBrand} 
                 onValueChange={handleBrandSelect}
@@ -168,20 +168,24 @@ const Refill = () => {
                       <SelectItem 
                         key={brand} 
                         value={brand} 
-                        className="hover:bg-accent/10 py-4 text-base cursor-pointer border-b border-gray-50 last:border-b-0"
+                        className="hover:bg-accent/10 py-5 px-4 text-base cursor-pointer border-b border-gray-50 last:border-b-0 min-h-[60px]"
                       >
                         <div className="flex items-center gap-3 w-full">
-                          <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Flame className="w-5 h-5 text-accent" />
+                          <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Flame className="w-6 h-6 text-accent" />
                           </div>
-                          <div className="flex-1">
-                            <div className="font-semibold text-gray-900">{brand} Gas</div>
-                            <div className="text-sm text-gray-500">Available for refill</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-lg text-gray-900 leading-tight">
+                              {brand} Gas
+                            </div>
+                            <div className="text-sm text-gray-600 leading-tight mt-1">
+                              Available for refill
+                            </div>
                           </div>
                           {popularBrands.includes(brand) && (
-                            <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">
+                            <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-3 py-1.5 rounded-full flex-shrink-0">
                               <Star className="w-3 h-3 fill-current" />
-                              Popular
+                              <span className="font-medium">Popular</span>
                             </div>
                           )}
                         </div>
@@ -190,16 +194,18 @@ const Refill = () => {
                     
                     {/* Show no results message when search has no matches */}
                     {searchTerm && filteredBrands.length === 0 && (
-                      <div className="p-6 text-center text-gray-500">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Search className="w-6 h-6 text-gray-400" />
+                      <div className="p-8 text-center text-gray-500">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Search className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-medium">No brands found</p>
-                        <p className="text-sm">Try searching for "{searchTerm}" or clear the search</p>
+                        <p className="font-semibold text-lg mb-2">No brands found</p>
+                        <p className="text-base mb-4">
+                          Try searching for "{searchTerm}" or clear the search
+                        </p>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="mt-3"
+                          className="h-10 px-6 text-base"
                           onClick={() => {
                             setSearchTerm("");
                             setIsDropdownOpen(true);
@@ -212,8 +218,10 @@ const Refill = () => {
                     
                     {/* Show all brands message when no search term */}
                     {!searchTerm && staticBrands.length > 0 && (
-                      <div className="p-3 text-center text-xs text-gray-500 border-t border-gray-100 bg-gray-50">
-                        Showing all {staticBrands.length} available gas brands
+                      <div className="p-4 text-center text-sm text-gray-500 border-t border-gray-100 bg-gray-50">
+                        <span className="font-medium">
+                          Showing all {staticBrands.length} available gas brands
+                        </span>
                       </div>
                     )}
                   </div>
@@ -223,13 +231,13 @@ const Refill = () => {
               {/* Quick search suggestions */}
               {searchTerm && filteredBrands.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  <span className="text-xs text-gray-500">Quick select:</span>
+                  <span className="text-sm text-gray-500 font-medium">Quick select:</span>
                   {filteredBrands.slice(0, 3).map(brand => (
                     <Button
                       key={brand}
                       variant="outline"
                       size="sm"
-                      className="h-7 text-xs"
+                      className="h-8 text-sm px-3"
                       onClick={() => handleBrandSelect(brand)}
                     >
                       {brand}
