@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 
 const PlaceScreen = () => {
@@ -38,15 +37,18 @@ const PlaceScreen = () => {
         transition={{ delay: 0.8, duration: 0.7 }}
         className="absolute bottom-16 flex flex-col items-center"
       >
-        <img
-          src="/lovable-uploads/c2791a2b-59d6-4982-8cda-b78cbc2556b3.png"
-          alt="Dots Logo"
-          className="w-8 h-8 mb-1"
-        />
         <motion.p 
-          className="text-sm text-gray-600 italic transform -rotate-2"
+          className="text-sm text-gray-600 italic transform -rotate-2 flex items-center gap-1"
         >
-          from Dots
+          designed by{" "}
+          <a 
+            href="https://junooby.tech" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-accent hover:text-accent/80 transition-colors font-medium"
+          >
+            Jubooby
+          </a>
         </motion.p>
       </motion.div>
     </div>
