@@ -1,4 +1,4 @@
-import { DivideIcon as LucideIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface NavItemProps {
@@ -31,33 +31,6 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
             
             {/* Core ring */}
             <div className="absolute inset-2 rounded-full bg-gradient-to-r from-yellow-300 via-orange-300 to-yellow-300 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-            
-            {/* Flame particles around the ring */}
-            <div className="absolute inset-0 rounded-full">
-              {/* Top flame particle */}
-              <div className="absolute -top-1 left-1/2 w-1.5 h-1.5 bg-orange-400 rounded-full animate-ping" style={{ animationDelay: '0s', transform: 'translateX(-50%)' }}></div>
-              
-              {/* Top-right flame particle */}
-              <div className="absolute top-1 right-1 w-1 h-1 bg-red-400 rounded-full animate-ping" style={{ animationDelay: '0.3s' }}></div>
-              
-              {/* Right flame particle */}
-              <div className="absolute top-1/2 -right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full animate-ping" style={{ animationDelay: '0.6s', transform: 'translateY(-50%)' }}></div>
-              
-              {/* Bottom-right flame particle */}
-              <div className="absolute bottom-1 right-1 w-1 h-1 bg-orange-500 rounded-full animate-ping" style={{ animationDelay: '0.9s' }}></div>
-              
-              {/* Bottom flame particle */}
-              <div className="absolute -bottom-1 left-1/2 w-1.5 h-1.5 bg-red-500 rounded-full animate-ping" style={{ animationDelay: '1.2s', transform: 'translateX(-50%)' }}></div>
-              
-              {/* Bottom-left flame particle */}
-              <div className="absolute bottom-1 left-1 w-1 h-1 bg-yellow-500 rounded-full animate-ping" style={{ animationDelay: '1.5s' }}></div>
-              
-              {/* Left flame particle */}
-              <div className="absolute top-1/2 -left-1 w-1.5 h-1.5 bg-orange-400 rounded-full animate-ping" style={{ animationDelay: '1.8s', transform: 'translateY(-50%)' }}></div>
-              
-              {/* Top-left flame particle */}
-              <div className="absolute top-1 left-1 w-1 h-1 bg-red-400 rounded-full animate-ping" style={{ animationDelay: '2.1s' }}></div>
-            </div>
             
             {/* Inner glow effect */}
             <div className="absolute inset-3 rounded-full bg-gradient-to-r from-yellow-200 to-orange-200 opacity-60 animate-pulse" style={{ animationDelay: '0.6s' }}></div>
