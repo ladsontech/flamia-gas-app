@@ -15,7 +15,7 @@ import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
 import { createOrder } from "@/services/database";
 
-const Order = () => {
+export default function Order() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -318,6 +318,4 @@ const Order = () => {
       <Footer />
     </div>
   );
-};
-
-export default Order;
+}
