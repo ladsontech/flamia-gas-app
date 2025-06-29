@@ -19,28 +19,49 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Thin flame ring around the icon */}
+      {/* Large blue ring with flame effect */}
       {isActive && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-          {/* Thin flame ring */}
+          {/* Outer flame glow - fading effect */}
           <div 
-            className="w-10 h-10 rounded-full animate-pulse"
+            className="w-16 h-16 rounded-full opacity-30 animate-pulse"
+            style={{
+              background: `radial-gradient(circle, 
+                rgba(255, 127, 0, 0.4) 0%,
+                rgba(74, 144, 226, 0.3) 25%, 
+                rgba(255, 140, 66, 0.2) 50%,
+                rgba(91, 163, 245, 0.1) 75%,
+                transparent 100%
+              )`,
+              animationDuration: '2s'
+            }}
+          />
+          
+          {/* Main blue ring */}
+          <div 
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full"
+            style={{
+              border: '2px solid #4a90e2',
+              background: 'transparent'
+            }}
+          />
+          
+          {/* Inner flame ring - closer to the blue ring */}
+          <div 
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-15 h-15 rounded-full opacity-60 animate-pulse"
             style={{
               background: `conic-gradient(
                 from 0deg,
-                #ff7f00,
-                #4a90e2,
-                #ff8c42,
-                #5ba3f5,
-                #ff7f00,
-                #3d7bd9,
-                #ff7f00
+                rgba(255, 127, 0, 0.6),
+                rgba(74, 144, 226, 0.6),
+                rgba(255, 140, 66, 0.6),
+                rgba(91, 163, 245, 0.6),
+                rgba(255, 127, 0, 0.6)
               )`,
               animationDuration: '3s',
-              padding: '2px'
+              padding: '1px'
             }}
           >
-            {/* Inner transparent circle to create thin ring effect */}
             <div className="w-full h-full rounded-full bg-white" />
           </div>
         </div>
