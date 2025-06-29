@@ -1,4 +1,4 @@
-import { DivideIcon as LucideIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface NavItemProps {
@@ -18,27 +18,24 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Flame ring effect for active state */}
+      {/* Flame ring effect for active state - encircling around the icon */}
       {isActive && (
-        <div className="absolute inset-0 flex items-center justify-center z-0">
-          {/* Main flame ring with gradient */}
-          <div className="w-14 h-14 rounded-full relative">
-            {/* Outer flame ring */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 animate-pulse opacity-80"></div>
-            
-            {/* Inner flame ring */}
-            <div className="absolute inset-1 rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-            
-            {/* Core ring */}
-            <div className="absolute inset-2 rounded-full bg-gradient-to-r from-yellow-300 via-orange-300 to-yellow-300 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-            
-            {/* Inner glow effect */}
-            <div className="absolute inset-3 rounded-full bg-gradient-to-r from-yellow-200 to-orange-200 opacity-60 animate-pulse" style={{ animationDelay: '0.6s' }}></div>
-          </div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
+          {/* Outer flame ring - largest */}
+          <div className="w-16 h-16 rounded-full border-2 border-orange-500 animate-pulse opacity-80"></div>
+          
+          {/* Middle flame ring */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border-2 border-red-500 animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+          
+          {/* Inner flame ring */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-2 border-yellow-500 animate-pulse" style={{ animationDelay: '0.6s' }}></div>
+          
+          {/* Flame glow effect around the rings */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-to-r from-orange-400 via-red-400 to-yellow-400 opacity-20 blur-sm animate-pulse"></div>
         </div>
       )}
       
-      {/* Icon and Label - Made icon bigger and elevated */}
+      {/* Icon and Label - Elevated above the flame rings */}
       <div className="relative z-30 flex flex-col items-center">
         <Icon className={`mb-1 transition-all duration-300 ${
           isActive ? "h-7 w-7 drop-shadow-lg" : "h-5 w-5"
