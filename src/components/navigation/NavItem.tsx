@@ -19,29 +19,30 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Simple flame ring around the icon */}
+      {/* Thin flame ring around the icon */}
       {isActive && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-          {/* Outer flame ring */}
+          {/* Thin flame ring */}
           <div 
-            className="w-12 h-12 rounded-full animate-pulse"
+            className="w-10 h-10 rounded-full animate-pulse"
             style={{
               background: `conic-gradient(
                 from 0deg,
-                #ff4500,
-                #ff6b00,
-                #ffaa00,
-                #ff8c00,
-                #ff4500,
-                #dc2626,
-                #ff4500
+                #ff7f00,
+                #4a90e2,
+                #ff8c42,
+                #5ba3f5,
+                #ff7f00,
+                #3d7bd9,
+                #ff7f00
               )`,
-              animationDuration: '2s'
+              animationDuration: '3s',
+              padding: '2px'
             }}
-          />
-          
-          {/* Inner transparent circle to create ring effect */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white" />
+          >
+            {/* Inner transparent circle to create thin ring effect */}
+            <div className="w-full h-full rounded-full bg-white" />
+          </div>
         </div>
       )}
       
