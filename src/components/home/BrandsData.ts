@@ -1,4 +1,3 @@
-
 // Static brand data with optimized descriptions and keywords - Full sets only
 export const staticBrands = [
   {
@@ -199,6 +198,13 @@ export const refillBrands = [
     id: "17",
     name: "Safe Gas Uganda",
     brand: "Safe",
+    refill_price_6kg: "UGX 45,000",
+    refill_price_12kg: "UGX 95,000",
+  },
+  {
+    id: "18",
+    name: "Star Gas Uganda",
+    brand: "Star",
     refill_price_6kg: "UGX 45,000",
     refill_price_12kg: "UGX 95,000",
   },

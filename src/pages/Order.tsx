@@ -40,7 +40,8 @@ const Order = () => {
     "K Gas", 
     "C Gas", 
     "Hashi",
-    "Mogas"
+    "Mogas",
+    "Star"
   ];
 
   useEffect(() => {

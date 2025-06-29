@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet";
 import { refillBrands } from "@/components/home/BrandsData";
 
-const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas"];
+const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas", "Star"];
 
 const Refill = () => {
   const navigate = useNavigate();
