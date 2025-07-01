@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -92,7 +93,7 @@ export default function Index() {
             "alternateName": ["Best Gas Delivery Uganda", "Fast Gas Delivery Kampala", "Premium Gas Delivery Service"],
             "description": "Uganda's best gas delivery service. Total, Shell, Stabex gas cylinders with free same-day delivery in Kampala, Wakiso, Mukono.",
             "url": "https://flamia.store",
-            "telephone": "+256789572007",
+            "telephone": "+256753894149",
             "address": {
               "@type": "PostalAddress",
               "addressCountry": "UG",
@@ -210,6 +211,20 @@ export default function Index() {
               </div>
             </div>
 
+            {/* Promotions Section for Desktop */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              <div className="bg-accent p-4">
+                <div className="flex items-center gap-2 text-white">
+                  <Flame size={20} />
+                  <h3 className="font-bold text-lg">Special Offers</h3>
+                </div>
+                <p className="text-white/90 text-sm mt-1">Full kits & packages</p>
+              </div>
+              <div className="p-4">
+                <PromotionsSection />
+              </div>
+            </div>
+
             {/* Features */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
@@ -240,7 +255,7 @@ export default function Index() {
                 </p>
                 <Button 
                   className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg"
-                  onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                  onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                 >
                   Chat with Gas Expert
                 </Button>
@@ -273,7 +288,7 @@ export default function Index() {
                     size="lg" 
                     variant="outline" 
                     className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold"
-                    onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                    onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                   >
                     Get Help
                   </Button>
@@ -325,7 +340,7 @@ export default function Index() {
                 </p>
                 <Button 
                   className="bg-accent hover:bg-accent/90 text-white py-2 px-6 rounded-lg font-semibold"
-                  onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                  onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                 >
                   Chat with Gas Expert
                 </Button>

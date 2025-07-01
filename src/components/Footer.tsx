@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -12,8 +13,8 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4 text-accent" />
-              <a href="tel:+256789572007" className="hover:text-accent transition-colors">
-                +256 789 572 007
+              <a href="tel:+256753894149" className="hover:text-accent transition-colors">
+                +256 753 894 149
               </a>
             </div>
             <div className="flex items-center space-x-2">

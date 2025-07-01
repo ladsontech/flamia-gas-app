@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -136,7 +137,7 @@ export default function Order() {
       await createOrder(message);
 
       // Also open WhatsApp for customer convenience
-      const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
+      const whatsappUrl = `https://wa.me/256753894149?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
       
       toast({

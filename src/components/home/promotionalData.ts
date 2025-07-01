@@ -16,7 +16,7 @@ export const promotionalOffers: PromotionalOffer[] = [
     title: "Ultimate 6KG fullset",
     description: "Free burner and Grill",
     image: "/images/ultimate 6.png",
-    whatsapp: "+256770477723",
+    whatsapp: "+256753894149",
     discount: "UGX 99,600"
   },
   {
@@ -24,7 +24,7 @@ export const promotionalOffers: PromotionalOffer[] = [
     title: "Ultimate 13KG full kit",
     description: "Cooker + Horse pipe + Regulator",
     image: "/images/ultimate 13.png",
-    whatsapp: "+256770477723",
+    whatsapp: "+256753894149",
     discount: "UGX 270,000"
   }
 ];
