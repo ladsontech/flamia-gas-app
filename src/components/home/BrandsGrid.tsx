@@ -11,6 +11,8 @@ interface Brand {
   image_url_12kg?: string;
   price_6kg?: string;
   price_12kg?: string;
+  original_price_6kg?: string;
+  original_price_12kg?: string;
   description_6kg?: string;
   description_12kg?: string;
 }
@@ -40,6 +42,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
             image={brand.image_url_6kg || ''}
             size="6kg"
             price={brand.price_6kg}
+            originalPrice={brand.original_price_6kg}
             description={brand.description_6kg || `${brand.brand} 6KG gas cylinder - best prices in Uganda with same-day delivery`}
           />
         </div>
@@ -56,6 +59,7 @@ const BrandsGrid: React.FC<BrandsGridProps> = () => {
             image={brand.image_url_12kg || ''}
             size="12kg"
             price={brand.price_12kg}
+            originalPrice={brand.original_price_12kg}
             description={brand.description_12kg || `${brand.brand} 12KG gas cylinder for commercial use and large families in Uganda`}
           />
         </div>
