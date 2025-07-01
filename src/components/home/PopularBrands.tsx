@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Carousel,
   CarouselContent,
@@ -14,6 +15,7 @@ import { staticBrands } from "./BrandsData";
 
 const PopularBrands = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -29,6 +31,11 @@ const PopularBrands = () => {
   }, []);
 
   const popularBrands = staticBrands.slice(0, 5);
+
+  const handleBrandClick = (brand: any) => {
+    // Navigate to order page with brand information for fullset order
+    navigate(`/order?brand=${brand.brand}&name=${brand.name}&size=6KG&price=${brand.price_6kg}&type=fullset`);
+  };
 
   return (
     <section className="mb-4 max-w-3xl mx-auto px-2 lg:hidden">
@@ -50,7 +57,10 @@ const PopularBrands = () => {
         <CarouselContent className="-ml-2 md:-ml-4">
           {popularBrands.map((brand) => (
             <CarouselItem key={brand.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3">
-              <Card className="overflow-hidden flex flex-col h-full shadow-sm">
+              <Card 
+                className="overflow-hidden flex flex-col h-full shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                onClick={() => handleBrandClick(brand)}
+              >
                 <div className="relative p-2 pb-1">
                   <div className="h-16 aspect-square bg-gray-50 rounded-md flex items-center justify-center mb-2">
                     <img 
