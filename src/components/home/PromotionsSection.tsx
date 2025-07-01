@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -30,27 +29,62 @@ I'm interested in this promotion.`;
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-2">
+      {/* Responsive grid that adapts to screen size */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 lg:gap-6">
         {promotionalOffers.map((offer) => (
-          <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200">
+          <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="relative">
-              <div className="flex sm:flex-col">
-                <div className="w-1/3 sm:w-full h-24 sm:h-32 md:h-28 lg:h-24 bg-gray-50 flex items-center justify-center">
+              {/* Desktop layout - side by side */}
+              <div className="hidden sm:flex lg:flex">
+                {/* Image section - larger on desktop */}
+                <div className="w-2/5 lg:w-1/2 h-32 lg:h-40 bg-gray-50 flex items-center justify-center p-4">
                   <img 
                     src={offer.image} 
                     alt={offer.title} 
-                    className="h-[80%] sm:h-[70%] object-contain"
+                    className="h-full w-full object-contain"
                     loading="lazy"
                   />
                 </div>
                 
-                <div className="w-2/3 sm:w-full p-3 md:p-2 lg:p-2">
-                  {/* Price badge - Repositioned below image and above title */}
+                {/* Content section */}
+                <div className="w-3/5 lg:w-1/2 p-4 lg:p-6 flex flex-col justify-between">
+                  {/* Price badge - positioned at top */}
+                  <div className="bg-green-600 text-white text-sm lg:text-base font-semibold px-3 py-2 rounded-lg w-fit mb-3">
+                    {offer.discount || "Price not available"}
+                  </div>
+                  
+                  <div className="flex-grow">
+                    <h3 className="font-bold text-base lg:text-lg mb-2 line-clamp-2">{offer.title}</h3>
+                    <p className="text-muted-foreground text-sm lg:text-base line-clamp-3 mb-4">{offer.description}</p>
+                  </div>
+                  
+                  <Button 
+                    className="w-full text-sm lg:text-base bg-accent hover:bg-accent/90 text-white py-2 lg:py-3 font-semibold rounded-lg" 
+                    onClick={() => handleOrderClick(offer)}
+                  >
+                    Order Now
+                  </Button>
+                </div>
+              </div>
+
+              {/* Mobile layout - stacked */}
+              <div className="flex sm:hidden">
+                <div className="w-1/3 h-24 bg-gray-50 flex items-center justify-center">
+                  <img 
+                    src={offer.image} 
+                    alt={offer.title} 
+                    className="h-[80%] object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                
+                <div className="w-2/3 p-3">
+                  {/* Price badge */}
                   <div className="bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-md w-fit mb-2">
                     {offer.discount || "Price not available"}
                   </div>
                   
-                  <h3 className="font-medium text-sm truncate sm:mt-0">{offer.title}</h3>
+                  <h3 className="font-medium text-sm truncate">{offer.title}</h3>
                   <p className="text-muted-foreground text-xs line-clamp-2 min-h-[2rem] mb-2">{offer.description}</p>
                   <Button 
                     className="w-full text-xs bg-accent hover:bg-accent/90 text-white py-1 h-7" 
