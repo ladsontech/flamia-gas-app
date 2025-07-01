@@ -37,7 +37,7 @@
       ],
       "icons": [
         {
-          "src": "/lovable-uploads/icon.png",
+          "src": "/images/icon.png",
           "sizes": "72x72"
         }
       ],
@@ -47,25 +47,25 @@
   ],
   "icons": [
     {
-      "src": "/lovable-uploads/icon.png",
+      "src": "/images/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/icon.png",
+      "src": "/images/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/icon.png",
+      "src": "/images/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/lovable-uploads/icon.png",
+      "src": "/images/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -84,12 +84,12 @@
     {
       "name": "Order Gas",
       "url": "/order?source=shortcut",
-      "icons": [{ "src": "/lovable-uploads/icon.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/icon.png", "sizes": "96x96" }]
     },
     {
       "name": "Gas Refill",
       "url": "/refill?source=shortcut", 
-      "icons": [{ "src": "/lovable-uploads/icon.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/icon.png", "sizes": "96x96" }]
     }
   ],
   "related_applications": [],
