@@ -57,7 +57,7 @@ const Refill = () => {
         id: `${brand.id}-3kg`,
         weight: "3KG",
         price: parseInt(brand.refill_price_3kg.replace(/[^0-9]/g, '')),
-        originalPrice: 35000, // Original price for 3kg
+        originalPrice: 32000, // Original price for 3kg - updated to 32,000
         description: "Perfect for small households",
         popular: false,
         savings: "Best for singles"
