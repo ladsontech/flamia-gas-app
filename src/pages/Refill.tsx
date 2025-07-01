@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ const Refill = () => {
   const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const refillOptionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,6 +23,19 @@ const Refill = () => {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Auto-scroll to refill options when a brand is selected
+  useEffect(() => {
+    if (selectedBrand && refillOptionsRef.current) {
+      const timer = setTimeout(() => {
+        refillOptionsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 300); // Small delay to allow animation to start
+      return () => clearTimeout(timer);
+    }
+  }, [selectedBrand]);
 
   const handleOrder = (weight: string, price: number) => {
     if (!selectedBrand) {
@@ -225,140 +239,142 @@ const Refill = () => {
 
         {/* Refill Options - Only show after brand selection */}
         {!isLoading && (
-          <AnimatePresence mode="wait">
-            {selectedBrand ? (
-              <motion.div
-                key="selected-brand"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-              >
-                {/* Brand Header */}
-                <div className="text-center mb-6 md:mb-8">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                    <span className="text-accent">{selectedBrand}</span> Gas Refill Options
-                  </h2>
-                  <p className="text-gray-600">
-                    Choose the right size for your needs
-                  </p>
-                </div>
-
-                {/* Refill Options Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
-                  {filteredPrices.length > 0 ? (
-                    filteredPrices.map((item, index) => (
-                      <motion.div 
-                        key={item.id} 
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1, duration: 0.5 }}
-                        className="relative"
-                      >
-                        {item.popular && (
-                          <div className="absolute -top-2 md:-top-3 left-1/2 transform -translate-x-1/2 z-10">
-                            <div className="bg-accent text-white px-3 md:px-4 py-1 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1">
-                              <Star className="w-2 md:w-3 h-2 md:h-3 fill-current" />
-                              Most Popular
-                            </div>
-                          </div>
-                        )}
-                        
-                        <Card className={`relative overflow-hidden h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
-                          item.popular 
-                            ? 'border-2 border-accent shadow-xl bg-gradient-to-br from-accent/5 to-white' 
-                            : 'border border-gray-200 shadow-lg bg-white hover:border-accent/30'
-                        }`}>
-                          <div className="p-4 md:p-6">
-                            {/* Header */}
-                            <div className="flex items-start justify-between mb-3 md:mb-4">
-                              <div className="flex items-center gap-2 md:gap-3">
-                                <div className={`w-8 md:w-12 h-8 md:h-12 rounded-xl flex items-center justify-center ${
-                                  item.popular ? 'bg-accent/20' : 'bg-gray-100'
-                                }`}>
-                                  <Flame className={`w-4 md:w-6 h-4 md:h-6 ${item.popular ? 'text-accent' : 'text-gray-600'}`} />
-                                </div>
-                                <div>
-                                  <h3 className="text-lg md:text-xl font-bold text-gray-900">
-                                    {selectedBrand} {item.weight}
-                                  </h3>
-                                  <p className="text-xs md:text-sm text-gray-600">{item.description}</p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Price */}
-                            <div className="text-center mb-4 md:mb-6">
-                              <div className="text-2xl md:text-3xl font-bold text-accent mb-1">
-                                UGX {item.price.toLocaleString()}
-                              </div>
-                              <div className="text-xs text-green-600 font-medium">
-                                {item.savings}
-                              </div>
-                            </div>
-
-                            {/* Features */}
-                            <div className="flex items-center justify-center gap-2 mb-4 md:mb-6">
-                              <Check className="w-3 md:w-4 h-3 md:h-4 text-accent" />
-                              <span className="text-xs md:text-sm text-gray-700">Free delivery included</span>
-                            </div>
-
-                            {/* Order Button */}
-                            <Button
-                              onClick={() => handleOrder(item.weight, item.price)}
-                              className={`w-full h-10 md:h-11 text-sm md:text-base font-semibold transition-all duration-300 group ${
-                                item.popular
-                                  ? 'bg-accent hover:bg-accent/90 text-white shadow-lg hover:shadow-xl'
-                                  : 'bg-gray-900 hover:bg-accent text-white'
-                              }`}
-                            >
-                              Order {selectedBrand} {item.weight} Refill
-                              <ArrowRight className="ml-2 h-3 md:h-4 w-3 md:w-4 transition-transform group-hover:translate-x-1" />
-                            </Button>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="col-span-full text-center py-12 md:py-16">
-                      <div className="max-w-md mx-auto">
-                        <div className="w-12 md:w-16 h-12 md:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <Flame className="w-6 md:w-8 h-6 md:h-8 text-gray-400" />
-                        </div>
-                        <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
-                          {selectedBrand} Gas Refill Coming Soon
-                        </h3>
-                        <p className="text-sm md:text-base text-gray-600">
-                          {selectedBrand} gas refill prices are currently being updated. Please try another brand or contact us directly.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="no-brand"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
-                className="text-center py-12 md:py-16"
-              >
-                <Card className="max-w-lg mx-auto p-6 md:p-8 bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-                  <div className="w-16 md:w-20 h-16 md:h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                    <Flame className="w-8 md:w-10 h-8 md:h-10 text-accent" />
+          <div ref={refillOptionsRef}>
+            <AnimatePresence mode="wait">
+              {selectedBrand ? (
+                <motion.div
+                  key="selected-brand"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  {/* Brand Header */}
+                  <div className="text-center mb-6 md:mb-8">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                      <span className="text-accent">{selectedBrand}</span> Gas Refill Options
+                    </h2>
+                    <p className="text-gray-600">
+                      Choose the right size for your needs
+                    </p>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">
-                    Select Your Gas Brand Above
-                  </h3>
-                  <p className="text-sm md:text-base text-gray-600">
-                    Choose your preferred gas brand to view the best refill prices in Uganda.
-                  </p>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
+
+                  {/* Refill Options Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
+                    {filteredPrices.length > 0 ? (
+                      filteredPrices.map((item, index) => (
+                        <motion.div 
+                          key={item.id} 
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1, duration: 0.5 }}
+                          className="relative"
+                        >
+                          {item.popular && (
+                            <div className="absolute -top-2 md:-top-3 left-1/2 transform -translate-x-1/2 z-10">
+                              <div className="bg-accent text-white px-3 md:px-4 py-1 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1">
+                                <Star className="w-2 md:w-3 h-2 md:h-3 fill-current" />
+                                Most Popular
+                              </div>
+                            </div>
+                          )}
+                          
+                          <Card className={`relative overflow-hidden h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+                            item.popular 
+                              ? 'border-2 border-accent shadow-xl bg-gradient-to-br from-accent/5 to-white' 
+                              : 'border border-gray-200 shadow-lg bg-white hover:border-accent/30'
+                          }`}>
+                            <div className="p-4 md:p-6">
+                              {/* Header */}
+                              <div className="flex items-start justify-between mb-3 md:mb-4">
+                                <div className="flex items-center gap-2 md:gap-3">
+                                  <div className={`w-8 md:w-12 h-8 md:h-12 rounded-xl flex items-center justify-center ${
+                                    item.popular ? 'bg-accent/20' : 'bg-gray-100'
+                                  }`}>
+                                    <Flame className={`w-4 md:w-6 h-4 md:h-6 ${item.popular ? 'text-accent' : 'text-gray-600'}`} />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg md:text-xl font-bold text-gray-900">
+                                      {selectedBrand} {item.weight}
+                                    </h3>
+                                    <p className="text-xs md:text-sm text-gray-600">{item.description}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Price */}
+                              <div className="text-center mb-4 md:mb-6">
+                                <div className="text-2xl md:text-3xl font-bold text-accent mb-1">
+                                  UGX {item.price.toLocaleString()}
+                                </div>
+                                <div className="text-xs text-green-600 font-medium">
+                                  {item.savings}
+                                </div>
+                              </div>
+
+                              {/* Features */}
+                              <div className="flex items-center justify-center gap-2 mb-4 md:mb-6">
+                                <Check className="w-3 md:w-4 h-3 md:h-4 text-accent" />
+                                <span className="text-xs md:text-sm text-gray-700">Free delivery included</span>
+                              </div>
+
+                              {/* Order Button */}
+                              <Button
+                                onClick={() => handleOrder(item.weight, item.price)}
+                                className={`w-full h-10 md:h-11 text-sm md:text-base font-semibold transition-all duration-300 group ${
+                                  item.popular
+                                    ? 'bg-accent hover:bg-accent/90 text-white shadow-lg hover:shadow-xl'
+                                    : 'bg-gray-900 hover:bg-accent text-white'
+                                }`}
+                              >
+                                Order {selectedBrand} {item.weight} Refill
+                                <ArrowRight className="ml-2 h-3 md:h-4 w-3 md:w-4 transition-transform group-hover:translate-x-1" />
+                              </Button>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-12 md:py-16">
+                        <div className="max-w-md mx-auto">
+                          <div className="w-12 md:w-16 h-12 md:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Flame className="w-6 md:w-8 h-6 md:h-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+                            {selectedBrand} Gas Refill Coming Soon
+                          </h3>
+                          <p className="text-sm md:text-base text-gray-600">
+                            {selectedBrand} gas refill prices are currently being updated. Please try another brand or contact us directly.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="no-brand"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-center py-12 md:py-16"
+                >
+                  <Card className="max-w-lg mx-auto p-6 md:p-8 bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+                    <div className="w-16 md:w-20 h-16 md:h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                      <Flame className="w-8 md:w-10 h-8 md:h-10 text-accent" />
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">
+                      Select Your Gas Brand Above
+                    </h3>
+                    <p className="text-sm md:text-base text-gray-600">
+                      Choose your preferred gas brand to view the best refill prices in Uganda.
+                    </p>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         )}
 
         {/* Contact Section */}
@@ -377,10 +393,10 @@ const Refill = () => {
                 Our gas experts are here to help you get the best gas refill prices in Uganda.
               </p>
               <Button
-                onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base font-semibold"
               >
-                WhatsApp: +256 789 572 007
+                WhatsApp: +256 753 894 149
               </Button>
             </div>
           </Card>
