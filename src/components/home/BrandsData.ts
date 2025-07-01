@@ -1,4 +1,3 @@
-
 // Static brand data with optimized descriptions and keywords - Full sets only
 export const staticBrands = [
   {
@@ -9,8 +8,6 @@ export const staticBrands = [
     image_url_12kg: "/images/total 12KG.png",
     price_6kg: "UGX 170,000",
     price_12kg: "UGX 350,000",
-    original_price_6kg: "UGX 55,000",
-    original_price_12kg: "UGX 115,000",
     description_6kg: "Affordable Total 6KG gas cylinder with same-day delivery in Uganda",
     description_12kg: "Total 12KG LPG gas cylinder - perfect for large families in Uganda"
   },
@@ -22,8 +19,6 @@ export const staticBrands = [
     image_url_12kg: "/images/shell 12KG.png",
     price_6kg: "UGX 165,000",
     price_12kg: "UGX 300,000",
-    original_price_6kg: "UGX 55,000",
-    original_price_12kg: "UGX 115,000",
     description_6kg: "Shell 6KG gas cylinder with fastest delivery in Kampala & Wakiso",
     description_12kg: "Premium Shell 12KG gas cylinder - reliable LPG supplier in Uganda"
   },
@@ -33,7 +28,6 @@ export const staticBrands = [
     brand: "Oryx",
     image_url_6kg: "/images/oryx 6KG.png",    
     price_6kg: "UGX 165,000",
-    original_price_6kg: "UGX 55,000",
     description_6kg: "Popular Oryx 6KG gas cylinder - affordable cooking gas with free delivery",
     description_12kg: "Oryx 12KG gas cylinder for restaurants and large homes in Uganda"
   },
@@ -45,8 +39,6 @@ export const staticBrands = [
     image_url_12kg: "/images/stabex 12KG.png",
     price_6kg: "UGX 145,000",
     price_12kg: "UGX 250,000",
-    original_price_6kg: "UGX 55,000",
-    original_price_12kg: "UGX 115,000",
     description_6kg: "Cheapest Stabex 6KG gas cylinder price in Uganda with free delivery",
     description_12kg: "Stabex 12KG gas cylinder - reliable cooking gas for Uganda homes"
   },
@@ -56,7 +48,6 @@ export const staticBrands = [
     brand: "Hass",
     image_url_6kg: "/images/hass 6KG.png",    
     price_6kg: "UGX 150,000",
-    original_price_6kg: "UGX 55,000",
     description_6kg: "Hass 6KG gas cylinder - cheap LPG for delivery in Kampala & Wakiso",
     description_12kg: "Premium Hass 12KG gas cylinder for restaurants & large families"
   },
@@ -68,8 +59,6 @@ export const staticBrands = [
     image_url_12kg: "/images/ultimate 13.png",   
     price_6kg: "UGX 120,000",
     price_12kg: "UGX 250,000",
-    original_price_6kg: "UGX 55,000",
-    original_price_12kg: "UGX 115,000",
     description_6kg: " Comes with a burner",
     description_12kg: "comes with a regulator, horse pipe and two-plate burner"
   },
@@ -82,8 +71,6 @@ export const staticBrands = [
     image_url_12kg: "/images/Nova 12kg.png",
     price_6kg: "UGX 130,000",
     price_12kg: "UGX 250,000",
-    original_price_6kg: "UGX 55,000",
-    original_price_12kg: "UGX 115,000",
     description_6kg: "Comes with a burner",
     description_12kg: "comes with a regulator, horse pipe and two plate burner"
   }

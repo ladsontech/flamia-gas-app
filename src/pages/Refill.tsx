@@ -49,7 +49,7 @@ const Refill = () => {
     navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
   };
 
-  // Get prices for the selected brand
+  // Get prices for the selected brand with original prices for strike-through
   const filteredPrices = selectedBrand ? refillBrands.filter(brand => brand.brand === selectedBrand).map(brand => {
     const prices = [];
     if (brand.refill_price_3kg) {
@@ -57,6 +57,7 @@ const Refill = () => {
         id: `${brand.id}-3kg`,
         weight: "3KG",
         price: parseInt(brand.refill_price_3kg.replace(/[^0-9]/g, '')),
+        originalPrice: 35000, // Original price for 3kg
         description: "Perfect for small households",
         popular: false,
         savings: "Best for singles"
@@ -67,6 +68,7 @@ const Refill = () => {
         id: `${brand.id}-6kg`,
         weight: "6KG",
         price: parseInt(brand.refill_price_6kg.replace(/[^0-9]/g, '')),
+        originalPrice: 55000, // Original price for 6kg
         description: "Most popular choice for families",
         popular: true,
         savings: "Save 15% vs 3KG"
@@ -77,6 +79,7 @@ const Refill = () => {
         id: `${brand.id}-12kg`,
         weight: "12KG",
         price: parseInt(brand.refill_price_12kg.replace(/[^0-9]/g, '')),
+        originalPrice: 115000, // Original price for 12kg
         description: "Ideal for large families",
         popular: false,
         savings: "Save 25% vs 6KG"
@@ -302,13 +305,21 @@ const Refill = () => {
                                 </div>
                               </div>
 
-                              {/* Price */}
+                              {/* Price with Strike-through */}
                               <div className="text-center mb-4 md:mb-6">
+                                <div className="flex items-center justify-center gap-2 mb-1">
+                                  <span className="text-lg text-gray-400 line-through">
+                                    UGX {item.originalPrice.toLocaleString()}
+                                  </span>
+                                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                                    -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                                  </span>
+                                </div>
                                 <div className="text-2xl md:text-3xl font-bold text-accent mb-1">
                                   UGX {item.price.toLocaleString()}
                                 </div>
                                 <div className="text-xs text-green-600 font-medium">
-                                  {item.savings}
+                                  Save UGX {(item.originalPrice - item.price).toLocaleString()}
                                 </div>
                               </div>
 

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -11,11 +10,10 @@ interface BrandCardProps {
   image: string;
   size: string;
   price: string;
-  originalPrice?: string;
   description?: string;
 }
 
-const BrandCardNew = ({ name, brand, image, size, price, originalPrice, description }: BrandCardProps) => {
+const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCardProps) => {
   const navigate = useNavigate();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -117,12 +115,7 @@ const BrandCardNew = ({ name, brand, image, size, price, originalPrice, descript
         <div className="pt-1.5 lg:pt-1 border-t border-gray-100">
           <div className="flex justify-between items-center mb-1.5 lg:mb-1">
             <span className="text-xs lg:text-xs font-medium text-gray-600">Price</span>
-            <div className="flex flex-col items-end">
-              {originalPrice && (
-                <span className="text-xs text-gray-400 line-through">{originalPrice}</span>
-              )}
-              <span className="text-xs sm:text-sm lg:text-xs font-semibold text-accent">{price}</span>
-            </div>
+            <span className="text-xs sm:text-sm lg:text-xs font-semibold text-accent">{price}</span>
           </div>
           <Button
             onClick={handleOrder}
