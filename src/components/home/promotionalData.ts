@@ -17,7 +17,7 @@ export const promotionalOffers: PromotionalOffer[] = [
     description: "Free burner and Grill",
     image: "/images/ultimate 6.png",
     whatsapp: "+256753894149",
-    discount: "UGX 99,600"
+    discount: "UGX 130,000"
   },
   {
     id: 2,
@@ -25,6 +25,6 @@ export const promotionalOffers: PromotionalOffer[] = [
     description: "Cooker + Horse pipe + Regulator",
     image: "/images/ultimate 13.png",
     whatsapp: "+256753894149",
-    discount: "UGX 270,000"
+    discount: "UGX 280,000"
   }
 ];
