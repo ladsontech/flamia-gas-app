@@ -8,7 +8,7 @@ const AppBar = () => {
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/refill', label: 'Refill', icon: RotateCw },
-    { path: '/accessories', label: 'Accessories', icon: ShoppingBag },
+    { path: '/gadgets', label: 'Shop', icon: ShoppingBag },
     { path: '/safety', label: 'Safety', icon: Flame },
   ];
 
