@@ -11,6 +11,7 @@ import Order from "./pages/Order";
 import Orders from "./pages/Orders";
 import Refill from "./pages/Refill";
 import Accessories from "./pages/Accessories";
+import Gadgets from "./pages/Gadgets";
 import GasSafety from "./pages/GasSafety";
 import Delivery from "./pages/Delivery";
 import DeliveryLogin from "./pages/DeliveryLogin";
@@ -217,6 +218,17 @@ const AppContent = () => {
                 transition={{ duration: 0.2 }}
               >
                 <Accessories />
+              </motion.div>
+            } />
+            <Route path="/gadgets" element={
+              <motion.div 
+                variants={pageVariants} 
+                initial="initial" 
+                animate="animate" 
+                exit="exit" 
+                transition={{ duration: 0.2 }}
+              >
+                <Gadgets />
               </motion.div>
             } />
             <Route path="/safety" element={

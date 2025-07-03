@@ -36,6 +36,60 @@ export type Database = {
         }
         Relationships: []
       }
+      gadgets: {
+        Row: {
+          brand: string | null
+          category: string
+          created_at: string
+          description: string
+          features: string[] | null
+          id: string
+          image_url: string | null
+          in_stock: boolean
+          name: string
+          original_price: number | null
+          price: number
+          rating: number | null
+          stock_quantity: number | null
+          total_reviews: number | null
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          category: string
+          created_at?: string
+          description: string
+          features?: string[] | null
+          id?: string
+          image_url?: string | null
+          in_stock?: boolean
+          name: string
+          original_price?: number | null
+          price: number
+          rating?: number | null
+          stock_quantity?: number | null
+          total_reviews?: number | null
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          features?: string[] | null
+          id?: string
+          image_url?: string | null
+          in_stock?: boolean
+          name?: string
+          original_price?: number | null
+          price?: number
+          rating?: number | null
+          stock_quantity?: number | null
+          total_reviews?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           assigned_at: string | null

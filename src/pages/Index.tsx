@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import PopularBrands from "@/components/home/PopularBrands";
+import AccessoriesSection from "@/components/home/AccessoriesSection";
 import { Sparkles, Zap, Shield, Clock, Star, Truck, MapPin, Phone, Flame } from "lucide-react";
 
 export default function Index() {
@@ -327,6 +328,11 @@ export default function Index() {
                   <BrandsGrid brands={[]} />
                 )}
               </div>
+            </section>
+
+            {/* Gas Accessories Section */}
+            <section className="mt-12">
+              <AccessoriesSection />
             </section>
 
             {/* Mobile Help Section */}

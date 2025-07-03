@@ -28,10 +28,10 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
           isActive={isHomeActive}
         />
         <NavItem
-          to="/accessories"
+          to="/gadgets"
           icon={ShoppingBag}
-          label="Shop"
-          isActive={isAccessoriesActive}
+          label="Gadgets"
+          isActive={path === "/gadgets"}
         />
         <NavItem
           to="/refill"
