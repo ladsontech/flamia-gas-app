@@ -35,6 +35,7 @@ const GadgetsManager: React.FC = () => {
     stock_quantity: '',
     rating: '',
     total_reviews: '',
+    condition: 'brand_new' as 'brand_new' | 'used',
     in_stock: true
   });
 
@@ -51,7 +52,10 @@ const GadgetsManager: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setGadgets(data || []);
+      setGadgets((data || []).map(gadget => ({
+        ...gadget,
+        condition: gadget.condition as 'brand_new' | 'used'
+      })));
     } catch (error) {
       toast({
         title: "Error",
@@ -76,6 +80,7 @@ const GadgetsManager: React.FC = () => {
       stock_quantity: '',
       rating: '',
       total_reviews: '',
+      condition: 'brand_new' as 'brand_new' | 'used',
       in_stock: true
     });
     setEditingGadget(null);
@@ -95,6 +100,7 @@ const GadgetsManager: React.FC = () => {
       stock_quantity: gadget.stock_quantity.toString(),
       rating: gadget.rating.toString(),
       total_reviews: gadget.total_reviews.toString(),
+      condition: gadget.condition,
       in_stock: gadget.in_stock
     });
     setIsDialogOpen(true);
@@ -123,6 +129,7 @@ const GadgetsManager: React.FC = () => {
         stock_quantity: parseInt(formData.stock_quantity),
         rating: parseFloat(formData.rating),
         total_reviews: parseInt(formData.total_reviews),
+        condition: formData.condition,
         in_stock: formData.in_stock
       };
 
@@ -287,6 +294,19 @@ const GadgetsManager: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="condition">Condition *</Label>
+                    <Select value={formData.condition} onValueChange={(value: 'brand_new' | 'used') => setFormData({...formData, condition: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="brand_new">Brand New</SelectItem>
+                        <SelectItem value="used">Used</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>

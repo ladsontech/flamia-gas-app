@@ -5,19 +5,13 @@ import { useGadgets } from '@/hooks/useGadgets';
 import { GadgetFilters } from '@/types/gadget';
 import GadgetCard from '@/components/gadgets/GadgetCard';
 import GadgetSearch from '@/components/gadgets/GadgetSearch';
-import GadgetCarousel from '@/components/gadgets/GadgetCarousel';
-import { Loader2, Smartphone, Laptop, Headphones } from 'lucide-react';
+import GadgetsCarousel from '@/components/gadgets/GadgetsCarousel';
+import { Loader2, Smartphone } from 'lucide-react';
 
 const Gadgets = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<GadgetFilters>({});
   const { gadgets, loading, error } = useGadgets(filters, searchQuery);
-
-  const featuredGadgets = gadgets.filter(g => g.rating >= 4.7).slice(0, 10);
-  const newArrivals = gadgets.slice(0, 8);
-  const smartphones = gadgets.filter(g => g.category === 'Smartphones').slice(0, 6);
-  const laptops = gadgets.filter(g => g.category === 'Laptops').slice(0, 6);
-  const audio = gadgets.filter(g => g.category === 'Audio').slice(0, 6);
 
   if (loading) {
     return (
@@ -50,6 +44,9 @@ const Gadgets = () => {
       </Helmet>
 
       <div className="container mx-auto px-3 md:px-6 lg:px-8 py-6 max-w-7xl">
+        {/* Image Carousel */}
+        <GadgetsCarousel />
+
         {/* Hero Section */}
         <div className="text-center mb-8">
           <motion.div
@@ -65,7 +62,7 @@ const Gadgets = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+            className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
           >
             Gadgets Store
           </motion.h1>
@@ -74,7 +71,7 @@ const Gadgets = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-gray-600 max-w-3xl mx-auto mb-8"
+            className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-8"
           >
             Discover the latest smartphones, laptops, tablets, and tech accessories. 
             Premium quality gadgets with competitive prices and fast delivery.
@@ -96,138 +93,51 @@ const Gadgets = () => {
           />
         </motion.div>
 
-        {/* Featured Products Carousel */}
-        {!searchQuery && Object.keys(filters).length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mb-12"
-          >
-            <GadgetCarousel gadgets={featuredGadgets} title="✨ Featured Products" />
-          </motion.div>
-        )}
+        {/* Search Results or All Products */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">
+              {searchQuery || Object.keys(filters).length > 0 
+                ? `${searchQuery ? `Search Results for "${searchQuery}"` : 'Filtered Results'}`
+                : 'All Products'
+              }
+            </h2>
+            <span className="text-gray-600">{gadgets.length} products found</span>
+          </div>
 
-        {/* Category Carousels */}
-        {!searchQuery && Object.keys(filters).length === 0 && (
-          <>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mb-12"
-            >
-              <GadgetCarousel gadgets={newArrivals} title="🆕 New Arrivals" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mb-12"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Smartphone className="w-6 h-6 text-accent" />
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Smartphones</h2>
-              </div>
-              <GadgetCarousel gadgets={smartphones} title="" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="mb-12"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Laptop className="w-6 h-6 text-accent" />
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Laptops</h2>
-              </div>
-              <GadgetCarousel gadgets={laptops} title="" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="mb-12"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Headphones className="w-6 h-6 text-accent" />
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Audio</h2>
-              </div>
-              <GadgetCarousel gadgets={audio} title="" />
-            </motion.div>
-          </>
-        )}
-
-        {/* Search Results Grid */}
-        {(searchQuery || Object.keys(filters).length > 0) && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
-                {searchQuery ? `Search Results for "${searchQuery}"` : 'Filtered Results'}
-              </h2>
-              <span className="text-gray-600">{gadgets.length} products found</span>
-            </div>
-
-            {gadgets.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {gadgets.map((gadget, index) => (
-                  <motion.div
-                    key={gadget.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <GadgetCard gadget={gadget} />
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-600 text-lg">No gadgets found matching your criteria.</p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setFilters({});
-                  }}
-                  className="mt-4 text-accent hover:underline"
-                >
-                  Clear search and filters
-                </button>
-              </div>
-            )}
-          </motion.div>
-        )}
-
-        {/* All Products Grid */}
-        {!searchQuery && Object.keys(filters).length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="mt-12"
-          >
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">All Products</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {gadgets.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
               {gadgets.map((gadget, index) => (
                 <motion.div
                   key={gadget.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: (index % 20) * 0.05 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="h-full"
                 >
                   <GadgetCard gadget={gadget} />
                 </motion.div>
               ))}
             </div>
-          </motion.div>
-        )}
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">No gadgets found matching your criteria.</p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setFilters({});
+                }}
+                className="mt-4 text-accent hover:underline"
+              >
+                Clear search and filters
+              </button>
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );

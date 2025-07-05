@@ -12,6 +12,7 @@ export interface Gadget {
   stock_quantity: number;
   rating: number;
   total_reviews: number;
+  condition: 'brand_new' | 'used';
   created_at: string;
   updated_at: string;
 }

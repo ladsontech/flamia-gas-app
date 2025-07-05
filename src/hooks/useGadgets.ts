@@ -44,7 +44,10 @@ export const useGadgets = (filters?: GadgetFilters, searchQuery?: string) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setGadgets(data || []);
+      setGadgets((data || []).map(gadget => ({
+        ...gadget,
+        condition: gadget.condition as 'brand_new' | 'used'
+      })));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch gadgets');
     } finally {
