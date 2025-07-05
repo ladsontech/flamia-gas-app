@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
 import { OrderNotifications } from "@/components/admin/OrderNotifications";
+import GadgetsManager from "@/components/admin/GadgetsManager";
+import CarouselManager from "@/components/admin/CarouselManager";
 import { fetchOrders, fetchDeliveryMen, verifyAdminPassword } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,7 +30,9 @@ import {
   Filter,
   Search,
   Download,
-  Settings
+  Settings,
+  ShoppingBag,
+  Images
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -280,7 +284,7 @@ const Admin = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:grid-cols-6">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Overview
@@ -292,6 +296,14 @@ const Admin = () => {
             <TabsTrigger value="delivery" className="flex items-center gap-2">
               <Truck className="h-4 w-4" />
               Delivery
+            </TabsTrigger>
+            <TabsTrigger value="gadgets" className="flex items-center gap-2">
+              <ShoppingBag className="h-4 w-4" />
+              Gadgets
+            </TabsTrigger>
+            <TabsTrigger value="carousel" className="flex items-center gap-2">
+              <Images className="h-4 w-4" />
+              Carousel
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -542,6 +554,16 @@ const Admin = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Gadgets Tab */}
+          <TabsContent value="gadgets" className="space-y-6">
+            <GadgetsManager />
+          </TabsContent>
+
+          {/* Carousel Tab */}
+          <TabsContent value="carousel" className="space-y-6">
+            <CarouselManager />
           </TabsContent>
 
           {/* Analytics Tab */}
