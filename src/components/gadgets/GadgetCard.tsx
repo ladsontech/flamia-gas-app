@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart } from 'lucide-react';
 import { Gadget } from '@/types/gadget';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +27,7 @@ Product Details: ${productDetailUrl}
 
 Please let me know about availability and delivery options.`;
 
-    const whatsappUrl = `https://wa.me/25678972007?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -46,17 +45,14 @@ Please let me know about availability and delivery options.`;
   };
 
   return (
-    <Card className="group h-full flex flex-col bg-white hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden">
-      {/* Image Container - Same size as brand cards */}
-      <div 
-        className="relative h-24 sm:h-28 md:h-32 bg-gray-50 overflow-hidden cursor-pointer rounded-t-md"
-        onClick={handleCardClick}
-      >
+    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 lg:p-2.5 transition-all duration-300 overflow-hidden h-full flex flex-col">
+      <div className="relative w-full pb-[100%] mb-2 lg:mb-1.5 rounded-lg overflow-hidden bg-gray-50/80">
         <img
           src={gadget.image_url || '/images/gadget-fallback.jpg'}
           alt={gadget.name}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 w-full h-full object-contain p-1.5 lg:p-1 group-hover:scale-110 transition-transform duration-500"
           loading="lazy"
+          onClick={handleCardClick}
         />
         
         {/* Badges */}
@@ -80,39 +76,34 @@ Please let me know about availability and delivery options.`;
           )}
         </div>
       </div>
-
-      {/* Content - Same padding as brand cards */}
-      <CardContent className="p-2 sm:p-3 flex-grow flex flex-col">
-        {/* Title */}
+      
+      <div className="flex-grow">
         <h3 
-          className="font-semibold text-sm sm:text-base line-clamp-2 text-gray-900 mb-1 group-hover:text-accent transition-colors cursor-pointer leading-tight"
+          className="text-xs sm:text-sm lg:text-xs font-semibold mb-0.5 lg:mb-0.5 text-gray-900 line-clamp-2 group-hover:text-accent transition-colors cursor-pointer"
           onClick={handleCardClick}
         >
           {gadget.name}
         </h3>
-        
-        {/* Description */}
-        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-2 flex-grow leading-relaxed">
+        <p className="text-muted-foreground mb-2 lg:mb-1.5 text-xs lg:text-xs line-clamp-2">
           {gadget.description}
         </p>
-
-        {/* Price */}
-        <div className="mb-2">
-          <span className="font-bold text-sm sm:text-base text-accent">
+      </div>
+      
+      <div className="pt-1.5 lg:pt-1 border-t border-gray-100">
+        <div className="flex justify-between items-center mb-1.5 lg:mb-1">
+          <span className="text-xs lg:text-xs font-medium text-gray-600">Price</span>
+          <span className="text-xs sm:text-sm lg:text-xs font-semibold text-accent">
             {formatPrice(gadget.price)}
           </span>
         </div>
-
-        {/* Order Button - Same size as brand cards */}
         <Button
           onClick={handleOrder}
           disabled={!gadget.in_stock}
-          className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-1 h-auto font-semibold transition-all duration-300"
+          className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-xs py-1.5 lg:py-1 h-7 lg:h-6 rounded-lg"
         >
-          <ShoppingCart className="w-3 h-3 mr-1" />
           {gadget.in_stock ? 'Order Now' : 'Out of Stock'}
         </Button>
-      </CardContent>
+      </div>
     </Card>
   );
 };

@@ -40,7 +40,7 @@ Product Details: ${productDetailUrl}
 
 Please let me know about availability and delivery options.`;
 
-    const whatsappUrl = `https://wa.me/25678972007?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
