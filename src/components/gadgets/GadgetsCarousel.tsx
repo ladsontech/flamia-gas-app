@@ -28,6 +28,18 @@ const GadgetsCarousel: React.FC = () => {
     setCurrentIndex(currentIndex === carouselImages.length - 1 ? 0 : currentIndex + 1);
   };
 
+  const handleImageClick = (image: any) => {
+    if (image.link_url) {
+      // Check if it's an external URL or internal route
+      if (image.link_url.startsWith('http') || image.link_url.startsWith('https')) {
+        window.open(image.link_url, '_blank');
+      } else {
+        // Internal route - navigate within the app
+        window.location.href = image.link_url;
+      }
+    }
+  };
+
   if (loading || carouselImages.length === 0) {
     return null;
   }
@@ -46,17 +58,11 @@ const GadgetsCarousel: React.FC = () => {
           >
             <img
               src={image.image_url}
-              alt={image.title}
-              className="w-full h-full object-cover"
+              alt=""
+              className={`w-full h-full object-cover ${image.link_url ? 'cursor-pointer' : ''}`}
               loading="lazy"
+              onClick={() => handleImageClick(image)}
             />
-            {/* Overlay with text */}
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <div className="text-center text-white px-4">
-                <h3 className="text-lg md:text-2xl font-bold mb-2">{image.title}</h3>
-                <p className="text-sm md:text-base opacity-90">{image.description}</p>
-              </div>
-            </div>
           </div>
         ))}
       </div>
