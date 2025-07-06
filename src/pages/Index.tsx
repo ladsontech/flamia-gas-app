@@ -195,67 +195,67 @@ export default function Index() {
       </Helmet>
 
       <div className="min-h-screen flex flex-col lg:flex-row pt-16">
-        {/* Left Sidebar - Desktop Only */}
-        <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gray-50 py-6 px-4">
-          <div className="sticky top-20 space-y-6">
-            {/* Featured Carousel */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-accent p-4">
-                <div className="flex items-center gap-2 text-white">
-                  <Sparkles size={20} />
-                  <h3 className="font-bold text-lg">Featured Deals</h3>
+        {/* Left Sidebar - Desktop Only - Improved responsive design */}
+        <div className="hidden lg:block lg:w-80 xl:w-96 2xl:w-[420px] border-r border-gray-100 bg-gray-50 py-8 px-6">
+          <div className="sticky top-24 space-y-8">
+            {/* Featured Carousel - Enhanced for desktop */}
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="bg-accent p-6">
+                <div className="flex items-center gap-3 text-white">
+                  <Sparkles size={24} />
+                  <h3 className="font-bold text-xl">Featured Deals</h3>
                 </div>
-                <p className="text-white/90 text-sm mt-1">Limited time offers</p>
+                <p className="text-white/90 text-base mt-2">Limited time offers</p>
               </div>
-              <div className="p-2">
+              <div className="p-4">
                 <ImageCarousel />
               </div>
             </div>
 
-            {/* Promotions Section for Desktop */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-accent p-4">
-                <div className="flex items-center gap-2 text-white">
-                  <Flame size={20} />
-                  <h3 className="font-bold text-lg">Special Offers</h3>
+            {/* Promotions Section for Desktop - Enhanced */}
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="bg-accent p-6">
+                <div className="flex items-center gap-3 text-white">
+                  <Flame size={24} />
+                  <h3 className="font-bold text-xl">Special Offers</h3>
                 </div>
-                <p className="text-white/90 text-sm mt-1">Full kits & packages</p>
+                <p className="text-white/90 text-base mt-2">Full kits & packages</p>
               </div>
-              <div className="p-4">
+              <div className="p-6">
                 <PromotionsSection />
               </div>
             </div>
 
-            {/* Features */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
-              <div className="space-y-4">
+            {/* Features - Enhanced sizing */}
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+              <h3 className="font-bold text-xl mb-6 text-gray-900">Why Choose Flamia?</h3>
+              <div className="space-y-6">
                 {features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="bg-accent/10 p-2 rounded-xl">
-                      <feature.icon size={20} className="text-accent" />
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="bg-accent/10 p-3 rounded-xl">
+                      <feature.icon size={24} className="text-accent" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-900">{feature.title}</h4>
-                      <p className="text-xs text-gray-600">{feature.desc}</p>
+                      <h4 className="font-semibold text-base text-gray-900">{feature.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{feature.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Contact Expert */}
-            <div className="bg-accent/10 rounded-2xl p-6 border border-accent/20">
+            {/* Contact Expert - Enhanced */}
+            <div className="bg-accent/10 rounded-3xl p-8 border border-accent/20">
               <div className="text-center">
-                <div className="bg-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 shadow-sm">
-                  <Sparkles className="text-accent" size={24} />
+                <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <Sparkles className="text-accent" size={28} />
                 </div>
-                <h3 className="font-bold text-lg mb-2">Need Expert Advice?</h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <h3 className="font-bold text-xl mb-3">Need Expert Advice?</h3>
+                <p className="text-base text-gray-600 mb-6">
                   Get personalized gas cylinder recommendations from our experts
                 </p>
                 <Button 
-                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg"
+                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-4 rounded-xl shadow-lg text-base"
                   onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                 >
                   Chat with Gas Expert
@@ -265,22 +265,22 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 w-full max-w-none mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex flex-col gap-6 md:gap-8 my-0 py-6 rounded">
+        {/* Main Content Area - Improved responsiveness */}
+        <div className="flex-1 w-full max-w-none mx-auto px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
+          <div className="flex flex-col gap-8 md:gap-12 lg:gap-16 my-0 py-8 lg:py-12 rounded">
             {/* Hero Section - Enhanced for Desktop */}
-            <div className="hidden lg:block bg-accent/10 rounded-3xl p-12 mb-8 border border-accent/20">
-              <div className="text-center max-w-6xl mx-auto">
-                <h1 className="text-5xl xl:text-6xl font-bold mb-6 text-accent">
+            <div className="hidden lg:block bg-accent/10 rounded-3xl p-16 xl:p-20 2xl:p-24 mb-12 border border-accent/20">
+              <div className="text-center max-w-7xl mx-auto">
+                <h1 className="text-5xl xl:text-7xl 2xl:text-8xl font-bold mb-8 text-accent leading-tight">
                   Uganda's #1 Gas Delivery Service
                 </h1>
-                <p className="text-2xl text-gray-700 mb-8 max-w-4xl mx-auto">
+                <p className="text-2xl xl:text-3xl 2xl:text-4xl text-gray-700 mb-12 max-w-5xl mx-auto leading-relaxed">
                   Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
                 </p>
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="flex flex-wrap justify-center gap-6">
                   <Button 
                     size="lg" 
-                    className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg"
+                    className="bg-accent hover:bg-accent/90 text-white px-12 py-6 rounded-xl font-bold text-xl shadow-lg"
                     onClick={() => navigate('/order')}
                   >
                     Order Gas Now
@@ -288,7 +288,7 @@ export default function Index() {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="border-accent text-accent hover:bg-accent/10 px-8 py-3 rounded-xl font-semibold"
+                    className="border-accent text-accent hover:bg-accent/10 px-12 py-6 rounded-xl font-semibold text-xl"
                     onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                   >
                     Get Help
@@ -303,26 +303,26 @@ export default function Index() {
             </div>
 
             {/* Mobile/Tablet Components */}
-            <div className="lg:hidden">
+            <div className="lg:hidden space-y-8">
               <ImageCarousel />
               <PromotionsSection />
               <PopularBrands />
             </div>
 
-            <section className="space-y-6">
+            <section className="space-y-8 lg:space-y-12">
               <div className="text-center">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-950">
+                <h2 className="text-3xl md:text-4xl lg:text-6xl xl:text-7xl font-bold mb-8 lg:mb-12 text-slate-950">
                   Premium Gas Cylinders
                 </h2>
-                <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-4xl mx-auto">
+                <p className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-muted-foreground mb-12 lg:mb-16 max-w-6xl mx-auto leading-relaxed">
                   Choose from our wide selection of certified gas cylinders with free same-day delivery across Kampala
                 </p>
               </div>
 
-              <div className="max-w-7xl mx-auto">
+              <div className="max-w-none mx-auto">
                 {isLoading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin h-8 w-8 border-4 border-accent rounded-full border-t-transparent"></div>
+                  <div className="flex justify-center py-16">
+                    <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
                   </div>
                 ) : (
                   <BrandsGrid brands={[]} />
@@ -330,22 +330,22 @@ export default function Index() {
               </div>
             </section>
 
-            {/* Gas Accessories Section */}
-            <section className="mt-12">
+            {/* Gas Accessories Section - Enhanced spacing */}
+            <section className="mt-16 lg:mt-24">
               <AccessoriesSection />
             </section>
 
-            {/* Mobile Help Section */}
-            <div className="py-4 md:hidden">
-              <div className="bg-primary/20 rounded-xl p-4 text-center">
-                <h3 className="text-lg font-bold mb-2">
+            {/* Mobile Help Section - Enhanced */}
+            <div className="py-6 md:hidden">
+              <div className="bg-primary/20 rounded-xl p-6 text-center">
+                <h3 className="text-xl font-bold mb-3">
                   Can't decide which cylinder to buy?
                 </h3>
-                <p className="mb-3 text-sm">
+                <p className="mb-4 text-base">
                   Contact our gas experts for personalized recommendations based on your household needs.
                 </p>
                 <Button 
-                  className="bg-accent hover:bg-accent/90 text-white py-2 px-6 rounded-lg font-semibold"
+                  className="bg-accent hover:bg-accent/90 text-white py-3 px-8 rounded-lg font-semibold text-base"
                   onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                 >
                   Chat with Gas Expert
