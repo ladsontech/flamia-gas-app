@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,14 +23,14 @@ I'm interested in this promotion.`;
   return (
     <section className="mb-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg md:text-xl font-bold">Special Promotions</h2>
-        <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs">
+        <h2 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">Special Promotions</h2>
+        <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs lg:text-sm">
           <span>View All</span>
           <ArrowRight size={14} />
         </Button>
       </div>
       
-      {/* Mobile Layout (sm and below) */}
+      {/* Mobile Layout (lg and below) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:hidden">
         {promotionalOffers.map((offer) => (
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200">
@@ -64,76 +65,72 @@ I'm interested in this promotion.`;
         ))}
       </div>
 
-      {/* Desktop Layout (lg and above) - Completely New Design */}
+      {/* Desktop Layout (lg and above) - New Single Column Layout */}
       <div className="hidden lg:block">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="space-y-4 xl:space-y-6">
           {promotionalOffers.map((offer, index) => (
             <Card 
               key={offer.id} 
-              className="group relative overflow-hidden bg-gradient-to-br from-white to-gray-50 border-2 border-gray-100 hover:border-accent/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              className="group relative overflow-hidden bg-gradient-to-r from-white via-gray-50/30 to-white border border-gray-200 hover:border-accent/40 transition-all duration-300 hover:shadow-xl"
             >
-              {/* Special Offer Badge */}
-              <div className="absolute top-4 left-4 z-10">
-                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-lg">
-                  <Star className="w-3 h-3 fill-current" />
-                  SPECIAL OFFER
-                </div>
-              </div>
-
               {/* Content Container */}
-              <div className="p-6">
-                <div className="flex items-center gap-6">
-                  {/* Image Section */}
-                  <div className="flex-shrink-0 w-32 h-32 xl:w-40 xl:h-40 bg-gradient-to-br from-accent/5 to-accent/10 rounded-2xl flex items-center justify-center p-4 group-hover:scale-105 transition-transform duration-300">
+              <div className="p-4 xl:p-6">
+                <div className="flex items-center gap-4 xl:gap-6">
+                  {/* Image Section - Smaller and more proportional */}
+                  <div className="flex-shrink-0 w-20 h-20 xl:w-24 xl:h-24 bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
                     <img 
                       src={offer.image} 
                       alt={offer.title} 
-                      className="w-full h-full object-contain drop-shadow-lg"
+                      className="w-full h-full object-contain drop-shadow-md"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Content Section */}
                   <div className="flex-1 min-w-0">
-                    {/* Title */}
-                    <h3 className="text-xl xl:text-2xl font-bold text-gray-900 mb-2 group-hover:text-accent transition-colors duration-300">
-                      {offer.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-gray-600 text-base xl:text-lg mb-4 leading-relaxed">
-                      {offer.description}
-                    </p>
-
-                    {/* Price and Action Row */}
                     <div className="flex items-center justify-between">
-                      {/* Price */}
-                      <div className="flex items-center gap-3">
-                        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-xl font-bold text-lg xl:text-xl shadow-lg">
-                          {offer.discount}
-                        </div>
-                        <div className="flex items-center gap-1 text-accent">
-                          <Flame className="w-4 h-4" />
-                          <span className="text-sm font-medium">Hot Deal!</span>
-                        </div>
+                      {/* Left side - Title and Description */}
+                      <div className="flex-1 min-w-0 mr-4">
+                        <h3 className="text-base xl:text-lg font-bold text-gray-900 mb-1 group-hover:text-accent transition-colors duration-300 line-clamp-1">
+                          {offer.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm xl:text-base mb-2 leading-relaxed line-clamp-2">
+                          {offer.description}
+                        </p>
                       </div>
 
-                      {/* Order Button */}
-                      <Button 
-                        className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-xl font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105" 
-                        onClick={() => handleOrderClick(offer)}
-                      >
-                        Order Now
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                      </Button>
+                      {/* Right side - Price and Action */}
+                      <div className="flex items-center gap-3 xl:gap-4 flex-shrink-0">
+                        {/* Special Badge */}
+                        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-1 xl:px-3 xl:py-1 rounded-full text-xs xl:text-sm font-bold flex items-center gap-1 shadow-md">
+                          <Star className="w-3 h-3 fill-current" />
+                          SPECIAL
+                        </div>
+
+                        {/* Price */}
+                        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 xl:px-4 xl:py-2 rounded-lg font-bold text-sm xl:text-base shadow-md">
+                          {offer.discount}
+                        </div>
+
+                        {/* Order Button */}
+                        <Button 
+                          className="bg-accent hover:bg-accent/90 text-white px-4 py-2 xl:px-6 xl:py-3 rounded-lg font-semibold text-sm xl:text-base shadow-md hover:shadow-lg transition-all duration-300" 
+                          onClick={() => handleOrderClick(offer)}
+                        >
+                          Order Now
+                          <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Decorative Elements */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-accent/10 to-transparent rounded-bl-full"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-accent/5 to-transparent rounded-tr-full"></div>
+              {/* Hot Deal Indicator */}
+              <div className="absolute top-2 right-2 flex items-center gap-1 text-accent opacity-70">
+                <Flame className="w-4 h-4" />
+                <span className="text-xs font-medium">Hot Deal!</span>
+              </div>
             </Card>
           ))}
         </div>
