@@ -123,19 +123,9 @@ const GasSafety = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-6"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-100 text-red-700 rounded-full text-sm font-medium mb-4">
-            <Shield className="w-4 h-4" />
-            Safety First
-          </div>
-          
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             Gas Safety <span className="text-accent">Guidelines</span>
           </h1>
-          
-          <p className="text-lg md:text-2xl text-gray-600 max-w-5xl mx-auto mb-8">
-            Essential safety tips for using cooking gas safely at home. 
-            Protect your family with proper LPG handling practices.
-          </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
