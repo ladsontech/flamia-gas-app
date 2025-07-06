@@ -44,7 +44,7 @@ const Gadgets = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-14">
+    <div className="min-h-screen bg-gray-50 pt-16 md:pt-20">
       <Helmet>
         <title>Gadgets Store - Flamia</title>
         <meta name="description" content="Shop the latest gadgets including smartphones, laptops, tablets, and more. Best prices with fast delivery." />
@@ -53,7 +53,7 @@ const Gadgets = () => {
 
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-none mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           {/* Image Carousel */}
           <GadgetsCarousel />
 
@@ -72,7 +72,7 @@ const Gadgets = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 lg:mb-8"
             >
               Gadgets Store
             </motion.h1>
@@ -81,7 +81,7 @@ const Gadgets = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto mb-8 lg:mb-10"
+              className="text-lg md:text-2xl lg:text-3xl text-gray-600 max-w-5xl mx-auto mb-8 lg:mb-12 leading-relaxed"
             >
               Discover the latest smartphones, laptops, tablets, and tech accessories. 
               Premium quality gadgets with competitive prices and fast delivery.
@@ -106,23 +106,23 @@ const Gadgets = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-none mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
           {/* Results Header */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 mb-4 lg:mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:p-8 mb-6 lg:mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
                   {searchQuery || Object.keys(filters).length > 0 
                     ? `${searchQuery ? `Results for "${searchQuery}"` : 'Filtered Results'}`
                     : 'All Products'
                   }
                 </h2>
-                <span className="text-base md:text-lg text-gray-600">
+                <span className="text-lg md:text-xl lg:text-2xl text-gray-600">
                   {gadgets.length} {gadgets.length === 1 ? 'product' : 'products'} found
                 </span>
               </div>
@@ -154,9 +154,9 @@ const Gadgets = () => {
 
           {/* Products Grid */}
           {gadgets.length > 0 ? (
-            <div className={`grid gap-4 lg:gap-6 ${
+            <div className={`grid gap-6 lg:gap-8 ${
               viewMode === 'grid' 
-                ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' 
+                ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6' 
                 : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
             }`}>
               {gadgets.map((gadget, index) => (

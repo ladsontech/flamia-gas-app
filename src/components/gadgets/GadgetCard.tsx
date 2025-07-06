@@ -45,8 +45,8 @@ Please let me know about availability and delivery options.`;
   };
 
   return (
-    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 lg:p-2.5 transition-all duration-300 overflow-hidden h-full flex flex-col">
-      <div className="relative w-full pb-[100%] mb-2 lg:mb-1.5 rounded-lg overflow-hidden bg-gray-50/80">
+    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-md p-3 sm:p-4 lg:p-4 transition-all duration-300 overflow-hidden h-full flex flex-col">
+      <div className="relative w-full pb-[100%] mb-3 lg:mb-3 rounded-lg overflow-hidden bg-gray-50/80">
         <img
           src={gadget.image_url || '/images/gadget-fallback.jpg'}
           alt={gadget.name}
@@ -79,27 +79,27 @@ Please let me know about availability and delivery options.`;
       
       <div className="flex-grow">
         <h3 
-          className="text-xs sm:text-sm lg:text-xs font-semibold mb-0.5 lg:mb-0.5 text-gray-900 line-clamp-2 group-hover:text-accent transition-colors cursor-pointer"
+          className="text-sm sm:text-base lg:text-base font-semibold mb-2 lg:mb-2 text-gray-900 line-clamp-2 group-hover:text-accent transition-colors cursor-pointer"
           onClick={handleCardClick}
         >
           {gadget.name}
         </h3>
-        <p className="text-muted-foreground mb-2 lg:mb-1.5 text-xs lg:text-xs line-clamp-2">
+        <p className="text-muted-foreground mb-3 lg:mb-3 text-sm lg:text-sm line-clamp-2">
           {gadget.description}
         </p>
       </div>
       
-      <div className="pt-1.5 lg:pt-1 border-t border-gray-100">
-        <div className="flex justify-between items-center mb-1.5 lg:mb-1">
-          <span className="text-xs lg:text-xs font-medium text-gray-600">Price</span>
-          <span className="text-xs sm:text-sm lg:text-xs font-semibold text-accent">
+      <div className="pt-3 lg:pt-3 border-t border-gray-100">
+        <div className="flex justify-between items-center mb-3 lg:mb-3">
+          <span className="text-sm lg:text-sm font-medium text-gray-600">Price</span>
+          <span className="text-sm sm:text-base lg:text-base font-semibold text-accent">
             {formatPrice(gadget.price)}
           </span>
         </div>
         <Button
           onClick={handleOrder}
           disabled={!gadget.in_stock}
-          className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-xs py-1.5 lg:py-1 h-7 lg:h-6 rounded-lg"
+          className="w-full bg-accent text-white hover:bg-accent/90 text-sm lg:text-sm py-2.5 lg:py-2.5 h-10 lg:h-10 rounded-lg"
         >
           {gadget.in_stock ? 'Order Now' : 'Out of Stock'}
         </Button>
