@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -249,9 +248,9 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Desktop Layout - Redesigned with Special Offers on Left */}
+        {/* Desktop Layout - Updated with 2 columns */}
         <div className="hidden lg:block">
-          <div className="max-w-[1600px] mx-auto px-4 lg:px-6 xl:px-8 2xl:px-12">
+          <div className="max-w-[1400px] mx-auto px-4 lg:px-6 xl:px-8 2xl:px-12">
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 2xl:p-16 mb-8 lg:mb-10 xl:mb-12 border border-accent/20">
               <div className="text-center">
@@ -281,12 +280,12 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Main Content Grid - Responsive for iPad and Desktop */}
+            {/* Main Content Grid - 2 Columns Layout */}
             <div className="grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8">
-              {/* Left Sidebar - Special Offers moved here */}
+              {/* Left Sidebar - Special Offers */}
               <div className="col-span-12 lg:col-span-3 xl:col-span-3">
                 <div className="sticky top-24 space-y-4 lg:space-y-6">
-                  {/* Special Promotions - Moved from right sidebar */}
+                  {/* Special Promotions */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 lg:p-4">
                       <div className="flex items-center gap-2 text-white">
@@ -331,43 +330,7 @@ export default function Index() {
                       ))}
                     </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Main Content Area */}
-              <div className="col-span-12 lg:col-span-6 xl:col-span-6">
-                <div className="space-y-6 lg:space-y-8">
-                  {/* Main Title */}
-                  <div className="text-center">
-                    <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-3 lg:mb-4 text-slate-950">
-                      Premium Gas Cylinders
-                    </h2>
-                    <p className="text-base lg:text-lg xl:text-xl text-muted-foreground mb-4 lg:mb-6 leading-relaxed">
-                      Choose from our wide selection of certified gas cylinders with free same-day delivery across Kampala
-                    </p>
-                  </div>
-
-                  {/* Gas Cylinders Grid */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
-                    {isLoading ? (
-                      <div className="flex justify-center py-16">
-                        <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
-                      </div>
-                    ) : (
-                      <BrandsGrid brands={[]} />
-                    )}
-                  </div>
-
-                  {/* Gas Accessories Section */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
-                    <AccessoriesSection />
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Sidebar */}
-              <div className="col-span-12 lg:col-span-3 xl:col-span-3">
-                <div className="sticky top-24 space-y-4 lg:space-y-6">
                   {/* Popular Brands */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
                     <h3 className="font-bold text-base lg:text-lg mb-3 lg:mb-4 text-gray-900 flex items-center gap-2">
@@ -394,6 +357,37 @@ export default function Index() {
                         Chat with Gas Expert
                       </Button>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Content Area - Expanded */}
+              <div className="col-span-12 lg:col-span-9 xl:col-span-9">
+                <div className="space-y-6 lg:space-y-8">
+                  {/* Main Title */}
+                  <div className="text-center">
+                    <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-3 lg:mb-4 text-slate-950">
+                      Premium Gas Cylinders
+                    </h2>
+                    <p className="text-base lg:text-lg xl:text-xl text-muted-foreground mb-4 lg:mb-6 leading-relaxed">
+                      Choose from our wide selection of certified gas cylinders with free same-day delivery across Kampala
+                    </p>
+                  </div>
+
+                  {/* Gas Cylinders Grid */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
+                    {isLoading ? (
+                      <div className="flex justify-center py-16">
+                        <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
+                      </div>
+                    ) : (
+                      <BrandsGrid brands={[]} />
+                    )}
+                  </div>
+
+                  {/* Gas Accessories Section */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
+                    <AccessoriesSection />
                   </div>
                 </div>
               </div>
