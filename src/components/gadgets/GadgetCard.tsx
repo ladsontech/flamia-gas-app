@@ -15,12 +15,26 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
   const navigate = useNavigate();
 
   const handleOrder = () => {
-    navigate(`/order?gadget=${gadget.id}`);
+    const productDetailUrl = `${window.location.origin}/gadget/${gadget.id}`;
+    const message = `Hello, I'm interested in this product:
+
+*${gadget.name}*
+
+${gadget.description}
+
+Price: ${formatPrice(gadget.price)}
+
+Product Details: ${productDetailUrl}
+
+Please let me know about availability and delivery options.`;
+
+    const whatsappUrl = `https://wa.me/25678972007?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
-  const discountPercentage = gadget.original_price 
-    ? Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)
-    : 0;
+  const handleCardClick = () => {
+    navigate(`/gadget/${gadget.id}`);
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-UG', {
@@ -34,7 +48,10 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
   return (
     <Card className="group h-full flex flex-col bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden">
       {/* Square Image Container */}
-      <div className="relative aspect-square bg-gray-50 overflow-hidden">
+      <div 
+        className="relative aspect-square bg-gray-50 overflow-hidden cursor-pointer"
+        onClick={handleCardClick}
+      >
         <img
           src={gadget.image_url || '/images/gadget-fallback.jpg'}
           alt={gadget.name}
@@ -55,13 +72,6 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
             {gadget.condition === 'brand_new' ? 'Brand New' : 'Used'}
           </Badge>
           
-          {/* Discount Badge */}
-          {discountPercentage > 0 && (
-            <Badge className="bg-red-500 text-white text-xs px-2 py-1">
-              -{discountPercentage}%
-            </Badge>
-          )}
-          
           {/* Stock Badge */}
           {!gadget.in_stock && (
             <Badge variant="secondary" className="text-xs">
@@ -74,7 +84,10 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
       {/* Content */}
       <CardContent className="p-3 flex-grow flex flex-col">
         {/* Title */}
-        <h3 className="font-semibold text-sm line-clamp-2 text-gray-900 mb-2 group-hover:text-accent transition-colors">
+        <h3 
+          className="font-semibold text-sm line-clamp-2 text-gray-900 mb-2 group-hover:text-accent transition-colors cursor-pointer"
+          onClick={handleCardClick}
+        >
           {gadget.name}
         </h3>
         
@@ -104,7 +117,7 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
           className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-2 h-8 font-semibold transition-all duration-300 group-hover:shadow-lg mt-3"
         >
           <ShoppingCart className="w-3 h-3 mr-1" />
-          {gadget.in_stock ? 'Add to Cart' : 'Out of Stock'}
+          {gadget.in_stock ? 'Order Now' : 'Out of Stock'}
         </Button>
       </CardContent>
     </Card>
