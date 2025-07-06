@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,15 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
   const discountPercentage = gadget.original_price 
     ? Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)
     : 0;
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-UG', {
+      style: 'currency',
+      currency: 'UGX',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   return (
     <Card className="group h-full flex flex-col bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden">
@@ -77,21 +87,14 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
         <div className="space-y-2 mt-auto">
           <div className="flex items-center gap-2">
             <span className="font-bold text-base text-accent">
-              ${gadget.price.toFixed(2)}
+              {formatPrice(gadget.price)}
             </span>
             {gadget.original_price && (
               <span className="text-sm text-gray-500 line-through">
-                ${gadget.original_price.toFixed(2)}
+                {formatPrice(gadget.original_price)}
               </span>
             )}
           </div>
-          
-          {/* Stock Info */}
-          {gadget.stock_quantity > 0 && gadget.stock_quantity <= 10 && (
-            <p className="text-xs text-orange-600">
-              Only {gadget.stock_quantity} left
-            </p>
-          )}
         </div>
 
         {/* Order Button */}

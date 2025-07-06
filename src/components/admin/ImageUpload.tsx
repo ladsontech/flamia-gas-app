@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,7 +89,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <img
               src={preview}
               alt="Preview"
-              className="w-full h-32 object-cover rounded-lg border"
+              className="w-full aspect-square object-cover rounded-lg border"
             />
             <Button
               variant="destructive"
@@ -100,9 +101,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             </Button>
           </div>
         ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+          <div className="border-2 border-dashed border-gray-300 rounded-lg aspect-square flex flex-col items-center justify-center text-center p-4">
+            <Upload className="w-8 h-8 text-gray-400 mb-2" />
             <p className="text-sm text-gray-500">No image selected</p>
+            <p className="text-xs text-gray-400 mt-1">Square format recommended</p>
           </div>
         )}
 

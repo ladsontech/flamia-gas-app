@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      carousel_images: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          is_active: boolean
+          link_url: string | null
+          order_position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          link_url?: string | null
+          order_position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          link_url?: string | null
+          order_position?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery_men: {
         Row: {
           created_at: string
@@ -43,16 +79,12 @@ export type Database = {
           condition: string | null
           created_at: string
           description: string
-          features: string[] | null
           id: string
           image_url: string | null
           in_stock: boolean
           name: string
           original_price: number | null
           price: number
-          rating: number | null
-          stock_quantity: number | null
-          total_reviews: number | null
           updated_at: string
         }
         Insert: {
@@ -61,16 +93,12 @@ export type Database = {
           condition?: string | null
           created_at?: string
           description: string
-          features?: string[] | null
           id?: string
           image_url?: string | null
           in_stock?: boolean
           name: string
           original_price?: number | null
           price: number
-          rating?: number | null
-          stock_quantity?: number | null
-          total_reviews?: number | null
           updated_at?: string
         }
         Update: {
@@ -79,16 +107,12 @@ export type Database = {
           condition?: string | null
           created_at?: string
           description?: string
-          features?: string[] | null
           id?: string
           image_url?: string | null
           in_stock?: boolean
           name?: string
           original_price?: number | null
           price?: number
-          rating?: number | null
-          stock_quantity?: number | null
-          total_reviews?: number | null
           updated_at?: string
         }
         Relationships: []

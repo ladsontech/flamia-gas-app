@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import ImageUpload from './ImageUpload';
 import { Plus, Edit, Trash2, Eye, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -15,34 +17,13 @@ interface CarouselImage {
   description: string;
   image_url: string;
   link_url?: string;
-  order: number;
+  order_position: number;
+  is_active: boolean;
 }
 
 const CarouselManager: React.FC = () => {
-  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([
-    {
-      id: '1',
-      title: 'Latest Smartphones',
-      description: 'Discover the newest smartphone technology',
-      image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop',
-      order: 1
-    },
-    {
-      id: '2',
-      title: 'Premium Laptops',
-      description: 'High-performance laptops for work and gaming',
-      image_url: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop',
-      order: 2
-    },
-    {
-      id: '3',
-      title: 'Gaming Accessories',
-      description: 'Enhance your gaming experience',
-      image_url: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&h=600&fit=crop',
-      order: 3
-    }
-  ]);
-  
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
+  const [loading, setLoading] = useState(false);
   const [editingImage, setEditingImage] = useState<CarouselImage | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -52,8 +33,33 @@ const CarouselManager: React.FC = () => {
     description: '',
     image_url: '',
     link_url: '',
-    order: '1'
+    order_position: '1'
   });
+
+  useEffect(() => {
+    fetchCarouselImages();
+  }, []);
+
+  const fetchCarouselImages = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('carousel_images')
+        .select('*')
+        .order('order_position', { ascending: true });
+
+      if (error) throw error;
+      setCarouselImages(data || []);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch carousel images",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -61,7 +67,7 @@ const CarouselManager: React.FC = () => {
       description: '',
       image_url: '',
       link_url: '',
-      order: '1'
+      order_position: '1'
     });
     setEditingImage(null);
   };
@@ -73,99 +79,146 @@ const CarouselManager: React.FC = () => {
       description: image.description,
       image_url: image.image_url,
       link_url: image.link_url || '',
-      order: image.order.toString()
+      order_position: image.order_position.toString()
     });
     setIsDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const imageData: CarouselImage = {
-      id: editingImage?.id || Date.now().toString(),
-      title: formData.title,
-      description: formData.description,
-      image_url: formData.image_url,
-      link_url: formData.link_url || undefined,
-      order: parseInt(formData.order)
-    };
+    try {
+      setLoading(true);
 
-    if (editingImage) {
-      setCarouselImages(prev => 
-        prev.map(img => img.id === editingImage.id ? imageData : img)
-      );
+      const imageData = {
+        title: formData.title,
+        description: formData.description,
+        image_url: formData.image_url,
+        link_url: formData.link_url || null,
+        order_position: parseInt(formData.order_position)
+      };
+
+      if (editingImage) {
+        const { error } = await supabase
+          .from('carousel_images')
+          .update(imageData)
+          .eq('id', editingImage.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Carousel image updated successfully!"
+        });
+      } else {
+        const { error } = await supabase
+          .from('carousel_images')
+          .insert([imageData]);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Carousel image added successfully!"
+        });
+      }
+
+      setIsDialogOpen(false);
+      resetForm();
+      fetchCarouselImages();
+    } catch (error) {
       toast({
-        title: "Success",
-        description: "Carousel image updated successfully!"
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Failed to save carousel image',
+        variant: "destructive"
       });
-    } else {
-      setCarouselImages(prev => [...prev, imageData]);
-      toast({
-        title: "Success",
-        description: "Carousel image added successfully!"
-      });
+    } finally {
+      setLoading(false);
     }
-
-    setIsDialogOpen(false);
-    resetForm();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this carousel image?')) return;
 
-    setCarouselImages(prev => prev.filter(img => img.id !== id));
-    toast({
-      title: "Success",
-      description: "Carousel image deleted successfully!"
-    });
-  };
+    try {
+      const { error } = await supabase
+        .from('carousel_images')
+        .delete()
+        .eq('id', id);
 
-  const moveImage = (id: string, direction: 'up' | 'down') => {
-    setCarouselImages(prev => {
-      const sortedImages = [...prev].sort((a, b) => a.order - b.order);
-      const currentIndex = sortedImages.findIndex(img => img.id === id);
-      
-      if (currentIndex === -1) return prev;
-      
-      const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      if (newIndex < 0 || newIndex >= sortedImages.length) return prev;
+      if (error) throw error;
 
-      // Swap orders
-      const currentOrder = sortedImages[currentIndex].order;
-      const targetOrder = sortedImages[newIndex].order;
-      
-      return prev.map(img => {
-        if (img.id === id) return { ...img, order: targetOrder };
-        if (img.id === sortedImages[newIndex].id) return { ...img, order: currentOrder };
-        return img;
+      toast({
+        title: "Success",
+        description: "Carousel image deleted successfully!"
       });
-    });
+
+      fetchCarouselImages();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete carousel image",
+        variant: "destructive"
+      });
+    }
   };
 
-  const sortedImages = [...carouselImages].sort((a, b) => a.order - b.order);
+  const moveImage = async (id: string, direction: 'up' | 'down') => {
+    const sortedImages = [...carouselImages].sort((a, b) => a.order_position - b.order_position);
+    const currentIndex = sortedImages.findIndex(img => img.id === id);
+    
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= sortedImages.length) return;
+
+    // Swap order positions
+    const currentOrder = sortedImages[currentIndex].order_position;
+    const targetOrder = sortedImages[newIndex].order_position;
+    
+    try {
+      await supabase
+        .from('carousel_images')
+        .update({ order_position: targetOrder })
+        .eq('id', id);
+
+      await supabase
+        .from('carousel_images')
+        .update({ order_position: currentOrder })
+        .eq('id', sortedImages[newIndex].id);
+
+      fetchCarouselImages();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reorder images",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Carousel Management</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Carousel Management</h2>
           <p className="text-gray-600 text-sm mt-1">Manage images that appear on the Gadgets page carousel</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm} className="bg-accent hover:bg-accent/90">
+            <Button onClick={resetForm} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add Carousel Image
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2">
             <DialogHeader>
               <DialogTitle>
                 {editingImage ? 'Edit Carousel Image' : 'Add New Carousel Image'}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="title">Title *</Label>
@@ -206,8 +259,8 @@ const CarouselManager: React.FC = () => {
                       id="order"
                       type="number"
                       min="1"
-                      value={formData.order}
-                      onChange={(e) => setFormData({...formData, order: e.target.value})}
+                      value={formData.order_position}
+                      onChange={(e) => setFormData({...formData, order_position: e.target.value})}
                       required
                     />
                   </div>
@@ -223,12 +276,12 @@ const CarouselManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-accent hover:bg-accent/90">
-                  {editingImage ? 'Update' : 'Add'} Image
+                <Button type="submit" className="bg-accent hover:bg-accent/90 w-full sm:w-auto" disabled={loading}>
+                  {loading ? 'Saving...' : editingImage ? 'Update' : 'Add'} Image
                 </Button>
               </div>
             </form>
@@ -243,21 +296,21 @@ const CarouselManager: React.FC = () => {
         </AlertDescription>
       </Alert>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedImages.map((image, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {carouselImages.map((image, index) => (
           <Card key={image.id} className="overflow-hidden">
-            <CardHeader className="p-4">
+            <CardHeader className="p-3 md:p-4">
               <img
                 src={image.image_url}
                 alt={image.title}
-                className="w-full h-32 object-cover rounded-lg mb-3"
+                className="w-full aspect-square object-cover rounded-lg mb-3"
               />
-              <CardTitle className="text-lg">{image.title}</CardTitle>
+              <CardTitle className="text-base md:text-lg">{image.title}</CardTitle>
               <p className="text-sm text-gray-600">{image.description}</p>
             </CardHeader>
-            <CardContent className="p-4 pt-0">
+            <CardContent className="p-3 md:p-4 pt-0">
               <div className="flex justify-between items-center mb-3">
-                <span className="text-sm text-gray-500">Order: {image.order}</span>
+                <span className="text-sm text-gray-500">Order: {image.order_position}</span>
                 {image.link_url && (
                   <Button
                     size="sm"
@@ -269,7 +322,7 @@ const CarouselManager: React.FC = () => {
                 )}
               </div>
               
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div className="flex gap-2">
                   <Button
                     size="sm"
@@ -283,7 +336,7 @@ const CarouselManager: React.FC = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => moveImage(image.id, 'down')}
-                    disabled={index === sortedImages.length - 1}
+                    disabled={index === carouselImages.length - 1}
                   >
                     ↓
                   </Button>
@@ -302,8 +355,8 @@ const CarouselManager: React.FC = () => {
         ))}
       </div>
 
-      {carouselImages.length === 0 && (
-        <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
+      {carouselImages.length === 0 && !loading && (
+        <div className="text-center py-8 md:py-12 border-2 border-dashed border-gray-300 rounded-lg">
           <p className="text-gray-500">No carousel images found. Add your first image to get started!</p>
           <p className="text-sm text-gray-400 mt-2">These images will appear on the Gadgets page carousel.</p>
         </div>

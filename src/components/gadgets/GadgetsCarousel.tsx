@@ -2,36 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-// For now, we'll use the same carousel images that are managed in the admin
-// This should ideally come from a database table, but we'll use the same structure
-const getCarouselImages = () => [
-  {
-    id: '1',
-    title: 'Latest Smartphones',
-    description: 'Discover the newest smartphone technology',
-    image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop',
-    order: 1
-  },
-  {
-    id: '2',
-    title: 'Premium Laptops',
-    description: 'High-performance laptops for work and gaming',
-    image_url: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop',
-    order: 2
-  },
-  {
-    id: '3',
-    title: 'Gaming Accessories',
-    description: 'Enhance your gaming experience',
-    image_url: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&h=600&fit=crop',
-    order: 3
-  }
-];
+import { useCarouselImages } from '@/hooks/useCarouselImages';
 
 const GadgetsCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const carouselImages = getCarouselImages();
+  const { carouselImages, loading } = useCarouselImages();
 
   useEffect(() => {
     if (carouselImages.length === 0) return;
@@ -53,7 +28,7 @@ const GadgetsCarousel: React.FC = () => {
     setCurrentIndex(currentIndex === carouselImages.length - 1 ? 0 : currentIndex + 1);
   };
 
-  if (carouselImages.length === 0) {
+  if (loading || carouselImages.length === 0) {
     return null;
   }
 

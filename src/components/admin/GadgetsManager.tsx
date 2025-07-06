@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Gadget } from '@/types/gadget';
 import ImageUpload from './ImageUpload';
-import { Plus, Edit, Trash2, Star } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 
 const categories = ['Smartphones', 'Laptops', 'Tablets', 'Audio', 'Wearables', 'Gaming'];
 const brands = ['Apple', 'Samsung', 'Google', 'Dell', 'Sony', 'Microsoft', 'HP', 'Lenovo'];
@@ -31,10 +32,6 @@ const GadgetsManager: React.FC = () => {
     category: '',
     brand: '',
     image_url: '',
-    features: '',
-    stock_quantity: '',
-    rating: '',
-    total_reviews: '',
     condition: 'brand_new' as 'brand_new' | 'used',
     in_stock: true
   });
@@ -76,10 +73,6 @@ const GadgetsManager: React.FC = () => {
       category: '',
       brand: '',
       image_url: '',
-      features: '',
-      stock_quantity: '',
-      rating: '',
-      total_reviews: '',
       condition: 'brand_new' as 'brand_new' | 'used',
       in_stock: true
     });
@@ -96,10 +89,6 @@ const GadgetsManager: React.FC = () => {
       category: gadget.category,
       brand: gadget.brand || '',
       image_url: gadget.image_url || '',
-      features: gadget.features?.join(', ') || '',
-      stock_quantity: gadget.stock_quantity.toString(),
-      rating: gadget.rating.toString(),
-      total_reviews: gadget.total_reviews.toString(),
       condition: gadget.condition,
       in_stock: gadget.in_stock
     });
@@ -112,11 +101,6 @@ const GadgetsManager: React.FC = () => {
     try {
       setLoading(true);
 
-      const featuresArray = formData.features
-        .split(',')
-        .map(f => f.trim())
-        .filter(f => f.length > 0);
-
       const gadgetData = {
         name: formData.name,
         description: formData.description,
@@ -125,10 +109,6 @@ const GadgetsManager: React.FC = () => {
         category: formData.category,
         brand: formData.brand || null,
         image_url: formData.image_url || null,
-        features: featuresArray,
-        stock_quantity: parseInt(formData.stock_quantity),
-        rating: parseFloat(formData.rating),
-        total_reviews: parseInt(formData.total_reviews),
         condition: formData.condition,
         in_stock: formData.in_stock
       };
@@ -198,25 +178,34 @@ const GadgetsManager: React.FC = () => {
     }
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-UG', {
+      style: 'currency',
+      currency: 'UGX',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gadgets Management</h2>
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h2 className="text-xl md:text-2xl font-bold">Gadgets Management</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm} className="bg-accent hover:bg-accent/90">
+            <Button onClick={resetForm} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add Gadget
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto mx-2">
             <DialogHeader>
               <DialogTitle>
                 {editingGadget ? 'Edit Gadget' : 'Add New Gadget'}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="name">Product Name *</Label>
@@ -239,31 +228,33 @@ const GadgetsManager: React.FC = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="price">Price ($) *</Label>
+                      <Label htmlFor="price">Price (UGX) *</Label>
                       <Input
                         id="price"
                         type="number"
-                        step="0.01"
+                        step="1"
                         value={formData.price}
                         onChange={(e) => setFormData({...formData, price: e.target.value})}
                         required
+                        placeholder="e.g., 1500000"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="original_price">Original Price ($)</Label>
+                      <Label htmlFor="original_price">Original Price (UGX)</Label>
                       <Input
                         id="original_price"
                         type="number"
-                        step="0.01"
+                        step="1"
                         value={formData.original_price}
                         onChange={(e) => setFormData({...formData, original_price: e.target.value})}
+                        placeholder="e.g., 2000000"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="category">Category *</Label>
                       <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
@@ -308,55 +299,6 @@ const GadgetsManager: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div>
-                    <Label htmlFor="features">Features (comma-separated)</Label>
-                    <Textarea
-                      id="features"
-                      value={formData.features}
-                      onChange={(e) => setFormData({...formData, features: e.target.value})}
-                      placeholder="6.7-inch display, A17 Pro chip, 128GB storage"
-                      rows={2}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="stock_quantity">Stock *</Label>
-                      <Input
-                        id="stock_quantity"
-                        type="number"
-                        min="0"
-                        value={formData.stock_quantity}
-                        onChange={(e) => setFormData({...formData, stock_quantity: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="rating">Rating (1-5) *</Label>
-                      <Input
-                        id="rating"
-                        type="number"
-                        min="0"
-                        max="5"
-                        step="0.1"
-                        value={formData.rating}
-                        onChange={(e) => setFormData({...formData, rating: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="total_reviews">Reviews *</Label>
-                      <Input
-                        id="total_reviews"
-                        type="number"
-                        min="0"
-                        value={formData.total_reviews}
-                        onChange={(e) => setFormData({...formData, total_reviews: e.target.value})}
-                        required
-                      />
-                    </div>
-                  </div>
                 </div>
 
                 <div>
@@ -369,11 +311,11 @@ const GadgetsManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading} className="bg-accent hover:bg-accent/90">
+                <Button type="submit" disabled={loading} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
                   {loading ? 'Saving...' : editingGadget ? 'Update' : 'Create'}
                 </Button>
               </div>
@@ -382,44 +324,50 @@ const GadgetsManager: React.FC = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {gadgets.map((gadget) => (
           <Card key={gadget.id} className="overflow-hidden">
-            <CardHeader className="p-4">
+            <CardHeader className="p-3 md:p-4">
               {gadget.image_url && (
                 <img
                   src={gadget.image_url}
                   alt={gadget.name}
-                  className="w-full h-32 object-cover rounded-lg mb-3"
+                  className="w-full aspect-square object-cover rounded-lg mb-3"
                 />
               )}
-              <CardTitle className="text-lg line-clamp-2">{gadget.name}</CardTitle>
-              <div className="flex items-center gap-2">
+              <CardTitle className="text-base md:text-lg line-clamp-2">{gadget.name}</CardTitle>
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={gadget.in_stock ? "default" : "secondary"}>
                   {gadget.in_stock ? 'In Stock' : 'Out of Stock'}
                 </Badge>
                 <Badge variant="outline">{gadget.category}</Badge>
+                <Badge 
+                  className={`text-xs ${
+                    gadget.condition === 'brand_new' 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-yellow-500 text-white'
+                  }`}
+                >
+                  {gadget.condition === 'brand_new' ? 'Brand New' : 'Used'}
+                </Badge>
               </div>
             </CardHeader>
-            <CardContent className="p-4 pt-0">
+            <CardContent className="p-3 md:p-4 pt-0">
               <p className="text-sm text-gray-600 line-clamp-2 mb-3">{gadget.description}</p>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="font-bold text-lg">${gadget.price}</span>
+                  <span className="font-bold text-base md:text-lg text-accent">
+                    {formatPrice(gadget.price)}
+                  </span>
                   {gadget.original_price && (
-                    <span className="text-sm text-gray-500 line-through ml-2">
-                      ${gadget.original_price}
+                    <span className="text-sm text-gray-500 line-through ml-2 block sm:inline">
+                      {formatPrice(gadget.original_price)}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm">{gadget.rating}</span>
-                  <span className="text-xs text-gray-500">({gadget.total_reviews})</span>
-                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Stock: {gadget.stock_quantity}</span>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <span className="text-sm text-gray-500">{gadget.brand}</span>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => handleEdit(gadget)}>
                     <Edit className="w-4 h-4" />
@@ -435,7 +383,7 @@ const GadgetsManager: React.FC = () => {
       </div>
 
       {gadgets.length === 0 && !loading && (
-        <div className="text-center py-12">
+        <div className="text-center py-8 md:py-12">
           <p className="text-gray-500">No gadgets found. Add your first gadget to get started!</p>
         </div>
       )}

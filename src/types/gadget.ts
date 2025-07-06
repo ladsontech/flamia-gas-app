@@ -1,3 +1,4 @@
+
 export interface Gadget {
   id: string;
   name: string;
@@ -7,11 +8,7 @@ export interface Gadget {
   category: string;
   brand?: string;
   image_url?: string;
-  features?: string[];
   in_stock: boolean;
-  stock_quantity: number;
-  rating: number;
-  total_reviews: number;
   condition: 'brand_new' | 'used';
   created_at: string;
   updated_at: string;
