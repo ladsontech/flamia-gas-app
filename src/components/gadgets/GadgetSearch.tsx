@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -45,53 +46,55 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
     <div className="space-y-4">
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
         <Input
           value={localQuery}
           onChange={(e) => setLocalQuery(e.target.value)}
           placeholder="Search gadgets, brands, categories..."
-          className="pl-10 pr-20 h-12 text-base border-2 border-gray-200 focus:border-accent"
+          className="pl-10 pr-24 md:pr-28 h-12 md:h-14 text-sm md:text-base border-2 border-gray-200 focus:border-accent rounded-lg"
         />
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-2">
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1 md:gap-2">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className={`${showFilters ? 'bg-accent text-white' : ''}`}
+            className={`px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm ${showFilters ? 'bg-accent text-white' : ''}`}
           >
-            <Filter className="w-4 h-4" />
+            <Filter className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline ml-1">Filter</span>
           </Button>
-          <Button type="submit" size="sm" className="bg-accent hover:bg-accent/90">
-            Search
+          <Button type="submit" size="sm" className="bg-accent hover:bg-accent/90 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm">
+            <span className="hidden sm:inline">Search</span>
+            <Search className="w-3 h-3 sm:hidden" />
           </Button>
         </div>
       </form>
 
       {/* Filters */}
       {showFilters && (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Filters</h3>
+            <h3 className="font-semibold text-gray-900 text-sm md:text-base">Filters</h3>
             {hasActiveFilters && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-red-500 hover:text-red-700"
+                className="text-red-500 hover:text-red-700 text-xs md:text-sm"
               >
-                <X className="w-4 h-4 mr-1" />
+                <X className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                 Clear All
               </Button>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Category</label>
               <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
-                <SelectTrigger>
+                <SelectTrigger className="text-xs md:text-sm">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -107,9 +110,9 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
 
             {/* Brand Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Brand</label>
               <Select value={filters.brand || ''} onValueChange={(value) => updateFilter('brand', value || undefined)}>
-                <SelectTrigger>
+                <SelectTrigger className="text-xs md:text-sm">
                   <SelectValue placeholder="All Brands" />
                 </SelectTrigger>
                 <SelectContent>
@@ -125,22 +128,24 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
 
             {/* Price Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Min Price</label>
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Min Price</label>
               <Input
                 type="number"
                 placeholder="$0"
                 value={filters.minPrice || ''}
                 onChange={(e) => updateFilter('minPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
+                className="text-xs md:text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Max Price</label>
+              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Max Price</label>
               <Input
                 type="number"
                 placeholder="$9999"
                 value={filters.maxPrice || ''}
                 onChange={(e) => updateFilter('maxPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
+                className="text-xs md:text-sm"
               />
             </div>
           </div>

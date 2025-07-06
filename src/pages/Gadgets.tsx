@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
@@ -6,28 +7,35 @@ import { GadgetFilters } from '@/types/gadget';
 import GadgetCard from '@/components/gadgets/GadgetCard';
 import GadgetSearch from '@/components/gadgets/GadgetSearch';
 import GadgetsCarousel from '@/components/gadgets/GadgetsCarousel';
-import { Loader2, Smartphone } from 'lucide-react';
+import { Loader2, Smartphone, Grid3X3, List } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Gadgets = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<GadgetFilters>({});
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { gadgets, loading, error } = useGadgets(filters, searchQuery);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-accent" />
-        <span className="ml-2 text-gray-600">Loading gadgets...</span>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-accent mx-auto mb-4" />
+          <span className="text-gray-600 text-lg">Loading gadgets...</span>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">Error loading gadgets: {error}</p>
-          <button onClick={() => window.location.reload()} className="text-accent hover:underline">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-md mx-auto px-4">
+          <p className="text-red-500 mb-4 text-lg">Error loading gadgets: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="text-accent hover:underline font-medium"
+          >
             Try again
           </button>
         </div>
@@ -36,81 +44,121 @@ const Gadgets = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gray-50">
       <Helmet>
         <title>Gadgets Store - Flamia</title>
         <meta name="description" content="Shop the latest gadgets including smartphones, laptops, tablets, and more. Best prices with fast delivery." />
         <meta name="keywords" content="gadgets, smartphones, laptops, tablets, electronics, technology" />
       </Helmet>
 
-      <div className="container mx-auto px-3 md:px-6 lg:px-8 py-6 max-w-7xl">
-        {/* Image Carousel */}
-        <GadgetsCarousel />
+      {/* Header Section */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 max-w-7xl">
+          {/* Image Carousel */}
+          <GadgetsCarousel />
 
-        {/* Hero Section */}
-        <div className="text-center mb-8">
+          {/* Hero Section */}
+          <div className="text-center mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4"
+            >
+              <Smartphone className="w-4 h-4" />
+              Latest Tech Gadgets
+            </motion.div>
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+            >
+              Gadgets Store
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-8"
+            >
+              Discover the latest smartphones, laptops, tablets, and tech accessories. 
+              Premium quality gadgets with competitive prices and fast delivery.
+            </motion.p>
+          </div>
+
+          {/* Search and Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4"
+            transition={{ delay: 0.3 }}
+            className="mb-6"
           >
-            <Smartphone className="w-4 h-4" />
-            Latest Tech Gadgets
+            <GadgetSearch
+              onSearch={setSearchQuery}
+              onFilter={setFilters}
+              searchQuery={searchQuery}
+              filters={filters}
+            />
           </motion.div>
-          
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
-          >
-            Gadgets Store
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-8"
-          >
-            Discover the latest smartphones, laptops, tablets, and tech accessories. 
-            Premium quality gadgets with competitive prices and fast delivery.
-          </motion.p>
         </div>
+      </div>
 
-        {/* Search and Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-8"
-        >
-          <GadgetSearch
-            onSearch={setSearchQuery}
-            onFilter={setFilters}
-            searchQuery={searchQuery}
-            filters={filters}
-          />
-        </motion.div>
-
-        {/* Search Results or All Products */}
+      {/* Main Content */}
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8 max-w-7xl">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">
-              {searchQuery || Object.keys(filters).length > 0 
-                ? `${searchQuery ? `Search Results for "${searchQuery}"` : 'Filtered Results'}`
-                : 'All Products'
-              }
-            </h2>
-            <span className="text-gray-600">{gadgets.length} products found</span>
+          {/* Results Header */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
+                  {searchQuery || Object.keys(filters).length > 0 
+                    ? `${searchQuery ? `Results for "${searchQuery}"` : 'Filtered Results'}`
+                    : 'All Products'
+                  }
+                </h2>
+                <span className="text-sm text-gray-600">
+                  {gadgets.length} {gadgets.length === 1 ? 'product' : 'products'} found
+                </span>
+              </div>
+              
+              {/* View Toggle */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 hidden sm:block">View:</span>
+                <div className="flex bg-gray-100 rounded-lg p-1">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className="px-3 py-1 text-xs"
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className="px-3 py-1 text-xs"
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
 
+          {/* Products Grid */}
           {gadgets.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+            <div className={`grid gap-4 md:gap-6 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' 
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+            }`}>
               {gadgets.map((gadget, index) => (
                 <motion.div
                   key={gadget.id}
@@ -124,17 +172,21 @@ const Gadgets = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No gadgets found matching your criteria.</p>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setFilters({});
-                }}
-                className="mt-4 text-accent hover:underline"
-              >
-                Clear search and filters
-              </button>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+              <div className="text-center">
+                <Smartphone className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-600 text-lg mb-2">No gadgets found matching your criteria.</p>
+                <p className="text-gray-500 text-sm mb-6">Try adjusting your search or filters</p>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilters({});
+                  }}
+                  className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors"
+                >
+                  Clear search and filters
+                </button>
+              </div>
             </div>
           )}
         </motion.div>

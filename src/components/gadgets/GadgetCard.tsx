@@ -46,7 +46,7 @@ Please let me know about availability and delivery options.`;
   };
 
   return (
-    <Card className="group h-full flex flex-col bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden">
+    <Card className="group h-full flex flex-col bg-white hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden">
       {/* Square Image Container */}
       <div 
         className="relative aspect-square bg-gray-50 overflow-hidden cursor-pointer"
@@ -69,7 +69,7 @@ Please let me know about availability and delivery options.`;
                 : 'bg-yellow-500 text-white'
             }`}
           >
-            {gadget.condition === 'brand_new' ? 'Brand New' : 'Used'}
+            {gadget.condition === 'brand_new' ? 'New' : 'Used'}
           </Badge>
           
           {/* Stock Badge */}
@@ -82,31 +82,26 @@ Please let me know about availability and delivery options.`;
       </div>
 
       {/* Content */}
-      <CardContent className="p-3 flex-grow flex flex-col">
+      <CardContent className="p-3 md:p-4 flex-grow flex flex-col">
         {/* Title */}
         <h3 
-          className="font-semibold text-sm line-clamp-2 text-gray-900 mb-2 group-hover:text-accent transition-colors cursor-pointer"
+          className="font-semibold text-sm md:text-base line-clamp-2 text-gray-900 mb-2 group-hover:text-accent transition-colors cursor-pointer leading-tight"
           onClick={handleCardClick}
         >
           {gadget.name}
         </h3>
         
         {/* Description */}
-        <p className="text-xs text-gray-600 line-clamp-2 mb-3 flex-grow">
+        <p className="text-xs md:text-sm text-gray-600 line-clamp-2 mb-3 flex-grow leading-relaxed">
           {gadget.description}
         </p>
 
         {/* Price */}
         <div className="space-y-2 mt-auto">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-base text-accent">
+            <span className="font-bold text-base md:text-lg text-accent">
               {formatPrice(gadget.price)}
             </span>
-            {gadget.original_price && (
-              <span className="text-sm text-gray-500 line-through">
-                {formatPrice(gadget.original_price)}
-              </span>
-            )}
           </div>
         </div>
 
@@ -114,9 +109,9 @@ Please let me know about availability and delivery options.`;
         <Button
           onClick={handleOrder}
           disabled={!gadget.in_stock}
-          className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-2 h-8 font-semibold transition-all duration-300 group-hover:shadow-lg mt-3"
+          className="w-full bg-accent hover:bg-accent/90 text-white text-xs md:text-sm py-2 h-8 md:h-9 font-semibold transition-all duration-300 group-hover:shadow-lg mt-3"
         >
-          <ShoppingCart className="w-3 h-3 mr-1" />
+          <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-1" />
           {gadget.in_stock ? 'Order Now' : 'Out of Stock'}
         </Button>
       </CardContent>
