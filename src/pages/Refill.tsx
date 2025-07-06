@@ -98,7 +98,7 @@ const Refill = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 pt-16">
       <Helmet>
         <title>Gas Refill Prices Uganda Today | Best LPG Refill Service Kampala</title>
         <meta name="description" content="Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex gas cylinders with free same-day delivery in Kampala, Wakiso, Mukono." />

@@ -107,7 +107,7 @@ const GasSafety = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 pt-16">
       <Helmet>
         <title>Gas Safety Tips Uganda | LPG Safety Guidelines | Flamia</title>
         <meta name="description" content="Essential gas safety tips for Uganda. Learn proper LPG cylinder storage, leak detection, safe cooking practices. Expert gas safety guidelines from Flamia." />

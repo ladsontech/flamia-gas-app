@@ -194,7 +194,7 @@ export default function Index() {
         </script>
       </Helmet>
 
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row pt-16">
         {/* Left Sidebar - Desktop Only */}
         <div className="hidden lg:block lg:w-80 xl:w-96 border-r border-gray-100 bg-gray-50 py-6 px-4">
           <div className="sticky top-20 space-y-6">
