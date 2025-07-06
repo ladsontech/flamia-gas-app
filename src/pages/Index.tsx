@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -248,22 +249,22 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Desktop Layout - Completely Redesigned */}
+        {/* Desktop Layout - Redesigned with Special Offers on Left */}
         <div className="hidden lg:block">
-          <div className="max-w-[1600px] mx-auto px-8 xl:px-12 2xl:px-16">
+          <div className="max-w-[1600px] mx-auto px-4 lg:px-6 xl:px-8 2xl:px-12">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-12 xl:p-16 mb-12 border border-accent/20">
+            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 2xl:p-16 mb-8 lg:mb-10 xl:mb-12 border border-accent/20">
               <div className="text-center">
-                <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-6 text-accent leading-tight">
+                <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
                   Uganda's #1 Gas Delivery Service
                 </h1>
-                <p className="text-xl xl:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed">
+                <p className="text-lg lg:text-xl xl:text-2xl text-gray-700 mb-6 lg:mb-8 max-w-4xl mx-auto leading-relaxed">
                   Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                   <Button 
                     size="lg" 
-                    className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg"
+                    className="bg-accent hover:bg-accent/90 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-bold text-base lg:text-lg shadow-lg"
                     onClick={() => navigate('/order')}
                   >
                     Order Gas Now
@@ -271,7 +272,7 @@ export default function Index() {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="border-accent text-accent hover:bg-accent/10 px-8 py-4 rounded-xl font-semibold text-lg"
+                    className="border-accent text-accent hover:bg-accent/10 px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold text-base lg:text-lg"
                     onClick={() => window.open("https://wa.me/256753894149", "_blank")}
                   >
                     Get Help
@@ -280,79 +281,74 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-12 gap-8 xl:gap-12">
-              {/* Left Sidebar */}
-              <div className="col-span-3">
-                <div className="sticky top-24 space-y-6">
+            {/* Main Content Grid - Responsive for iPad and Desktop */}
+            <div className="grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8">
+              {/* Left Sidebar - Special Offers moved here */}
+              <div className="col-span-12 lg:col-span-3 xl:col-span-3">
+                <div className="sticky top-24 space-y-4 lg:space-y-6">
+                  {/* Special Promotions - Moved from right sidebar */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 lg:p-4">
+                      <div className="flex items-center gap-2 text-white">
+                        <Flame size={18} className="lg:w-5 lg:h-5" />
+                        <h3 className="font-bold text-base lg:text-lg">Special Offers</h3>
+                      </div>
+                      <p className="text-white/90 text-xs lg:text-sm mt-1">Full kits & packages</p>
+                    </div>
+                    <div className="p-3 lg:p-4">
+                      <PromotionsSection />
+                    </div>
+                  </div>
+
                   {/* Featured Carousel */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="bg-accent p-4">
+                    <div className="bg-accent p-3 lg:p-4">
                       <div className="flex items-center gap-2 text-white">
-                        <Sparkles size={20} />
-                        <h3 className="font-bold text-lg">Featured Deals</h3>
+                        <Sparkles size={18} className="lg:w-5 lg:h-5" />
+                        <h3 className="font-bold text-base lg:text-lg">Featured Deals</h3>
                       </div>
-                      <p className="text-white/90 text-sm mt-1">Limited time offers</p>
+                      <p className="text-white/90 text-xs lg:text-sm mt-1">Limited time offers</p>
                     </div>
-                    <div className="p-3">
+                    <div className="p-2 lg:p-3">
                       <ImageCarousel />
                     </div>
                   </div>
 
                   {/* Features */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                    <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
-                    <div className="space-y-4">
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
+                    <h3 className="font-bold text-base lg:text-lg mb-3 lg:mb-4 text-gray-900">Why Choose Flamia?</h3>
+                    <div className="space-y-3 lg:space-y-4">
                       {features.map((feature, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <div className="bg-accent/10 p-2 rounded-lg">
-                            <feature.icon size={18} className="text-accent" />
+                        <div key={index} className="flex items-start gap-2 lg:gap-3">
+                          <div className="bg-accent/10 p-1.5 lg:p-2 rounded-lg">
+                            <feature.icon size={16} className="text-accent lg:w-[18px] lg:h-[18px]" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-sm text-gray-900">{feature.title}</h4>
+                            <h4 className="font-semibold text-xs lg:text-sm text-gray-900">{feature.title}</h4>
                             <p className="text-xs text-gray-600 mt-1">{feature.desc}</p>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
-
-                  {/* Contact Expert */}
-                  <div className="bg-accent/10 rounded-2xl p-6 border border-accent/20">
-                    <div className="text-center">
-                      <div className="bg-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 shadow-md">
-                        <Sparkles className="text-accent" size={20} />
-                      </div>
-                      <h3 className="font-bold text-lg mb-2">Need Expert Advice?</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Get personalized gas cylinder recommendations from our experts
-                      </p>
-                      <Button 
-                        className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg text-sm"
-                        onClick={() => window.open("https://wa.me/256753894149", "_blank")}
-                      >
-                        Chat with Gas Expert
-                      </Button>
-                    </div>
-                  </div>
                 </div>
               </div>
 
               {/* Main Content Area */}
-              <div className="col-span-6">
-                <div className="space-y-8">
+              <div className="col-span-12 lg:col-span-6 xl:col-span-6">
+                <div className="space-y-6 lg:space-y-8">
                   {/* Main Title */}
                   <div className="text-center">
-                    <h2 className="text-3xl xl:text-4xl font-bold mb-4 text-slate-950">
+                    <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-3 lg:mb-4 text-slate-950">
                       Premium Gas Cylinders
                     </h2>
-                    <p className="text-lg xl:text-xl text-muted-foreground mb-6 leading-relaxed">
+                    <p className="text-base lg:text-lg xl:text-xl text-muted-foreground mb-4 lg:mb-6 leading-relaxed">
                       Choose from our wide selection of certified gas cylinders with free same-day delivery across Kampala
                     </p>
                   </div>
 
                   {/* Gas Cylinders Grid */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
                     {isLoading ? (
                       <div className="flex justify-center py-16">
                         <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
@@ -363,36 +359,41 @@ export default function Index() {
                   </div>
 
                   {/* Gas Accessories Section */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
                     <AccessoriesSection />
                   </div>
                 </div>
               </div>
 
               {/* Right Sidebar */}
-              <div className="col-span-3">
-                <div className="sticky top-24 space-y-6">
-                  {/* Special Promotions */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4">
-                      <div className="flex items-center gap-2 text-white">
-                        <Flame size={20} />
-                        <h3 className="font-bold text-lg">Special Offers</h3>
-                      </div>
-                      <p className="text-white/90 text-sm mt-1">Full kits & packages</p>
-                    </div>
-                    <div className="p-4">
-                      <PromotionsSection />
-                    </div>
-                  </div>
-
+              <div className="col-span-12 lg:col-span-3 xl:col-span-3">
+                <div className="sticky top-24 space-y-4 lg:space-y-6">
                   {/* Popular Brands */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                    <h3 className="font-bold text-lg mb-4 text-gray-900 flex items-center gap-2">
-                      <Star size={18} className="text-accent" />
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6">
+                    <h3 className="font-bold text-base lg:text-lg mb-3 lg:mb-4 text-gray-900 flex items-center gap-2">
+                      <Star size={16} className="text-accent lg:w-[18px] lg:h-[18px]" />
                       Popular Brands
                     </h3>
                     <PopularBrands />
+                  </div>
+
+                  {/* Contact Expert */}
+                  <div className="bg-accent/10 rounded-2xl p-4 lg:p-6 border border-accent/20">
+                    <div className="text-center">
+                      <div className="bg-white rounded-full w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center mx-auto mb-2 lg:mb-3 shadow-md">
+                        <Sparkles className="text-accent w-5 h-5 lg:w-6 lg:h-6" />
+                      </div>
+                      <h3 className="font-bold text-base lg:text-lg mb-2">Need Expert Advice?</h3>
+                      <p className="text-xs lg:text-sm text-gray-600 mb-3 lg:mb-4">
+                        Get personalized gas cylinder recommendations from our experts
+                      </p>
+                      <Button 
+                        className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-2 lg:py-3 rounded-xl shadow-lg text-xs lg:text-sm"
+                        onClick={() => window.open("https://wa.me/256753894149", "_blank")}
+                      >
+                        Chat with Gas Expert
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
