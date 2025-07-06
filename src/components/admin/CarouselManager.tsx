@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface CarouselImage {
   id: string;
@@ -21,19 +22,24 @@ const CarouselManager: React.FC = () => {
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([
     {
       id: '1',
-      title: 'Premium Gas Cylinders',
-      description: 'Best quality gas cylinders with free delivery',
-      image_url: '/images/oryx 6KG.png',
-      link_url: '/order',
+      title: 'Latest Smartphones',
+      description: 'Discover the newest smartphone technology',
+      image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop',
       order: 1
     },
     {
       id: '2',
-      title: 'Gas Accessories',
-      description: 'Complete range of gas accessories',
-      image_url: '/images/regulator.jpeg',
-      link_url: '/accessories',
+      title: 'Premium Laptops',
+      description: 'High-performance laptops for work and gaming',
+      image_url: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop',
       order: 2
+    },
+    {
+      id: '3',
+      title: 'Gaming Accessories',
+      description: 'Enhance your gaming experience',
+      image_url: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&h=600&fit=crop',
+      order: 3
     }
   ]);
   
@@ -141,7 +147,10 @@ const CarouselManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Carousel Management</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Carousel Management</h2>
+          <p className="text-gray-600 text-sm mt-1">Manage images that appear on the Gadgets page carousel</p>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm} className="bg-accent hover:bg-accent/90">
@@ -165,6 +174,7 @@ const CarouselManager: React.FC = () => {
                       value={formData.title}
                       onChange={(e) => setFormData({...formData, title: e.target.value})}
                       required
+                      placeholder="e.g., Latest Smartphones"
                     />
                   </div>
 
@@ -175,6 +185,7 @@ const CarouselManager: React.FC = () => {
                       value={formData.description}
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
                       required
+                      placeholder="e.g., Discover the newest technology"
                     />
                   </div>
 
@@ -185,7 +196,7 @@ const CarouselManager: React.FC = () => {
                       type="url"
                       value={formData.link_url}
                       onChange={(e) => setFormData({...formData, link_url: e.target.value})}
-                      placeholder="/order or https://example.com"
+                      placeholder="/gadgets or https://example.com"
                     />
                   </div>
 
@@ -224,6 +235,13 @@ const CarouselManager: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          These carousel images will appear at the top of the Gadgets page. They auto-slide every 4 seconds and visitors can navigate through them manually.
+        </AlertDescription>
+      </Alert>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedImages.map((image, index) => (
@@ -285,8 +303,9 @@ const CarouselManager: React.FC = () => {
       </div>
 
       {carouselImages.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
           <p className="text-gray-500">No carousel images found. Add your first image to get started!</p>
+          <p className="text-sm text-gray-400 mt-2">These images will appear on the Gadgets page carousel.</p>
         </div>
       )}
     </div>

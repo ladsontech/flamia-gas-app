@@ -1,16 +1,37 @@
+
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useGadgets } from '@/hooks/useGadgets';
+
+// For now, we'll use the same carousel images that are managed in the admin
+// This should ideally come from a database table, but we'll use the same structure
+const getCarouselImages = () => [
+  {
+    id: '1',
+    title: 'Latest Smartphones',
+    description: 'Discover the newest smartphone technology',
+    image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop',
+    order: 1
+  },
+  {
+    id: '2',
+    title: 'Premium Laptops',
+    description: 'High-performance laptops for work and gaming',
+    image_url: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop',
+    order: 2
+  },
+  {
+    id: '3',
+    title: 'Gaming Accessories',
+    description: 'Enhance your gaming experience',
+    image_url: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&h=600&fit=crop',
+    order: 3
+  }
+];
 
 const GadgetsCarousel: React.FC = () => {
-  const { gadgets } = useGadgets();
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Filter gadgets with images
-  const carouselImages = gadgets
-    .filter(gadget => gadget.image_url)
-    .slice(0, 8); // Limit to 8 images
+  const carouselImages = getCarouselImages();
 
   useEffect(() => {
     if (carouselImages.length === 0) return;
@@ -19,7 +40,7 @@ const GadgetsCarousel: React.FC = () => {
       setCurrentIndex((prevIndex) => 
         prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
       );
-    }, 3000); // Auto-slide every 3 seconds
+    }, 4000); // Auto-slide every 4 seconds
 
     return () => clearInterval(interval);
   }, [carouselImages.length]);
@@ -37,22 +58,30 @@ const GadgetsCarousel: React.FC = () => {
   }
 
   return (
-    <div className="relative w-full h-48 md:h-64 lg:h-80 bg-gray-100 rounded-lg overflow-hidden mb-6">
+    <div className="relative w-full h-48 md:h-64 lg:h-80 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-6 shadow-lg">
       {/* Images */}
       <div 
-        className="flex transition-transform duration-500 ease-in-out h-full"
+        className="flex transition-transform duration-700 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {carouselImages.map((gadget, index) => (
+        {carouselImages.map((image) => (
           <div
-            key={gadget.id}
-            className="min-w-full h-full flex items-center justify-center bg-white"
+            key={image.id}
+            className="min-w-full h-full relative bg-gradient-to-br from-accent/10 to-accent/20"
           >
             <img
-              src={gadget.image_url}
-              alt={gadget.name}
-              className="max-w-full max-h-full object-contain p-4"
+              src={image.image_url}
+              alt={image.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
             />
+            {/* Overlay with text */}
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div className="text-center text-white px-4">
+                <h3 className="text-lg md:text-2xl font-bold mb-2">{image.title}</h3>
+                <p className="text-sm md:text-base opacity-90">{image.description}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -61,19 +90,19 @@ const GadgetsCarousel: React.FC = () => {
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white shadow-lg"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg border-0 w-10 h-10"
         onClick={goToPrevious}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className="h-5 w-5 text-gray-700" />
       </Button>
 
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white shadow-lg"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg border-0 w-10 h-10"
         onClick={goToNext}
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight className="h-5 w-5 text-gray-700" />
       </Button>
 
       {/* Dots Indicator */}
@@ -81,8 +110,10 @@ const GadgetsCarousel: React.FC = () => {
         {carouselImages.map((_, index) => (
           <button
             key={index}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === currentIndex ? 'bg-accent' : 'bg-white/50'
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentIndex 
+                ? 'bg-white shadow-lg' 
+                : 'bg-white/50 hover:bg-white/70'
             }`}
             onClick={() => setCurrentIndex(index)}
           />
