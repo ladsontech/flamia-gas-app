@@ -143,10 +143,6 @@ const GasSafety = () => {
 
         {/* Safety Tips Section */}
         <div id="safety-tips" className="mb-8">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Essential Safety Guidelines</h2>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {safetyTips.map((tip, index) => (
               <motion.div
