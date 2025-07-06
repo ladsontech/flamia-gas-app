@@ -67,23 +67,23 @@ const GadgetsCarousel: React.FC = () => {
         ))}
       </div>
 
-      {/* Navigation Buttons */}
+      {/* Navigation Buttons - Extreme ends with responsive sizing */}
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg border-0 w-10 h-10"
+        className="absolute left-2 sm:left-4 md:left-6 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg border-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 z-10"
         onClick={goToPrevious}
       >
-        <ChevronLeft className="h-5 w-5 text-gray-700" />
+        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-gray-700" />
       </Button>
 
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg border-0 w-10 h-10"
+        className="absolute right-2 sm:right-4 md:right-6 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg border-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 z-10"
         onClick={goToNext}
       >
-        <ChevronRight className="h-5 w-5 text-gray-700" />
+        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-gray-700" />
       </Button>
 
       {/* Dots Indicator */}
