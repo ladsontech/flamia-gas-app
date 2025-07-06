@@ -191,25 +191,16 @@ const GasSafety = () => {
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Emergency Response Guide</h2>
           </div>
 
-          <Card className="p-4 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card className="p-6 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
+            <div className="space-y-4">
               {emergencySteps.map((step, index) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="text-center"
-                >
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                <div key={step.step} className="flex items-start gap-3">
+                  <span className="font-bold text-red-600 text-lg min-w-[24px]">{step.step}.</span>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">{step.title}</h3>
+                    <p className="text-gray-600 text-sm">{step.description}</p>
                   </div>
-                  <div className="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-sm">
-                    {step.step}
-                  </div>
-                  <h3 className="font-semibold text-sm md:text-base text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-gray-600 text-xs md:text-sm">{step.description}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
 
