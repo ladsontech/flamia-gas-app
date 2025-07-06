@@ -22,7 +22,7 @@ I'm interested in this promotion.`;
 
   return (
     <section className="mb-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-3 lg:hidden">
         <h2 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">Special Promotions</h2>
         <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs lg:text-sm">
           <span>View All</span>
@@ -65,71 +65,56 @@ I'm interested in this promotion.`;
         ))}
       </div>
 
-      {/* Desktop Layout (lg and above) - New Single Column Layout */}
+      {/* Desktop Sidebar Layout */}
       <div className="hidden lg:block">
-        <div className="space-y-4 xl:space-y-6">
-          {promotionalOffers.map((offer, index) => (
+        <div className="space-y-3">
+          {promotionalOffers.map((offer) => (
             <Card 
               key={offer.id} 
-              className="group relative overflow-hidden bg-gradient-to-r from-white via-gray-50/30 to-white border border-gray-200 hover:border-accent/40 transition-all duration-300 hover:shadow-xl"
+              className="group relative overflow-hidden bg-white border border-gray-200 hover:border-accent/40 transition-all duration-300 hover:shadow-md"
             >
-              {/* Content Container */}
-              <div className="p-4 xl:p-6">
-                <div className="flex items-center gap-4 xl:gap-6">
-                  {/* Image Section - Smaller and more proportional */}
-                  <div className="flex-shrink-0 w-20 h-20 xl:w-24 xl:h-24 bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
+              <div className="p-3">
+                <div className="flex items-center gap-3">
+                  {/* Image */}
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-accent/5 to-accent/10 rounded-lg flex items-center justify-center p-1 group-hover:scale-105 transition-transform duration-300">
                     <img 
                       src={offer.image} 
                       alt={offer.title} 
-                      className="w-full h-full object-contain drop-shadow-md"
+                      className="w-full h-full object-contain drop-shadow-sm"
                       loading="lazy"
                     />
                   </div>
 
-                  {/* Content Section */}
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1 group-hover:text-accent transition-colors duration-300 line-clamp-1">
+                      {offer.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs mb-2 leading-tight line-clamp-2">
+                      {offer.description}
+                    </p>
+                    
                     <div className="flex items-center justify-between">
-                      {/* Left side - Title and Description */}
-                      <div className="flex-1 min-w-0 mr-4">
-                        <h3 className="text-base xl:text-lg font-bold text-gray-900 mb-1 group-hover:text-accent transition-colors duration-300 line-clamp-1">
-                          {offer.title}
-                        </h3>
-                        <p className="text-gray-600 text-sm xl:text-base mb-2 leading-relaxed line-clamp-2">
-                          {offer.description}
-                        </p>
+                      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-2 py-1 rounded text-xs font-semibold">
+                        {offer.discount}
                       </div>
-
-                      {/* Right side - Price and Action */}
-                      <div className="flex items-center gap-3 xl:gap-4 flex-shrink-0">
-                        {/* Special Badge */}
-                        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-1 xl:px-3 xl:py-1 rounded-full text-xs xl:text-sm font-bold flex items-center gap-1 shadow-md">
-                          <Star className="w-3 h-3 fill-current" />
-                          SPECIAL
-                        </div>
-
-                        {/* Price */}
-                        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 xl:px-4 xl:py-2 rounded-lg font-bold text-sm xl:text-base shadow-md">
-                          {offer.discount}
-                        </div>
-
-                        {/* Order Button */}
-                        <Button 
-                          className="bg-accent hover:bg-accent/90 text-white px-4 py-2 xl:px-6 xl:py-3 rounded-lg font-semibold text-sm xl:text-base shadow-md hover:shadow-lg transition-all duration-300" 
-                          onClick={() => handleOrderClick(offer)}
-                        >
-                          Order Now
-                          <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
-                        </Button>
-                      </div>
+                      
+                      <Button 
+                        size="sm"
+                        className="bg-accent hover:bg-accent/90 text-white px-3 py-1 rounded text-xs font-medium h-6" 
+                        onClick={() => handleOrderClick(offer)}
+                      >
+                        Order
+                        <ArrowRight className="w-3 h-3 ml-1" />
+                      </Button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Hot Deal Indicator */}
-              <div className="absolute top-2 right-2 flex items-center gap-1 text-accent opacity-70">
-                <Flame className="w-4 h-4" />
-                <span className="text-xs font-medium">Hot Deal!</span>
+              <div className="absolute top-1 right-1 flex items-center gap-1 text-orange-500 opacity-70">
+                <Flame className="w-3 h-3" />
               </div>
             </Card>
           ))}
