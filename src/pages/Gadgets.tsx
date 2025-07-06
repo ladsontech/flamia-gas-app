@@ -53,7 +53,7 @@ const Gadgets = () => {
 
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6">
+        <div className="max-w-none mx-auto px-1 sm:px-2 lg:px-3 py-8 lg:py-10">
           {/* Image Carousel */}
           <GadgetsCarousel />
 
@@ -72,7 +72,7 @@ const Gadgets = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
             >
               Gadgets Store
             </motion.h1>
@@ -81,7 +81,7 @@ const Gadgets = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-6 lg:mb-8"
+              className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto mb-8 lg:mb-10"
             >
               Discover the latest smartphones, laptops, tablets, and tech accessories. 
               Premium quality gadgets with competitive prices and fast delivery.
@@ -106,7 +106,7 @@ const Gadgets = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6">
+      <div className="max-w-none mx-auto px-1 sm:px-2 lg:px-3 py-8 lg:py-10">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -116,13 +116,13 @@ const Gadgets = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 mb-4 lg:mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
                   {searchQuery || Object.keys(filters).length > 0 
                     ? `${searchQuery ? `Results for "${searchQuery}"` : 'Filtered Results'}`
                     : 'All Products'
                   }
                 </h2>
-                <span className="text-sm text-gray-600">
+                <span className="text-base md:text-lg text-gray-600">
                   {gadgets.length} {gadgets.length === 1 ? 'product' : 'products'} found
                 </span>
               </div>

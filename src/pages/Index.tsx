@@ -266,15 +266,15 @@ export default function Index() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-6">
-          <div className="flex flex-col gap-4 md:gap-6 my-0 py-4 rounded">
+        <div className="flex-1 w-full max-w-none mx-auto px-1 md:px-2 lg:px-3">
+          <div className="flex flex-col gap-6 md:gap-8 my-0 py-6 rounded">
             {/* Hero Section - Enhanced for Desktop */}
-            <div className="hidden lg:block bg-accent/10 rounded-3xl p-8 mb-6 border border-accent/20">
-              <div className="text-center max-w-4xl mx-auto">
-                <h1 className="text-4xl xl:text-5xl font-bold mb-4 text-accent">
+            <div className="hidden lg:block bg-accent/10 rounded-3xl p-12 mb-8 border border-accent/20">
+              <div className="text-center max-w-6xl mx-auto">
+                <h1 className="text-5xl xl:text-6xl font-bold mb-6 text-accent">
                   Uganda's #1 Gas Delivery Service
                 </h1>
-                <p className="text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
+                <p className="text-2xl text-gray-700 mb-8 max-w-4xl mx-auto">
                   Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
@@ -311,10 +311,10 @@ export default function Index() {
 
             <section className="space-y-6">
               <div className="text-center">
-                <h2 className="text-2xl md:text-3xl lg:text-3xl font-bold mb-3 text-slate-950">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-950">
                   Premium Gas Cylinders
                 </h2>
-                <p className="text-base text-muted-foreground mb-6 max-w-2xl mx-auto">
+                <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-4xl mx-auto">
                   Choose from our wide selection of certified gas cylinders with free same-day delivery across Kampala
                 </p>
               </div>

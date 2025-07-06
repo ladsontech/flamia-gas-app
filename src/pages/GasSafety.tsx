@@ -115,7 +115,7 @@ const GasSafety = () => {
         <link rel="canonical" href="https://flamia.store/safety" />
       </Helmet>
 
-      <div className="container mx-auto px-3 py-4 max-w-6xl">
+      <div className="container mx-auto px-1 md:px-2 py-6 max-w-none">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -128,11 +128,11 @@ const GasSafety = () => {
             Safety First
           </div>
           
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             Gas Safety <span className="text-accent">Guidelines</span>
           </h1>
           
-          <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+          <p className="text-lg md:text-2xl text-gray-600 max-w-5xl mx-auto mb-8">
             Essential safety tips for using cooking gas safely at home. 
             Protect your family with proper LPG handling practices.
           </p>
@@ -159,8 +159,8 @@ const GasSafety = () => {
         {/* Safety Tips Section */}
         <div id="safety-tips" className="mb-8">
           <div className="text-center mb-6">
-            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-3">Essential Safety Guidelines</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Essential Safety Guidelines</h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto">
               Follow these important safety tips to protect your family and home
             </p>
           </div>
@@ -206,8 +206,8 @@ const GasSafety = () => {
         {/* Emergency Guide Section */}
         <div className="mb-8">
           <div className="text-center mb-6">
-            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-3">Emergency Response Guide</h2>
-            <p className="text-base md:text-lg text-gray-600">What to do in case of a gas leak</p>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Emergency Response Guide</h2>
+            <p className="text-lg md:text-xl lg:text-2xl text-gray-600">What to do in case of a gas leak</p>
           </div>
 
           <Card className="p-4 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
