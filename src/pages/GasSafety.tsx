@@ -77,32 +77,27 @@ const GasSafety = () => {
     {
       step: 1,
       title: "Turn Off Gas Valve",
-      description: "Immediately turn off the gas valve and move cylinder outside",
-      icon: "🔴"
+      description: "Immediately turn off the gas valve and move cylinder outside"
     },
     {
       step: 2,
-      title: "Ventilate Area",
-      description: "Open all doors and windows to let gas escape",
-      icon: "🌬️"
+      title: "Ventilate Area", 
+      description: "Open all doors and windows to let gas escape"
     },
     {
       step: 3,
       title: "No Electrical Switches",
-      description: "Do not switch on/off any electrical appliances",
-      icon: "⚡"
+      description: "Do not switch on/off any electrical appliances"
     },
     {
       step: 4,
       title: "No Open Flames",
-      description: "Do not light matches, candles, or any open flames",
-      icon: "🚫"
+      description: "Do not light matches, candles, or any open flames"
     },
     {
       step: 5,
       title: "Call for Help",
-      description: "Contact professionals if leak persists",
-      icon: "📞"
+      description: "Contact professionals if leak persists"
     }
   ];
 
@@ -150,9 +145,6 @@ const GasSafety = () => {
         <div id="safety-tips" className="mb-8">
           <div className="text-center mb-6">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Essential Safety Guidelines</h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto">
-              Follow these important safety tips to protect your family and home
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -197,7 +189,6 @@ const GasSafety = () => {
         <div className="mb-8">
           <div className="text-center mb-6">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Emergency Response Guide</h2>
-            <p className="text-lg md:text-xl lg:text-2xl text-gray-600">What to do in case of a gas leak</p>
           </div>
 
           <Card className="p-4 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
@@ -211,7 +202,7 @@ const GasSafety = () => {
                   className="text-center"
                 >
                   <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                    <span className="text-xl">{step.icon}</span>
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
                   </div>
                   <div className="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-sm">
                     {step.step}
