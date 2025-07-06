@@ -46,28 +46,34 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
     <div className="space-y-4">
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
-        <Input
-          value={localQuery}
-          onChange={(e) => setLocalQuery(e.target.value)}
-          placeholder="Search gadgets, brands, categories..."
-          className="pl-10 pr-24 md:pr-28 h-12 md:h-14 text-sm md:text-base border-2 border-gray-200 focus:border-accent rounded-lg"
-        />
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1 md:gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowFilters(!showFilters)}
-            className={`px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm ${showFilters ? 'bg-accent text-white' : ''}`}
-          >
-            <Filter className="w-3 h-3 md:w-4 md:h-4" />
-            <span className="hidden sm:inline ml-1">Filter</span>
-          </Button>
-          <Button type="submit" size="sm" className="bg-accent hover:bg-accent/90 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm">
-            <span className="hidden sm:inline">Search</span>
-            <Search className="w-3 h-3 sm:hidden" />
-          </Button>
+        <div className="relative flex items-center">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5 z-10" />
+          <Input
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
+            placeholder="Search gadgets, brands, categories..."
+            className="pl-10 pr-32 md:pr-36 h-12 md:h-14 text-sm md:text-base border-2 border-gray-200 focus:border-accent rounded-lg"
+          />
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1 md:gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1 ${showFilters ? 'bg-accent text-white' : ''}`}
+            >
+              <Filter className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Filter</span>
+            </Button>
+            <Button 
+              type="submit" 
+              size="sm" 
+              className="bg-accent hover:bg-accent/90 px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1"
+            >
+              <Search className="w-3 h-3 md:w-4 md:h-4 sm:hidden" />
+              <span className="hidden sm:inline">Search</span>
+            </Button>
+          </div>
         </div>
       </form>
 

@@ -18,7 +18,7 @@ const Gadgets = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-14">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-accent mx-auto mb-4" />
           <span className="text-gray-600 text-lg">Loading gadgets...</span>
@@ -29,7 +29,7 @@ const Gadgets = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-14">
         <div className="text-center max-w-md mx-auto px-4">
           <p className="text-red-500 mb-4 text-lg">Error loading gadgets: {error}</p>
           <button 
@@ -44,7 +44,7 @@ const Gadgets = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-14">
       <Helmet>
         <title>Gadgets Store - Flamia</title>
         <meta name="description" content="Shop the latest gadgets including smartphones, laptops, tablets, and more. Best prices with fast delivery." />
