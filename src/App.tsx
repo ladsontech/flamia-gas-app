@@ -54,7 +54,7 @@ function App() {
         <BrowserRouter>
           <div className="min-h-screen bg-background">
             <AppBar />
-            <main className="pb-16">
+            <main className="pb-16 md:pb-0">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/order" element={<Order />} />
@@ -68,6 +68,7 @@ function App() {
                 <Route path="/gadget/:id" element={<GadgetDetail />} />
                 <Route path="/accessories" element={<Accessories />} />
                 <Route path="/gas-safety" element={<GasSafety />} />
+                <Route path="/safety" element={<GasSafety />} />
               </Routes>
             </main>
             <BottomNav isAdmin={null} />

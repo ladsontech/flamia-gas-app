@@ -53,12 +53,12 @@ const Gadgets = () => {
 
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 max-w-7xl">
+        <div className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6">
           {/* Image Carousel */}
           <GadgetsCarousel />
 
           {/* Hero Section */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 lg:mb-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ const Gadgets = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-8"
+              className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-6 lg:mb-8"
             >
               Discover the latest smartphones, laptops, tablets, and tech accessories. 
               Premium quality gadgets with competitive prices and fast delivery.
@@ -93,7 +93,7 @@ const Gadgets = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mb-6"
+            className="mb-4 lg:mb-6"
           >
             <GadgetSearch
               onSearch={setSearchQuery}
@@ -106,14 +106,14 @@ const Gadgets = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8 max-w-7xl">
+      <div className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
           {/* Results Header */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 mb-4 lg:mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
@@ -154,10 +154,10 @@ const Gadgets = () => {
 
           {/* Products Grid */}
           {gadgets.length > 0 ? (
-            <div className={`grid gap-4 md:gap-6 ${
+            <div className={`grid gap-4 lg:gap-6 ${
               viewMode === 'grid' 
-                ? 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' 
-                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' 
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
             }`}>
               {gadgets.map((gadget, index) => (
                 <motion.div
@@ -172,7 +172,7 @@ const Gadgets = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 lg:p-12">
               <div className="text-center">
                 <Smartphone className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-600 text-lg mb-2">No gadgets found matching your criteria.</p>

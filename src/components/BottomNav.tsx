@@ -1,3 +1,4 @@
+
 import { useLocation } from "react-router-dom";
 import { Home, ShoppingBag, Flame, RotateCw, Package } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
@@ -14,12 +15,12 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   // Define active states
   const isHomeActive = path === "/";
   const isAccessoriesActive = path === "/accessories";
-  const isSafetyActive = path === "/safety";
+  const isSafetyActive = path === "/gas-safety";
   const isRefillActive = path === "/refill";
   const isOrdersActive = path === "/orders";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg md:hidden">
       <div className="flex items-center justify-around h-16 px-2 max-w-md mx-auto">
         <NavItem
           to="/"
@@ -55,7 +56,7 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
           />
         ) : (
           <NavItem
-            to="/safety"
+            to="/gas-safety"
             icon={Flame}
             label="Safety"
             isActive={isSafetyActive}
