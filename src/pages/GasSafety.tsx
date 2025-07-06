@@ -115,7 +115,7 @@ const GasSafety = () => {
         <link rel="canonical" href="https://flamia.store/safety" />
       </Helmet>
 
-      <div className="container mx-auto px-1 md:px-2 py-6 max-w-none">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 max-w-none">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

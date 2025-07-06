@@ -53,7 +53,7 @@ const Gadgets = () => {
 
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-none mx-auto px-1 sm:px-2 lg:px-3 py-8 lg:py-10">
+        <div className="max-w-none mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
           {/* Image Carousel */}
           <GadgetsCarousel />
 
@@ -106,7 +106,7 @@ const Gadgets = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-none mx-auto px-1 sm:px-2 lg:px-3 py-8 lg:py-10">
+      <div className="max-w-none mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

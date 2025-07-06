@@ -266,7 +266,7 @@ export default function Index() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 w-full max-w-none mx-auto px-1 md:px-2 lg:px-3">
+        <div className="flex-1 w-full max-w-none mx-auto px-4 md:px-6 lg:px-8">
           <div className="flex flex-col gap-6 md:gap-8 my-0 py-6 rounded">
             {/* Hero Section - Enhanced for Desktop */}
             <div className="hidden lg:block bg-accent/10 rounded-3xl p-12 mb-8 border border-accent/20">
