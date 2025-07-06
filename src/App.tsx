@@ -18,11 +18,11 @@ import GadgetDetail from "./pages/GadgetDetail";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
 import AppBar from "./components/AppBar";
-import BottomNav from "./components/BottomNav";
+import { BottomNav } from "./components/BottomNav";
 import DeepLinkHandler from "./components/DeepLinkHandler";
 import ShareTargetHandler from "./components/ShareTargetHandler";
 import InstallPWA from "./components/InstallPWA";
-import OnlineStatusMonitor from "./components/OnlineStatusMonitor";
+import { OnlineStatusMonitor } from "./components/OnlineStatusMonitor";
 import UpdateNotification from "./components/UpdateNotification";
 import TestingHelper from "./components/TestingHelper";
 
@@ -41,6 +41,10 @@ function App() {
         });
     }
   }, []);
+
+  const handleUpdate = () => {
+    window.location.reload();
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -66,12 +70,12 @@ function App() {
                 <Route path="/gas-safety" element={<GasSafety />} />
               </Routes>
             </main>
-            <BottomNav />
+            <BottomNav isAdmin={null} />
             <DeepLinkHandler />
             <ShareTargetHandler />
             <InstallPWA />
             <OnlineStatusMonitor />
-            <UpdateNotification />
+            <UpdateNotification onUpdate={handleUpdate} />
             <TestingHelper />
           </div>
         </BrowserRouter>
