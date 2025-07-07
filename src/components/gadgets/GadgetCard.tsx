@@ -45,12 +45,12 @@ Please let me know about availability and delivery options.`;
   };
 
   return (
-    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-lg p-4 lg:p-6 transition-all duration-300 overflow-hidden h-full flex flex-col">
-      <div className="relative w-full pb-[100%] mb-4 lg:mb-6 rounded-lg overflow-hidden bg-gray-50/80">
+    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-lg p-2 lg:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col">
+      <div className="relative w-full pb-[100%] mb-4 lg:mb-6 rounded-lg overflow-hidden bg-white">
         <img
           src={gadget.image_url || '/images/gadget-fallback.jpg'}
           alt={gadget.name}
-          className="absolute inset-0 w-full h-full object-contain p-2 lg:p-3 group-hover:scale-110 transition-transform duration-500 cursor-pointer"
+          className="absolute inset-0 w-full h-full object-contain p-1 group-hover:scale-110 transition-transform duration-500 cursor-pointer"
           loading="lazy"
           onClick={handleCardClick}
         />
@@ -77,7 +77,7 @@ Please let me know about availability and delivery options.`;
         </div>
       </div>
       
-      <div className="flex-grow">
+      <div className="flex-grow px-2 lg:px-3">
         <h3 
           className="text-base sm:text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-900 line-clamp-2 group-hover:text-accent transition-colors cursor-pointer"
           onClick={handleCardClick}
@@ -89,7 +89,7 @@ Please let me know about availability and delivery options.`;
         </p>
       </div>
       
-      <div className="pt-4 lg:pt-6 border-t border-gray-100">
+      <div className="pt-4 lg:pt-6 border-t border-gray-100 px-2 lg:px-3 pb-2 lg:pb-3">
         <div className="flex justify-between items-center mb-4 lg:mb-6">
           <span className="text-sm lg:text-base font-medium text-gray-600">Price</span>
           <span className="text-base sm:text-lg lg:text-xl font-semibold text-accent">

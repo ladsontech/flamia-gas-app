@@ -44,8 +44,8 @@ const AccessoriesSection: React.FC = () => {
             className="h-full"
           >
             <Card className="bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col group hover:-translate-y-1">
-              <CardHeader className="p-4">
-                <div className="relative w-full pb-[75%] mb-3 rounded-lg overflow-hidden bg-gray-50">
+              <CardHeader className="p-2">
+                <div className="relative w-full pb-[75%] mb-3 rounded-lg overflow-hidden bg-white">
                   <img
                     src={accessory.image_url || '/images/accessory-fallback.jpg'}
                     alt={accessory.name}
@@ -56,10 +56,10 @@ const AccessoriesSection: React.FC = () => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/images/accessory-fallback.jpg';
                     }}
-                    className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-500 object-contain p-3"
+                    className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-500 object-contain p-1"
                   />
                 </div>
-                <CardTitle className="text-base font-semibold text-gray-900 line-clamp-2 min-h-[3rem]">
+                <CardTitle className="text-base font-semibold text-gray-900 line-clamp-2 min-h-[3rem] px-2">
                   {accessory.name}
                 </CardTitle>
               </CardHeader>
