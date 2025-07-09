@@ -133,7 +133,7 @@ const GasSafety = () => {
             <Button 
               variant="outline" 
               className="border-accent text-accent hover:bg-accent/10 px-6 py-2.5 text-base font-semibold"
-              onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+              onClick={() => window.open("https://wa.me/256787899483", "_blank")}
             >
               <Phone className="w-4 h-4 mr-2" />
               Contact Expert
@@ -213,10 +213,10 @@ const GasSafety = () => {
                 </div>
                 <Button 
                   className="bg-red-600 hover:bg-red-700 text-white w-full text-sm"
-                  onClick={() => window.open("tel:+256789572007", "_self")}
+                  onClick={() => window.open("tel:+256787899483", "_self")}
                 >
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Emergency: +256 789 572 007
+                  Call Emergency: +256 787 899 483
                 </Button>
               </div>
             </div>
@@ -307,14 +307,14 @@ const GasSafety = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
-                onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+                onClick={() => window.open("https://wa.me/256787899483", "_blank")}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-semibold"
               >
                 <Phone className="w-4 h-4 mr-2" />
                 WhatsApp Expert
               </Button>
               <Button
-                onClick={() => window.open("tel:+256789572007", "_self")}
+                onClick={() => window.open("tel:+256787899483", "_self")}
                 variant="outline"
                 className="border-accent text-accent hover:bg-accent/10 px-6 py-2.5 text-sm font-semibold"
               >

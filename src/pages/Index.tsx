@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -238,7 +239,7 @@ export default function Index() {
                   </p>
                   <Button 
                     className="bg-accent hover:bg-accent/90 text-white py-3 px-8 rounded-lg font-semibold text-base"
-                    onClick={() => window.open("https://wa.me/256753894149", "_blank")}
+                    onClick={() => window.open("https://wa.me/256787899483", "_blank")}
                   >
                     Chat with Gas Expert
                   </Button>
@@ -272,7 +273,7 @@ export default function Index() {
                     size="lg" 
                     variant="outline" 
                     className="border-accent text-accent hover:bg-accent/10 px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold text-base lg:text-lg"
-                    onClick={() => window.open("https://wa.me/256753894149", "_blank")}
+                    onClick={() => window.open("https://wa.me/256787899483", "_blank")}
                   >
                     Get Help
                   </Button>
@@ -283,7 +284,7 @@ export default function Index() {
             {/* Main Content Grid - 2 Columns Layout */}
             <div className="grid grid-cols-12 gap-6 lg:gap-8">
               {/* Left Sidebar - Special Offers */}
-              <div className="col-span-12 lg:col-span-4 xl:col-span-3">
+              <div className="col-span-12 lg:col-span-4">
                 <div className="sticky top-24 space-y-6">
                   {/* Special Promotions */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -352,7 +353,7 @@ export default function Index() {
                       </p>
                       <Button 
                         className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg text-sm"
-                        onClick={() => window.open("https://wa.me/256753894149", "_blank")}
+                        onClick={() => window.open("https://wa.me/256787899483", "_blank")}
                       >
                         Chat with Gas Expert
                       </Button>
@@ -362,7 +363,7 @@ export default function Index() {
               </div>
 
               {/* Main Content Area */}
-              <div className="col-span-12 lg:col-span-8 xl:col-span-9">
+              <div className="col-span-12 lg:col-span-8">
                 <div className="space-y-8">
                   {/* Main Title */}
                   <div className="text-center">
