@@ -30,6 +30,12 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
     onSearch(localQuery);
   };
 
+  const handleFilterToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowFilters(!showFilters);
+  };
+
   const updateFilter = (key: keyof GadgetFilters, value: any) => {
     onFilter({ ...filters, [key]: value });
   };
@@ -59,7 +65,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={handleFilterToggle}
               className={`px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1 ${showFilters ? 'bg-accent text-white' : ''}`}
             >
               <Filter className="w-3 h-3 md:w-4 md:h-4" />
