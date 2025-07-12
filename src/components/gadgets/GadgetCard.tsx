@@ -45,8 +45,8 @@ Please let me know about availability and delivery options.`;
   };
 
   return (
-    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-lg p-2 lg:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col">
-      <div className="relative w-full pb-[100%] mb-4 lg:mb-6 rounded-lg overflow-hidden bg-white">
+    <Card className="group bg-white border-gray-100 shadow-sm hover:shadow-lg p-2 lg:p-2 transition-all duration-300 overflow-hidden h-full flex flex-col">
+      <div className="relative w-full pb-[100%] mb-3 lg:mb-4 rounded-lg overflow-hidden bg-white">
         <img
           src={gadget.image_url || '/images/gadget-fallback.jpg'}
           alt={gadget.name}
@@ -56,10 +56,10 @@ Please let me know about availability and delivery options.`;
         />
         
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-1 left-1 flex flex-col gap-1">
           {/* Condition Badge */}
           <Badge 
-            className={`text-xs px-2 py-1 ${
+            className={`text-xs px-1.5 py-0.5 ${
               gadget.condition === 'brand_new' 
                 ? 'bg-green-500 text-white' 
                 : 'bg-yellow-500 text-white'
@@ -70,36 +70,36 @@ Please let me know about availability and delivery options.`;
           
           {/* Stock Badge */}
           {!gadget.in_stock && (
-            <Badge variant="secondary" className="text-xs px-2 py-1">
+            <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
               Out of Stock
             </Badge>
           )}
         </div>
       </div>
       
-      <div className="flex-grow px-2 lg:px-3">
+      <div className="flex-grow px-1 lg:px-2">
         <h3 
-          className="text-base sm:text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-900 line-clamp-2 group-hover:text-accent transition-colors cursor-pointer"
+          className="text-sm sm:text-base lg:text-lg font-semibold mb-2 lg:mb-3 text-gray-900 line-clamp-2 group-hover:text-accent transition-colors cursor-pointer"
           onClick={handleCardClick}
         >
           {gadget.name}
         </h3>
-        <p className="text-muted-foreground mb-4 lg:mb-6 text-sm lg:text-base line-clamp-2">
+        <p className="text-muted-foreground mb-3 lg:mb-4 text-xs lg:text-sm line-clamp-2">
           {gadget.description}
         </p>
       </div>
       
-      <div className="pt-4 lg:pt-6 border-t border-gray-100 px-2 lg:px-3 pb-2 lg:pb-3">
-        <div className="flex justify-between items-center mb-4 lg:mb-6">
-          <span className="text-sm lg:text-base font-medium text-gray-600">Price</span>
-          <span className="text-base sm:text-lg lg:text-xl font-semibold text-accent">
+      <div className="pt-3 lg:pt-4 border-t border-gray-100 px-1 lg:px-2 pb-2 lg:pb-2">
+        <div className="flex justify-between items-center mb-3 lg:mb-4">
+          <span className="text-xs lg:text-sm font-medium text-gray-600">Price</span>
+          <span className="text-sm sm:text-base lg:text-lg font-semibold text-accent">
             {formatPrice(gadget.price)}
           </span>
         </div>
         <Button
           onClick={handleOrder}
           disabled={!gadget.in_stock}
-          className="w-full bg-accent text-white hover:bg-accent/90 text-sm lg:text-base py-3 lg:py-4 h-11 lg:h-12 rounded-lg font-medium"
+          className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-sm py-2 lg:py-3 h-9 lg:h-10 rounded-lg font-medium"
         >
           {gadget.in_stock ? 'Order Now' : 'Out of Stock'}
         </Button>
