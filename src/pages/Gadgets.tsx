@@ -53,7 +53,7 @@ const Gadgets = () => {
 
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="w-full px-2 sm:px-4 lg:px-6 py-8 lg:py-12">
+        <div className="w-full px-2 sm:px-4 lg:px-8 xl:px-12 2xl:px-16 py-8 lg:py-12">
           {/* Image Carousel */}
           <GadgetsCarousel />
 
@@ -106,7 +106,7 @@ const Gadgets = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full px-2 sm:px-4 lg:px-6 py-8 lg:py-12">
+      <div className="w-full px-2 sm:px-4 lg:px-8 xl:px-12 2xl:px-16 py-8 lg:py-12">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
