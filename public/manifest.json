@@ -1,7 +1,7 @@
 
 {
   "name": "Flamia - Gas Delivery Service",
-  "short_name": "Flamia Gas",
+  "short_name": "Flamia",
   "description": "Quick and reliable gas delivery service in Uganda",
   "start_url": "/?source=pwa",
   "display": "standalone",
