@@ -1,4 +1,3 @@
-
 import { Flame, Home, ShoppingBag, RotateCw } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -9,7 +8,7 @@ const AppBar = () => {
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/refill', label: 'Refill', icon: RotateCw },
-    { path: '/gadgets', label: 'Shop', icon: ShoppingBag },
+    { path: '/gadgets', label: 'Gadgets', icon: ShoppingBag },
     { path: '/gas-safety', label: 'Safety', icon: Flame },
   ];
 
