@@ -34,7 +34,10 @@ const FeaturedGadgets = () => {
 
       if (error) throw error;
       
-      setFeaturedGadgets(data || []);
+      setFeaturedGadgets((data || []).map(gadget => ({
+        ...gadget,
+        condition: gadget.condition as 'brand_new' | 'used'
+      })));
     } catch (error) {
       console.error('Error fetching featured gadgets:', error);
     } finally {
