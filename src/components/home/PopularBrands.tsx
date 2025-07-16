@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 interface Gadget {
   id: string;
@@ -121,6 +123,11 @@ const PopularBrands: React.FC = () => {
       <div className="block md:hidden">
         {/* Mobile Carousel */}
         <Carousel
+          plugins={[
+            Autoplay({
+              delay: 3000,
+            }),
+          ]}
           opts={{
             align: "start",
             loop: true,
@@ -163,38 +170,54 @@ const PopularBrands: React.FC = () => {
       </div>
 
       <div className="hidden md:block">
-        {/* Desktop Grid */}
-        <div className="grid grid-cols-6 gap-4">
-          {featuredGadgets.map((gadget) => (
-            <Card 
-              key={gadget.id}
-              className="overflow-hidden flex flex-col h-56 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-2"
-              onClick={() => handleGadgetClick(gadget)}
-            >
-              <div className="relative h-36 bg-gray-50 rounded-sm flex items-center justify-center mb-2">
-                <img 
-                  src={gadget.image_url || '/images/gadget-fallback.jpg'} 
-                  alt={gadget.name} 
-                  className="w-full h-full object-cover rounded-sm"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-1 pb-1 flex-1 flex flex-col justify-end">
-                <h3 className="font-medium text-xs line-clamp-2 mb-1 leading-tight">
-                  {gadget.name}
-                </h3>
-                <div className="text-xs font-semibold text-accent">
-                  {new Intl.NumberFormat('en-UG', {
-                    style: 'currency',
-                    currency: 'UGX',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }).format(gadget.price)}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        {/* Desktop Carousel */}
+        <Carousel
+          plugins={[
+            Autoplay({
+              delay: 4000,
+            }),
+          ]}
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-4">
+            {featuredGadgets.map((gadget) => (
+              <CarouselItem key={gadget.id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <Card 
+                  className="overflow-hidden flex flex-col h-72 lg:h-80 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-3"
+                  onClick={() => handleGadgetClick(gadget)}
+                >
+                  <div className="relative h-48 lg:h-52 bg-gray-50 rounded-sm flex items-center justify-center mb-3">
+                    <img 
+                      src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                      alt={gadget.name} 
+                      className="w-full h-full object-cover rounded-sm"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="px-2 pb-2 flex-1 flex flex-col justify-end">
+                    <h3 className="font-medium text-sm lg:text-base line-clamp-2 mb-2 leading-tight">
+                      {gadget.name}
+                    </h3>
+                    <div className="text-sm lg:text-base font-semibold text-accent">
+                      {new Intl.NumberFormat('en-UG', {
+                        style: 'currency',
+                        currency: 'UGX',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(gadget.price)}
+                    </div>
+                  </div>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
   );
