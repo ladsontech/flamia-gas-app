@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       carousel_images: {
         Row: {
+          category: string
           created_at: string
           description: string
           id: string
@@ -27,6 +28,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string
           created_at?: string
           description: string
           id?: string
@@ -38,6 +40,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string
           created_at?: string
           description?: string
           id?: string

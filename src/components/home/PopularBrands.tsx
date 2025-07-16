@@ -1,22 +1,30 @@
 
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { 
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from "@/components/ui/carousel";
+import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { Gadget } from "@/types/gadget";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
-const FeaturedGadgets = () => {
+interface Gadget {
+  id: string;
+  name: string;
+  price: number;
+  original_price?: number;
+  image_url?: string;
+  brand?: string;
+  category: string;
+  description: string;
+  condition: 'brand_new' | 'used';
+  featured?: boolean;
+  in_stock: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+const PopularBrands: React.FC = () => {
   const [featuredGadgets, setFeaturedGadgets] = useState<Gadget[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +33,7 @@ const FeaturedGadgets = () => {
 
   const fetchFeaturedGadgets = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('gadgets')
         .select('*')
@@ -35,56 +44,62 @@ const FeaturedGadgets = () => {
 
       if (error) throw error;
       
-      setFeaturedGadgets((data || []).map(gadget => ({
+      const gadgets = (data || []).map(gadget => ({
         ...gadget,
         condition: gadget.condition as 'brand_new' | 'used'
-      })));
-    } catch (error) {
-      console.error('Error fetching featured gadgets:', error);
-      // Fallback to latest gadgets if no featured ones
-      fetchLatestGadgets();
+      }));
+      
+      setFeaturedGadgets(gadgets);
+    } catch (err) {
+      console.error('Error fetching featured gadgets:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch featured gadgets');
+      
+      // Fallback to any gadgets if featured ones fail
+      try {
+        const { data, error } = await supabase
+          .from('gadgets')
+          .select('*')
+          .eq('in_stock', true)
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (error) throw error;
+        
+        const gadgets = (data || []).map(gadget => ({
+          ...gadget,
+          condition: gadget.condition as 'brand_new' | 'used'
+        }));
+        
+        setFeaturedGadgets(gadgets);
+      } catch (fallbackErr) {
+        console.error('Error fetching fallback gadgets:', fallbackErr);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchLatestGadgets = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('gadgets')
-        .select('*')
-        .eq('in_stock', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-      if (error) throw error;
-      
-      setFeaturedGadgets((data || []).map(gadget => ({
-        ...gadget,
-        condition: gadget.condition as 'brand_new' | 'used'
-      })));
-    } catch (error) {
-      console.error('Error fetching latest gadgets:', error);
-    }
-  };
-
   const handleGadgetClick = (gadget: Gadget) => {
-    navigate(`/gadget/${gadget.id}`);
+    navigate(`/gadgets/${gadget.id}`);
   };
 
   if (loading) {
     return (
-      <section className="mb-3 max-w-3xl mx-auto px-2 lg:hidden">
-        <div className="animate-pulse">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
           <div className="h-4 bg-gray-200 rounded mb-2 w-32"></div>
           <div className="flex gap-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-20 h-24 bg-gray-200 rounded"></div>
+              <div key={i} className="w-20 h-48 md:h-56 bg-gray-200 rounded"></div>
             ))}
           </div>
         </div>
-      </section>
+      </div>
     );
+  }
+
+  if (error && featuredGadgets.length === 0) {
+    return null;
   }
 
   if (featuredGadgets.length === 0) {
@@ -92,66 +107,97 @@ const FeaturedGadgets = () => {
   }
 
   return (
-    <section className="mb-3 max-w-3xl mx-auto px-2 lg:hidden">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-base font-bold">Featured Gadgets</h2>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-primary flex items-center gap-1 text-xs px-2 py-1 h-auto"
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900">Featured Products</h2>
+        <button 
           onClick={() => navigate('/gadgets')}
+          className="text-sm text-accent hover:text-accent/80 font-medium"
         >
-          <span>View All</span>
-          <ArrowRight size={12} />
-        </Button>
+          View All
+        </button>
       </div>
       
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="w-full"
-      >
-        <CarouselContent className="-ml-1">
-          {featuredGadgets.map((gadget) => (
-            <CarouselItem key={gadget.id} className="pl-1 basis-1/4 sm:basis-1/5">
-              <Card 
-                className="overflow-hidden flex flex-col h-24 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-1"
-                onClick={() => handleGadgetClick(gadget)}
-              >
-                <div className="relative h-14 bg-gray-50 rounded-sm flex items-center justify-center mb-1">
-                  <img 
-                    src={gadget.image_url || '/images/gadget-fallback.jpg'} 
-                    alt={gadget.name} 
-                    className="h-full w-full object-contain p-0.5"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="px-1 pb-1 flex-1 flex flex-col justify-end">
-                  <h3 className="font-medium text-[9px] line-clamp-1 mb-0.5 leading-tight">
-                    {gadget.name}
-                  </h3>
-                  <div className="text-[9px] font-semibold text-accent">
-                    {new Intl.NumberFormat('en-UG', {
-                      style: 'currency',
-                      currency: 'UGX',
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(gadget.price)}
+      <div className="block md:hidden">
+        {/* Mobile Carousel */}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-1">
+            {featuredGadgets.map((gadget) => (
+              <CarouselItem key={gadget.id} className="pl-1 basis-1/4 sm:basis-1/5">
+                <Card 
+                  className="overflow-hidden flex flex-col h-48 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-1"
+                  onClick={() => handleGadgetClick(gadget)}
+                >
+                  <div className="relative h-28 bg-gray-50 rounded-sm flex items-center justify-center mb-1">
+                    <img 
+                      src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                      alt={gadget.name} 
+                      className="w-full h-full object-cover rounded-sm"
+                      loading="lazy"
+                    />
                   </div>
+                  <div className="px-1 pb-1 flex-1 flex flex-col justify-end">
+                    <h3 className="font-medium text-[9px] line-clamp-1 mb-0.5 leading-tight">
+                      {gadget.name}
+                    </h3>
+                    <div className="text-[9px] font-semibold text-accent">
+                      {new Intl.NumberFormat('en-UG', {
+                        style: 'currency',
+                        currency: 'UGX',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(gadget.price)}
+                    </div>
+                  </div>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
+
+      <div className="hidden md:block">
+        {/* Desktop Grid */}
+        <div className="grid grid-cols-6 gap-4">
+          {featuredGadgets.map((gadget) => (
+            <Card 
+              key={gadget.id}
+              className="overflow-hidden flex flex-col h-56 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-2"
+              onClick={() => handleGadgetClick(gadget)}
+            >
+              <div className="relative h-36 bg-gray-50 rounded-sm flex items-center justify-center mb-2">
+                <img 
+                  src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                  alt={gadget.name} 
+                  className="w-full h-full object-cover rounded-sm"
+                  loading="lazy"
+                />
+              </div>
+              <div className="px-1 pb-1 flex-1 flex flex-col justify-end">
+                <h3 className="font-medium text-xs line-clamp-2 mb-1 leading-tight">
+                  {gadget.name}
+                </h3>
+                <div className="text-xs font-semibold text-accent">
+                  {new Intl.NumberFormat('en-UG', {
+                    style: 'currency',
+                    currency: 'UGX',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  }).format(gadget.price)}
                 </div>
-              </Card>
-            </CarouselItem>
+              </div>
+            </Card>
           ))}
-        </CarouselContent>
-        <div className="hidden md:flex lg:hidden justify-end items-center mt-1 gap-2">
-          <CarouselPrevious className="static translate-y-0 h-6 w-6" />
-          <CarouselNext className="static translate-y-0 h-6 w-6" />
         </div>
-      </Carousel>
-    </section>
+      </div>
+    </div>
   );
 };
 
-export default FeaturedGadgets;
+export default PopularBrands;

@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import ImageUpload from './ImageUpload';
@@ -19,6 +19,7 @@ interface CarouselImage {
   link_url?: string;
   order_position: number;
   is_active: boolean;
+  category: 'gas' | 'gadgets';
 }
 
 const CarouselManager: React.FC = () => {
@@ -33,7 +34,8 @@ const CarouselManager: React.FC = () => {
     description: '',
     image_url: '',
     link_url: '',
-    order_position: '1'
+    order_position: '1',
+    category: 'gas' as 'gas' | 'gadgets'
   });
 
   useEffect(() => {
@@ -46,6 +48,7 @@ const CarouselManager: React.FC = () => {
       const { data, error } = await supabase
         .from('carousel_images')
         .select('*')
+        .order('category', { ascending: true })
         .order('order_position', { ascending: true });
 
       if (error) throw error;
@@ -67,7 +70,8 @@ const CarouselManager: React.FC = () => {
       description: '',
       image_url: '',
       link_url: '',
-      order_position: '1'
+      order_position: '1',
+      category: 'gas'
     });
     setEditingImage(null);
   };
@@ -79,7 +83,8 @@ const CarouselManager: React.FC = () => {
       description: image.description,
       image_url: image.image_url,
       link_url: image.link_url || '',
-      order_position: image.order_position.toString()
+      order_position: image.order_position.toString(),
+      category: image.category
     });
     setIsDialogOpen(true);
   };
@@ -95,7 +100,8 @@ const CarouselManager: React.FC = () => {
         description: formData.description,
         image_url: formData.image_url,
         link_url: formData.link_url || null,
-        order_position: parseInt(formData.order_position)
+        order_position: parseInt(formData.order_position),
+        category: formData.category
       };
 
       if (editingImage) {
@@ -197,12 +203,15 @@ const CarouselManager: React.FC = () => {
     }
   };
 
+  const gasImages = carouselImages.filter(img => img.category === 'gas');
+  const gadgetImages = carouselImages.filter(img => img.category === 'gadgets');
+
   return (
     <div className="space-y-4 md:space-y-6 p-2 md:p-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold">Carousel Management</h2>
-          <p className="text-gray-600 text-sm mt-1">Manage images that appear on the Gadgets page carousel</p>
+          <p className="text-gray-600 text-sm mt-1">Manage images that appear on the Home page (gas) and Gadgets page (gadgets) carousels</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -220,6 +229,19 @@ const CarouselManager: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="category">Category *</Label>
+                    <Select value={formData.category} onValueChange={(value: 'gas' | 'gadgets') => setFormData({...formData, category: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gas">Gas (Home Page)</SelectItem>
+                        <SelectItem value="gadgets">Gadgets (Gadgets Page)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div>
                     <Label htmlFor="title">Title *</Label>
                     <Input
@@ -292,75 +314,145 @@ const CarouselManager: React.FC = () => {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          These carousel images will appear at the top of the Gadgets page. They auto-slide every 4 seconds and visitors can navigate through them manually.
+          Gas carousel images appear on the Home page, while Gadgets carousel images appear on the Gadgets page. They auto-slide every 5 seconds and visitors can navigate through them manually.
         </AlertDescription>
       </Alert>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {carouselImages.map((image, index) => (
-          <Card key={image.id} className="overflow-hidden">
-            <CardHeader className="p-3 md:p-4">
-              <img
-                src={image.image_url}
-                alt={image.title}
-                className="w-full aspect-square object-cover rounded-lg mb-3"
-              />
-              <CardTitle className="text-base md:text-lg">{image.title}</CardTitle>
-              <p className="text-sm text-gray-600">{image.description}</p>
-            </CardHeader>
-            <CardContent className="p-3 md:p-4 pt-0">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm text-gray-500">Order: {image.order_position}</span>
-                {image.link_url && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => window.open(image.link_url, '_blank')}
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-              
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => moveImage(image.id, 'up')}
-                    disabled={index === 0}
-                  >
-                    ↑
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => moveImage(image.id, 'down')}
-                    disabled={index === carouselImages.length - 1}
-                  >
-                    ↓
-                  </Button>
+      {/* Gas Carousel Images */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-900">Gas Carousel (Home Page)</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {gasImages.map((image, index) => (
+            <Card key={image.id} className="overflow-hidden">
+              <CardHeader className="p-3 md:p-4">
+                <img
+                  src={image.image_url}
+                  alt={image.title}
+                  className="w-full aspect-square object-cover rounded-lg mb-3"
+                />
+                <CardTitle className="text-base md:text-lg">{image.title}</CardTitle>
+                <p className="text-sm text-gray-600">{image.description}</p>
+              </CardHeader>
+              <CardContent className="p-3 md:p-4 pt-0">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm text-gray-500">Order: {image.order_position}</span>
+                  {image.link_url && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.open(image.link_url, '_blank')}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(image)}>
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(image.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => moveImage(image.id, 'up')}
+                      disabled={index === 0}
+                    >
+                      ↑
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => moveImage(image.id, 'down')}
+                      disabled={index === gasImages.length - 1}
+                    >
+                      ↓
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(image)}>
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(image.id)}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {gasImages.length === 0 && (
+          <div className="text-center py-8 md:py-12 border-2 border-dashed border-gray-300 rounded-lg">
+            <p className="text-gray-500">No gas carousel images found. Add your first image to get started!</p>
+          </div>
+        )}
       </div>
 
-      {carouselImages.length === 0 && !loading && (
-        <div className="text-center py-8 md:py-12 border-2 border-dashed border-gray-300 rounded-lg">
-          <p className="text-gray-500">No carousel images found. Add your first image to get started!</p>
-          <p className="text-sm text-gray-400 mt-2">These images will appear on the Gadgets page carousel.</p>
+      {/* Gadgets Carousel Images */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-900">Gadgets Carousel (Gadgets Page)</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {gadgetImages.map((image, index) => (
+            <Card key={image.id} className="overflow-hidden">
+              <CardHeader className="p-3 md:p-4">
+                <img
+                  src={image.image_url}
+                  alt={image.title}
+                  className="w-full aspect-square object-cover rounded-lg mb-3"
+                />
+                <CardTitle className="text-base md:text-lg">{image.title}</CardTitle>
+                <p className="text-sm text-gray-600">{image.description}</p>
+              </CardHeader>
+              <CardContent className="p-3 md:p-4 pt-0">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm text-gray-500">Order: {image.order_position}</span>
+                  {image.link_url && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.open(image.link_url, '_blank')}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => moveImage(image.id, 'up')}
+                      disabled={index === 0}
+                    >
+                      ↑
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => moveImage(image.id, 'down')}
+                      disabled={index === gadgetImages.length - 1}
+                    >
+                      ↓
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(image)}>
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(image.id)}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      )}
+        {gadgetImages.length === 0 && (
+          <div className="text-center py-8 md:py-12 border-2 border-dashed border-gray-300 rounded-lg">
+            <p className="text-gray-500">No gadgets carousel images found. Add your first image to get started!</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

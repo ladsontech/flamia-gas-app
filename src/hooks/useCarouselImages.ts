@@ -10,6 +10,7 @@ interface CarouselImage {
   link_url?: string;
   order_position: number;
   is_active: boolean;
+  category: 'gas' | 'gadgets';
 }
 
 export const useCarouselImages = () => {
