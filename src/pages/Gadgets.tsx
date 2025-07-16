@@ -16,6 +16,10 @@ const Gadgets = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { gadgets, loading, error } = useGadgets(filters, searchQuery);
 
+  // Get first 6 gadgets as featured (most recent)
+  const featuredGadgets = gadgets.slice(0, 6);
+  const remainingGadgets = gadgets.slice(6);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-14">
@@ -53,7 +57,7 @@ const Gadgets = () => {
 
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="w-full px-2 sm:px-4 lg:px-8 xl:px-12 2xl:px-16 py-8 lg:py-12">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-20 py-8 lg:py-12">
           {/* Image Carousel */}
           <GadgetsCarousel />
 
@@ -106,12 +110,34 @@ const Gadgets = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full px-2 sm:px-4 lg:px-8 xl:px-12 2xl:px-16 py-8 lg:py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-20 py-8 lg:py-12">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
+          {/* Featured Gadgets Section */}
+          {featuredGadgets.length > 0 && !searchQuery && Object.keys(filters).length === 0 && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 mb-6 lg:mb-8">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 lg:mb-6">
+                Featured Products
+              </h2>
+              <div className="grid gap-4 lg:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {featuredGadgets.map((gadget, index) => (
+                  <motion.div
+                    key={gadget.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="h-full"
+                  >
+                    <GadgetCard gadget={gadget} />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Results Header */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 mb-6 lg:mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -123,7 +149,7 @@ const Gadgets = () => {
                   }
                 </h2>
                 <span className="text-lg md:text-xl lg:text-2xl text-gray-600">
-                  {gadgets.length} {gadgets.length === 1 ? 'product' : 'products'} found
+                  {(searchQuery || Object.keys(filters).length > 0 ? gadgets : remainingGadgets).length} products found
                 </span>
               </div>
               
@@ -153,13 +179,13 @@ const Gadgets = () => {
           </div>
 
           {/* Products Grid */}
-          {gadgets.length > 0 ? (
+          {(searchQuery || Object.keys(filters).length > 0 ? gadgets : remainingGadgets).length > 0 ? (
             <div className={`grid gap-4 lg:gap-6 ${
               viewMode === 'grid' 
                 ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' 
                 : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
             }`}>
-              {gadgets.map((gadget, index) => (
+              {(searchQuery || Object.keys(filters).length > 0 ? gadgets : remainingGadgets).map((gadget, index) => (
                 <motion.div
                   key={gadget.id}
                   initial={{ opacity: 0, y: 20 }}

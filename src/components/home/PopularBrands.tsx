@@ -11,37 +11,70 @@ import {
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { staticBrands } from "./BrandsData";
+import { supabase } from "@/integrations/supabase/client";
+import { Gadget } from "@/types/gadget";
 
-const PopularBrands = () => {
-  const [isMobile, setIsMobile] = useState(false);
+const FeaturedGadgets = () => {
+  const [featuredGadgets, setFeaturedGadgets] = useState<Gadget[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    
-    return () => {
-      window.removeEventListener('resize', checkScreenSize);
-    };
+    fetchFeaturedGadgets();
   }, []);
 
-  const popularBrands = staticBrands.slice(0, 5);
+  const fetchFeaturedGadgets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gadgets')
+        .select('*')
+        .eq('in_stock', true)
+        .order('created_at', { ascending: false })
+        .limit(8);
 
-  const handleBrandClick = (brand: any) => {
-    // Navigate to order page with brand information for fullset order
-    navigate(`/order?brand=${brand.brand}&name=${brand.name}&size=6KG&price=${brand.price_6kg}&type=fullset`);
+      if (error) throw error;
+      
+      setFeaturedGadgets(data || []);
+    } catch (error) {
+      console.error('Error fetching featured gadgets:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleGadgetClick = (gadget: Gadget) => {
+    navigate(`/gadget/${gadget.id}`);
+  };
+
+  if (loading) {
+    return (
+      <section className="mb-4 max-w-3xl mx-auto px-2 lg:hidden">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded mb-3 w-32"></div>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="w-24 h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (featuredGadgets.length === 0) {
+    return null;
+  }
 
   return (
     <section className="mb-4 max-w-3xl mx-auto px-2 lg:hidden">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg md:text-xl font-bold">Popular Gas Brands</h2>
-        <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs">
+        <h2 className="text-lg md:text-xl font-bold">Featured Gadgets</h2>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-primary flex items-center gap-1 text-xs"
+          onClick={() => navigate('/gadgets')}
+        >
           <span>View All</span>
           <ArrowRight size={14} />
         </Button>
@@ -54,28 +87,32 @@ const PopularBrands = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
-          {popularBrands.map((brand) => (
-            <CarouselItem key={brand.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3">
+        <CarouselContent className="-ml-1">
+          {featuredGadgets.map((gadget) => (
+            <CarouselItem key={gadget.id} className="pl-1 basis-1/3 sm:basis-1/4">
               <Card 
-                className="overflow-hidden flex flex-col h-full shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
-                onClick={() => handleBrandClick(brand)}
+                className="overflow-hidden flex flex-col h-full shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-1"
+                onClick={() => handleGadgetClick(gadget)}
               >
-                <div className="relative p-2 pb-1">
-                  <div className="h-16 aspect-square bg-gray-50 rounded-md flex items-center justify-center mb-2">
-                    <img 
-                      src={brand.image_url_6kg || ''} 
-                      alt={brand.name} 
-                      className="h-full w-full object-contain p-1"
-                      loading="lazy"
-                    />
-                  </div>
-                  <h3 className="font-medium text-xs sm:text-sm truncate">{brand.name}</h3>
-                  <p className="text-muted-foreground text-xs line-clamp-1 mb-2">
-                    {brand.description_6kg || `${brand.brand} gas for best prices in Uganda`}
-                  </p>
-                  <div className="text-sm font-semibold text-accent">
-                    {brand.price_6kg}
+                <div className="relative aspect-square bg-gray-50 rounded-md flex items-center justify-center mb-1">
+                  <img 
+                    src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                    alt={gadget.name} 
+                    className="h-full w-full object-contain p-0.5"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="px-1 pb-1">
+                  <h3 className="font-medium text-xs line-clamp-2 mb-1 leading-tight">
+                    {gadget.name}
+                  </h3>
+                  <div className="text-xs font-semibold text-accent">
+                    {new Intl.NumberFormat('en-UG', {
+                      style: 'currency',
+                      currency: 'UGX',
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }).format(gadget.price)}
                   </div>
                 </div>
               </Card>
@@ -91,4 +128,4 @@ const PopularBrands = () => {
   );
 };
 
-export default PopularBrands;
+export default FeaturedGadgets;

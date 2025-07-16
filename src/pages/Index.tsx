@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import BrandsGrid from "@/components/home/BrandsGrid";
 import { Helmet } from "react-helmet";
 import ImageCarousel from "@/components/home/ImageCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
-import PopularBrands from "@/components/home/PopularBrands";
+import FeaturedGadgets from "@/components/home/PopularBrands";
 import AccessoriesSection from "@/components/home/AccessoriesSection";
 import { Sparkles, Zap, Shield, Clock, Star, Truck, MapPin, Phone, Flame } from "lucide-react";
 
@@ -85,7 +84,6 @@ export default function Index() {
         <link rel="preload" as="image" href="/images/shell 6KG.png" />
         <link rel="preload" as="image" href="/images/stabex 6KG.png" />
         
-        {/* Hidden SEO-focused structured data */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -160,7 +158,6 @@ export default function Index() {
           })}
         </script>
 
-        {/* Product Schema for Gas Cylinders */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -195,14 +192,13 @@ export default function Index() {
       </Helmet>
 
       <div className="min-h-screen pt-16 overflow-x-hidden">
-        {/* Mobile Layout - unchanged */}
         <div className="lg:hidden">
           <div className="px-4 md:px-6">
             <div className="flex flex-col gap-8 md:gap-12 my-0 py-8 rounded max-w-full">
               <HeaderSection />
               <ImageCarousel />
               <PromotionsSection />
-              <PopularBrands />
+              <FeaturedGadgets />
 
               <section className="space-y-8">
                 <div className="text-center">
@@ -249,10 +245,8 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Desktop Layout - 2 columns */}
         <div className="hidden lg:block">
           <div className="max-w-7xl mx-auto px-4 lg:px-6 xl:px-8">
-            {/* Hero Section */}
             <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-8 lg:mb-10 xl:mb-12 border border-accent/20">
               <div className="text-center">
                 <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
@@ -281,12 +275,9 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Main Content Grid - 2 Columns Layout */}
             <div className="grid grid-cols-12 gap-6 lg:gap-8">
-              {/* Left Sidebar - Special Offers */}
               <div className="col-span-12 lg:col-span-4">
                 <div className="sticky top-24 space-y-6">
-                  {/* Special Promotions */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4">
                       <div className="flex items-center gap-2 text-white">
@@ -300,7 +291,6 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* Featured Carousel */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div className="bg-accent p-4">
                       <div className="flex items-center gap-2 text-white">
@@ -314,7 +304,6 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* Features */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
                     <div className="space-y-4">
@@ -332,16 +321,14 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* Popular Brands */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <h3 className="font-bold text-lg mb-4 text-gray-900 flex items-center gap-2">
                       <Star size={18} className="text-accent" />
-                      Popular Brands
+                      Featured Gadgets
                     </h3>
-                    <PopularBrands />
+                    <FeaturedGadgets />
                   </div>
 
-                  {/* Contact Expert */}
                   <div className="bg-accent/10 rounded-2xl p-6 border border-accent/20">
                     <div className="text-center">
                       <div className="bg-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 shadow-md">
@@ -362,10 +349,8 @@ export default function Index() {
                 </div>
               </div>
 
-              {/* Main Content Area */}
               <div className="col-span-12 lg:col-span-8">
                 <div className="space-y-8">
-                  {/* Main Title */}
                   <div className="text-center">
                     <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-4 text-slate-950">
                       Premium Gas Cylinders
@@ -375,7 +360,6 @@ export default function Index() {
                     </p>
                   </div>
 
-                  {/* Gas Cylinders Grid */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     {isLoading ? (
                       <div className="flex justify-center py-16">
@@ -386,7 +370,6 @@ export default function Index() {
                     )}
                   </div>
 
-                  {/* Gas Accessories Section */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <AccessoriesSection />
                   </div>
