@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,11 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Gadget } from '@/types/gadget';
 import ImageUpload from './ImageUpload';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Star } from 'lucide-react';
 
 const categories = ['Smartphones', 'Laptops', 'Tablets', 'Audio', 'Wearables', 'Gaming'];
 const brands = ['Apple', 'Samsung', 'Google', 'Dell', 'Sony', 'Microsoft', 'HP', 'Lenovo'];
@@ -33,7 +33,8 @@ const GadgetsManager: React.FC = () => {
     brand: '',
     image_url: '',
     condition: 'brand_new' as 'brand_new' | 'used',
-    in_stock: true
+    in_stock: true,
+    featured: false
   });
 
   useEffect(() => {
@@ -74,7 +75,8 @@ const GadgetsManager: React.FC = () => {
       brand: '',
       image_url: '',
       condition: 'brand_new' as 'brand_new' | 'used',
-      in_stock: true
+      in_stock: true,
+      featured: false
     });
     setEditingGadget(null);
   };
@@ -90,9 +92,34 @@ const GadgetsManager: React.FC = () => {
       brand: gadget.brand || '',
       image_url: gadget.image_url || '',
       condition: gadget.condition,
-      in_stock: gadget.in_stock
+      in_stock: gadget.in_stock,
+      featured: gadget.featured || false
     });
     setIsDialogOpen(true);
+  };
+
+  const handleToggleFeatured = async (gadget: Gadget) => {
+    try {
+      const { error } = await supabase
+        .from('gadgets')
+        .update({ featured: !gadget.featured })
+        .eq('id', gadget.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Gadget ${!gadget.featured ? 'featured' : 'unfeatured'} successfully!`
+      });
+
+      fetchGadgets();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update featured status",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,7 +137,8 @@ const GadgetsManager: React.FC = () => {
         brand: formData.brand || null,
         image_url: formData.image_url || null,
         condition: formData.condition,
-        in_stock: formData.in_stock
+        in_stock: formData.in_stock,
+        featured: formData.featured
       };
 
       if (editingGadget) {
@@ -299,6 +327,15 @@ const GadgetsManager: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="featured"
+                      checked={formData.featured}
+                      onCheckedChange={(checked) => setFormData({...formData, featured: checked})}
+                    />
+                    <Label htmlFor="featured">Featured Product</Label>
+                  </div>
                 </div>
 
                 <div>
@@ -350,6 +387,12 @@ const GadgetsManager: React.FC = () => {
                 >
                   {gadget.condition === 'brand_new' ? 'Brand New' : 'Used'}
                 </Badge>
+                {gadget.featured && (
+                  <Badge className="bg-orange-500 text-white">
+                    <Star className="w-3 h-3 mr-1" />
+                    Featured
+                  </Badge>
+                )}
               </div>
             </CardHeader>
             <CardContent className="p-3 md:p-4 pt-0">
@@ -369,6 +412,13 @@ const GadgetsManager: React.FC = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <span className="text-sm text-gray-500">{gadget.brand}</span>
                 <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant={gadget.featured ? "default" : "outline"} 
+                    onClick={() => handleToggleFeatured(gadget)}
+                  >
+                    <Star className="w-4 h-4" />
+                  </Button>
                   <Button size="sm" variant="outline" onClick={() => handleEdit(gadget)}>
                     <Edit className="w-4 h-4" />
                   </Button>

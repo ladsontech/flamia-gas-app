@@ -29,6 +29,7 @@ const FeaturedGadgets = () => {
         .from('gadgets')
         .select('*')
         .eq('in_stock', true)
+        .eq('featured', true)
         .order('created_at', { ascending: false })
         .limit(8);
 
@@ -40,8 +41,30 @@ const FeaturedGadgets = () => {
       })));
     } catch (error) {
       console.error('Error fetching featured gadgets:', error);
+      // Fallback to latest gadgets if no featured ones
+      fetchLatestGadgets();
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLatestGadgets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gadgets')
+        .select('*')
+        .eq('in_stock', true)
+        .order('created_at', { ascending: false })
+        .limit(8);
+
+      if (error) throw error;
+      
+      setFeaturedGadgets((data || []).map(gadget => ({
+        ...gadget,
+        condition: gadget.condition as 'brand_new' | 'used'
+      })));
+    } catch (error) {
+      console.error('Error fetching latest gadgets:', error);
     }
   };
 
@@ -56,7 +79,7 @@ const FeaturedGadgets = () => {
           <div className="h-4 bg-gray-200 rounded mb-2 w-32"></div>
           <div className="flex gap-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-20 h-24 bg-gray-200 rounded"></div>
+              <div key={i} className="w-20 h-28 bg-gray-200 rounded"></div>
             ))}
           </div>
         </div>
@@ -94,10 +117,10 @@ const FeaturedGadgets = () => {
           {featuredGadgets.map((gadget) => (
             <CarouselItem key={gadget.id} className="pl-1 basis-1/4 sm:basis-1/5">
               <Card 
-                className="overflow-hidden flex flex-col h-20 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-0.5"
+                className="overflow-hidden flex flex-col h-28 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-1"
                 onClick={() => handleGadgetClick(gadget)}
               >
-                <div className="relative flex-1 bg-gray-50 rounded-sm flex items-center justify-center mb-1">
+                <div className="relative h-16 bg-gray-50 rounded-sm flex items-center justify-center mb-1">
                   <img 
                     src={gadget.image_url || '/images/gadget-fallback.jpg'} 
                     alt={gadget.name} 
@@ -105,7 +128,7 @@ const FeaturedGadgets = () => {
                     loading="lazy"
                   />
                 </div>
-                <div className="px-0.5 pb-0.5 mt-auto">
+                <div className="px-1 pb-1 flex-1 flex flex-col justify-end">
                   <h3 className="font-medium text-[10px] line-clamp-1 mb-0.5 leading-tight">
                     {gadget.name}
                   </h3>
