@@ -42,8 +42,8 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ category = 'gas' }) => {
 
   if (loading) {
     return (
-      <div className="relative w-full overflow-hidden rounded-lg shadow-sm bg-white">
-        <div className="aspect-[4/3] lg:aspect-[3/2] flex items-center justify-center bg-gray-100">
+      <div className="relative w-full overflow-hidden bg-white">
+        <div className="aspect-[16/9] lg:aspect-[2.5/1] flex items-center justify-center bg-gray-100">
           <div className="w-6 h-6 lg:w-4 lg:h-4 border-3 border-accent rounded-full border-t-transparent animate-spin"></div>
         </div>
       </div>
@@ -52,8 +52,8 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ category = 'gas' }) => {
 
   if (error || filteredImages.length === 0) {
     return (
-      <div className="relative w-full overflow-hidden rounded-lg shadow-sm bg-white">
-        <div className="aspect-[4/3] lg:aspect-[3/2] flex items-center justify-center bg-gray-100">
+      <div className="relative w-full overflow-hidden bg-white">
+        <div className="aspect-[16/9] lg:aspect-[2.5/1] flex items-center justify-center bg-gray-100">
           <p className="text-gray-500 text-sm">No carousel images available</p>
         </div>
       </div>
@@ -61,8 +61,8 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ category = 'gas' }) => {
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg shadow-sm bg-white">
-      <div className="aspect-[4/3] lg:aspect-[3/2]">
+    <div className="relative w-full overflow-hidden bg-white">
+      <div className="aspect-[16/9] lg:aspect-[2.5/1]">
         {imageLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-50">
             <div className="w-6 h-6 lg:w-4 lg:h-4 border-3 border-accent rounded-full border-t-transparent animate-spin"></div>
@@ -72,25 +72,28 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ category = 'gas' }) => {
         <AnimatePresence mode="wait">
           <motion.div 
             key={currentIndex} 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            transition={{ duration: 0.7 }} 
+            initial={{ opacity: 0, x: 100 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            exit={{ opacity: 0, x: -100 }} 
+            transition={{ 
+              duration: 0.5,
+              ease: "easeInOut"
+            }} 
             className="absolute inset-0"
           >
-            <AspectRatio ratio={4 / 3} className="lg:aspect-[3/2]">
+            <AspectRatio ratio={16 / 9} className="lg:aspect-[2.5/1]">
               <img 
                 src={filteredImages[currentIndex].image_url} 
                 alt={filteredImages[currentIndex].title} 
                 loading="lazy" 
                 onLoad={handleImageLoad} 
                 width="2400" 
-                height="1600" 
+                height="800" 
                 className="w-full h-full bg-white object-cover" 
               />
             </AspectRatio>
-            <div className="absolute bottom-0 left-0 right-0 p-2 lg:p-1.5 text-white z-20">
-              <h3 className="text-sm lg:text-xs font-bold drop-shadow-md">
+            <div className="absolute bottom-0 left-0 right-0 p-3 lg:p-4 text-white z-20">
+              <h3 className="text-base lg:text-lg font-bold drop-shadow-md">
                 {filteredImages[currentIndex].title}
               </h3>
             </div>
@@ -98,31 +101,31 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ category = 'gas' }) => {
         </AnimatePresence>
       </div>
       
-      {/* Navigation arrows - hidden on small screens, visible on medium and up */}
+      {/* Navigation arrows - visible on all screen sizes */}
       <button 
         onClick={prevSlide} 
-        className="absolute left-1 top-1/2 transform -translate-y-1/2 z-30 hidden sm:flex items-center justify-center w-5 h-5 lg:w-4 lg:h-4 rounded-full bg-white/70 hover:bg-white/90 text-accent" 
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-30 flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-white/80 hover:bg-white/95 text-accent shadow-lg" 
         aria-label="Previous slide"
       >
-        <ChevronLeft size={12} className="lg:w-3 lg:h-3" />
+        <ChevronLeft size={20} className="lg:w-6 lg:h-6" />
       </button>
       
       <button 
         onClick={nextSlide} 
-        className="absolute right-1 top-1/2 transform -translate-y-1/2 z-30 hidden sm:flex items-center justify-center w-5 h-5 lg:w-4 lg:h-4 rounded-full bg-white/70 hover:bg-white/90 text-accent" 
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-30 flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-white/80 hover:bg-white/95 text-accent shadow-lg" 
         aria-label="Next slide"
       >
-        <ChevronRight size={12} className="lg:w-3 lg:h-3" />
+        <ChevronRight size={20} className="lg:w-6 lg:h-6" />
       </button>
       
       {/* Indicator dots */}
-      <div className="absolute bottom-0.5 lg:bottom-0.5 left-0 right-0 flex justify-center gap-1 z-30">
+      <div className="absolute bottom-2 lg:bottom-3 left-0 right-0 flex justify-center gap-1.5 z-30">
         {filteredImages.map((_, index) => (
           <button 
             key={index} 
             onClick={() => setCurrentIndex(index)} 
-            className={`w-1 h-1 lg:w-1 lg:h-1 rounded-full transition-all duration-300 ${
-              index === currentIndex ? "bg-accent w-2 lg:w-1.5" : "bg-accent/50"
+            className={`w-2 h-2 lg:w-2.5 lg:h-2.5 rounded-full transition-all duration-300 ${
+              index === currentIndex ? "bg-accent w-4 lg:w-5" : "bg-white/60"
             }`} 
             aria-label={`Go to slide ${index + 1}`} 
           />

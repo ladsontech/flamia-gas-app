@@ -9,6 +9,7 @@ import PromotionsSection from "@/components/home/PromotionsSection";
 import FeaturedGadgets from "@/components/home/PopularBrands";
 import AccessoriesSection from "@/components/home/AccessoriesSection";
 import { Sparkles, Zap, Shield, Clock, Star, Truck, MapPin, Phone, Flame } from "lucide-react";
+
 export default function Index() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -18,13 +19,14 @@ export default function Index() {
     desc: "Same-day delivery"
   }, {
     icon: Shield,
-    title: "Guaranteed Quality",
+    title: "Guaranteed Quality", 
     desc: "Certified gas suppliers"
   }, {
     icon: Clock,
     title: "24/7 Support",
     desc: "Always here to help"
   }];
+
   return <>
       <Helmet>
         <title>Flamia - Best Gas Delivery Service in Uganda | Free Same-Day Delivery</title>
@@ -182,7 +184,7 @@ export default function Index() {
       <div className="min-h-screen pt-16 overflow-x-hidden">
         <div className="lg:hidden">
           <div className="px-4 md:px-6">
-            <div className="flex flex-col gap-8 md:gap-12 my-0 py-8 rounded max-w-full">
+            <div className="flex flex-col gap-6 md:gap-8 my-0 py-6 rounded max-w-full">
               <HeaderSection />
               <ImageCarousel />
               <PromotionsSection />
@@ -201,7 +203,7 @@ export default function Index() {
                 <div className="w-full">
                   {isLoading ? <div className="flex justify-center py-16">
                       <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
-                    </div> : <BrandsGrid brands={[]} />}
+                    </div> : <BrandsGrid />}
                 </div>
               </section>
 
@@ -228,7 +230,7 @@ export default function Index() {
 
         <div className="hidden lg:block">
           <div className="max-w-7xl mx-auto px-4 lg:px-6 xl:px-8">
-            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-8 lg:mb-10 xl:mb-12 border border-accent/20">
+            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-6 lg:mb-8 xl:mb-10 border border-accent/20">
               <div className="text-center">
                 <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
                   Uganda's #1 Gas Delivery Service
@@ -330,7 +332,7 @@ export default function Index() {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     {isLoading ? <div className="flex justify-center py-16">
                         <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
-                      </div> : <BrandsGrid brands={[]} />}
+                      </div> : <BrandsGrid />}
                   </div>
 
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
