@@ -45,7 +45,7 @@ const AccessoriesSection: React.FC = () => {
           >
             <Card className="bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col group hover:-translate-y-1">
               <CardHeader className="p-2">
-                <div className="relative w-full pb-[75%] mb-3 rounded-lg overflow-hidden bg-white">
+                <div className="relative w-full pb-[75%] mb-2 rounded-lg overflow-hidden bg-white">
                   <img
                     src={accessory.image_url || '/images/accessory-fallback.jpg'}
                     alt={accessory.name}
@@ -59,28 +59,28 @@ const AccessoriesSection: React.FC = () => {
                     className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-500 object-contain p-1"
                   />
                 </div>
-                <CardTitle className="text-base font-semibold text-gray-900 line-clamp-2 min-h-[3rem] px-2">
+                <CardTitle className="text-sm font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem] px-2 leading-tight">
                   {accessory.name}
                 </CardTitle>
               </CardHeader>
               
-              <CardContent className="p-4 pt-0 flex-grow">
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2 min-h-[2.5rem]">
+              <CardContent className="p-3 pt-0 flex-grow">
+                <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem] leading-tight">
                   {accessory.description}
                 </p>
-                <p className="text-accent font-bold text-lg mb-3">
+                <p className="text-accent font-bold text-base mb-2">
                   UGX {accessory.price.toLocaleString()}
                 </p>
-                <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <Truck className="w-4 h-4" />
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <Truck className="w-3 h-3" />
                   <span>Free delivery</span>
                 </div>
               </CardContent>
               
-              <CardFooter className="p-4 pt-0">
+              <CardFooter className="p-3 pt-0">
                 <Button
                   onClick={() => handleOrder(accessory.id)}
-                  className="w-full bg-accent hover:bg-accent/90 text-white text-sm py-2 h-10 font-semibold transition-all duration-300 group-hover:shadow-lg"
+                  className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-2 h-8 font-semibold transition-all duration-300 group-hover:shadow-lg"
                 >
                   Order Now
                 </Button>

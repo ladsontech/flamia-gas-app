@@ -47,8 +47,8 @@ const Gadgets = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="min-h-screen bg-gray-50 pt-16 md:pt-20">
+        <div className="container mx-auto px-4 py-4 space-y-6">
           {/* Carousel Skeleton */}
           <Skeleton className="w-full h-64 rounded-lg" />
           
@@ -79,7 +79,7 @@ const Gadgets = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 pt-16 md:pt-20 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops! Something went wrong</h2>
           <p className="text-gray-600">{error}</p>
@@ -89,7 +89,7 @@ const Gadgets = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-2">
+    <div className="min-h-screen bg-gray-50 pt-16 md:pt-20">
       <div className="container mx-auto px-4 py-4 space-y-6">
         {/* Gadgets Carousel */}
         <ImageCarousel category="gadgets" />
