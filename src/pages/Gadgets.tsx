@@ -89,8 +89,8 @@ const Gadgets = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 pt-2">
+      <div className="container mx-auto px-4 py-4 space-y-6">
         {/* Gadgets Carousel */}
         <ImageCarousel category="gadgets" />
         

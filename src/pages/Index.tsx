@@ -184,7 +184,7 @@ export default function Index() {
       <div className="min-h-screen pt-16 overflow-x-hidden">
         <div className="lg:hidden">
           <div className="px-4 md:px-6">
-            <div className="flex flex-col gap-6 md:gap-8 my-0 py-6 rounded max-w-full">
+            <div className="flex flex-col gap-4 md:gap-6 my-0 py-2 rounded max-w-full">
               <HeaderSection />
               <ImageCarousel />
               <PromotionsSection />
@@ -230,7 +230,7 @@ export default function Index() {
 
         <div className="hidden lg:block">
           <div className="max-w-7xl mx-auto px-4 lg:px-6 xl:px-8">
-            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-6 lg:mb-8 xl:mb-10 border border-accent/20">
+            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-4 lg:mb-6 xl:mb-8 border border-accent/20">
               <div className="text-center">
                 <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
                   Uganda's #1 Gas Delivery Service

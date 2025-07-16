@@ -129,7 +129,7 @@ const PopularBrands: React.FC = () => {
         >
           <CarouselContent className="-ml-1">
             {featuredGadgets.map((gadget) => (
-              <CarouselItem key={gadget.id} className="pl-1 basis-1/4 sm:basis-1/5">
+              <CarouselItem key={gadget.id} className="pl-1 basis-1/3 sm:basis-1/4">
                 <Card 
                   className="overflow-hidden flex flex-col h-48 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-1"
                   onClick={() => handleGadgetClick(gadget)}
