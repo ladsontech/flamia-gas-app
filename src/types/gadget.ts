@@ -10,6 +10,7 @@ export interface Gadget {
   image_url?: string;
   in_stock: boolean;
   condition: 'brand_new' | 'used';
+  featured?: boolean;
   created_at: string;
   updated_at: string;
 }

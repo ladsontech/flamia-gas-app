@@ -52,7 +52,8 @@ const GadgetsManager: React.FC = () => {
       if (error) throw error;
       setGadgets((data || []).map(gadget => ({
         ...gadget,
-        condition: gadget.condition as 'brand_new' | 'used'
+        condition: gadget.condition as 'brand_new' | 'used',
+        featured: gadget.featured || false
       })));
     } catch (error) {
       toast({
@@ -102,14 +103,14 @@ const GadgetsManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('gadgets')
-        .update({ featured: !gadget.featured })
+        .update({ featured: !(gadget.featured || false) })
         .eq('id', gadget.id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: `Gadget ${!gadget.featured ? 'featured' : 'unfeatured'} successfully!`
+        description: `Gadget ${!(gadget.featured || false) ? 'featured' : 'unfeatured'} successfully!`
       });
 
       fetchGadgets();

@@ -84,6 +84,7 @@ export type Database = {
           condition: string | null
           created_at: string
           description: string
+          featured: boolean
           id: string
           image_url: string | null
           in_stock: boolean
@@ -98,6 +99,7 @@ export type Database = {
           condition?: string | null
           created_at?: string
           description: string
+          featured?: boolean
           id?: string
           image_url?: string | null
           in_stock?: boolean
@@ -112,6 +114,7 @@ export type Database = {
           condition?: string | null
           created_at?: string
           description?: string
+          featured?: boolean
           id?: string
           image_url?: string | null
           in_stock?: boolean
