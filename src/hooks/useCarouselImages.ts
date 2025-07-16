@@ -28,7 +28,8 @@ export const useCarouselImages = () => {
         .order('order_position', { ascending: true });
 
       if (error) throw error;
-      setCarouselImages(data || []);
+      // Type assertion to ensure category is properly typed
+      setCarouselImages((data || []) as CarouselImage[]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch carousel images');
     } finally {

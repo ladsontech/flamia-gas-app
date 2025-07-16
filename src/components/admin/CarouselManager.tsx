@@ -52,7 +52,8 @@ const CarouselManager: React.FC = () => {
         .order('order_position', { ascending: true });
 
       if (error) throw error;
-      setCarouselImages(data || []);
+      // Type assertion to ensure category is properly typed
+      setCarouselImages((data || []) as CarouselImage[]);
     } catch (error) {
       toast({
         title: "Error",

@@ -1,32 +1,9 @@
+
 import React from "react";
 import BrandCardNew from "./BrandCardNew";
 import { staticBrands } from "./BrandsData";
 
-interface Brand {
-  id: string;
-  name: string;
-  brand: string;
-  image_url_6kg?: string;
-  image_url_12kg?: string;
-  price_6kg?: string;
-  price_12kg?: string;
-  description_6kg?: string;
-  description_12kg?: string;
-}
-
-interface RefillBrand {
-  id: string;
-  name: string;
-  brand: string;
-  refill_price_6kg?: string;
-  refill_price_12kg?: string;
-}
-
-interface BrandsGridProps {
-  brands: Brand[];
-}
-
-const BrandsGrid: React.FC<BrandsGridProps> = () => {
+const BrandsGrid: React.FC = () => {
   // Use the staticBrands instead of the brands prop for static data
   const allCards = staticBrands.reduce((acc: React.ReactNode[], brand) => {
     // Add 6kg cards if the brand has a price for 6kg

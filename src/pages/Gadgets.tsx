@@ -7,18 +7,17 @@ import GadgetCarousel from '@/components/gadgets/GadgetCarousel';
 import ImageCarousel from '@/components/home/ImageCarousel';
 import { useGadgets } from '@/hooks/useGadgets';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GadgetFilters } from '@/types/gadget';
 
 const Gadgets = () => {
   const { category } = useParams();
   const { gadgets, loading, error } = useGadgets();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(category || 'all');
-  const [selectedBrand, setSelectedBrand] = useState('all');
-  const [priceRange, setPriceRange] = useState([0, 10000000]);
+  const [filters, setFilters] = useState<GadgetFilters>({});
 
   useEffect(() => {
     if (category) {
-      setSelectedCategory(category);
+      setFilters(prev => ({ ...prev, category }));
     }
   }, [category]);
 
@@ -28,16 +27,13 @@ const Gadgets = () => {
                          gadget.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (gadget.brand && gadget.brand.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    const matchesCategory = selectedCategory === 'all' || gadget.category === selectedCategory;
-    const matchesBrand = selectedBrand === 'all' || gadget.brand === selectedBrand;
-    const matchesPrice = gadget.price >= priceRange[0] && gadget.price <= priceRange[1];
+    const matchesCategory = !filters.category || gadget.category === filters.category;
+    const matchesBrand = !filters.brand || gadget.brand === filters.brand;
+    const matchesMinPrice = !filters.minPrice || gadget.price >= filters.minPrice;
+    const matchesMaxPrice = !filters.maxPrice || gadget.price <= filters.maxPrice;
     
-    return matchesSearch && matchesCategory && matchesBrand && matchesPrice && gadget.in_stock;
+    return matchesSearch && matchesCategory && matchesBrand && matchesMinPrice && matchesMaxPrice && gadget.in_stock;
   });
-
-  // Get unique categories and brands for filters
-  const categories = ['all', ...Array.from(new Set(gadgets.map(g => g.category)))];
-  const brands = ['all', ...Array.from(new Set(gadgets.map(g => g.brand).filter(Boolean)))];
 
   // Group gadgets by category for carousels
   const featuredGadgets = filteredGadgets.filter(g => g.featured);
@@ -100,16 +96,10 @@ const Gadgets = () => {
         
         {/* Search and Filters */}
         <GadgetSearch
+          onSearch={setSearchQuery}
+          onFilter={setFilters}
           searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          selectedBrand={selectedBrand}
-          onBrandChange={setSelectedBrand}
-          priceRange={priceRange}
-          onPriceRangeChange={setPriceRange}
-          categories={categories}
-          brands={brands}
+          filters={filters}
         />
 
         {/* Featured Gadgets Carousel */}
@@ -133,7 +123,7 @@ const Gadgets = () => {
         {/* All Gadgets Grid */}
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-            All Gadgets {selectedCategory !== 'all' && `- ${selectedCategory}`}
+            All Gadgets {filters.category && `- ${filters.category}`}
           </h2>
           
           {filteredGadgets.length === 0 ? (
