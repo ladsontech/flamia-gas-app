@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -36,7 +35,7 @@ I'm interested in this promotion.`;
           <Card key={offer.id} className="overflow-hidden flex flex-col h-full shadow-sm border-gray-200">
             <div className="relative">
               <div className="flex sm:flex-col">
-                <div className="w-1/3 sm:w-full h-24 sm:h-32 bg-gray-50 flex items-center justify-center">
+                <div className="w-1/3 sm:w-full h-24 sm:h-32 bg-white flex items-center justify-center p-0">
                   <img 
                     src={offer.image} 
                     alt={offer.title} 
