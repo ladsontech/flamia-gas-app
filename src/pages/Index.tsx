@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -185,7 +184,7 @@ export default function Index() {
       <div className="min-h-screen pt-16 overflow-x-hidden">
         <div className="lg:hidden">
           <div className="px-4 md:px-6">
-            <div className="flex flex-col gap-4 md:gap-6 my-0 py-2 rounded max-w-full">
+            <div className="flex flex-col gap-3 md:gap-6 my-0 py-1 rounded max-w-full">
               <HeaderSection />
               <ImageCarousel />
               <PromotionsSection />
@@ -232,20 +231,35 @@ export default function Index() {
         <div className="hidden lg:block">
           <div className="max-w-[95rem] mx-auto px-6 xl:px-8">
             <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-6 lg:mb-8 border border-accent/20">
-              <div className="text-center">
-                <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
-                  Uganda's #1 Gas Delivery Service
-                </h1>
-                <p className="text-lg lg:text-xl xl:text-2xl text-gray-700 mb-6 lg:mb-8 max-w-4xl mx-auto leading-relaxed">
-                  Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-bold text-base lg:text-lg shadow-lg" onClick={() => navigate('/order')}>
-                    Order Gas Now
-                  </Button>
-                  <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold text-base lg:text-lg" onClick={() => window.open("https://wa.me/256787899483", "_blank")}>
-                    Get Help
-                  </Button>
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 xl:gap-12">
+                <div className="xl:col-span-3">
+                  <div className="text-center xl:text-left">
+                    <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
+                      Uganda's #1 Gas Delivery Service
+                    </h1>
+                    <p className="text-lg lg:text-xl xl:text-2xl text-gray-700 mb-6 lg:mb-8 max-w-4xl xl:max-w-none leading-relaxed">
+                      Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
+                    </p>
+                    <div className="flex flex-wrap justify-center xl:justify-start gap-4">
+                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-bold text-base lg:text-lg shadow-lg" onClick={() => navigate('/order')}>
+                        Order Gas Now
+                      </Button>
+                      <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold text-base lg:text-lg" onClick={() => window.open("https://wa.me/256787899483", "_blank")}>
+                        Get Help
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="xl:col-span-2">
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 lg:p-6 border border-white/20">
+                    <h3 className="font-bold text-lg lg:text-xl mb-4 text-gray-900 flex items-center gap-2">
+                      <Star size={20} className="text-accent" />
+                      Featured Products
+                    </h3>
+                    <div className="overflow-hidden">
+                      <FeaturedGadgets />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -313,16 +327,6 @@ export default function Index() {
 
               <div className="col-span-12 lg:col-span-8 xl:col-span-9">
                 <div className="space-y-8 lg:space-y-10">
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="font-bold text-xl lg:text-2xl text-gray-900 flex items-center gap-3">
-                        <Star size={24} className="text-accent" />
-                        Featured Gadgets
-                      </h3>
-                    </div>
-                    <FeaturedGadgets />
-                  </div>
-
                   <div className="text-center">
                     <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-4 text-slate-950">
                       Premium Gas Cylinders
