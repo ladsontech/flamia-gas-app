@@ -58,7 +58,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
             value={localQuery}
             onChange={(e) => setLocalQuery(e.target.value)}
             placeholder="Search gadgets, brands, categories..."
-            className="pl-10 pr-32 md:pr-36 h-12 md:h-14 text-sm md:text-base border-2 border-gray-200 focus:border-accent rounded-lg"
+            className="pl-10 pr-28 md:pr-32 h-11 md:h-12 text-sm md:text-base border border-gray-300 focus:border-accent focus:ring-1 focus:ring-accent rounded-lg bg-white shadow-sm"
           />
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1 md:gap-2">
             <Button
@@ -66,7 +66,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
               variant="ghost"
               size="sm"
               onClick={handleFilterToggle}
-              className={`px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1 ${showFilters ? 'bg-accent text-white' : ''}`}
+              className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm flex items-center gap-1 border ${showFilters ? 'bg-accent text-white border-accent' : 'bg-white border-gray-300 hover:bg-gray-50'}`}
             >
               <Filter className="w-3 h-3 md:w-4 md:h-4" />
               <span className="hidden sm:inline">Filter</span>
@@ -74,7 +74,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
             <Button 
               type="submit" 
               size="sm" 
-              className="bg-accent hover:bg-accent/90 px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1"
+              className="bg-accent hover:bg-accent/90 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm flex items-center gap-1"
             >
               <Search className="w-3 h-3 md:w-4 md:h-4 sm:hidden" />
               <span className="hidden sm:inline">Search</span>
@@ -85,7 +85,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
 
       {/* Filters */}
       {showFilters && (
-        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div className="bg-white border border-gray-300 rounded-lg p-4 shadow-lg relative z-50">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900 text-sm md:text-base">Filters</h3>
             {hasActiveFilters && (
@@ -103,16 +103,16 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {/* Category Filter */}
-            <div>
+            <div className="relative z-50">
               <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Category</label>
               <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
-                <SelectTrigger className="text-xs md:text-sm">
+                <SelectTrigger className="text-xs md:text-sm bg-white border-gray-300">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-300 shadow-lg z-[100]">
                   <SelectItem value="">All Categories</SelectItem>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
+                    <SelectItem key={category} value={category} className="hover:bg-gray-100">
                       {category}
                     </SelectItem>
                   ))}
@@ -121,16 +121,16 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
             </div>
 
             {/* Brand Filter */}
-            <div>
+            <div className="relative z-50">
               <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Brand</label>
               <Select value={filters.brand || ''} onValueChange={(value) => updateFilter('brand', value || undefined)}>
-                <SelectTrigger className="text-xs md:text-sm">
+                <SelectTrigger className="text-xs md:text-sm bg-white border-gray-300">
                   <SelectValue placeholder="All Brands" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-300 shadow-lg z-[100]">
                   <SelectItem value="">All Brands</SelectItem>
                   {brands.map((brand) => (
-                    <SelectItem key={brand} value={brand}>
+                    <SelectItem key={brand} value={brand} className="hover:bg-gray-100">
                       {brand}
                     </SelectItem>
                   ))}
@@ -146,7 +146,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
                 placeholder="$0"
                 value={filters.minPrice || ''}
                 onChange={(e) => updateFilter('minPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="text-xs md:text-sm"
+                className="text-xs md:text-sm bg-white border-gray-300"
               />
             </div>
 
@@ -157,7 +157,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
                 placeholder="$9999"
                 value={filters.maxPrice || ''}
                 onChange={(e) => updateFilter('maxPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="text-xs md:text-sm"
+                className="text-xs md:text-sm bg-white border-gray-300"
               />
             </div>
           </div>
