@@ -145,7 +145,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
               <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Min Price</label>
               <Input
                 type="number"
-                placeholder="$0"
+                placeholder="UGX 0"
                 value={filters.minPrice || ''}
                 onChange={(e) => updateFilter('minPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
                 className="text-xs md:text-sm bg-white border-gray-300"
@@ -156,7 +156,7 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
               <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Max Price</label>
               <Input
                 type="number"
-                placeholder="$9999"
+                placeholder="UGX 9,999,999"
                 value={filters.maxPrice || ''}
                 onChange={(e) => updateFilter('maxPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
                 className="text-xs md:text-sm bg-white border-gray-300"
