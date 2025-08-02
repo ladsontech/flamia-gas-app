@@ -37,7 +37,9 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
   };
 
   const updateFilter = (key: keyof GadgetFilters, value: any) => {
-    onFilter({ ...filters, [key]: value });
+    // Convert "all" values back to undefined for the filter
+    const filterValue = value === 'all' ? undefined : value;
+    onFilter({ ...filters, [key]: filterValue });
   };
 
   const clearFilters = () => {
@@ -105,12 +107,12 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
             {/* Category Filter */}
             <div className="relative z-50">
               <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Category</label>
-              <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
+              <Select value={filters.category || 'all'} onValueChange={(value) => updateFilter('category', value)}>
                 <SelectTrigger className="text-xs md:text-sm bg-white border-gray-300">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-300 shadow-lg z-[100]">
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all" className="hover:bg-gray-100">All Categories</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category} className="hover:bg-gray-100">
                       {category}
@@ -123,12 +125,12 @@ const GadgetSearch: React.FC<GadgetSearchProps> = ({
             {/* Brand Filter */}
             <div className="relative z-50">
               <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">Brand</label>
-              <Select value={filters.brand || ''} onValueChange={(value) => updateFilter('brand', value || undefined)}>
+              <Select value={filters.brand || 'all'} onValueChange={(value) => updateFilter('brand', value)}>
                 <SelectTrigger className="text-xs md:text-sm bg-white border-gray-300">
                   <SelectValue placeholder="All Brands" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-300 shadow-lg z-[100]">
-                  <SelectItem value="">All Brands</SelectItem>
+                  <SelectItem value="all" className="hover:bg-gray-100">All Brands</SelectItem>
                   {brands.map((brand) => (
                     <SelectItem key={brand} value={brand} className="hover:bg-gray-100">
                       {brand}
