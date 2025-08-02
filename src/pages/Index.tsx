@@ -184,7 +184,7 @@ export default function Index() {
       <div className="min-h-screen pt-16 overflow-x-hidden">
         <div className="lg:hidden">
           <div className="px-4 md:px-6">
-            <div className="flex flex-col gap-3 md:gap-6 my-0 py-1 rounded max-w-full">
+            <div className="flex flex-col gap-3 md:gap-6 my-0 py-0 rounded max-w-full">
               <HeaderSection />
               <ImageCarousel />
               <PromotionsSection />
