@@ -32,7 +32,9 @@ import {
   Download,
   Settings,
   ShoppingBag,
-  Images
+  Images,
+  Menu,
+  X
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -48,6 +50,7 @@ const Admin = () => {
   const [dateFilter, setDateFilter] = useState('today');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
 
   const { 
@@ -242,8 +245,68 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+      {/* Mobile Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm lg:hidden">
+        <div className="flex items-center justify-between h-16 px-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">Flamia Admin</h1>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <OrderNotifications onNewOrder={handleNewOrder} />
+            <Button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="border-t bg-white"
+            >
+              <div className="p-4 space-y-2">
+                <Button
+                  onClick={handleRefresh}
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start"
+                  disabled={ordersLoading}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${ordersLoading ? 'animate-spin' : ''}`} />
+                  Refresh Data
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Desktop Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm hidden lg:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -282,52 +345,87 @@ const Admin = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:grid-cols-6">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Orders
-            </TabsTrigger>
-            <TabsTrigger value="delivery" className="flex items-center gap-2">
-              <Truck className="h-4 w-4" />
-              Delivery
-            </TabsTrigger>
-            <TabsTrigger value="gadgets" className="flex items-center gap-2">
-              <ShoppingBag className="h-4 w-4" />
-              Gadgets
-            </TabsTrigger>
-            <TabsTrigger value="carousel" className="flex items-center gap-2">
-              <Images className="h-4 w-4" />
-              Carousel
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-          </TabsList>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
+          {/* Mobile Tabs - Scrollable */}
+          <div className="lg:hidden">
+            <div className="overflow-x-auto pb-2">
+              <TabsList className="inline-flex w-max min-w-full">
+                <TabsTrigger value="overview" className="flex items-center gap-1 text-xs whitespace-nowrap">
+                  <BarChart3 className="h-3 w-3" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="flex items-center gap-1 text-xs whitespace-nowrap">
+                  <Package className="h-3 w-3" />
+                  Orders
+                </TabsTrigger>
+                <TabsTrigger value="delivery" className="flex items-center gap-1 text-xs whitespace-nowrap">
+                  <Truck className="h-3 w-3" />
+                  Delivery
+                </TabsTrigger>
+                <TabsTrigger value="gadgets" className="flex items-center gap-1 text-xs whitespace-nowrap">
+                  <ShoppingBag className="h-3 w-3" />
+                  Gadgets
+                </TabsTrigger>
+                <TabsTrigger value="carousel" className="flex items-center gap-1 text-xs whitespace-nowrap">
+                  <Images className="h-3 w-3" />
+                  Carousel
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center gap-1 text-xs whitespace-nowrap">
+                  <TrendingUp className="h-3 w-3" />
+                  Analytics
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+
+          {/* Desktop Tabs */}
+          <div className="hidden lg:block">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Orders
+              </TabsTrigger>
+              <TabsTrigger value="delivery" className="flex items-center gap-2">
+                <Truck className="h-4 w-4" />
+                Delivery
+              </TabsTrigger>
+              <TabsTrigger value="gadgets" className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4" />
+                Gadgets
+              </TabsTrigger>
+              <TabsTrigger value="carousel" className="flex items-center gap-2">
+                <Images className="h-4 w-4" />
+                Carousel
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <TabsContent value="overview" className="space-y-4 lg:space-y-6">
+            {/* Stats Cards - Better Mobile Layout */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
                 <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 lg:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-blue-100 text-sm font-medium">Total Orders</p>
-                        <p className="text-3xl font-bold">{stats.total}</p>
+                        <p className="text-blue-100 text-xs lg:text-sm font-medium">Total Orders</p>
+                        <p className="text-xl lg:text-3xl font-bold">{stats.total}</p>
                       </div>
-                      <Package className="h-8 w-8 text-blue-200" />
+                      <Package className="h-6 w-6 lg:h-8 lg:w-8 text-blue-200" />
                     </div>
                   </CardContent>
                 </Card>
@@ -339,13 +437,13 @@ const Admin = () => {
                 transition={{ delay: 0.2 }}
               >
                 <Card className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 lg:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-yellow-100 text-sm font-medium">Pending</p>
-                        <p className="text-3xl font-bold">{stats.pending}</p>
+                        <p className="text-yellow-100 text-xs lg:text-sm font-medium">Pending</p>
+                        <p className="text-xl lg:text-3xl font-bold">{stats.pending}</p>
                       </div>
-                      <Clock className="h-8 w-8 text-yellow-200" />
+                      <Clock className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-200" />
                     </div>
                   </CardContent>
                 </Card>
@@ -357,13 +455,13 @@ const Admin = () => {
                 transition={{ delay: 0.3 }}
               >
                 <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 lg:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-green-100 text-sm font-medium">Completed</p>
-                        <p className="text-3xl font-bold">{stats.completed}</p>
+                        <p className="text-green-100 text-xs lg:text-sm font-medium">Completed</p>
+                        <p className="text-xl lg:text-3xl font-bold">{stats.completed}</p>
                       </div>
-                      <CheckCircle className="h-8 w-8 text-green-200" />
+                      <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 text-green-200" />
                     </div>
                   </CardContent>
                 </Card>
@@ -375,84 +473,97 @@ const Admin = () => {
                 transition={{ delay: 0.4 }}
               >
                 <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 lg:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-purple-100 text-sm font-medium">Revenue</p>
-                        <p className="text-3xl font-bold">UGX {(stats.revenue / 1000000).toFixed(1)}M</p>
+                        <p className="text-purple-100 text-xs lg:text-sm font-medium">Revenue</p>
+                        <p className="text-xl lg:text-3xl font-bold">UGX {(stats.revenue / 1000000).toFixed(1)}M</p>
                       </div>
-                      <TrendingUp className="h-8 w-8 text-purple-200" />
+                      <TrendingUp className="h-6 w-6 lg:h-8 lg:w-8 text-purple-200" />
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
             </div>
 
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button className="h-12 bg-accent hover:bg-accent/90">
-                    <Package className="h-4 w-4 mr-2" />
-                    View All Orders
-                  </Button>
-                  <Button variant="outline" className="h-12">
-                    <Users className="h-4 w-4 mr-2" />
-                    Manage Delivery Team
-                  </Button>
-                  <Button variant="outline" className="h-12">
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Reports
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Mobile-First Layout for Quick Actions and Recent Orders */}
+            <div className="space-y-4 lg:space-y-6">
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
+                    <Settings className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Quick Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
+                    <Button 
+                      className="h-12 bg-accent hover:bg-accent/90 text-sm"
+                      onClick={() => setActiveTab('orders')}
+                    >
+                      <Package className="h-4 w-4 mr-2" />
+                      View All Orders
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-12 text-sm"
+                      onClick={() => setActiveTab('delivery')}
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      Manage Delivery Team
+                    </Button>
+                    <Button variant="outline" className="h-12 text-sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Reports
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-            {/* Recent Orders Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Orders</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {filteredOrders.slice(0, 5).map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
-                          <Package className="w-5 h-5 text-accent" />
+              {/* Recent Orders Preview */}
+              <Card>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base lg:text-lg">Recent Orders</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 lg:space-y-4">
+                    {filteredOrders.slice(0, 5).map((order) => (
+                      <div key={order.id} className="flex items-center justify-between p-3 lg:p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-accent/10 rounded-full flex items-center justify-center">
+                            <Package className="w-4 h-4 lg:w-5 lg:h-5 text-accent" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">Order #{order.id.slice(0, 8)}</p>
+                            <p className="text-xs text-gray-600">{format(new Date(order.created_at), 'MMM d, h:mm a')}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-sm">Order #{order.id.slice(0, 8)}</p>
-                          <p className="text-xs text-gray-600">{format(new Date(order.created_at), 'MMM d, h:mm a')}</p>
-                        </div>
+                        <Badge 
+                          variant={
+                            order.status === 'completed' ? 'default' :
+                            order.status === 'in_progress' ? 'secondary' :
+                            order.status === 'assigned' ? 'outline' : 'destructive'
+                          }
+                          className="text-xs"
+                        >
+                          {order.status || 'pending'}
+                        </Badge>
                       </div>
-                      <Badge variant={
-                        order.status === 'completed' ? 'default' :
-                        order.status === 'in_progress' ? 'secondary' :
-                        order.status === 'assigned' ? 'outline' : 'destructive'
-                      }>
-                        {order.status || 'pending'}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-6">
-            {/* Filters */}
+          <TabsContent value="orders" className="space-y-4 lg:space-y-6">
+            {/* Filters - Better Mobile Layout */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row gap-4">
-                  <div className="flex-1">
+              <CardContent className="p-4 lg:p-6">
+                <div className="space-y-3 lg:space-y-0 lg:flex lg:gap-4">
+                  <div className="lg:flex-1">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <Input
@@ -463,29 +574,31 @@ const Admin = () => {
                       />
                     </div>
                   </div>
-                  <Select value={dateFilter} onValueChange={setDateFilter}>
-                    <SelectTrigger className="w-full lg:w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="week">This Week</SelectItem>
-                      <SelectItem value="month">This Month</SelectItem>
-                      <SelectItem value="all">All Time</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full lg:w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="assigned">Assigned</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="grid grid-cols-2 gap-3 lg:gap-4 lg:flex">
+                    <Select value={dateFilter} onValueChange={setDateFilter}>
+                      <SelectTrigger className="lg:w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="today">Today</SelectItem>
+                        <SelectItem value="week">This Week</SelectItem>
+                        <SelectItem value="month">This Month</SelectItem>
+                        <SelectItem value="all">All Time</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="lg:w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="assigned">Assigned</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -508,26 +621,26 @@ const Admin = () => {
           </TabsContent>
 
           {/* Delivery Tab */}
-          <TabsContent value="delivery" className="space-y-6">
+          <TabsContent value="delivery" className="space-y-4 lg:space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
+                  <Truck className="h-4 w-4 lg:h-5 lg:w-5" />
                   Delivery Team Management
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                   {deliveryMen.map((deliveryMan) => (
                     <Card key={deliveryMan.id} className="border-2">
-                      <CardContent className="p-6">
+                      <CardContent className="p-4 lg:p-6">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center">
-                            <Users className="w-6 h-6 text-accent" />
+                          <div className="w-10 h-10 lg:w-12 lg:h-12 bg-accent/10 rounded-full flex items-center justify-center">
+                            <Users className="w-5 h-5 lg:w-6 lg:h-6 text-accent" />
                           </div>
-                          <div>
-                            <h3 className="font-semibold">{deliveryMan.name}</h3>
-                            <p className="text-sm text-gray-600">{deliveryMan.email}</p>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-sm lg:text-base truncate">{deliveryMan.name}</h3>
+                            <p className="text-xs lg:text-sm text-gray-600 truncate">{deliveryMan.email}</p>
                           </div>
                         </div>
                         <div className="space-y-2">
@@ -557,70 +670,70 @@ const Admin = () => {
           </TabsContent>
 
           {/* Gadgets Tab */}
-          <TabsContent value="gadgets" className="space-y-6">
+          <TabsContent value="gadgets" className="space-y-4 lg:space-y-6">
             <GadgetsManager />
           </TabsContent>
 
           {/* Carousel Tab */}
-          <TabsContent value="carousel" className="space-y-6">
+          <TabsContent value="carousel" className="space-y-4 lg:space-y-6">
             <CarouselManager />
           </TabsContent>
 
           {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="analytics" className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Order Status Distribution</CardTitle>
+                  <CardTitle className="text-base lg:text-lg">Order Status Distribution</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Pending</span>
                       <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-24 lg:w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-yellow-500 rounded-full"
                             style={{ width: `${(stats.pending / stats.total) * 100}%` }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{stats.pending}</span>
+                        <span className="text-sm font-medium w-6 text-right">{stats.pending}</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Assigned</span>
                       <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-24 lg:w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-blue-500 rounded-full"
                             style={{ width: `${(stats.assigned / stats.total) * 100}%` }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{stats.assigned}</span>
+                        <span className="text-sm font-medium w-6 text-right">{stats.assigned}</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">In Progress</span>
                       <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-24 lg:w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-orange-500 rounded-full"
                             style={{ width: `${(stats.inProgress / stats.total) * 100}%` }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{stats.inProgress}</span>
+                        <span className="text-sm font-medium w-6 text-right">{stats.inProgress}</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Completed</span>
                       <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-24 lg:w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-green-500 rounded-full"
                             style={{ width: `${(stats.completed / stats.total) * 100}%` }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{stats.completed}</span>
+                        <span className="text-sm font-medium w-6 text-right">{stats.completed}</span>
                       </div>
                     </div>
                   </div>
@@ -629,7 +742,7 @@ const Admin = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Performance Metrics</CardTitle>
+                  <CardTitle className="text-base lg:text-lg">Performance Metrics</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
