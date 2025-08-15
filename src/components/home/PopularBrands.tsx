@@ -164,7 +164,7 @@ const PopularBrands: React.FC = () => {
         </div>
       </div>
 
-      {/* Desktop Layout - Removed ratings and improved styling */}
+      {/* Desktop Layout - Removed brand info and discount badges */}
       <div className="hidden md:block">
         <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {featuredGadgets.map((gadget) => (
@@ -217,21 +217,7 @@ const PopularBrands: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    
-                    {/* Discount badge */}
-                    {gadget.original_price && gadget.original_price > gadget.price && (
-                      <div className="text-xs text-red-600 font-medium">
-                        Save {Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)}%
-                      </div>
-                    )}
                   </div>
-                  
-                  {/* Brand */}
-                  {gadget.brand && (
-                    <div className="text-xs text-gray-600 mt-1">
-                      {gadget.brand}
-                    </div>
-                  )}
                   
                   {/* Free delivery note */}
                   <div className="text-xs text-green-700 mt-1 font-medium">
