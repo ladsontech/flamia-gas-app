@@ -1,15 +1,17 @@
-import { Flame, Home, ShoppingBag, RotateCw } from "lucide-react";
+
+import { Flame, Home, ShoppingBag, Utensils, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const AppBar = () => {
   const location = useLocation();
 
-  // Desktop navigation items
+  // Desktop navigation items - updated to match bottom nav
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/refill', label: 'Refill', icon: RotateCw },
     { path: '/gadgets', label: 'Gadgets', icon: ShoppingBag },
+    { path: '/foods', label: 'Foods', icon: Utensils },
     { path: '/gas-safety', label: 'Safety', icon: Flame },
+    { path: '/account', label: 'Account', icon: User },
   ];
 
   return (
