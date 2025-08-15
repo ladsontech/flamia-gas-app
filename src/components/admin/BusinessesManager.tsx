@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit2, Trash2, Store } from 'lucide-react';
+import { Plus, Edit2, Trash2, Store, RefreshCw, AlertCircle } from 'lucide-react';
 import { Business } from '@/types/business';
 import { fetchBusinesses, createBusiness, updateBusiness, deleteBusiness } from '@/services/businessService';
 import ImageUpload from './ImageUpload';
@@ -15,6 +15,7 @@ import ImageUpload from './ImageUpload';
 const BusinessesManager: React.FC = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,13 +35,23 @@ const BusinessesManager: React.FC = () => {
 
   const loadBusinesses = async () => {
     setLoading(true);
+    setError(null);
     try {
+      console.log("Admin: Loading businesses...");
       const data = await fetchBusinesses();
+      console.log("Admin: Businesses loaded:", data);
       setBusinesses(data);
+      
+      if (data.length === 0) {
+        setError("No businesses found. Create your first business!");
+      }
     } catch (error) {
+      console.error('Admin: Error loading businesses:', error);
+      const errorMsg = "Failed to load businesses";
+      setError(errorMsg);
       toast({
         title: "Error",
-        description: "Failed to load businesses",
+        description: errorMsg,
         variant: "destructive"
       });
     } finally {
@@ -70,6 +81,7 @@ const BusinessesManager: React.FC = () => {
       resetForm();
       loadBusinesses();
     } catch (error) {
+      console.error("Error saving business:", error);
       toast({
         title: "Error",
         description: "Failed to save business",
@@ -105,6 +117,7 @@ const BusinessesManager: React.FC = () => {
       });
       loadBusinesses();
     } catch (error) {
+      console.error("Error deleting business:", error);
       toast({
         title: "Error",
         description: "Failed to delete business",
@@ -130,11 +143,25 @@ const BusinessesManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Food Businesses</h2>
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Business
-        </Button>
+        <div>
+          <h2 className="text-2xl font-bold">Food Businesses</h2>
+          <p className="text-gray-600">Manage food businesses and restaurants</p>
+        </div>
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={loadBusinesses}
+            disabled={loading}
+          >
+            <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setShowForm(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Business
+          </Button>
+        </div>
       </div>
 
       {showForm && (
@@ -154,6 +181,7 @@ const BusinessesManager: React.FC = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    placeholder="e.g., Pizza Palace"
                   />
                 </div>
                 <div>
@@ -163,6 +191,7 @@ const BusinessesManager: React.FC = () => {
                     value={formData.location}
                     onChange={(e) => setFormData({...formData, location: e.target.value})}
                     required
+                    placeholder="e.g., Kampala, Uganda"
                   />
                 </div>
                 <div>
@@ -171,7 +200,7 @@ const BusinessesManager: React.FC = () => {
                     id="contact"
                     value={formData.contact}
                     onChange={(e) => setFormData({...formData, contact: e.target.value})}
-                    placeholder="+256..."
+                    placeholder="+256700000000"
                     required
                   />
                 </div>
@@ -184,6 +213,7 @@ const BusinessesManager: React.FC = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={3}
+                  placeholder="Brief description of the business..."
                 />
               </div>
 
@@ -203,7 +233,7 @@ const BusinessesManager: React.FC = () => {
                     checked={formData.is_featured}
                     onCheckedChange={(checked) => setFormData({...formData, is_featured: checked})}
                   />
-                  <Label htmlFor="featured">Featured</Label>
+                  <Label htmlFor="featured">Featured (appears at top)</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -228,57 +258,79 @@ const BusinessesManager: React.FC = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {businesses.map((business) => (
-          <Card key={business.id}>
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <Store className="w-4 h-4" />
-                  <h3 className="font-semibold">{business.name}</h3>
+      {loading && !showForm && (
+        <div className="text-center py-12">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-500">Loading businesses...</p>
+        </div>
+      )}
+
+      {error && !loading && !showForm && (
+        <div className="text-center py-12">
+          <AlertCircle className="w-12 h-12 text-orange-400 mx-auto mb-4" />
+          <p className="text-orange-600 mb-4">{error}</p>
+          <Button 
+            variant="outline" 
+            onClick={loadBusinesses}
+          >
+            Try again
+          </Button>
+        </div>
+      )}
+
+      {!loading && !error && businesses.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {businesses.map((business) => (
+            <Card key={business.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <Store className="w-4 h-4" />
+                    <h3 className="font-semibold">{business.name}</h3>
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(business)}
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDelete(business.id)}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex space-x-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(business)}
-                  >
-                    <Edit2 className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDelete(business.id)}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
-              
-              <p className="text-sm text-gray-600 mb-1">{business.location}</p>
-              <p className="text-sm text-gray-600 mb-2">{business.contact}</p>
-              {business.description && (
-                <p className="text-xs text-gray-500 mb-2">{business.description}</p>
-              )}
-              
-              <div className="flex space-x-2">
-                {business.is_featured && (
-                  <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                    Featured
-                  </span>
+                
+                <p className="text-sm text-gray-600 mb-1">{business.location}</p>
+                <p className="text-sm text-gray-600 mb-2">{business.contact}</p>
+                {business.description && (
+                  <p className="text-xs text-gray-500 mb-2">{business.description}</p>
                 )}
-                <span className={`text-xs px-2 py-1 rounded ${
-                  business.is_active 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {business.is_active ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                
+                <div className="flex space-x-2">
+                  {business.is_featured && (
+                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                      Featured
+                    </span>
+                  )}
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    business.is_active 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {business.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

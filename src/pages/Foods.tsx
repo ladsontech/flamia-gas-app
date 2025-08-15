@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Phone, Star, RefreshCw } from 'lucide-react';
+import { Search, MapPin, Phone, Star, RefreshCw, AlertCircle } from 'lucide-react';
 import { Business, BusinessProduct } from '@/types/business';
 import { fetchBusinesses, fetchBusinessProducts } from '@/services/businessService';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +14,7 @@ const Foods: React.FC = () => {
   const [products, setProducts] = useState<BusinessProduct[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -22,6 +23,7 @@ const Foods: React.FC = () => {
 
   const loadBusinesses = async () => {
     setLoading(true);
+    setError(null);
     try {
       console.log("Loading businesses...");
       const data = await fetchBusinesses();
@@ -29,6 +31,7 @@ const Foods: React.FC = () => {
       setBusinesses(data);
       
       if (data.length === 0) {
+        setError("No food businesses are available at the moment.");
         toast({
           title: "No businesses found",
           description: "No food businesses are available at the moment.",
@@ -36,9 +39,11 @@ const Foods: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading businesses:', error);
+      const errorMsg = "Failed to load businesses. Please try again.";
+      setError(errorMsg);
       toast({
         title: "Error",
-        description: "Failed to load businesses. Please try again.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -48,6 +53,7 @@ const Foods: React.FC = () => {
 
   const loadProducts = async (businessId: string) => {
     setLoading(true);
+    setError(null);
     try {
       console.log("Loading products for business:", businessId);
       const data = await fetchBusinessProducts(businessId);
@@ -75,6 +81,7 @@ const Foods: React.FC = () => {
   const handleBusinessSelect = (business: Business) => {
     console.log("Selecting business:", business);
     setSelectedBusiness(business);
+    setProducts([]); // Clear products first
     loadProducts(business.id);
   };
 
@@ -153,7 +160,7 @@ const Foods: React.FC = () => {
             </div>
           )}
 
-          {!loading && (
+          {!loading && filteredProducts.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredProducts.map((product) => (
                 <Card key={product.id} className="overflow-hidden">
@@ -163,6 +170,10 @@ const Foods: React.FC = () => {
                         src={product.image_url}
                         alt={product.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.log("Image failed to load:", product.image_url);
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                       {product.is_featured && (
                         <div className="absolute top-2 left-2">
@@ -214,6 +225,7 @@ const Foods: React.FC = () => {
 
           {!loading && filteredProducts.length === 0 && (
             <div className="text-center py-12">
+              <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500">No products found</p>
               {searchTerm && (
                 <Button 
@@ -268,7 +280,20 @@ const Foods: React.FC = () => {
           </div>
         )}
 
-        {!loading && (
+        {error && !loading && (
+          <div className="text-center py-12">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button 
+              variant="outline" 
+              onClick={loadBusinesses}
+            >
+              Try again
+            </Button>
+          </div>
+        )}
+
+        {!loading && !error && filteredBusinesses.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredBusinesses.map((business) => (
               <Card 
@@ -282,6 +307,10 @@ const Foods: React.FC = () => {
                       src={business.image_url}
                       alt={business.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.log("Business image failed to load:", business.image_url);
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
                     {business.is_featured && (
                       <div className="absolute top-2 left-2">
@@ -315,28 +344,28 @@ const Foods: React.FC = () => {
           </div>
         )}
 
-        {!loading && filteredBusinesses.length === 0 && (
+        {!loading && !error && businesses.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">
-              {businesses.length === 0 ? "No businesses found" : "No businesses match your search"}
-            </p>
-            {searchTerm && (
-              <Button 
-                variant="outline" 
-                onClick={() => setSearchTerm('')}
-              >
-                Clear search
-              </Button>
-            )}
-            {businesses.length === 0 && (
-              <Button 
-                variant="outline" 
-                className="ml-2"
-                onClick={loadBusinesses}
-              >
-                Try again
-              </Button>
-            )}
+            <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 mb-4">No businesses found</p>
+            <Button 
+              variant="outline" 
+              onClick={loadBusinesses}
+            >
+              Try again
+            </Button>
+          </div>
+        )}
+
+        {!loading && !error && filteredBusinesses.length === 0 && businesses.length > 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">No businesses match your search</p>
+            <Button 
+              variant="outline" 
+              onClick={() => setSearchTerm('')}
+            >
+              Clear search
+            </Button>
           </div>
         )}
       </div>
