@@ -1,11 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
 
 interface Gadget {
   id: string;
@@ -101,9 +98,9 @@ const PopularBrands: React.FC = () => {
           <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
           <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="bg-gray-200 rounded-lg h-64 md:h-80 animate-pulse"></div>
+            <div key={i} className="bg-gray-200 rounded-lg h-80 animate-pulse"></div>
           ))}
         </div>
       </div>
@@ -130,16 +127,16 @@ const PopularBrands: React.FC = () => {
         </button>
       </div>
       
-      {/* Mobile Grid Layout */}
+      {/* Mobile Grid Layout - 2 columns */}
       <div className="block md:hidden">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {featuredGadgets.slice(0, 6).map((gadget) => (
             <Card 
               key={gadget.id}
               className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
               onClick={() => handleGadgetClick(gadget)}
             >
-              <div className="aspect-square bg-gray-50 flex items-center justify-center p-3">
+              <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
                 <img 
                   src={gadget.image_url || '/images/gadget-fallback.jpg'} 
                   alt={gadget.name} 
@@ -152,7 +149,7 @@ const PopularBrands: React.FC = () => {
                   {gadget.name}
                 </h3>
                 <div className="space-y-1">
-                  <div className="text-sm font-semibold text-accent">
+                  <div className="text-lg font-bold text-accent">
                     {formatPrice(gadget.price)}
                   </div>
                   {gadget.original_price && gadget.original_price > gadget.price && (
@@ -167,47 +164,59 @@ const PopularBrands: React.FC = () => {
         </div>
       </div>
 
-      {/* Desktop Amazon-style Layout */}
+      {/* Desktop Amazon-style Layout - Better proportions */}
       <div className="hidden md:block">
-        <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6">
+        <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {featuredGadgets.map((gadget) => (
             <Card 
               key={gadget.id}
               className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
               onClick={() => handleGadgetClick(gadget)}
             >
-              <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+              {/* Product Image Container */}
+              <div className="aspect-square bg-gray-50 flex items-center justify-center p-6 relative">
                 <img 
                   src={gadget.image_url || '/images/gadget-fallback.jpg'} 
                   alt={gadget.name} 
                   className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                   loading="lazy"
                 />
+                {gadget.condition === 'brand_new' && (
+                  <div className="absolute top-2 left-2">
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                      New
+                    </span>
+                  </div>
+                )}
               </div>
+              
+              {/* Product Details */}
               <div className="p-4 space-y-3">
-                <h3 className="font-medium text-sm lg:text-base line-clamp-2 text-gray-900 group-hover:text-accent transition-colors leading-tight">
+                <h3 className="font-medium text-base line-clamp-2 text-gray-900 group-hover:text-accent transition-colors leading-tight min-h-[3rem]">
                   {gadget.name}
                 </h3>
-                <div className="space-y-1">
-                  <div className="text-base lg:text-lg font-bold text-accent">
+                
+                {/* Price Section */}
+                <div className="space-y-2">
+                  <div className="text-xl font-bold text-accent">
                     {formatPrice(gadget.price)}
                   </div>
                   {gadget.original_price && gadget.original_price > gadget.price && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm text-gray-500 line-through">
                         {formatPrice(gadget.original_price)}
                       </span>
                       <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-medium">
-                        Save {Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)}%
+                        -{Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)}%
                       </span>
                     </div>
                   )}
                 </div>
-                {gadget.condition === 'brand_new' && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
-                      Brand New
-                    </span>
+                
+                {/* Brand/Category if available */}
+                {gadget.brand && (
+                  <div className="text-xs text-gray-600 font-medium">
+                    {gadget.brand}
                   </div>
                 )}
               </div>
