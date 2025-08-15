@@ -5,7 +5,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
 import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Refill from "./pages/Refill";
@@ -32,19 +31,6 @@ import TestingHelper from "./components/TestingHelper";
 const queryClient = new QueryClient();
 
 function App() {
-  useEffect(() => {
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
-        });
-    }
-  }, []);
-
   const handleUpdate = () => {
     window.location.reload();
   };
