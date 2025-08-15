@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Search, MapPin, Phone, Star, RefreshCw, AlertCircle } from 'lucide-react';
 import { Business, BusinessProduct } from '@/types/business';
 import { fetchBusinesses, fetchBusinessProducts } from '@/services/businessService';
@@ -165,7 +166,7 @@ const Foods: React.FC = () => {
               {filteredProducts.map((product) => (
                 <Card key={product.id} className="overflow-hidden">
                   {product.image_url && (
-                    <div className="aspect-video relative">
+                    <div className="aspect-square relative">
                       <img
                         src={product.image_url}
                         alt={product.name}
@@ -301,38 +302,38 @@ const Foods: React.FC = () => {
                 className="cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => handleBusinessSelect(business)}
               >
-                {business.image_url && (
-                  <div className="aspect-video relative">
-                    <img
-                      src={business.image_url}
-                      alt={business.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.log("Business image failed to load:", business.image_url);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    {business.is_featured && (
-                      <div className="absolute top-2 left-2">
-                        <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded flex items-center">
-                          <Star className="w-3 h-3 mr-1 fill-current" />
-                          Featured
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">{business.name}</h3>
-                  
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{business.location}</span>
+                  <div className="flex items-start space-x-4 mb-3">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage 
+                        src={business.image_url} 
+                        alt={business.name}
+                        onError={(e) => {
+                          console.log("Business image failed to load:", business.image_url);
+                        }}
+                      />
+                      <AvatarFallback>
+                        {business.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-semibold truncate">{business.name}</h3>
+                        {business.is_featured && (
+                          <Star className="w-4 h-4 text-yellow-500 fill-current flex-shrink-0" />
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center text-gray-600 mb-2">
+                        <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                        <span className="text-sm truncate">{business.location}</span>
+                      </div>
+                    </div>
                   </div>
                   
                   {business.description && (
-                    <p className="text-gray-600 text-sm mb-3">{business.description}</p>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{business.description}</p>
                   )}
                   
                   <Button className="w-full" size="sm">
