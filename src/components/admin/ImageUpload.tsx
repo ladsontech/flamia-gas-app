@@ -9,7 +9,7 @@ import { Upload, X, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ImageUploadProps {
-  bucket: 'gadgets' | 'carousel';
+  bucket: 'gadgets' | 'carousel' | 'promotions';
   onUploadComplete?: (url: string) => void;
   currentImage?: string;
   title?: string;

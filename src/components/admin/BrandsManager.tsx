@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ interface Brand {
   refill_price_12kg: string | null;
 }
 
-export const BrandsManager = () => {
+const BrandsManager = () => {
   const { toast } = useToast();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrandIndex, setSelectedBrandIndex] = useState<number | null>(null);
@@ -158,3 +159,5 @@ export const BrandsManager = () => {
     </div>
   );
 };
+
+export default BrandsManager;

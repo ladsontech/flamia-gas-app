@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import AdminAppBar from '@/components/admin/AdminAppBar';
-import AdminOrdersView from '@/components/admin/AdminOrdersView';
+import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
 import BrandsManager from '@/components/admin/BrandsManager';
 import GadgetsManager from '@/components/admin/GadgetsManager';
 import CarouselManager from '@/components/admin/CarouselManager';
@@ -114,7 +114,7 @@ const Admin: React.FC = () => {
           </TabsList>
           
           <TabsContent value="orders">
-            <AdminOrdersView />
+            <AdminOrdersView orders={[]} deliveryMen={[]} onOrdersUpdate={() => {}} />
           </TabsContent>
           
           <TabsContent value="promotions">
