@@ -229,31 +229,31 @@ export default function Index() {
         </div>
 
         <div className="hidden lg:block">
-          <div className="max-w-[95rem] mx-auto px-6 xl:px-8">
-            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 lg:p-10 xl:p-12 mb-6 lg:mb-8 border border-accent/20">
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 xl:gap-12">
-                <div className="xl:col-span-3">
+          <div className="max-w-[1400px] mx-auto px-4 xl:px-6">
+            <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 rounded-2xl p-8 mb-8 border border-accent/20">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-2">
                   <div className="text-center xl:text-left">
-                    <h1 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 lg:mb-6 text-accent leading-tight">
+                    <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-6 text-accent leading-tight">
                       Uganda's #1 Gas Delivery Service
                     </h1>
-                    <p className="text-lg lg:text-xl xl:text-2xl text-gray-700 mb-6 lg:mb-8 max-w-4xl xl:max-w-none leading-relaxed">
+                    <p className="text-xl xl:text-2xl text-gray-700 mb-8 leading-relaxed">
                       Fast, reliable, and affordable gas delivery to your doorstep in Kampala and nearby areas
                     </p>
                     <div className="flex flex-wrap justify-center xl:justify-start gap-4">
-                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-bold text-base lg:text-lg shadow-lg" onClick={() => navigate('/order')}>
+                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg" onClick={() => navigate('/order')}>
                         Order Gas Now
                       </Button>
-                      <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold text-base lg:text-lg" onClick={() => window.open("https://wa.me/256787899483", "_blank")}>
+                      <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/10 px-8 py-4 rounded-xl font-semibold text-lg" onClick={() => window.open("https://wa.me/256787899483", "_blank")}>
                         Get Help
                       </Button>
                     </div>
                   </div>
                 </div>
-                <div className="xl:col-span-2">
-                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 lg:p-6 border border-white/20">
-                    <h3 className="font-bold text-lg lg:text-xl mb-4 text-gray-900 flex items-center gap-2">
-                      <Star size={20} className="text-accent" />
+                <div className="xl:col-span-1">
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <h3 className="font-bold text-xl mb-4 text-gray-900 flex items-center gap-2">
+                      <Star size={24} className="text-accent" />
                       Featured Products
                     </h3>
                     <div className="overflow-hidden">
@@ -264,60 +264,66 @@ export default function Index() {
               </div>
             </div>
 
-            <div className="grid grid-cols-12 gap-8 lg:gap-10">
-              <div className="col-span-12 lg:col-span-4 xl:col-span-3">
-                <div className="sticky top-24 space-y-6 lg:space-y-8">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-3">
+                <div className="sticky top-24 space-y-6">
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4 lg:p-6">
-                      <div className="flex items-center gap-2 text-white">
-                        <Flame size={20} />
-                        <h3 className="font-bold text-lg">Special Offers</h3>
+                    <div className="bg-gradient-to-r from-orange-500 to-red-500 p-6">
+                      <div className="flex items-center gap-3 text-white">
+                        <Flame size={24} />
+                        <div>
+                          <h3 className="font-bold text-xl">Special Offers</h3>
+                          <p className="text-white/90 text-sm">Full kits & packages</p>
+                        </div>
                       </div>
-                      <p className="text-white/90 text-sm mt-1">Full kits & packages</p>
                     </div>
-                    <div className="p-4 lg:p-6">
+                    <div className="p-6">
                       <PromotionsSection />
                     </div>
                   </div>
 
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="bg-accent p-4 lg:p-6">
-                      <div className="flex items-center gap-2 text-white">
-                        <Sparkles size={20} />
-                        <h3 className="font-bold text-lg">Featured Deals</h3>
+                    <div className="bg-accent p-6">
+                      <div className="flex items-center gap-3 text-white">
+                        <Sparkles size={24} />
+                        <div>
+                          <h3 className="font-bold text-xl">Featured Deals</h3>
+                          <p className="text-white/90 text-sm">Limited time offers</p>
+                        </div>
                       </div>
-                      <p className="text-white/90 text-sm mt-1">Limited time offers</p>
                     </div>
-                    <div className="p-4 lg:p-6">
+                    <div className="p-6">
                       <ImageCarousel />
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
-                    <h3 className="font-bold text-lg mb-4 text-gray-900">Why Choose Flamia?</h3>
-                    <div className="space-y-4">
-                      {features.map((feature, index) => <div key={index} className="flex items-start gap-3">
-                          <div className="bg-accent/10 p-2 rounded-lg">
-                            <feature.icon size={18} className="text-accent" />
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <h3 className="font-bold text-xl mb-6 text-gray-900">Why Choose Flamia?</h3>
+                    <div className="space-y-6">
+                      {features.map((feature, index) => (
+                        <div key={index} className="flex items-start gap-4">
+                          <div className="bg-accent/10 p-3 rounded-lg flex-shrink-0">
+                            <feature.icon size={24} className="text-accent" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-sm text-gray-900">{feature.title}</h4>
-                            <p className="text-xs text-gray-600 mt-1">{feature.desc}</p>
+                            <h4 className="font-semibold text-base text-gray-900 mb-1">{feature.title}</h4>
+                            <p className="text-sm text-gray-600">{feature.desc}</p>
                           </div>
-                        </div>)}
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="bg-accent/10 rounded-2xl p-6 lg:p-8 border border-accent/20">
+                  <div className="bg-accent/10 rounded-2xl p-8 border border-accent/20">
                     <div className="text-center">
-                      <div className="bg-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 shadow-md">
-                        <Sparkles className="text-accent w-6 h-6" />
+                      <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-md">
+                        <Sparkles className="text-accent w-8 h-8" />
                       </div>
-                      <h3 className="font-bold text-lg mb-2">Need Expert Advice?</h3>
-                      <p className="text-sm text-gray-600 mb-4">
+                      <h3 className="font-bold text-xl mb-3">Need Expert Advice?</h3>
+                      <p className="text-sm text-gray-600 mb-6">
                         Get personalized gas cylinder recommendations from our experts
                       </p>
-                      <Button className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-3 rounded-xl shadow-lg text-sm" onClick={() => window.open("https://wa.me/256787899483", "_blank")}>
+                      <Button className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-4 rounded-xl shadow-lg text-base" onClick={() => window.open("https://wa.me/256787899483", "_blank")}>
                         Chat with Gas Expert
                       </Button>
                     </div>
@@ -325,24 +331,28 @@ export default function Index() {
                 </div>
               </div>
 
-              <div className="col-span-12 lg:col-span-8 xl:col-span-9">
-                <div className="space-y-8 lg:space-y-10">
-                  <div className="text-center">
-                    <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-4 text-slate-950">
+              <div className="col-span-9">
+                <div className="space-y-8">
+                  <div className="text-center mb-8">
+                    <h2 className="text-3xl xl:text-4xl font-bold mb-4 text-slate-950">
                       Premium Gas Cylinders
                     </h2>
-                    <p className="text-base lg:text-lg xl:text-xl text-muted-foreground mb-6 leading-relaxed">
+                    <p className="text-lg xl:text-xl text-muted-foreground leading-relaxed max-w-4xl mx-auto">
                       Choose from our wide selection of certified gas cylinders with free same-day delivery across Kampala
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
-                    {isLoading ? <div className="flex justify-center py-16">
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    {isLoading ? (
+                      <div className="flex justify-center py-16">
                         <div className="animate-spin h-12 w-12 border-4 border-accent rounded-full border-t-transparent"></div>
-                      </div> : <BrandsGrid />}
+                      </div>
+                    ) : (
+                      <BrandsGrid />
+                    )}
                   </div>
 
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                     <AccessoriesSection />
                   </div>
                 </div>
