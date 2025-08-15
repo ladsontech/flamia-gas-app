@@ -42,7 +42,7 @@ const PopularBrands: React.FC = () => {
         .eq('in_stock', true)
         .eq('featured', true)
         .order('created_at', { ascending: false })
-        .limit(6);
+        .limit(8);
 
       if (error) throw error;
       
@@ -63,7 +63,7 @@ const PopularBrands: React.FC = () => {
           .select('*')
           .eq('in_stock', true)
           .order('created_at', { ascending: false })
-          .limit(6);
+          .limit(8);
 
         if (error) throw error;
         
@@ -85,16 +85,26 @@ const PopularBrands: React.FC = () => {
     navigate(`/gadgets/${gadget.id}`);
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-UG', {
+      style: 'currency',
+      currency: 'UGX',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="h-4 bg-gray-200 rounded mb-2 w-32"></div>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-20 h-48 md:h-56 bg-gray-200 rounded"></div>
-            ))}
-          </div>
+          <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="bg-gray-200 rounded-lg h-64 md:h-80 animate-pulse"></div>
+          ))}
         </div>
       </div>
     );
@@ -109,115 +119,101 @@ const PopularBrands: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900">Featured Products</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">Featured Products</h2>
         <button 
           onClick={() => navigate('/gadgets')}
-          className="text-sm text-accent hover:text-accent/80 font-medium"
+          className="text-sm text-accent hover:text-accent/80 font-medium hover:underline"
         >
-          View All
+          See all
         </button>
       </div>
       
+      {/* Mobile Grid Layout */}
       <div className="block md:hidden">
-        {/* Mobile Carousel */}
-        <Carousel
-          plugins={[
-            Autoplay({
-              delay: 3000,
-            }),
-          ]}
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-1">
-            {featuredGadgets.map((gadget) => (
-              <CarouselItem key={gadget.id} className="pl-1 basis-1/3 sm:basis-1/4">
-                <Card 
-                  className="overflow-hidden flex flex-col h-48 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-1"
-                  onClick={() => handleGadgetClick(gadget)}
-                >
-                  <div className="relative h-28 bg-gray-50 rounded-sm flex items-center justify-center mb-1">
-                    <img 
-                      src={gadget.image_url || '/images/gadget-fallback.jpg'} 
-                      alt={gadget.name} 
-                      className="w-full h-full object-cover rounded-sm"
-                      loading="lazy"
-                    />
+        <div className="grid grid-cols-2 gap-3">
+          {featuredGadgets.slice(0, 6).map((gadget) => (
+            <Card 
+              key={gadget.id}
+              className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
+              onClick={() => handleGadgetClick(gadget)}
+            >
+              <div className="aspect-square bg-gray-50 flex items-center justify-center p-3">
+                <img 
+                  src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                  alt={gadget.name} 
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-3 space-y-2">
+                <h3 className="font-medium text-sm line-clamp-2 text-gray-900 group-hover:text-accent transition-colors">
+                  {gadget.name}
+                </h3>
+                <div className="space-y-1">
+                  <div className="text-sm font-semibold text-accent">
+                    {formatPrice(gadget.price)}
                   </div>
-                  <div className="px-1 pb-1 flex-1 flex flex-col justify-end">
-                    <h3 className="font-medium text-[9px] line-clamp-1 mb-0.5 leading-tight">
-                      {gadget.name}
-                    </h3>
-                    <div className="text-[9px] font-semibold text-accent">
-                      {new Intl.NumberFormat('en-UG', {
-                        style: 'currency',
-                        currency: 'UGX',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }).format(gadget.price)}
+                  {gadget.original_price && gadget.original_price > gadget.price && (
+                    <div className="text-xs text-gray-500 line-through">
+                      {formatPrice(gadget.original_price)}
                     </div>
-                  </div>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
 
+      {/* Desktop Amazon-style Layout */}
       <div className="hidden md:block">
-        {/* Desktop Carousel */}
-        <Carousel
-          plugins={[
-            Autoplay({
-              delay: 4000,
-            }),
-          ]}
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {featuredGadgets.map((gadget) => (
-              <CarouselItem key={gadget.id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                <Card 
-                  className="overflow-hidden flex flex-col h-72 lg:h-80 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 p-3"
-                  onClick={() => handleGadgetClick(gadget)}
-                >
-                  <div className="relative h-48 lg:h-52 bg-gray-50 rounded-sm flex items-center justify-center mb-3">
-                    <img 
-                      src={gadget.image_url || '/images/gadget-fallback.jpg'} 
-                      alt={gadget.name} 
-                      className="w-full h-full object-cover rounded-sm"
-                      loading="lazy"
-                    />
+        <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6">
+          {featuredGadgets.map((gadget) => (
+            <Card 
+              key={gadget.id}
+              className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+              onClick={() => handleGadgetClick(gadget)}
+            >
+              <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                <img 
+                  src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                  alt={gadget.name} 
+                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-4 space-y-3">
+                <h3 className="font-medium text-sm lg:text-base line-clamp-2 text-gray-900 group-hover:text-accent transition-colors leading-tight">
+                  {gadget.name}
+                </h3>
+                <div className="space-y-1">
+                  <div className="text-base lg:text-lg font-bold text-accent">
+                    {formatPrice(gadget.price)}
                   </div>
-                  <div className="px-2 pb-2 flex-1 flex flex-col justify-end">
-                    <h3 className="font-medium text-sm lg:text-base line-clamp-2 mb-2 leading-tight">
-                      {gadget.name}
-                    </h3>
-                    <div className="text-sm lg:text-base font-semibold text-accent">
-                      {new Intl.NumberFormat('en-UG', {
-                        style: 'currency',
-                        currency: 'UGX',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }).format(gadget.price)}
+                  {gadget.original_price && gadget.original_price > gadget.price && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500 line-through">
+                        {formatPrice(gadget.original_price)}
+                      </span>
+                      <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-medium">
+                        Save {Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)}%
+                      </span>
                     </div>
+                  )}
+                </div>
+                {gadget.condition === 'brand_new' && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                      Brand New
+                    </span>
                   </div>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
