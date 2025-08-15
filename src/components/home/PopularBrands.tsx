@@ -164,26 +164,30 @@ const PopularBrands: React.FC = () => {
         </div>
       </div>
 
-      {/* Desktop Amazon-style Layout - Better proportions */}
+      {/* Desktop Amazon-style Layout */}
       <div className="hidden md:block">
-        <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {featuredGadgets.map((gadget) => (
             <Card 
               key={gadget.id}
-              className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+              className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer h-full flex flex-col"
               onClick={() => handleGadgetClick(gadget)}
             >
-              {/* Product Image Container */}
-              <div className="aspect-square bg-gray-50 flex items-center justify-center p-6 relative">
-                <img 
-                  src={gadget.image_url || '/images/gadget-fallback.jpg'} 
-                  alt={gadget.name} 
-                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
+              {/* Product Image Container - Amazon style square aspect ratio */}
+              <div className="relative bg-white p-4 flex-shrink-0">
+                <div className="aspect-square relative overflow-hidden">
+                  <img 
+                    src={gadget.image_url || '/images/gadget-fallback.jpg'} 
+                    alt={gadget.name} 
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+                
+                {/* Condition Badge */}
                 {gadget.condition === 'brand_new' && (
                   <div className="absolute top-2 left-2">
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">
                       New
                     </span>
                   </div>
@@ -191,34 +195,57 @@ const PopularBrands: React.FC = () => {
               </div>
               
               {/* Product Details */}
-              <div className="p-4 space-y-3">
-                <h3 className="font-medium text-base line-clamp-2 text-gray-900 group-hover:text-accent transition-colors leading-tight min-h-[3rem]">
-                  {gadget.name}
-                </h3>
-                
-                {/* Price Section */}
-                <div className="space-y-2">
-                  <div className="text-xl font-bold text-accent">
-                    {formatPrice(gadget.price)}
-                  </div>
-                  {gadget.original_price && gadget.original_price > gadget.price && (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm text-gray-500 line-through">
-                        {formatPrice(gadget.original_price)}
-                      </span>
-                      <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-medium">
-                        -{Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)}%
-                      </span>
-                    </div>
-                  )}
+              <div className="p-3 flex-grow flex flex-col justify-between">
+                {/* Product Title */}
+                <div className="mb-2">
+                  <h3 className="text-sm font-normal text-gray-900 line-clamp-2 leading-tight group-hover:text-accent transition-colors">
+                    {gadget.name}
+                  </h3>
                 </div>
                 
-                {/* Brand/Category if available */}
-                {gadget.brand && (
-                  <div className="text-xs text-gray-600 font-medium">
-                    {gadget.brand}
+                {/* Price Section */}
+                <div className="mt-auto">
+                  {/* Ratings placeholder (Amazon style) */}
+                  <div className="flex items-center mb-1">
+                    <div className="flex text-orange-400 text-xs">
+                      ★★★★★
+                    </div>
+                    <span className="text-xs text-gray-500 ml-1">(4.5)</span>
                   </div>
-                )}
+                  
+                  {/* Price */}
+                  <div className="space-y-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-lg font-bold text-gray-900">
+                        {formatPrice(gadget.price)}
+                      </span>
+                      {gadget.original_price && gadget.original_price > gadget.price && (
+                        <span className="text-sm text-gray-500 line-through">
+                          {formatPrice(gadget.original_price)}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Discount badge */}
+                    {gadget.original_price && gadget.original_price > gadget.price && (
+                      <div className="text-xs text-red-600 font-medium">
+                        Save {Math.round(((gadget.original_price - gadget.price) / gadget.original_price) * 100)}%
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Brand */}
+                  {gadget.brand && (
+                    <div className="text-xs text-gray-600 mt-1">
+                      {gadget.brand}
+                    </div>
+                  )}
+                  
+                  {/* Free delivery note */}
+                  <div className="text-xs text-green-700 mt-1 font-medium">
+                    FREE delivery
+                  </div>
+                </div>
               </div>
             </Card>
           ))}
