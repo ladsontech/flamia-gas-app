@@ -1,5 +1,5 @@
 
-import React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -257,9 +257,9 @@ declare global {
 
 const root = createRoot(container);
 
-// Render the app with proper React context - wrap in StrictMode here instead of App.tsx
+// Render the app with proper React context - use named import for StrictMode
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>
+  </StrictMode>
 );
