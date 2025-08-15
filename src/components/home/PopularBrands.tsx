@@ -164,7 +164,7 @@ const PopularBrands: React.FC = () => {
         </div>
       </div>
 
-      {/* Desktop Amazon-style Layout */}
+      {/* Desktop Layout - Removed ratings and improved styling */}
       <div className="hidden md:block">
         <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {featuredGadgets.map((gadget) => (
@@ -173,7 +173,7 @@ const PopularBrands: React.FC = () => {
               className="group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer h-full flex flex-col"
               onClick={() => handleGadgetClick(gadget)}
             >
-              {/* Product Image Container - Amazon style square aspect ratio */}
+              {/* Product Image Container */}
               <div className="relative bg-white p-4 flex-shrink-0">
                 <div className="aspect-square relative overflow-hidden">
                   <img 
@@ -205,14 +205,6 @@ const PopularBrands: React.FC = () => {
                 
                 {/* Price Section */}
                 <div className="mt-auto">
-                  {/* Ratings placeholder (Amazon style) */}
-                  <div className="flex items-center mb-1">
-                    <div className="flex text-orange-400 text-xs">
-                      ★★★★★
-                    </div>
-                    <span className="text-xs text-gray-500 ml-1">(4.5)</span>
-                  </div>
-                  
                   {/* Price */}
                   <div className="space-y-1">
                     <div className="flex items-baseline gap-2">
