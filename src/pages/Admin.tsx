@@ -12,6 +12,8 @@ import BrandsManager from '@/components/admin/BrandsManager';
 import GadgetsManager from '@/components/admin/GadgetsManager';
 import CarouselManager from '@/components/admin/CarouselManager';
 import PromotionsManager from '@/components/admin/PromotionsManager';
+import BusinessesManager from '@/components/admin/BusinessesManager';
+import BusinessProductsManager from '@/components/admin/BusinessProductsManager';
 import { verifyAdminPassword } from '@/services/database';
 
 const Admin: React.FC = () => {
@@ -105,12 +107,14 @@ const Admin: React.FC = () => {
       
       <div className="container mx-auto p-4">
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="promotions">Promotions</TabsTrigger>
             <TabsTrigger value="gadgets">Gadgets</TabsTrigger>
             <TabsTrigger value="brands">Brands</TabsTrigger>
             <TabsTrigger value="carousel">Carousel</TabsTrigger>
+            <TabsTrigger value="businesses">Businesses</TabsTrigger>
+            <TabsTrigger value="products">Products</TabsTrigger>
           </TabsList>
           
           <TabsContent value="orders">
@@ -131,6 +135,14 @@ const Admin: React.FC = () => {
           
           <TabsContent value="carousel">
             <CarouselManager />
+          </TabsContent>
+          
+          <TabsContent value="businesses">
+            <BusinessesManager />
+          </TabsContent>
+          
+          <TabsContent value="products">
+            <BusinessProductsManager />
           </TabsContent>
         </Tabs>
       </div>

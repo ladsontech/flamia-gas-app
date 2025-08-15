@@ -1,6 +1,6 @@
 
 import { useLocation } from "react-router-dom";
-import { Home, ShoppingBag, Flame, RotateCw, Package } from "lucide-react";
+import { Home, ShoppingBag, User, RotateCw, Utensils } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
 
 interface BottomNavProps {
@@ -14,10 +14,9 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
 
   // Define active states
   const isHomeActive = path === "/";
-  const isAccessoriesActive = path === "/accessories";
-  const isSafetyActive = path === "/gas-safety";
-  const isRefillActive = path === "/refill";
-  const isOrdersActive = path === "/orders";
+  const isGadgetsActive = path === "/gadgets";
+  const isFoodsActive = path === "/foods";
+  const isAccountActive = path === "/account";
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg md:hidden">
@@ -32,36 +31,20 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
           to="/gadgets"
           icon={ShoppingBag}
           label="Gadgets"
-          isActive={path === "/gadgets"}
+          isActive={isGadgetsActive}
         />
         <NavItem
-          to="/refill"
-          icon={RotateCw}
-          label="Refill"
-          isActive={isRefillActive}
+          to="/foods"
+          icon={Utensils}
+          label="Foods"
+          isActive={isFoodsActive}
         />
-        {isAdmin ? (
-          <NavItem
-            to="/admin"
-            icon={Flame}
-            label="Admin"
-            isActive={false}
-          />
-        ) : user ? (
-          <NavItem
-            to="/orders"
-            icon={Package}
-            label="Orders"
-            isActive={isOrdersActive}
-          />
-        ) : (
-          <NavItem
-            to="/gas-safety"
-            icon={Flame}
-            label="Safety"
-            isActive={isSafetyActive}
-          />
-        )}
+        <NavItem
+          to="/account"
+          icon={User}
+          label="Account"
+          isActive={isAccountActive}
+        />
       </div>
     </nav>
   );

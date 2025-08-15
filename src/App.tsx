@@ -18,6 +18,8 @@ import Gadgets from "./pages/Gadgets";
 import GadgetDetail from "./pages/GadgetDetail";
 import Accessories from "./pages/Accessories";
 import GasSafety from "./pages/GasSafety";
+import Foods from "./pages/Foods";
+import Account from "./pages/Account";
 import AppBar from "./components/AppBar";
 import { BottomNav } from "./components/BottomNav";
 import DeepLinkHandler from "./components/DeepLinkHandler";
@@ -70,6 +72,8 @@ function App() {
                 <Route path="/accessories" element={<Accessories />} />
                 <Route path="/gas-safety" element={<GasSafety />} />
                 <Route path="/safety" element={<GasSafety />} />
+                <Route path="/foods" element={<Foods />} />
+                <Route path="/account" element={<Account />} />
               </Routes>
             </main>
             <BottomNav isAdmin={null} />

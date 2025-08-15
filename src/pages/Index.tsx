@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import HeaderSection from "@/components/home/HeaderSection";
 import OverlayCarousel from "@/components/home/OverlayCarousel";
+import QuickActionsSection from "@/components/home/QuickActionsSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import PopularBrands from "@/components/home/PopularBrands";
 import PromotionsSection from "@/components/home/PromotionsSection";
@@ -31,6 +32,8 @@ const Index = () => {
             
             <div className="space-y-6 lg:space-y-10 xl:space-y-14">
               <OverlayCarousel />
+              
+              <QuickActionsSection />
               
               <section className="space-y-4 lg:space-y-6">
                 <h2 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold px-1">
