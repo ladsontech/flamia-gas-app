@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import BrandsGrid from "@/components/home/BrandsGrid";
 import { Helmet } from "react-helmet";
-import ImageCarousel from "@/components/home/ImageCarousel";
+import OverlayCarousel from "@/components/home/OverlayCarousel";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import FeaturedGadgets from "@/components/home/PopularBrands";
 import AccessoriesSection from "@/components/home/AccessoriesSection";
@@ -46,7 +45,7 @@ export default function Index() {
         <meta name="format-detection" content="telephone=yes" />
         <meta name="format-detection" content="address=yes" />
 
-        <meta name="author" content="Flamia Gas Delivery" />
+        <meta name="author" content="Flamia Gas" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="googlebot" content="index, follow" />
         <meta name="google" content="notranslate" />
@@ -173,7 +172,7 @@ export default function Index() {
         <div className="px-4 md:px-6 max-w-7xl mx-auto">
           <div className="flex flex-col gap-3 md:gap-6 my-0 py-0 rounded max-w-full">
             <HeaderSection />
-            <ImageCarousel />
+            <OverlayCarousel />
             <PromotionsSection />
             <FeaturedGadgets />
 
