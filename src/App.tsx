@@ -48,43 +48,41 @@ function App() {
   };
 
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider delayDuration={300}>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="min-h-screen bg-background">
-              <AppBar />
-              <main className="pb-16 md:pb-0">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/order" element={<Order />} />
-                  <Route path="/refill" element={<Refill />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/delivery" element={<Delivery />} />
-                  <Route path="/delivery-login" element={<DeliveryLogin />} />
-                  <Route path="/gadgets" element={<Gadgets />} />
-                  <Route path="/gadget/:id" element={<GadgetDetail />} />
-                  <Route path="/accessories" element={<Accessories />} />
-                  <Route path="/gas-safety" element={<GasSafety />} />
-                  <Route path="/safety" element={<GasSafety />} />
-                </Routes>
-              </main>
-              <BottomNav isAdmin={null} />
-              <DeepLinkHandler />
-              <ShareTargetHandler />
-              <InstallPWA />
-              <OnlineStatusMonitor />
-              <UpdateNotification onUpdate={handleUpdate} />
-              <TestingHelper />
-            </div>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider delayDuration={300}>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen bg-background">
+            <AppBar />
+            <main className="pb-16 md:pb-0">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/order" element={<Order />} />
+                <Route path="/refill" element={<Refill />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/delivery" element={<Delivery />} />
+                <Route path="/delivery-login" element={<DeliveryLogin />} />
+                <Route path="/gadgets" element={<Gadgets />} />
+                <Route path="/gadget/:id" element={<GadgetDetail />} />
+                <Route path="/accessories" element={<Accessories />} />
+                <Route path="/gas-safety" element={<GasSafety />} />
+                <Route path="/safety" element={<GasSafety />} />
+              </Routes>
+            </main>
+            <BottomNav isAdmin={null} />
+            <DeepLinkHandler />
+            <ShareTargetHandler />
+            <InstallPWA />
+            <OnlineStatusMonitor />
+            <UpdateNotification onUpdate={handleUpdate} />
+            <TestingHelper />
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 
