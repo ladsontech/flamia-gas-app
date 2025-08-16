@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Search, MapPin, Phone, Star, RefreshCw, AlertCircle } from 'lucide-react';
+import { Search, MapPin, Phone, Star, RefreshCw, AlertCircle, ArrowLeft, Share2 } from 'lucide-react';
 import { Business, BusinessProduct } from '@/types/business';
 import { fetchBusinesses, fetchBusinessProducts } from '@/services/businessService';
 import { useToast } from '@/hooks/use-toast';
@@ -92,6 +91,49 @@ const Foods: React.FC = () => {
     window.open(whatsappUrl, '_blank');
   };
 
+  const handleShareBusiness = async (business: Business) => {
+    const currentUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${currentUrl}?business=${business.id}`;
+    const shareData = {
+      title: `${business.name} - Food Menu`,
+      text: `Check out ${business.name}'s delicious food menu! Located at ${business.location}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast({
+          title: "Shared successfully",
+          description: "Business details shared!",
+        });
+      } else {
+        // Fallback to copying to clipboard
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link copied",
+          description: "Business link copied to clipboard!",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Final fallback - try to copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link copied",
+          description: "Business link copied to clipboard!",
+        });
+      } catch (clipboardError) {
+        toast({
+          title: "Share failed",
+          description: "Unable to share or copy link",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const filteredBusinesses = businesses.filter(business =>
     business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     business.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -104,43 +146,84 @@ const Foods: React.FC = () => {
 
   if (selectedBusiness) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20 pt-20">
-        <div className="bg-white shadow-sm sticky top-16 z-10">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between mb-4">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Fixed Header */}
+        <div className="bg-white shadow-sm sticky top-0 z-20 border-b">
+          <div className="container mx-auto px-4 py-3">
+            {/* Top row with back button and share button */}
+            <div className="flex items-center justify-between mb-3">
               <Button 
-                variant="outline" 
-                onClick={() => {setSelectedBusiness(null); setProducts([]);}}
-              >
-                ← Back to Businesses
-              </Button>
-              <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="sm"
-                onClick={() => loadProducts(selectedBusiness.id)}
-                disabled={loading}
+                onClick={() => {setSelectedBusiness(null); setProducts([]);}}
+                className="flex items-center gap-2 p-2 hover:bg-gray-100"
               >
-                <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Back</span>
               </Button>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => loadProducts(selectedBusiness.id)}
+                  disabled={loading}
+                  className="hidden sm:flex"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleShareBusiness(selectedBusiness)}
+                  className="flex items-center gap-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Share</span>
+                </Button>
+              </div>
             </div>
             
+            {/* Business info - scrollable on mobile */}
             <div className="mb-4">
-              <div className="flex items-center space-x-3 mb-2">
-                {selectedBusiness.is_featured && (
-                  <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                )}
-                <h1 className="text-2xl font-bold">{selectedBusiness.name}</h1>
+              <div className="flex items-start gap-3 mb-3">
+                <Avatar className="w-12 h-12 flex-shrink-0">
+                  <AvatarImage 
+                    src={selectedBusiness.image_url} 
+                    alt={selectedBusiness.name}
+                  />
+                  <AvatarFallback>
+                    {selectedBusiness.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 break-words">
+                      {selectedBusiness.name}
+                    </h1>
+                    {selectedBusiness.is_featured && (
+                      <Star className="w-4 h-4 text-yellow-500 fill-current flex-shrink-0" />
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center text-gray-600 mb-2">
+                    <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                    <span className="text-sm break-words">{selectedBusiness.location}</span>
+                  </div>
+                  
+                  {selectedBusiness.description && (
+                    <p className="text-gray-600 text-sm leading-relaxed break-words">
+                      {selectedBusiness.description}
+                    </p>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center text-gray-600 mb-1">
-                <MapPin className="w-4 h-4 mr-1" />
-                <span className="text-sm">{selectedBusiness.location}</span>
-              </div>
-              {selectedBusiness.description && (
-                <p className="text-gray-600 text-sm">{selectedBusiness.description}</p>
-              )}
             </div>
 
+            {/* Search bar */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
@@ -153,92 +236,96 @@ const Foods: React.FC = () => {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-4">
-          {loading && (
-            <div className="text-center py-12">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-400" />
-              <p className="text-gray-500">Loading products...</p>
-            </div>
-          )}
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-4">
+            {loading && (
+              <div className="text-center py-12">
+                <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500">Loading products...</p>
+              </div>
+            )}
 
-          {!loading && filteredProducts.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden">
-                  {product.image_url && (
-                    <div className="aspect-square relative">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log("Image failed to load:", product.image_url);
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                      {product.is_featured && (
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded">
-                            Featured
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold mb-2">{product.name}</h3>
-                    
-                    {product.description && (
-                      <p className="text-gray-600 text-sm mb-2">{product.description}</p>
-                    )}
-                    
-                    {product.category && (
-                      <p className="text-gray-500 text-xs mb-2">{product.category}</p>
-                    )}
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-lg font-bold text-green-600">
-                          UGX {product.price.toLocaleString()}
-                        </span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-sm text-gray-500 line-through ml-2">
-                            UGX {product.original_price.toLocaleString()}
-                          </span>
+            {!loading && filteredProducts.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredProducts.map((product) => (
+                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    {product.image_url && (
+                      <div className="aspect-square relative">
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.log("Image failed to load:", product.image_url);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        {product.is_featured && (
+                          <div className="absolute top-2 left-2">
+                            <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded">
+                              Featured
+                            </span>
+                          </div>
                         )}
                       </div>
+                    )}
+                    
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold mb-2 text-sm sm:text-base break-words">{product.name}</h3>
                       
-                      <Button 
-                        size="sm"
-                        onClick={() => handleOrderProduct(product, selectedBusiness)}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <Phone className="w-4 h-4 mr-1" />
-                        Order
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                      {product.description && (
+                        <p className="text-gray-600 text-xs sm:text-sm mb-2 line-clamp-2 break-words">
+                          {product.description}
+                        </p>
+                      )}
+                      
+                      {product.category && (
+                        <p className="text-gray-500 text-xs mb-2">{product.category}</p>
+                      )}
+                      
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm sm:text-base font-bold text-green-600 block">
+                            UGX {product.price.toLocaleString()}
+                          </span>
+                          {product.original_price && product.original_price > product.price && (
+                            <span className="text-xs text-gray-500 line-through">
+                              UGX {product.original_price.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <Button 
+                          size="sm"
+                          onClick={() => handleOrderProduct(product, selectedBusiness)}
+                          className="bg-green-600 hover:bg-green-700 flex-shrink-0"
+                        >
+                          <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                          <span className="text-xs sm:text-sm">Order</span>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
-          {!loading && filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No products found</p>
-              {searchTerm && (
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
-                  onClick={() => setSearchTerm('')}
-                >
-                  Clear search
-                </Button>
-              )}
-            </div>
-          )}
+            {!loading && filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 mb-4">No products found</p>
+                {searchTerm && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSearchTerm('')}
+                  >
+                    Clear search
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
