@@ -148,75 +148,75 @@ const Foods: React.FC = () => {
   if (selectedBusiness) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Ultra Compact Fixed Header */}
+        {/* Fixed Header */}
         <div className="bg-white shadow-sm sticky top-16 z-20 border-b">
-          <div className="container mx-auto px-2 py-1">
-            {/* Compact top row */}
-            <div className="flex items-center justify-between mb-1">
+          <div className="container mx-auto px-3 py-2">
+            {/* Top row with back button and actions */}
+            <div className="flex items-center justify-between mb-2">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => {setSelectedBusiness(null); setProducts([]);}}
-                className="flex items-center gap-1 p-1 hover:bg-gray-100 h-7"
+                className="flex items-center gap-1 p-1 hover:bg-gray-100 h-8"
               >
-                <ArrowLeft className="w-3 h-3" />
-                <span className="text-xs">Back</span>
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm">Back</span>
               </Button>
               
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => loadProducts(selectedBusiness.id)}
                   disabled={loading}
-                  className="hidden sm:flex h-7 px-2"
+                  className="hidden sm:flex h-8 px-3"
                 >
-                  <RefreshCw className={`w-3 h-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                  <span className="text-xs">Refresh</span>
+                  <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                  <span className="text-sm">Refresh</span>
                 </Button>
                 
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => handleShareBusiness(selectedBusiness)}
-                  className="flex items-center gap-1 h-7 px-2"
+                  className="flex items-center gap-1 h-8 px-3"
                 >
-                  <Share2 className="w-3 h-3" />
-                  <span className="text-xs">Share</span>
+                  <Share2 className="w-4 h-4" />
+                  <span className="text-sm">Share</span>
                 </Button>
               </div>
             </div>
             
-            {/* Ultra compact business info */}
-            <div className="mb-2">
-              <div className="flex items-start gap-2 mb-1">
-                <Avatar className="w-8 h-8 flex-shrink-0">
+            {/* Business info */}
+            <div className="mb-3">
+              <div className="flex items-start gap-3 mb-2">
+                <Avatar className="w-12 h-12 flex-shrink-0">
                   <AvatarImage 
                     src={selectedBusiness.image_url} 
                     alt={selectedBusiness.name}
                   />
-                  <AvatarFallback className="text-xs">
+                  <AvatarFallback className="text-sm">
                     {selectedBusiness.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 mb-0.5 flex-wrap">
-                    <h1 className="text-sm font-bold text-gray-900 break-words">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <h1 className="text-lg font-bold text-gray-900 break-words">
                       {selectedBusiness.name}
                     </h1>
                     {selectedBusiness.is_featured && (
-                      <Star className="w-3 h-3 text-yellow-500 fill-current flex-shrink-0" />
+                      <Star className="w-4 h-4 text-yellow-500 fill-current flex-shrink-0" />
                     )}
                   </div>
                   
-                  <div className="flex items-center text-gray-600 mb-0.5">
-                    <MapPin className="w-2.5 h-2.5 mr-1 flex-shrink-0" />
-                    <span className="text-xs break-words">{selectedBusiness.location}</span>
+                  <div className="flex items-center text-gray-600 mb-1">
+                    <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span className="text-sm break-words">{selectedBusiness.location}</span>
                   </div>
                   
                   {selectedBusiness.description && (
-                    <p className="text-gray-600 text-xs leading-relaxed break-words line-clamp-1">
+                    <p className="text-gray-600 text-sm leading-relaxed break-words line-clamp-2">
                       {selectedBusiness.description}
                     </p>
                   )}
@@ -224,35 +224,36 @@ const Foods: React.FC = () => {
               </div>
             </div>
 
-            {/* Ultra compact search bar */}
+            {/* Search bar */}
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-7 h-7 text-xs"
+                className="pl-10 h-10 text-sm"
               />
             </div>
           </div>
         </div>
 
-        {/* Scrollable Content with ultra compact cards */}
-        <div className="flex-1 overflow-y-auto pt-1">
-          <div className="container mx-auto px-2 py-1">
+        {/* Scrollable Content with proper spacing */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-3 py-4">
             {loading && (
-              <div className="text-center py-6">
-                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-gray-400" />
-                <p className="text-gray-500 text-xs">Loading products...</p>
+              <div className="text-center py-8">
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-3 text-gray-400" />
+                <p className="text-gray-500 text-sm">Loading products...</p>
               </div>
             )}
 
             {!loading && filteredProducts.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {filteredProducts.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                    {product.image_url && (
-                      <div className="aspect-[4/3] relative">
+                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-white">
+                    {/* Square image container */}
+                    <div className="aspect-square relative bg-gray-50">
+                      {product.image_url && (
                         <img
                           src={product.image_url}
                           alt={product.name}
@@ -262,39 +263,41 @@ const Foods: React.FC = () => {
                             e.currentTarget.style.display = 'none';
                           }}
                         />
-                        {product.is_featured && (
-                          <div className="absolute top-0.5 left-0.5">
-                            <span className="bg-yellow-500 text-white text-xs px-1 py-0.5 rounded text-[10px]">
-                              Featured
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      )}
+                      {product.is_featured && (
+                        <div className="absolute top-2 left-2">
+                          <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded font-medium">
+                            Featured
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     
-                    <CardContent className="p-2">
-                      <h3 className="font-semibold mb-0.5 text-xs break-words line-clamp-1">{product.name}</h3>
+                    <CardContent className="p-3">
+                      <h3 className="font-semibold mb-1 text-sm break-words line-clamp-2 min-h-[2.5rem]">
+                        {product.name}
+                      </h3>
                       
                       {product.description && (
-                        <p className="text-gray-600 text-[10px] mb-0.5 line-clamp-1 break-words">
+                        <p className="text-gray-600 text-xs mb-2 line-clamp-2 break-words min-h-[2rem]">
                           {product.description}
                         </p>
                       )}
                       
                       {product.category && (
-                        <p className="text-gray-500 text-[10px] mb-0.5 flex items-center gap-1">
-                          <Clock className="w-2.5 h-2.5" />
-                          {product.category}
+                        <p className="text-gray-500 text-xs mb-2 flex items-center gap-1">
+                          <Clock className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">{product.category}</span>
                         </p>
                       )}
                       
-                      <div className="flex items-center justify-between gap-2 mt-1">
-                        <div className="flex-1 min-w-0">
-                          <span className="text-xs font-bold text-green-600 block">
+                      <div className="flex flex-col gap-2 mt-3">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-green-600">
                             UGX {product.price.toLocaleString()}
                           </span>
                           {product.original_price && product.original_price > product.price && (
-                            <span className="text-[10px] text-gray-500 line-through">
+                            <span className="text-xs text-gray-500 line-through">
                               UGX {product.original_price.toLocaleString()}
                             </span>
                           )}
@@ -303,10 +306,10 @@ const Foods: React.FC = () => {
                         <Button 
                           size="sm"
                           onClick={() => handleOrderProduct(product, selectedBusiness)}
-                          className="bg-green-600 hover:bg-green-700 flex-shrink-0 h-6 px-2"
+                          className="bg-green-600 hover:bg-green-700 w-full h-8"
                         >
-                          <Phone className="w-2.5 h-2.5 mr-1" />
-                          <span className="text-[10px]">Order</span>
+                          <Phone className="w-3 h-3 mr-1" />
+                          <span className="text-xs">Order Now</span>
                         </Button>
                       </div>
                     </CardContent>
@@ -316,15 +319,15 @@ const Foods: React.FC = () => {
             )}
 
             {!loading && filteredProducts.length === 0 && (
-              <div className="text-center py-6">
-                <AlertCircle className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 mb-2 text-xs">No products found</p>
+              <div className="text-center py-12">
+                <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500 mb-3 text-sm">No products found</p>
                 {searchTerm && (
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setSearchTerm('')}
-                    className="h-7 px-3 text-xs"
+                    className="h-9 px-4 text-sm"
                   >
                     Clear search
                   </Button>
