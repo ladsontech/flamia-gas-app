@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -147,19 +148,19 @@ const Foods: React.FC = () => {
   if (selectedBusiness) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Compact Fixed Header */}
+        {/* Ultra Compact Fixed Header */}
         <div className="bg-white shadow-sm sticky top-16 z-20 border-b">
-          <div className="container mx-auto px-3 py-2">
+          <div className="container mx-auto px-2 py-1">
             {/* Compact top row */}
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => {setSelectedBusiness(null); setProducts([]);}}
-                className="flex items-center gap-1 p-1 hover:bg-gray-100 h-8"
+                className="flex items-center gap-1 p-1 hover:bg-gray-100 h-7"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-sm">Back</span>
+                <ArrowLeft className="w-3 h-3" />
+                <span className="text-xs">Back</span>
               </Button>
               
               <div className="flex items-center gap-1">
@@ -168,7 +169,7 @@ const Foods: React.FC = () => {
                   size="sm"
                   onClick={() => loadProducts(selectedBusiness.id)}
                   disabled={loading}
-                  className="hidden sm:flex h-8 px-2"
+                  className="hidden sm:flex h-7 px-2"
                 >
                   <RefreshCw className={`w-3 h-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
                   <span className="text-xs">Refresh</span>
@@ -178,7 +179,7 @@ const Foods: React.FC = () => {
                   variant="outline" 
                   size="sm"
                   onClick={() => handleShareBusiness(selectedBusiness)}
-                  className="flex items-center gap-1 h-8 px-2"
+                  className="flex items-center gap-1 h-7 px-2"
                 >
                   <Share2 className="w-3 h-3" />
                   <span className="text-xs">Share</span>
@@ -186,10 +187,10 @@ const Foods: React.FC = () => {
               </div>
             </div>
             
-            {/* Compact business info */}
-            <div className="mb-3">
-              <div className="flex items-start gap-2 mb-2">
-                <Avatar className="w-10 h-10 flex-shrink-0">
+            {/* Ultra compact business info */}
+            <div className="mb-2">
+              <div className="flex items-start gap-2 mb-1">
+                <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarImage 
                     src={selectedBusiness.image_url} 
                     alt={selectedBusiness.name}
@@ -200,8 +201,8 @@ const Foods: React.FC = () => {
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 mb-1 flex-wrap">
-                    <h1 className="text-base font-bold text-gray-900 break-words">
+                  <div className="flex items-center gap-1 mb-0.5 flex-wrap">
+                    <h1 className="text-sm font-bold text-gray-900 break-words">
                       {selectedBusiness.name}
                     </h1>
                     {selectedBusiness.is_featured && (
@@ -209,8 +210,8 @@ const Foods: React.FC = () => {
                     )}
                   </div>
                   
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                  <div className="flex items-center text-gray-600 mb-0.5">
+                    <MapPin className="w-2.5 h-2.5 mr-1 flex-shrink-0" />
                     <span className="text-xs break-words">{selectedBusiness.location}</span>
                   </div>
                   
@@ -223,35 +224,35 @@ const Foods: React.FC = () => {
               </div>
             </div>
 
-            {/* Compact search bar */}
+            {/* Ultra compact search bar */}
             <div className="relative">
               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 h-8 text-sm"
+                className="pl-7 h-7 text-xs"
               />
             </div>
           </div>
         </div>
 
-        {/* Scrollable Content with compact cards */}
-        <div className="flex-1 overflow-y-auto pt-2">
-          <div className="container mx-auto px-3 py-2">
+        {/* Scrollable Content with ultra compact cards */}
+        <div className="flex-1 overflow-y-auto pt-1">
+          <div className="container mx-auto px-2 py-1">
             {loading && (
-              <div className="text-center py-8">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-400" />
-                <p className="text-gray-500 text-sm">Loading products...</p>
+              <div className="text-center py-6">
+                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-gray-400" />
+                <p className="text-gray-500 text-xs">Loading products...</p>
               </div>
             )}
 
             {!loading && filteredProducts.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                 {filteredProducts.map((product) => (
                   <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
                     {product.image_url && (
-                      <div className="aspect-square relative">
+                      <div className="aspect-[4/3] relative">
                         <img
                           src={product.image_url}
                           alt={product.name}
@@ -262,8 +263,8 @@ const Foods: React.FC = () => {
                           }}
                         />
                         {product.is_featured && (
-                          <div className="absolute top-1 left-1">
-                            <span className="bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded text-[10px]">
+                          <div className="absolute top-0.5 left-0.5">
+                            <span className="bg-yellow-500 text-white text-xs px-1 py-0.5 rounded text-[10px]">
                               Featured
                             </span>
                           </div>
@@ -271,29 +272,29 @@ const Foods: React.FC = () => {
                       </div>
                     )}
                     
-                    <CardContent className="p-3">
-                      <h3 className="font-semibold mb-1 text-sm break-words line-clamp-1">{product.name}</h3>
+                    <CardContent className="p-2">
+                      <h3 className="font-semibold mb-0.5 text-xs break-words line-clamp-1">{product.name}</h3>
                       
                       {product.description && (
-                        <p className="text-gray-600 text-xs mb-1 line-clamp-2 break-words">
+                        <p className="text-gray-600 text-[10px] mb-0.5 line-clamp-1 break-words">
                           {product.description}
                         </p>
                       )}
                       
                       {product.category && (
-                        <p className="text-gray-500 text-xs mb-1 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
+                        <p className="text-gray-500 text-[10px] mb-0.5 flex items-center gap-1">
+                          <Clock className="w-2.5 h-2.5" />
                           {product.category}
                         </p>
                       )}
                       
-                      <div className="flex items-center justify-between gap-2 mt-2">
+                      <div className="flex items-center justify-between gap-2 mt-1">
                         <div className="flex-1 min-w-0">
-                          <span className="text-sm font-bold text-green-600 block">
+                          <span className="text-xs font-bold text-green-600 block">
                             UGX {product.price.toLocaleString()}
                           </span>
                           {product.original_price && product.original_price > product.price && (
-                            <span className="text-xs text-gray-500 line-through">
+                            <span className="text-[10px] text-gray-500 line-through">
                               UGX {product.original_price.toLocaleString()}
                             </span>
                           )}
@@ -302,10 +303,10 @@ const Foods: React.FC = () => {
                         <Button 
                           size="sm"
                           onClick={() => handleOrderProduct(product, selectedBusiness)}
-                          className="bg-green-600 hover:bg-green-700 flex-shrink-0 h-7 px-2"
+                          className="bg-green-600 hover:bg-green-700 flex-shrink-0 h-6 px-2"
                         >
-                          <Phone className="w-3 h-3 mr-1" />
-                          <span className="text-xs">Order</span>
+                          <Phone className="w-2.5 h-2.5 mr-1" />
+                          <span className="text-[10px]">Order</span>
                         </Button>
                       </div>
                     </CardContent>
@@ -315,15 +316,15 @@ const Foods: React.FC = () => {
             )}
 
             {!loading && filteredProducts.length === 0 && (
-              <div className="text-center py-8">
-                <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 mb-2 text-sm">No products found</p>
+              <div className="text-center py-6">
+                <AlertCircle className="w-6 h-6 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-500 mb-2 text-xs">No products found</p>
                 {searchTerm && (
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setSearchTerm('')}
-                    className="h-8 px-3 text-xs"
+                    className="h-7 px-3 text-xs"
                   >
                     Clear search
                   </Button>
