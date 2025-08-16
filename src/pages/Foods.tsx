@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -160,21 +159,6 @@ const Foods: React.FC = () => {
           onBack={handleBackToBusiness}
           onShare={handleShareBusiness}
         />
-        
-        {/* Search section */}
-        <div className="bg-white border-b border-gray-100 sticky top-[200px] z-10">
-          <div className="container mx-auto px-4 py-3">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-gray-50 border-gray-200 focus:bg-white"
-              />
-            </div>
-          </div>
-        </div>
 
         {/* Products content */}
         <div className="container mx-auto px-4 py-6">
