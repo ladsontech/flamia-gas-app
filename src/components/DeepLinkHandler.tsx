@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import * as React from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -8,7 +8,7 @@ const DeepLinkHandler = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleDeepLink = () => {
       const source = searchParams.get('source');
       const type = searchParams.get('type');
@@ -107,7 +107,7 @@ const DeepLinkHandler = () => {
   }, [location, searchParams, navigate]);
 
   // Handle external link clicks within the app
-  useEffect(() => {
+  React.useEffect(() => {
     const handleLinkClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       const link = target.closest('a');
