@@ -16,9 +16,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, business, onOrderPr
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {products.map((product) => (
-        <Card key={product.id} className="group bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <Card key={product.id} className="group bg-card shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
           {/* Square image container */}
-          <div className="aspect-square relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+          <div className="aspect-square relative bg-gradient-to-br from-muted to-muted/80 overflow-hidden">
             {product.image_url ? (
               <img
                 src={product.image_url}
@@ -30,8 +30,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, business, onOrderPr
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                  <Tag className="w-8 h-8 text-gray-400" />
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                  <Tag className="w-8 h-8 text-muted-foreground" />
                 </div>
               </div>
             )}
@@ -39,7 +39,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, business, onOrderPr
             {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-1">
               {product.is_featured && (
-                <Badge className="bg-yellow-500 text-white text-xs px-2 py-1">
+                <Badge className="bg-accent text-accent-foreground text-xs px-2 py-1">
                   Featured
                 </Badge>
               )}
@@ -54,18 +54,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, business, onOrderPr
           <CardContent className="p-4">
             <div className="space-y-3">
               <div>
-                <h3 className="font-semibold text-lg text-gray-900 line-clamp-2 mb-1">
+                <h3 className="font-semibold text-lg text-foreground line-clamp-2 mb-1">
                   {product.name}
                 </h3>
                 
                 {product.description && (
-                  <p className="text-gray-600 text-sm line-clamp-2 mb-2">
+                  <p className="text-muted-foreground text-sm line-clamp-2 mb-2">
                     {product.description}
                   </p>
                 )}
                 
                 {product.category && (
-                  <div className="flex items-center text-gray-500 text-xs mb-2">
+                  <div className="flex items-center text-muted-foreground text-xs mb-2">
                     <Clock className="w-3 h-3 mr-1" />
                     <span>{product.category}</span>
                   </div>
@@ -74,11 +74,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, business, onOrderPr
               
               <div className="space-y-3">
                 <div className="flex flex-col">
-                  <span className="text-lg font-bold text-green-600">
+                  <span className="text-lg font-bold text-accent">
                     UGX {product.price.toLocaleString()}
                   </span>
                   {product.original_price && product.original_price > product.price && (
-                    <span className="text-sm text-gray-500 line-through">
+                    <span className="text-sm text-muted-foreground line-through">
                       UGX {product.original_price.toLocaleString()}
                     </span>
                   )}
@@ -87,7 +87,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, business, onOrderPr
                 <Button 
                   onClick={() => onOrderProduct(product, business)}
                   disabled={!product.is_available}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   {product.is_available ? 'Order Now' : 'Unavailable'}
