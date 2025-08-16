@@ -149,7 +149,7 @@ const Foods: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         {/* Fixed Header */}
-        <div className="bg-white shadow-sm sticky top-0 z-20 border-b">
+        <div className="bg-white shadow-sm sticky top-16 z-20 border-b">
           <div className="container mx-auto px-4 py-3">
             {/* Top row with back button and share button */}
             <div className="flex items-center justify-between mb-3">
@@ -238,7 +238,7 @@ const Foods: React.FC = () => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pt-4">
           <div className="container mx-auto px-4 py-4">
             {loading && (
               <div className="text-center py-12">

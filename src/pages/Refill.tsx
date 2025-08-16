@@ -7,6 +7,7 @@ import { Flame, ArrowRight, Check, Star, Crown, Zap } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet";
 import { refillBrands } from "@/components/home/BrandsData";
+import { BackButton } from "@/components/BackButton";
 
 const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas", "Star"];
 
@@ -107,6 +108,9 @@ const Refill = () => {
       </Helmet>
       
       <div className="container px-4 md:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
+        {/* Back Button */}
+        <BackButton />
+
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
