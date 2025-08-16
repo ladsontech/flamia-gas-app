@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import * as React from 'react';
 
 declare global {
   interface Window {
@@ -8,7 +8,7 @@ declare global {
 }
 
 const AdSection = () => {
-  useEffect(() => {
+  React.useEffect(() => {
     try {
       // Push the ad only if adsbygoogle is defined
       if (window.adsbygoogle) {
