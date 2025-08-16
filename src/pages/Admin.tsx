@@ -15,6 +15,7 @@ import PromotionsManager from '@/components/admin/PromotionsManager';
 import BusinessesManager from '@/components/admin/BusinessesManager';
 import BusinessProductsManager from '@/components/admin/BusinessProductsManager';
 import { verifyAdminPassword } from '@/services/database';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -105,45 +106,66 @@ const Admin: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <AdminAppBar onLogout={handleLogout} />
       
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-2 sm:p-4 max-w-7xl">
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="promotions">Promotions</TabsTrigger>
-            <TabsTrigger value="gadgets">Gadgets</TabsTrigger>
-            <TabsTrigger value="brands">Brands</TabsTrigger>
-            <TabsTrigger value="carousel">Carousel</TabsTrigger>
-            <TabsTrigger value="businesses">Businesses</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-          </TabsList>
+          {/* Mobile-responsive tabs */}
+          <div className="mb-4">
+            <ScrollArea className="w-full">
+              <TabsList className="grid grid-cols-7 w-full min-w-[600px] h-auto p-1 bg-muted rounded-lg">
+                <TabsTrigger value="orders" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Orders
+                </TabsTrigger>
+                <TabsTrigger value="promotions" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Promos
+                </TabsTrigger>
+                <TabsTrigger value="gadgets" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Gadgets
+                </TabsTrigger>
+                <TabsTrigger value="brands" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Brands
+                </TabsTrigger>
+                <TabsTrigger value="carousel" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Carousel
+                </TabsTrigger>
+                <TabsTrigger value="businesses" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Business
+                </TabsTrigger>
+                <TabsTrigger value="products" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Products
+                </TabsTrigger>
+              </TabsList>
+            </ScrollArea>
+          </div>
           
-          <TabsContent value="orders">
-            <AdminOrdersView orders={[]} deliveryMen={[]} onOrdersUpdate={() => {}} />
-          </TabsContent>
-          
-          <TabsContent value="promotions">
-            <PromotionsManager />
-          </TabsContent>
-          
-          <TabsContent value="gadgets">
-            <GadgetsManager />
-          </TabsContent>
-          
-          <TabsContent value="brands">
-            <BrandsManager />
-          </TabsContent>
-          
-          <TabsContent value="carousel">
-            <CarouselManager />
-          </TabsContent>
-          
-          <TabsContent value="businesses">
-            <BusinessesManager />
-          </TabsContent>
-          
-          <TabsContent value="products">
-            <BusinessProductsManager />
-          </TabsContent>
+          <div className="space-y-4">
+            <TabsContent value="orders" className="mt-0">
+              <AdminOrdersView orders={[]} deliveryMen={[]} onOrdersUpdate={() => {}} />
+            </TabsContent>
+            
+            <TabsContent value="promotions" className="mt-0">
+              <PromotionsManager />
+            </TabsContent>
+            
+            <TabsContent value="gadgets" className="mt-0">
+              <GadgetsManager />
+            </TabsContent>
+            
+            <TabsContent value="brands" className="mt-0">
+              <BrandsManager />
+            </TabsContent>
+            
+            <TabsContent value="carousel" className="mt-0">
+              <CarouselManager />
+            </TabsContent>
+            
+            <TabsContent value="businesses" className="mt-0">
+              <BusinessesManager />
+            </TabsContent>
+            
+            <TabsContent value="products" className="mt-0">
+              <BusinessProductsManager />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </div>
