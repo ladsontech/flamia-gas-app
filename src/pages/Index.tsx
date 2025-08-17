@@ -19,7 +19,7 @@ const Index = () => {
         <meta name="keywords" content="gas cylinders Uganda, gas delivery Kampala, electronics Uganda, gadgets delivery, cooking gas, LPG cylinders" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-16 md:pt-20">
         {/* Container with larger desktop margins */}
         <div className="px-3 sm:px-4 lg:px-8 xl:px-16 2xl:px-24 py-2 sm:py-4 lg:py-6">
           <motion.div
