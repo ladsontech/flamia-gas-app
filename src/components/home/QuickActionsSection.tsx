@@ -1,7 +1,5 @@
 
 import * as React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { RotateCw, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,29 +13,29 @@ const QuickActionsSection: React.FC = () => {
       </h2>
       
       <div className="grid grid-cols-2 gap-4">
-        <Card className="cursor-pointer hover:shadow-md transition-shadow border border-gray-200">
-          <CardContent className="p-4 text-center">
-            <Button 
-              className="w-full h-auto flex-col space-y-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-none"
-              onClick={() => navigate('/refill')}
-            >
-              <RotateCw className="w-8 h-8 text-gray-600" />
-              <span className="text-sm font-medium">Gas Refill</span>
-            </Button>
-          </CardContent>
-        </Card>
+        <div 
+          className="bg-card rounded-lg border border-border p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          onClick={() => navigate('/refill')}
+        >
+          <div className="flex flex-col items-center space-y-3 text-center">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <RotateCw className="w-6 h-6 text-accent" />
+            </div>
+            <span className="text-sm font-medium text-foreground">Gas Refill</span>
+          </div>
+        </div>
 
-        <Card className="cursor-pointer hover:shadow-md transition-shadow border border-gray-200">
-          <CardContent className="p-4 text-center">
-            <Button 
-              className="w-full h-auto flex-col space-y-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-none"
-              onClick={() => navigate('/gas-safety')}
-            >
-              <Flame className="w-8 h-8 text-gray-600" />
-              <span className="text-sm font-medium">Gas Safety</span>
-            </Button>
-          </CardContent>
-        </Card>
+        <div 
+          className="bg-card rounded-lg border border-border p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          onClick={() => navigate('/gas-safety')}
+        >
+          <div className="flex flex-col items-center space-y-3 text-center">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Flame className="w-6 h-6 text-accent" />
+            </div>
+            <span className="text-sm font-medium text-foreground">Gas Safety</span>
+          </div>
+        </div>
       </div>
     </section>
   );
