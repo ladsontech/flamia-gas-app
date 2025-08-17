@@ -17,13 +17,17 @@ const AppBar = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="flex items-center justify-between h-16 md:h-20 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
-        {/* Logo */}
+        {/* Logo with circular orange ring */}
         <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <img 
-            src="/images/icon.png" 
-            alt="Flamia" 
-            className="w-10 h-10 md:w-12 md:h-12" 
-          />
+          <div className="relative">
+            {/* Circular orange ring */}
+            <div className="absolute inset-0 w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-accent animate-pulse" />
+            <img 
+              src="/images/icon.png" 
+              alt="Flamia" 
+              className="w-10 h-10 md:w-12 md:h-12 relative z-10" 
+            />
+          </div>
           <span className="text-2xl md:text-3xl font-bold text-accent font-serif">
             Flamia
           </span>
