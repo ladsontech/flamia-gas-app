@@ -1,4 +1,5 @@
 
+
 import { Flame, Home, ShoppingBag, Utensils, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -19,7 +20,7 @@ const AppBar = () => {
       <div className="flex items-center justify-between h-16 md:h-20 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Word Logo */}
         <Link to="/" className="hover:opacity-80 transition-opacity">
-          <span className="text-3xl md:text-4xl font-bold text-accent tracking-wide font-serif bg-gradient-to-r from-accent via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
+          <span className="text-3xl md:text-4xl font-bold text-accent tracking-wide font-serif">
             Flamia
           </span>
         </Link>
@@ -50,3 +51,4 @@ const AppBar = () => {
 };
 
 export default AppBar;
+
