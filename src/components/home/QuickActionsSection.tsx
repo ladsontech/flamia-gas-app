@@ -21,7 +21,7 @@ const QuickActionsSection: React.FC = () => {
             <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
               <RotateCw className="w-6 h-6 text-accent" />
             </div>
-            <span className="text-sm font-medium text-foreground">Gas Refill</span>
+            <span className="text-sm font-medium text-foreground">Order Gas Refill</span>
           </div>
         </div>
 
