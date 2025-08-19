@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,22 +28,40 @@ const Account: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isPhoneUser, setIsPhoneUser] = useState(false);
 
   useEffect(() => {
-    getUser();
+    checkAuthStatus();
   }, []);
 
-  const getUser = async () => {
+  const checkAuthStatus = async () => {
     try {
+      // First check for Supabase authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
         setUser(user);
         await fetchProfile(user.id);
         await fetchOrders();
+      } else {
+        // Check for phone-verified user
+        const phoneVerified = localStorage.getItem('phoneVerified');
+        const userName = localStorage.getItem('userName');
+        
+        if (phoneVerified && userName) {
+          setIsPhoneUser(true);
+          // Fetch phone user profile
+          await fetchPhoneProfile(phoneVerified);
+          setUser({ 
+            id: phoneVerified, 
+            email: null, 
+            phone: phoneVerified,
+            user_metadata: { display_name: userName }
+          });
+        }
       }
     } catch (error) {
-      console.error('Error getting user:', error);
+      console.error('Error checking auth status:', error);
     } finally {
       setLoading(false);
     }
@@ -69,6 +86,25 @@ const Account: React.FC = () => {
     }
   };
 
+  const fetchPhoneProfile = async (phoneNumber: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('phone_number', phoneNumber)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching phone profile:', error);
+        return;
+      }
+
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching phone profile:', error);
+    }
+  };
+
   const fetchOrders = async () => {
     try {
       const { data, error } = await supabase
@@ -90,15 +126,28 @@ const Account: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast({
-        title: "Signed out successfully",
-        description: "You have been signed out of your account."
-      });
-      
-      navigate('/');
+      if (isPhoneUser) {
+        // Clear phone verification data
+        localStorage.removeItem('phoneVerified');
+        localStorage.removeItem('userName');
+        
+        toast({
+          title: "Signed out successfully",
+          description: "You have been signed out of your account."
+        });
+        
+        navigate('/');
+      } else {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        
+        toast({
+          title: "Signed out successfully",
+          description: "You have been signed out of your account."
+        });
+        
+        navigate('/');
+      }
     } catch (error: any) {
       toast({
         title: "Error signing out",
@@ -159,13 +208,23 @@ const Account: React.FC = () => {
                 <p className="text-gray-600 text-sm">Sign in to save your preferences</p>
               </div>
               
-              <Button 
-                className="w-full"
-                onClick={() => navigate('/signin')}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Sign In / Register
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  className="w-full"
+                  onClick={() => navigate('/signin')}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate('/signup')}
+                >
+                  Create Account
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -197,11 +256,16 @@ const Account: React.FC = () => {
                 <User className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-lg font-semibold">
-                {profile?.display_name || profile?.full_name || 'User'}
+                {profile?.display_name || profile?.full_name || user?.user_metadata?.display_name || 'User'}
               </h3>
-              <p className="text-gray-600 text-sm">{user.email}</p>
-              {profile?.phone_number && (
-                <p className="text-gray-600 text-sm">{profile.phone_number}</p>
+              {user.email && <p className="text-gray-600 text-sm">{user.email}</p>}
+              {(profile?.phone_number || user.phone) && (
+                <p className="text-gray-600 text-sm">{profile?.phone_number || user.phone}</p>
+              )}
+              {isPhoneUser && (
+                <span className="inline-block px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs mt-2">
+                  Phone Verified
+                </span>
               )}
             </div>
             
