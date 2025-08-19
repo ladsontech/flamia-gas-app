@@ -26,7 +26,14 @@ import { BottomNav } from './components/BottomNav';
 import { Toaster } from "@/components/ui/toaster"
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 function App() {
   const handleUpdate = () => {
