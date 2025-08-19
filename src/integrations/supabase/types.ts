@@ -334,6 +334,7 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          password_hash: string | null
           phone_number: string | null
           updated_at: string
         }
@@ -343,6 +344,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
+          password_hash?: string | null
           phone_number?: string | null
           updated_at?: string
         }
@@ -352,6 +354,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          password_hash?: string | null
           phone_number?: string | null
           updated_at?: string
         }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -280,7 +281,9 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
         
         const { error } = await supabase
           .from('profiles')
-          .update({ password_hash: newPassword }) // Note: In production, hash the password
+          .update({ 
+            password_hash: newPassword // Now this should work with the new column
+          })
           .eq('phone_number', verifiedPhoneNumber);
 
         if (error) {
