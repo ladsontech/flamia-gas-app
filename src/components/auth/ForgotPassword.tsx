@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,9 +21,54 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [step, setStep] = useState<'input' | 'verify' | 'reset'>('input');
+  const [step, setStep] = useState<'input' | 'verify' | 'reset' | 'email_sent'>('input');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  // Check if we're coming back from an email link
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
+    const error = hashParams.get('error');
+    const errorDescription = hashParams.get('error_description');
+
+    if (error) {
+      toast({
+        title: "Reset Link Error",
+        description: errorDescription || "The reset link is invalid or has expired. Please request a new one.",
+        variant: "destructive"
+      });
+      // Clear the error from URL
+      window.history.replaceState(null, '', window.location.pathname);
+      return;
+    }
+
+    if (accessToken && refreshToken && type === 'recovery') {
+      // Set the session with the tokens
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      }).then(({ error }) => {
+        if (error) {
+          toast({
+            title: "Session Error",
+            description: "Failed to authenticate. Please try again.",
+            variant: "destructive"
+          });
+        } else {
+          setStep('reset');
+          toast({
+            title: "Email Verified",
+            description: "You can now set your new password"
+          });
+        }
+      });
+      // Clear the tokens from URL
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [toast]);
 
   const sendResetCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +77,7 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     try {
       if (resetMethod === 'email') {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/signin`,
+          redirectTo: `${window.location.origin}/signin#reset`,
         });
 
         if (error) {
@@ -42,10 +87,10 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
             variant: "destructive"
           });
         } else {
-          setStep('verify');
+          setStep('email_sent');
           toast({
-            title: "Code Sent",
-            description: "Please check your email for the reset code"
+            title: "Reset Email Sent",
+            description: "Please check your email and click the reset link"
           });
         }
       } else {
@@ -89,30 +134,25 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     setLoading(true);
 
     try {
-      if (resetMethod === 'phone') {
-        const { data, error } = await supabase.functions.invoke('send-sms-verification', {
-          body: {
-            phoneNumber: phoneNumber,
-            action: 'verify',
-            code: otp,
-            type: 'password_reset'
-          }
-        });
-
-        if (error) throw error;
-
-        if (data.success) {
-          setStep('reset');
-          toast({
-            title: "Code Verified",
-            description: "Please enter your new password"
-          });
-        } else {
-          throw new Error(data.error || 'Invalid verification code');
+      const { data, error } = await supabase.functions.invoke('send-sms-verification', {
+        body: {
+          phoneNumber: phoneNumber,
+          action: 'verify',
+          code: otp,
+          type: 'password_reset'
         }
-      } else {
-        // For email, we proceed directly to reset step
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
         setStep('reset');
+        toast({
+          title: "Code Verified",
+          description: "Please enter your new password"
+        });
+      } else {
+        throw new Error(data.error || 'Invalid verification code');
       }
     } catch (error: any) {
       console.error('Error verifying code:', error);
@@ -251,13 +291,40 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending Code...
+                  Sending...
                 </>
               ) : (
-                "Send Reset Code"
+                `Send Reset ${resetMethod === 'email' ? 'Link' : 'Code'}`
               )}
             </Button>
           </form>
+        )}
+
+        {step === 'email_sent' && (
+          <div className="space-y-4 text-center">
+            <div className="mb-4">
+              <Mail className="h-12 w-12 mx-auto mb-2 text-accent" />
+              <h3 className="text-lg font-semibold">Check Your Email</h3>
+              <p className="text-sm text-muted-foreground">
+                We've sent a password reset link to {email}
+              </p>
+            </div>
+            
+            <Alert>
+              <Mail className="h-4 w-4" />
+              <AlertDescription>
+                Click the link in your email to reset your password. The link will expire in 1 hour.
+              </AlertDescription>
+            </Alert>
+
+            <Button
+              variant="outline"
+              onClick={() => setStep('input')}
+              className="w-full"
+            >
+              Try Different Method
+            </Button>
+          </div>
         )}
 
         {step === 'verify' && (
@@ -266,7 +333,7 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
               <Shield className="h-12 w-12 mx-auto mb-2 text-accent" />
               <h3 className="text-lg font-semibold">Enter Verification Code</h3>
               <p className="text-sm text-muted-foreground">
-                Code sent to {resetMethod === 'email' ? email : phoneNumber}
+                Code sent to {phoneNumber}
               </p>
             </div>
 
