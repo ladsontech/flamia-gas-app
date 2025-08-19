@@ -7,13 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -63,8 +64,8 @@ const ResetPassword = () => {
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success("Password updated successfully! You can now sign in with your new password.");
-        navigate('/signin');
+        setIsSuccess(true);
+        toast.success("Password updated successfully!");
       }
     } catch (error) {
       console.error('Password reset error:', error);
@@ -73,6 +74,43 @@ const ResetPassword = () => {
       setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
+        <div className="w-full max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <LionFlameLogo size={64} className="animate-pulse" />
+            </div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
+              Password Reset Successful
+            </h2>
+          </div>
+
+          <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <CheckCircle className="h-16 w-16 text-green-500" />
+                </div>
+                <h3 className="text-xl font-semibold">All Done!</h3>
+                <p className="text-muted-foreground">
+                  Your password has been successfully updated. You can now sign in with your new password.
+                </p>
+                <Button 
+                  onClick={() => navigate('/signin')}
+                  className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent"
+                >
+                  Continue to Sign In
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
