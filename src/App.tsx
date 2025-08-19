@@ -21,6 +21,8 @@ import UpdateNotification from './components/UpdateNotification';
 import { OnlineStatusMonitor } from './components/OnlineStatusMonitor';
 import DeepLinkHandler from './components/DeepLinkHandler';
 import ShareTargetHandler from './components/ShareTargetHandler';
+import AppBar from './components/AppBar';
+import { BottomNav } from './components/BottomNav';
 import { Toaster } from "@/components/ui/toaster"
 
 // Create a client
@@ -35,6 +37,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Toaster />
       <BrowserRouter>
+        <AppBar />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/order" element={<Order />} />
@@ -44,7 +47,7 @@ function App() {
           <Route path="/gadgets" element={<Gadgets />} />
           <Route path="/gadget/:id" element={<GadgetDetail />} />
           <Route path="/foods" element={<Foods />} />
-          <Route path="/safety" element={<GasSafety />} />
+          <Route path="/gas-safety" element={<GasSafety />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/delivery-login" element={<DeliveryLogin />} />
           <Route path="/delivery" element={<Delivery />} />
@@ -52,6 +55,7 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
+        <BottomNav isAdmin={false} />
         <UpdateNotification onUpdate={handleUpdate} />
         <OnlineStatusMonitor />
         <DeepLinkHandler />
