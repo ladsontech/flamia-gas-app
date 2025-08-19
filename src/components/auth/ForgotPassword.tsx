@@ -11,7 +11,7 @@ interface ForgotPasswordProps {
   onBack: () => void;
 }
 
-export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
+function ForgotPassword({ onBack }: ForgotPasswordProps) {
   const [identifier, setIdentifier] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -304,3 +304,5 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
     </Card>
   );
 }
+
+export default ForgotPassword;
