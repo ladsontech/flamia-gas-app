@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Mail } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const EmailSignUp = () => {
@@ -75,7 +75,8 @@ export const EmailSignUp = () => {
         setConfirmationSent(true);
         toast({
           title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration."
+          description: "We've sent you a confirmation link to complete your registration.",
+          className: "border-accent/20"
         });
       }
     } catch (error: any) {
@@ -91,18 +92,25 @@ export const EmailSignUp = () => {
 
   if (confirmationSent) {
     return (
-      <div className="text-center space-y-4">
-        <Mail className="h-12 w-12 mx-auto text-primary" />
-        <h3 className="text-lg font-semibold">Check Your Email</h3>
-        <Alert>
-          <AlertDescription>
-            We've sent a confirmation link to <strong>{email}</strong>. 
+      <div className="text-center space-y-6">
+        <div className="flex justify-center">
+          <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-full">
+            <Mail className="h-12 w-12 text-accent" />
+          </div>
+        </div>
+        <h3 className="text-lg font-semibold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
+          Check Your Email
+        </h3>
+        <Alert className="border-accent/20 bg-accent/5">
+          <AlertDescription className="text-center">
+            We've sent a confirmation link to <strong className="text-accent">{email}</strong>. 
             Please check your email and click the link to complete your registration.
             You'll be automatically signed in after confirmation.
           </AlertDescription>
         </Alert>
         <Button 
           variant="outline" 
+          className="hover:bg-accent/10 hover:border-accent/50"
           onClick={() => {
             setConfirmationSent(false);
             setEmail('');
@@ -117,53 +125,76 @@ export const EmailSignUp = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <form onSubmit={handleSignUp} className="space-y-4">
+    <div className="space-y-6">
+      <form onSubmit={handleSignUp} className="space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="email">Email Address</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="your.email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <Label htmlFor="email" className="text-sm font-medium text-foreground">
+            Email Address
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="your.email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="pl-10 border-accent/20 focus:border-accent focus:ring-accent/20"
+              required
+            />
+          </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Create a strong password (min 6 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-          />
+          <Label htmlFor="password" className="text-sm font-medium text-foreground">
+            Password
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              id="password"
+              type="password"
+              placeholder="Create a strong password (min 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pl-10 border-accent/20 focus:border-accent focus:ring-accent/20"
+              required
+              minLength={6}
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            minLength={6}
-          />
+          <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+            Confirm Password
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="pl-10 border-accent/20 focus:border-accent focus:ring-accent/20"
+              required
+              minLength={6}
+            />
+          </div>
         </div>
 
-        <Alert>
+        <Alert className="border-accent/20 bg-accent/5">
+          <User className="h-4 w-4 text-accent" />
           <AlertDescription>
-            Your display name will be automatically set as: <strong>{extractNameFromEmail(email)}</strong>
+            Your display name will be automatically set as: <strong className="text-accent">{extractNameFromEmail(email)}</strong>
           </AlertDescription>
         </Alert>
         
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button 
+          type="submit" 
+          className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200" 
+          disabled={loading}
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

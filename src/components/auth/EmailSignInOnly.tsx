@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail, Lock } from "lucide-react";
 
 export const EmailSignInOnly = () => {
   const [email, setEmail] = useState('');
@@ -34,7 +34,8 @@ export const EmailSignInOnly = () => {
       } else {
         toast({
           title: "Welcome back!",
-          description: "You have successfully signed in."
+          description: "You have successfully signed in.",
+          className: "border-accent/20"
         });
         navigate('/account');
       }
@@ -50,33 +51,49 @@ export const EmailSignInOnly = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <form onSubmit={handleSignIn} className="space-y-4">
+    <div className="space-y-6">
+      <form onSubmit={handleSignIn} className="space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="email">Email Address</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="your.email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <Label htmlFor="email" className="text-sm font-medium text-foreground">
+            Email Address
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="your.email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="pl-10 border-accent/20 focus:border-accent focus:ring-accent/20"
+              required
+            />
+          </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <Label htmlFor="password" className="text-sm font-medium text-foreground">
+            Password
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pl-10 border-accent/20 focus:border-accent focus:ring-accent/20"
+              required
+            />
+          </div>
         </div>
         
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button 
+          type="submit" 
+          className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200" 
+          disabled={loading}
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
