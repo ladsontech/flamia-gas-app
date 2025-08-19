@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +22,7 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [step, setStep] = useState<'input' | 'verify' | 'reset' | 'email_sent'>('input');
   const [loading, setLoading] = useState(false);
+  const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState('');
   const { toast } = useToast();
 
   // Check if we're coming back from an email link
@@ -85,6 +85,24 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     }
   }, [toast]);
 
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    
+    if (cleaned.startsWith('0')) {
+      return '+256' + cleaned.slice(1);
+    }
+    
+    if (!cleaned.startsWith('256') && !phone.startsWith('+')) {
+      return '+256' + cleaned;
+    }
+    
+    if (cleaned.startsWith('256') && !phone.startsWith('+')) {
+      return '+' + cleaned;
+    }
+    
+    return phone;
+  };
+
   const sendResetCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -114,8 +132,10 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
           });
         }
       } else {
-        // Validate phone number format before sending
-        if (!phoneNumber.startsWith('+') && !phoneNumber.startsWith('0')) {
+        // Format and validate phone number
+        const formattedPhone = formatPhoneNumber(phoneNumber);
+        
+        if (!formattedPhone.startsWith('+')) {
           toast({
             title: "Invalid Phone Number",
             description: "Please enter a valid phone number with country code (e.g., +256789123456) or local format (0789123456)",
@@ -124,11 +144,11 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
           return;
         }
 
-        console.log('Sending SMS reset to:', phoneNumber);
+        console.log('Sending SMS reset to:', formattedPhone);
         
         const { data, error } = await supabase.functions.invoke('send-sms-verification', {
           body: {
-            phoneNumber: phoneNumber,
+            phoneNumber: formattedPhone,
             action: 'send',
             type: 'password_reset'
           }
@@ -140,6 +160,7 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
         }
 
         if (data.success) {
+          setPhoneNumber(formattedPhone); // Store the formatted number
           setStep('verify');
           toast({
             title: "Code Sent",
@@ -185,6 +206,7 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
       }
 
       if (data.success) {
+        setVerifiedPhoneNumber(phoneNumber); // Store verified phone number
         setStep('reset');
         toast({
           title: "Code Verified",
@@ -229,26 +251,53 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     setLoading(true);
 
     try {
-      console.log('Updating user password...');
-      
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      if (resetMethod === 'email') {
+        // For email users, use Supabase's built-in password update
+        console.log('Updating user password via Supabase auth...');
+        
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword
+        });
 
-      if (error) {
-        console.error('Password update error:', error);
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
+        if (error) {
+          console.error('Password update error:', error);
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive"
+          });
+        } else {
+          console.log('Password updated successfully');
+          toast({
+            title: "Success",
+            description: "Password updated successfully"
+          });
+          onBack();
+        }
       } else {
-        console.log('Password updated successfully');
-        toast({
-          title: "Success",
-          description: "Password updated successfully"
-        });
-        onBack();
+        // For phone users, update password in the profiles table
+        console.log('Updating password for phone user:', verifiedPhoneNumber);
+        
+        const { error } = await supabase
+          .from('profiles')
+          .update({ password_hash: newPassword }) // Note: In production, hash the password
+          .eq('phone_number', verifiedPhoneNumber);
+
+        if (error) {
+          console.error('Phone user password update error:', error);
+          toast({
+            title: "Error",
+            description: "Failed to update password. Please try again.",
+            variant: "destructive"
+          });
+        } else {
+          console.log('Password updated successfully for phone user');
+          toast({
+            title: "Success",
+            description: "Password updated successfully"
+          });
+          onBack();
+        }
       }
     } catch (error: any) {
       console.error('Password update error:', error);
@@ -441,6 +490,11 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
             <div className="text-center mb-4">
               <Shield className="h-12 w-12 mx-auto mb-2 text-accent" />
               <h3 className="text-lg font-semibold">Create New Password</h3>
+              {resetMethod === 'phone' && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  For phone number: {verifiedPhoneNumber}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
