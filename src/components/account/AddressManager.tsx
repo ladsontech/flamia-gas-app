@@ -28,7 +28,7 @@ export const AddressManager = () => {
   const [formData, setFormData] = useState({
     label: '',
     address_line: '',
-    city: 'Kampala', // Default to Kampala
+    city: 'Kampala',
     latitude: null as number | null,
     longitude: null as number | null,
     is_default: false
@@ -209,8 +209,8 @@ export const AddressManager = () => {
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="p-6">
+      <Card className="w-full">
+        <CardContent className="p-4 sm:p-6">
           <div className="animate-pulse space-y-4">
             {[1, 2].map((i) => (
               <div key={i} className="h-20 bg-gray-200 rounded"></div>
@@ -222,21 +222,22 @@ export const AddressManager = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="w-full">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <MapPin className="w-5 h-5" />
-            <span>My Addresses</span>
+            <MapPin className="w-5 h-5 text-primary" />
+            <span className="text-lg">My Addresses</span>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" onClick={resetForm}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Address
+              <Button size="sm" onClick={resetForm} className="h-8">
+                <Plus className="w-3 h-3 mr-1" />
+                <span className="hidden sm:inline">Add Address</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingAddress ? 'Edit Address' : 'Add New Address'}
@@ -244,47 +245,65 @@ export const AddressManager = () => {
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="label">Nearby Location Name</Label>
+                  <Label htmlFor="label" className="text-sm font-medium">
+                    Nearby Location Name
+                  </Label>
                   <Input
                     id="label"
                     value={formData.label}
                     onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
                     placeholder="e.g., Near Nakumatt, Close to Bank of Uganda, etc."
                     required
+                    className="mt-1"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Enter a nearby landmark or location name for easy identification
                   </p>
                 </div>
 
-                <LocationPicker
-                  onLocationSelect={handleLocationSelect}
-                  selectedLocation={
-                    formData.latitude && formData.longitude
-                      ? {
-                          lat: formData.latitude,
-                          lng: formData.longitude,
-                          address: formData.address_line
-                        }
-                      : null
-                  }
-                />
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Select Location on Map
+                  </Label>
+                  <div className="h-64 sm:h-80">
+                    <LocationPicker
+                      onLocationSelect={handleLocationSelect}
+                      selectedLocation={
+                        formData.latitude && formData.longitude
+                          ? {
+                              lat: formData.latitude,
+                              lng: formData.longitude,
+                              address: formData.address_line
+                            }
+                          : null
+                      }
+                    />
+                  </div>
+                </div>
 
                 <div>
-                  <Label htmlFor="city">City</Label>
+                  <Label htmlFor="city" className="text-sm font-medium">
+                    City
+                  </Label>
                   <Input
                     id="city"
                     value={formData.city}
                     onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
                     placeholder="Kampala"
+                    className="mt-1"
                   />
                 </div>
 
-                <div className="flex justify-end space-x-2 pt-4">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setIsDialogOpen(false)}
+                    className="flex-1 sm:flex-none"
+                  >
                     Cancel
                   </Button>
-                  <Button type="submit">
+                  <Button type="submit" className="flex-1 sm:flex-none">
                     {editingAddress ? 'Update Address' : 'Add Address'}
                   </Button>
                 </div>
@@ -293,12 +312,12 @@ export const AddressManager = () => {
           </Dialog>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6 pt-0">
         {addresses.length === 0 ? (
           <div className="text-center py-8">
             <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600 mb-4">No addresses added yet</p>
-            <Button onClick={() => setIsDialogOpen(true)}>
+            <p className="text-gray-600 mb-4 text-sm">No addresses added yet</p>
+            <Button onClick={() => setIsDialogOpen(true)} size="sm">
               Add Your First Address
             </Button>
           </div>
@@ -306,26 +325,30 @@ export const AddressManager = () => {
           <div className="space-y-3">
             {addresses.map((address) => (
               <div key={address.id} className="border rounded-lg p-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-medium">{address.label}</span>
-                      {address.is_default && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-accent text-white">
-                          <Star className="w-3 h-3 mr-1" />
-                          Default
-                        </span>
-                      )}
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-sm truncate">{address.label}</span>
+                        {address.is_default && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary text-primary-foreground shrink-0">
+                            <Star className="w-3 h-3 mr-1" />
+                            Default
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1 break-words">{address.address_line}</p>
+                      <p className="text-xs text-gray-500">{address.city}</p>
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">{address.address_line}</p>
-                    <p className="text-xs text-gray-500">{address.city}</p>
                   </div>
-                  <div className="flex space-x-2">
+                  
+                  <div className="flex flex-wrap gap-2">
                     {!address.is_default && (
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleSetDefault(address.id)}
+                        className="text-xs h-8 flex-1 sm:flex-none"
                       >
                         Set Default
                       </Button>
@@ -334,15 +357,19 @@ export const AddressManager = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => openEditDialog(address)}
+                      className="text-xs h-8 flex-1 sm:flex-none"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => handleDelete(address.id)}
+                      className="text-xs h-8 flex-1 sm:flex-none"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Delete
                     </Button>
                   </div>
                 </div>

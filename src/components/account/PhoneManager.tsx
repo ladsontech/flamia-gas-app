@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Phone, Edit2, Save, X } from 'lucide-react';
+import { Phone, Edit2, Save, X, Plus } from 'lucide-react';
 
 interface Profile {
   phone_number?: string;
@@ -16,7 +16,9 @@ interface Profile {
 export const PhoneManager = () => {
   const [profile, setProfile] = useState<Profile>({});
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
+  const [editingPrimary, setEditingPrimary] = useState(false);
+  const [editingAdditional, setEditingAdditional] = useState(false);
+  const [primaryPhone, setPrimaryPhone] = useState('');
   const [additionalPhone, setAdditionalPhone] = useState('');
   const { toast } = useToast();
 
@@ -42,6 +44,7 @@ export const PhoneManager = () => {
 
       if (data) {
         setProfile(data);
+        setPrimaryPhone(data.phone_number || '');
         setAdditionalPhone(data.additional_phone_number || '');
       }
     } catch (error) {
@@ -69,7 +72,38 @@ export const PhoneManager = () => {
     return phone;
   };
 
-  const handleSave = async () => {
+  const handleSavePrimary = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const formattedPhone = primaryPhone ? formatPhoneNumber(primaryPhone) : null;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ phone_number: formattedPhone })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setProfile(prev => ({ ...prev, phone_number: formattedPhone || undefined }));
+      setEditingPrimary(false);
+
+      toast({
+        title: "Success",
+        description: "Primary phone number updated successfully"
+      });
+    } catch (error: any) {
+      console.error('Error updating phone number:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update phone number",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSaveAdditional = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
@@ -84,7 +118,7 @@ export const PhoneManager = () => {
       if (error) throw error;
 
       setProfile(prev => ({ ...prev, additional_phone_number: formattedPhone || undefined }));
-      setEditing(false);
+      setEditingAdditional(false);
 
       toast({
         title: "Success",
@@ -100,17 +134,23 @@ export const PhoneManager = () => {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancelPrimary = () => {
+    setPrimaryPhone(profile.phone_number || '');
+    setEditingPrimary(false);
+  };
+
+  const handleCancelAdditional = () => {
     setAdditionalPhone(profile.additional_phone_number || '');
-    setEditing(false);
+    setEditingAdditional(false);
   };
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="p-6">
+      <Card className="w-full">
+        <CardContent className="p-4 sm:p-6">
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
             <div className="h-10 bg-gray-200 rounded"></div>
           </div>
         </CardContent>
@@ -119,70 +159,131 @@ export const PhoneManager = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Phone className="w-5 h-5" />
+    <Card className="w-full">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center space-x-2 text-lg">
+          <Phone className="w-5 h-5 text-primary" />
           <span>Phone Numbers</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6 p-4 sm:p-6 pt-0">
         {/* Primary Phone Number */}
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Primary Phone</Label>
-          <div className="mt-1 p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium">
-              {profile.phone_number || 'Not set'}
-            </p>
-            <p className="text-xs text-gray-500">
-              This is your main phone number used for account verification
-            </p>
-          </div>
-        </div>
-
-        {/* Additional Phone Number */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
             <Label className="text-sm font-medium text-gray-700">
-              Emergency Contact Number
+              Primary Phone Number
             </Label>
-            {!editing && (
+            {!editingPrimary && (
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => setEditing(true)}
+                onClick={() => setEditingPrimary(true)}
+                className="h-8"
               >
-                <Edit2 className="w-4 h-4 mr-1" />
-                Edit
+                {profile.phone_number ? (
+                  <>
+                    <Edit2 className="w-3 h-3 mr-1" />
+                    Edit
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add
+                  </>
+                )}
               </Button>
             )}
           </div>
 
-          {editing ? (
+          {editingPrimary ? (
+            <div className="space-y-3">
+              <Input
+                type="tel"
+                placeholder="+256789123456 or 0789123456"
+                value={primaryPhone}
+                onChange={(e) => setPrimaryPhone(e.target.value)}
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">
+                This number will be used for account verification and important notifications
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button size="sm" onClick={handleSavePrimary} className="flex-1 sm:flex-none">
+                  <Save className="w-3 h-3 mr-1" />
+                  Save
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleCancelPrimary} className="flex-1 sm:flex-none">
+                  <X className="w-3 h-3 mr-1" />
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium mb-1">
+                {profile.phone_number || 'Not set'}
+              </p>
+              <p className="text-xs text-gray-500">
+                Main phone number for account verification
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Additional Phone Number */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm font-medium text-gray-700">
+              Emergency Contact Number
+            </Label>
+            {!editingAdditional && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setEditingAdditional(true)}
+                className="h-8"
+              >
+                {profile.additional_phone_number ? (
+                  <>
+                    <Edit2 className="w-3 h-3 mr-1" />
+                    Edit
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+
+          {editingAdditional ? (
             <div className="space-y-3">
               <Input
                 type="tel"
                 placeholder="+256789123456 or 0789123456"
                 value={additionalPhone}
                 onChange={(e) => setAdditionalPhone(e.target.value)}
+                className="w-full"
               />
               <p className="text-xs text-gray-500">
                 This number can be used as an emergency contact for deliveries
               </p>
-              <div className="flex space-x-2">
-                <Button size="sm" onClick={handleSave}>
-                  <Save className="w-4 h-4 mr-1" />
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button size="sm" onClick={handleSaveAdditional} className="flex-1 sm:flex-none">
+                  <Save className="w-3 h-3 mr-1" />
                   Save
                 </Button>
-                <Button size="sm" variant="outline" onClick={handleCancel}>
-                  <X className="w-4 h-4 mr-1" />
+                <Button size="sm" variant="outline" onClick={handleCancelAdditional} className="flex-1 sm:flex-none">
+                  <X className="w-3 h-3 mr-1" />
                   Cancel
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium mb-1">
                 {profile.additional_phone_number || 'Not set'}
               </p>
               <p className="text-xs text-gray-500">
