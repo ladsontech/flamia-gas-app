@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { EmailSignInOnly } from "@/components/auth/EmailSignInOnly";
 import { PhoneSignInOnly } from "@/components/auth/PhoneSignInOnly";
-import { ForgotPassword } from "@/components/auth/ForgotPassword";
+import ForgotPassword from "@/components/auth/ForgotPassword";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 
 const SignIn = () => {
