@@ -34,39 +34,54 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     const error = hashParams.get('error');
     const errorDescription = hashParams.get('error_description');
 
+    console.log('URL hash params:', { accessToken: !!accessToken, refreshToken: !!refreshToken, type, error, errorDescription });
+
     if (error) {
+      let errorMessage = "The reset link is invalid or has expired. Please request a new one.";
+      
+      if (error === 'access_denied' && errorDescription?.includes('otp_expired')) {
+        errorMessage = "The reset link has expired. Please request a new password reset email.";
+      }
+      
       toast({
         title: "Reset Link Error",
-        description: errorDescription || "The reset link is invalid or has expired. Please request a new one.",
+        description: errorMessage,
         variant: "destructive"
       });
-      // Clear the error from URL
+      
+      // Clear the error from URL and redirect back to initial state
       window.history.replaceState(null, '', window.location.pathname);
+      setStep('input');
       return;
     }
 
     if (accessToken && refreshToken && type === 'recovery') {
+      console.log('Valid recovery tokens found, setting session...');
+      
       // Set the session with the tokens
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken
       }).then(({ error }) => {
         if (error) {
+          console.error('Session error:', error);
           toast({
             title: "Session Error",
-            description: "Failed to authenticate. Please try again.",
+            description: "Failed to authenticate. Please try requesting a new reset link.",
             variant: "destructive"
           });
+          setStep('input');
         } else {
+          console.log('Session set successfully, proceeding to reset step');
           setStep('reset');
           toast({
             title: "Email Verified",
             description: "You can now set your new password"
           });
         }
+        // Clear the tokens from URL
+        window.history.replaceState(null, '', window.location.pathname);
       });
-      // Clear the tokens from URL
-      window.history.replaceState(null, '', window.location.pathname);
     }
   }, [toast]);
 
@@ -76,11 +91,16 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
 
     try {
       if (resetMethod === 'email') {
+        // For email reset, use a more reliable redirect URL
+        const redirectUrl = `${window.location.origin}${window.location.pathname}#reset`;
+        console.log('Sending email reset to:', email, 'with redirect:', redirectUrl);
+        
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/signin#reset`,
+          redirectTo: redirectUrl,
         });
 
         if (error) {
+          console.error('Email reset error:', error);
           toast({
             title: "Error",
             description: error.message,
@@ -90,11 +110,22 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
           setStep('email_sent');
           toast({
             title: "Reset Email Sent",
-            description: "Please check your email and click the reset link"
+            description: "Please check your email and click the reset link. The link is valid for 1 hour."
           });
         }
       } else {
-        // For phone reset, we'll use the SMS verification function
+        // Validate phone number format before sending
+        if (!phoneNumber.startsWith('+') && !phoneNumber.startsWith('0')) {
+          toast({
+            title: "Invalid Phone Number",
+            description: "Please enter a valid phone number with country code (e.g., +256789123456) or local format (0789123456)",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        console.log('Sending SMS reset to:', phoneNumber);
+        
         const { data, error } = await supabase.functions.invoke('send-sms-verification', {
           body: {
             phoneNumber: phoneNumber,
@@ -103,7 +134,10 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
           }
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('SMS function error:', error);
+          throw error;
+        }
 
         if (data.success) {
           setStep('verify');
@@ -134,6 +168,8 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     setLoading(true);
 
     try {
+      console.log('Verifying SMS code for:', phoneNumber);
+      
       const { data, error } = await supabase.functions.invoke('send-sms-verification', {
         body: {
           phoneNumber: phoneNumber,
@@ -143,7 +179,10 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('SMS verify function error:', error);
+        throw error;
+      }
 
       if (data.success) {
         setStep('reset');
@@ -190,17 +229,21 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     setLoading(true);
 
     try {
+      console.log('Updating user password...');
+      
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
 
       if (error) {
+        console.error('Password update error:', error);
         toast({
           title: "Error",
           description: error.message,
           variant: "destructive"
         });
       } else {
+        console.log('Password updated successfully');
         toast({
           title: "Success",
           description: "Password updated successfully"
@@ -208,6 +251,7 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
         onBack();
       }
     } catch (error: any) {
+      console.error('Password update error:', error);
       toast({
         title: "Error",
         description: "Failed to update password",
@@ -276,13 +320,13 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="+256789123456"
+                  placeholder="+256789123456 or 0789123456"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Include country code (e.g., +256 for Uganda)
+                  Include country code (+256 for Uganda) or use local format (0789123456)
                 </p>
               </div>
             )}
@@ -314,16 +358,27 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
               <Mail className="h-4 w-4" />
               <AlertDescription>
                 Click the link in your email to reset your password. The link will expire in 1 hour.
+                If you don't see the email, check your spam folder.
               </AlertDescription>
             </Alert>
 
-            <Button
-              variant="outline"
-              onClick={() => setStep('input')}
-              className="w-full"
-            >
-              Try Different Method
-            </Button>
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                onClick={() => setStep('input')}
+                className="w-full"
+              >
+                Try Different Method
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={sendResetCode}
+                disabled={loading}
+                className="w-full text-sm"
+              >
+                Resend Email
+              </Button>
+            </div>
           </div>
         )}
 
@@ -367,6 +422,15 @@ export const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
                 ) : (
                   "Verify Code"
                 )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setStep('input')}
+                className="w-full text-sm"
+              >
+                Back to Phone Number
               </Button>
             </form>
           </div>

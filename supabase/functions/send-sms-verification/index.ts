@@ -11,10 +11,28 @@ interface SMSRequest {
   phoneNumber: string;
   action: 'send' | 'verify';
   code?: string;
+  type?: string;
 }
 
 const generateVerificationCode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const formatPhoneNumber = (phoneNumber: string): string => {
+  // Remove any spaces, dashes, or other formatting
+  let cleaned = phoneNumber.replace(/[\s\-\(\)]/g, '');
+  
+  // If it starts with 0, assume it's a Ugandan number and replace with +256
+  if (cleaned.startsWith('0')) {
+    cleaned = '+256' + cleaned.substring(1);
+  }
+  
+  // If it doesn't start with +, add +256 (assuming Ugandan)
+  if (!cleaned.startsWith('+')) {
+    cleaned = '+256' + cleaned;
+  }
+  
+  return cleaned;
 };
 
 const sendSMS = async (to: string, message: string) => {
@@ -32,16 +50,20 @@ const sendSMS = async (to: string, message: string) => {
     throw new Error('Missing Twilio credentials. Please check TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER');
   }
 
+  // Format the phone number properly
+  const formattedTo = formatPhoneNumber(to);
+  console.log('Phone number formatted from', to, 'to', formattedTo);
+
   const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
   
   const body = new URLSearchParams({
     From: fromNumber,
-    To: to,
+    To: formattedTo,
     Body: message,
   });
 
   console.log('Sending SMS request to:', url);
-  console.log('SMS payload:', { From: fromNumber, To: to, Body: message });
+  console.log('SMS payload:', { From: fromNumber, To: formattedTo, Body: message });
 
   const response = await fetch(url, {
     method: 'POST',
@@ -99,8 +121,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { phoneNumber, action, code } = parsedBody;
-    console.log('Parsed request:', { phoneNumber, action, code: code ? 'present' : 'not provided' });
+    const { phoneNumber, action, code, type } = parsedBody;
+    console.log('Parsed request:', { phoneNumber, action, code: code ? 'present' : 'not provided', type });
 
     if (!phoneNumber || !action) {
       return new Response(
@@ -141,20 +163,43 @@ const handler = async (req: Request): Promise<Response> => {
       
       console.log(`Attempting to send SMS to ${phoneNumber} with code ${verificationCode}`);
       
-      await sendSMS(phoneNumber, message);
-      
-      console.log(`SMS sent successfully to ${phoneNumber}`);
-      
-      return new Response(
-        JSON.stringify({ success: true, message: 'Verification code sent' }),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            ...corsHeaders,
-          },
-        }
-      );
+      try {
+        await sendSMS(phoneNumber, message);
+        console.log(`SMS sent successfully to ${phoneNumber}`);
+        
+        return new Response(
+          JSON.stringify({ success: true, message: 'Verification code sent' }),
+          {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+            },
+          }
+        );
+      } catch (smsError: any) {
+        console.error('SMS sending failed:', smsError);
+        
+        // Clean up the stored code since SMS failed
+        await supabase
+          .from('phone_verifications')
+          .delete()
+          .eq('phone_number', phoneNumber);
+        
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: `Failed to send SMS: ${smsError.message}. Please check your phone number format (should include country code, e.g., +256789123456)` 
+          }),
+          {
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+            },
+          }
+        );
+      }
     } else if (action === 'verify') {
       // Verify the code from database
       const { data: stored, error: fetchError } = await supabase
