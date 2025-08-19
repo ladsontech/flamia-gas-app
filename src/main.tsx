@@ -1,5 +1,5 @@
 
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -201,7 +201,7 @@ if (isServiceWorkerSupported()) {
   });
 
   // Make the saveOfflineAction function available globally
-  window.saveOfflineAction = saveOfflineAction;
+  (window as any).saveOfflineAction = saveOfflineAction;
 } else {
   console.log('Service Worker not supported in this environment - PWA features will be limited');
   
@@ -227,11 +227,11 @@ if (isServiceWorkerSupported()) {
   });
 
   // Provide a fallback saveOfflineAction function
-  window.saveOfflineAction = saveOfflineAction;
+  (window as any).saveOfflineAction = saveOfflineAction;
 }
 
 // Expose service worker events to window for component access
-window.swEvents = swEvents;
+(window as any).swEvents = swEvents;
 
 // Add TypeScript interface for window
 declare global {
