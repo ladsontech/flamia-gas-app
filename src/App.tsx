@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Order from "./pages/Order";
 import Refill from "./pages/Refill";
 import Login from "./pages/Login";
+import SignIn from "./pages/SignIn";
 import Admin from "./pages/Admin";
 import Orders from "./pages/Orders";
 import Delivery from "./pages/Delivery";
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/order" element={<Order />} />
                 <Route path="/refill" element={<Refill />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/signin" element={<SignIn />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/delivery" element={<Delivery />} />

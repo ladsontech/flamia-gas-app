@@ -1,10 +1,13 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { User, Package, MapPin, Phone, Mail, Settings } from 'lucide-react';
 
 const Account: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="bg-white shadow-sm">
@@ -31,7 +34,10 @@ const Account: React.FC = () => {
               <p className="text-gray-600 text-sm">Sign in to save your preferences</p>
             </div>
             
-            <Button className="w-full">
+            <Button 
+              className="w-full"
+              onClick={() => navigate('/signin')}
+            >
               <Mail className="w-4 h-4 mr-2" />
               Sign In / Register
             </Button>
