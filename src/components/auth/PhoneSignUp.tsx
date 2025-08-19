@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Phone, Shield } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export const PhoneSignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,15 @@ export const PhoneSignUp = () => {
       toast({
         title: "Name Required",
         description: "Please enter your full name",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!password.trim() || password.length < 6) {
+      toast({
+        title: "Password Required",
+        description: "Please enter a password with at least 6 characters",
         variant: "destructive"
       });
       return;
@@ -105,31 +115,45 @@ export const PhoneSignUp = () => {
       if (error) throw error;
 
       if (data.success) {
-        // Create a profile entry for the phone-verified user
-        // Since we don't have full Supabase auth for phone numbers,
-        // we'll create a user entry in our profiles table
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            phone_number: formattedPhone,
-            full_name: fullName,
-            display_name: fullName
-          });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-        }
-
-        toast({
-          title: "Account Created Successfully",
-          description: `Welcome, ${fullName}! Your account has been created.`
+        // Create user account with phone number as email (workaround)
+        const emailFromPhone = `${formattedPhone.replace('+', '')}@phone.local`;
+        
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: emailFromPhone,
+          password: password,
+          options: {
+            data: {
+              display_name: fullName,
+              full_name: fullName,
+              phone_number: formattedPhone
+            }
+          }
         });
-        
-        // Store phone verification status locally
-        localStorage.setItem('phoneVerified', formattedPhone);
-        localStorage.setItem('userName', fullName);
-        
-        navigate('/account');
+
+        if (signUpError) throw signUpError;
+
+        if (signUpData.user) {
+          // Update the profile with phone number
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: signUpData.user.id,
+              phone_number: formattedPhone,
+              full_name: fullName,
+              display_name: fullName
+            });
+
+          if (profileError) {
+            console.error('Profile update error:', profileError);
+          }
+
+          toast({
+            title: "Account Created Successfully",
+            description: `Welcome, ${fullName}! Your account has been created.`
+          });
+          
+          navigate('/account');
+        }
       } else {
         throw new Error(data.error || 'Verification failed');
       }
@@ -150,6 +174,7 @@ export const PhoneSignUp = () => {
     setOtp('');
     setPhoneNumber('');
     setFullName('');
+    setPassword('');
   };
 
   if (otpSent) {
@@ -243,6 +268,21 @@ export const PhoneSignUp = () => {
           />
           <p className="text-xs text-muted-foreground">
             Uganda numbers: +256 or start with 0
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Enter a secure password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <p className="text-xs text-muted-foreground">
+            Minimum 6 characters
           </p>
         </div>
 

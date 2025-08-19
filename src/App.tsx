@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Index from './pages/Index';
 import Order from './pages/Order';
 import Orders from './pages/Orders';
@@ -16,43 +18,46 @@ import Account from './pages/Account';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import UpdateNotification from './components/UpdateNotification';
-import OnlineStatusMonitor from './components/OnlineStatusMonitor';
+import { OnlineStatusMonitor } from './components/OnlineStatusMonitor';
 import DeepLinkHandler from './components/DeepLinkHandler';
 import ShareTargetHandler from './components/ShareTargetHandler';
-import { ToastProvider } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
-import { QueryClient } from '@tanstack/react-query';
+
+// Create a client
+const queryClient = new QueryClient();
 
 function App() {
+  const handleUpdate = () => {
+    window.location.reload();
+  };
+
   return (
-    <QueryClient>
-      <ToastProvider>
-        <Toaster />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/order" element={<Order />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/refill" element={<Refill />} />
-            <Route path="/accessories" element={<Accessories />} />
-            <Route path="/gadgets" element={<Gadgets />} />
-            <Route path="/gadget/:id" element={<GadgetDetail />} />
-            <Route path="/foods" element={<Foods />} />
-            <Route path="/safety" element={<GasSafety />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/delivery-login" element={<DeliveryLogin />} />
-            <Route path="/delivery" element={<Delivery />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-          </Routes>
-          <UpdateNotification />
-          <OnlineStatusMonitor />
-          <DeepLinkHandler />
-          <ShareTargetHandler />
-        </BrowserRouter>
-      </ToastProvider>
-    </QueryClient>
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/refill" element={<Refill />} />
+          <Route path="/accessories" element={<Accessories />} />
+          <Route path="/gadgets" element={<Gadgets />} />
+          <Route path="/gadget/:id" element={<GadgetDetail />} />
+          <Route path="/foods" element={<Foods />} />
+          <Route path="/safety" element={<GasSafety />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/delivery-login" element={<DeliveryLogin />} />
+          <Route path="/delivery" element={<Delivery />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+        </Routes>
+        <UpdateNotification onUpdate={handleUpdate} />
+        <OnlineStatusMonitor />
+        <DeepLinkHandler />
+        <ShareTargetHandler />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
