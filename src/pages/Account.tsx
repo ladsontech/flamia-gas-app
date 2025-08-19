@@ -1,11 +1,14 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Package, MapPin, Phone, Mail, Settings, LogOut } from 'lucide-react';
+import { User, Package, Phone, Mail, Settings, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
+import { AddressManager } from '@/components/account/AddressManager';
+import { PhoneManager } from '@/components/account/PhoneManager';
 
 interface Profile {
   id: string;
@@ -280,6 +283,12 @@ const Account: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* Phone Numbers Management */}
+        {!isPhoneUser && <PhoneManager />}
+
+        {/* Address Management */}
+        {!isPhoneUser && <AddressManager />}
+
         {/* Order History */}
         <Card>
           <CardHeader>
@@ -348,11 +357,6 @@ const Account: React.FC = () => {
             <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/orders')}>
               <Package className="w-4 h-4 mr-2" />
               My Orders
-            </Button>
-            
-            <Button variant="outline" className="w-full justify-start">
-              <MapPin className="w-4 h-4 mr-2" />
-              Saved Addresses
             </Button>
             
             <Button variant="outline" className="w-full justify-start">

@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          address_line: string
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          label: string
+          latitude: number | null
+          longitude: number | null
+          postal_code: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          label: string
+          latitude?: number | null
+          longitude?: number | null
+          postal_code?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          label?: string
+          latitude?: number | null
+          longitude?: number | null
+          postal_code?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_products: {
         Row: {
           business_id: string
@@ -281,6 +329,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          additional_phone_number: string | null
           created_at: string
           display_name: string | null
           full_name: string | null
@@ -289,6 +338,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          additional_phone_number?: string | null
           created_at?: string
           display_name?: string | null
           full_name?: string | null
@@ -297,6 +347,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          additional_phone_number?: string | null
           created_at?: string
           display_name?: string | null
           full_name?: string | null
