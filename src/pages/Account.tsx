@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -175,12 +174,12 @@ const Account: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 pb-20">
-        <div className="container mx-auto px-4 py-6">
+      <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="animate-pulse space-y-4">
             {[1, 2, 3].map((i) => (
               <Card key={i}>
-                <CardContent className="p-4">
+                <CardContent className="p-4 sm:p-6">
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                   <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                 </CardContent>
@@ -195,19 +194,19 @@ const Account: React.FC = () => {
   // If not authenticated, show guest view
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 pb-20">
-        <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-2 text-lg">
                 <User className="w-5 h-5" />
                 <span>Profile Information</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
               <div className="text-center py-6">
-                <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-10 h-10 text-white" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                  <User className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold">Guest User</h3>
                 <p className="text-gray-600 text-sm">Sign in to save your preferences</p>
@@ -239,28 +238,33 @@ const Account: React.FC = () => {
 
   // Authenticated user view
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-20">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* User Profile Section */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
-                <User className="w-8 h-8 text-white" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base sm:text-lg font-semibold truncate">
                   {profile?.display_name || profile?.full_name || user?.user_metadata?.display_name || 'User'}
                 </h3>
-                {user.email && <p className="text-gray-600 text-sm">{user.email}</p>}
+                {user.email && (
+                  <p className="text-gray-600 text-xs sm:text-sm truncate">{user.email}</p>
+                )}
                 {(profile?.phone_number || user.phone) && (
-                  <p className="text-gray-600 text-sm">{profile?.phone_number || user.phone}</p>
+                  <p className="text-gray-600 text-xs sm:text-sm truncate">
+                    {profile?.phone_number || user.phone}
+                  </p>
                 )}
               </div>
               <Button 
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
+                className="flex-shrink-0"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -270,18 +274,18 @@ const Account: React.FC = () => {
 
         {/* Recent Orders - Activity Style */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center space-x-2 text-lg">
               <Package className="w-5 h-5" />
               <span>Recent Orders</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             {orders.length === 0 ? (
-              <div className="text-center py-8">
-                <Package className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600 mb-4">No orders yet</p>
-                <Button onClick={() => navigate('/order')}>
+              <div className="text-center py-6 sm:py-8">
+                <Package className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600 mb-4 text-sm sm:text-base">No orders yet</p>
+                <Button onClick={() => navigate('/order')} size="sm">
                   Place Your First Order
                 </Button>
               </div>
@@ -295,12 +299,12 @@ const Account: React.FC = () => {
                   >
                     <CollapsibleTrigger asChild>
                       <div className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                            <Package className="w-5 h-5 text-orange-600" />
+                        <div className="flex items-center space-x-3 flex-1 min-w-0">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Package className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
                           </div>
-                          <div>
-                            <p className="font-medium text-sm">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm truncate">
                               Order #{order.id.slice(0, 8)}
                             </p>
                             <p className="text-xs text-gray-500">
@@ -308,8 +312,8 @@ const Account: React.FC = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`text-xs font-medium ${getStatusColor(order.status)}`}>
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          <span className={`text-xs font-medium ${getStatusColor(order.status)} hidden sm:inline`}>
                             {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Pending'}
                           </span>
                           <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -317,15 +321,15 @@ const Account: React.FC = () => {
                       </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                      <div className="mt-2 p-4 bg-gray-50 rounded-lg">
+                      <div className="mt-2 p-3 sm:p-4 bg-gray-50 rounded-lg">
                         <h4 className="font-medium text-sm mb-2">Order Details</h4>
-                        <p className="text-sm text-gray-600">{order.description}</p>
-                        <div className="mt-3 pt-3 border-t border-gray-200">
+                        <p className="text-sm text-gray-600 mb-3 break-words">{order.description}</p>
+                        <div className="pt-3 border-t border-gray-200 space-y-2">
                           <div className="flex justify-between text-xs">
                             <span className="text-gray-500">Order ID:</span>
-                            <span className="font-medium">{order.id}</span>
+                            <span className="font-medium break-all">{order.id}</span>
                           </div>
-                          <div className="flex justify-between text-xs mt-1">
+                          <div className="flex justify-between text-xs">
                             <span className="text-gray-500">Status:</span>
                             <span className={`font-medium ${getStatusColor(order.status)}`}>
                               {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Pending'}
@@ -342,6 +346,7 @@ const Account: React.FC = () => {
                     variant="outline" 
                     className="w-full mt-4"
                     onClick={() => navigate('/orders')}
+                    size="sm"
                   >
                     View All Orders
                   </Button>

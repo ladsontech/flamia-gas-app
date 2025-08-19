@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -147,7 +146,7 @@ export const PhoneManager = () => {
   if (loading) {
     return (
       <Card className="w-full">
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-3 sm:p-6">
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-gray-200 rounded w-1/4"></div>
             <div className="h-10 bg-gray-200 rounded"></div>
@@ -160,17 +159,17 @@ export const PhoneManager = () => {
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center space-x-2 text-lg">
-          <Phone className="w-5 h-5 text-primary" />
+      <CardHeader className="pb-3 sm:pb-4">
+        <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+          <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           <span>Phone Numbers</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6 p-4 sm:p-6 pt-0">
+      <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0">
         {/* Primary Phone Number */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-gray-700">
+          <div className="flex items-center justify-between gap-2">
+            <Label className="text-xs sm:text-sm font-medium text-gray-700 flex-1">
               Primary Phone Number
             </Label>
             {!editingPrimary && (
@@ -178,17 +177,17 @@ export const PhoneManager = () => {
                 size="sm"
                 variant="outline"
                 onClick={() => setEditingPrimary(true)}
-                className="h-8"
+                className="h-7 sm:h-8 text-xs px-2 sm:px-3 flex-shrink-0"
               >
                 {profile.phone_number ? (
                   <>
                     <Edit2 className="w-3 h-3 mr-1" />
-                    Edit
+                    <span className="hidden sm:inline">Edit</span>
                   </>
                 ) : (
                   <>
                     <Plus className="w-3 h-3 mr-1" />
-                    Add
+                    <span className="hidden sm:inline">Add</span>
                   </>
                 )}
               </Button>
@@ -202,25 +201,34 @@ export const PhoneManager = () => {
                 placeholder="+256789123456 or 0789123456"
                 value={primaryPhone}
                 onChange={(e) => setPrimaryPhone(e.target.value)}
-                className="w-full"
+                className="w-full text-sm"
               />
               <p className="text-xs text-gray-500">
                 This number will be used for account verification and important notifications
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button size="sm" onClick={handleSavePrimary} className="flex-1 sm:flex-none">
+                <Button 
+                  size="sm" 
+                  onClick={handleSavePrimary} 
+                  className="flex-1 sm:flex-none h-8 text-xs"
+                >
                   <Save className="w-3 h-3 mr-1" />
                   Save
                 </Button>
-                <Button size="sm" variant="outline" onClick={handleCancelPrimary} className="flex-1 sm:flex-none">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={handleCancelPrimary} 
+                  className="flex-1 sm:flex-none h-8 text-xs"
+                >
                   <X className="w-3 h-3 mr-1" />
                   Cancel
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium mb-1">
+            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium mb-1 break-all">
                 {profile.phone_number || 'Not set'}
               </p>
               <p className="text-xs text-gray-500">
@@ -232,8 +240,8 @@ export const PhoneManager = () => {
 
         {/* Additional Phone Number */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-gray-700">
+          <div className="flex items-center justify-between gap-2">
+            <Label className="text-xs sm:text-sm font-medium text-gray-700 flex-1">
               Emergency Contact Number
             </Label>
             {!editingAdditional && (
@@ -241,17 +249,17 @@ export const PhoneManager = () => {
                 size="sm"
                 variant="outline"
                 onClick={() => setEditingAdditional(true)}
-                className="h-8"
+                className="h-7 sm:h-8 text-xs px-2 sm:px-3 flex-shrink-0"
               >
                 {profile.additional_phone_number ? (
                   <>
                     <Edit2 className="w-3 h-3 mr-1" />
-                    Edit
+                    <span className="hidden sm:inline">Edit</span>
                   </>
                 ) : (
                   <>
                     <Plus className="w-3 h-3 mr-1" />
-                    Add
+                    <span className="hidden sm:inline">Add</span>
                   </>
                 )}
               </Button>
@@ -265,25 +273,34 @@ export const PhoneManager = () => {
                 placeholder="+256789123456 or 0789123456"
                 value={additionalPhone}
                 onChange={(e) => setAdditionalPhone(e.target.value)}
-                className="w-full"
+                className="w-full text-sm"
               />
               <p className="text-xs text-gray-500">
                 This number can be used as an emergency contact for deliveries
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button size="sm" onClick={handleSaveAdditional} className="flex-1 sm:flex-none">
+                <Button 
+                  size="sm" 
+                  onClick={handleSaveAdditional} 
+                  className="flex-1 sm:flex-none h-8 text-xs"
+                >
                   <Save className="w-3 h-3 mr-1" />
                   Save
                 </Button>
-                <Button size="sm" variant="outline" onClick={handleCancelAdditional} className="flex-1 sm:flex-none">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={handleCancelAdditional} 
+                  className="flex-1 sm:flex-none h-8 text-xs"
+                >
                   <X className="w-3 h-3 mr-1" />
                   Cancel
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium mb-1">
+            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium mb-1 break-all">
                 {profile.additional_phone_number || 'Not set'}
               </p>
               <p className="text-xs text-gray-500">
