@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,9 +15,6 @@ interface Address {
   label: string;
   address_line: string;
   city?: string;
-  state?: string;
-  country?: string;
-  postal_code?: string;
   latitude?: number;
   longitude?: number;
   is_default: boolean;
@@ -32,10 +28,7 @@ export const AddressManager = () => {
   const [formData, setFormData] = useState({
     label: '',
     address_line: '',
-    city: '',
-    state: '',
-    country: '',
-    postal_code: '',
+    city: 'Kampala', // Default to Kampala
     latitude: null as number | null,
     longitude: null as number | null,
     is_default: false
@@ -85,7 +78,12 @@ export const AddressManager = () => {
       if (!user) throw new Error('User not authenticated');
 
       const addressData = {
-        ...formData,
+        label: formData.label,
+        address_line: formData.address_line,
+        city: formData.city,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        is_default: formData.is_default,
         user_id: user.id
       };
 
@@ -188,10 +186,7 @@ export const AddressManager = () => {
     setFormData({
       label: '',
       address_line: '',
-      city: '',
-      state: '',
-      country: '',
-      postal_code: '',
+      city: 'Kampala',
       latitude: null,
       longitude: null,
       is_default: false
@@ -204,10 +199,7 @@ export const AddressManager = () => {
     setFormData({
       label: address.label,
       address_line: address.address_line,
-      city: address.city || '',
-      state: address.state || '',
-      country: address.country || '',
-      postal_code: address.postal_code || '',
+      city: address.city || 'Kampala',
       latitude: address.latitude,
       longitude: address.longitude,
       is_default: address.is_default
@@ -251,20 +243,18 @@ export const AddressManager = () => {
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="label">Address Label</Label>
-                    <Select value={formData.label} onValueChange={(value) => setFormData(prev => ({ ...prev, label: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select label" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Home">Home</SelectItem>
-                        <SelectItem value="Work">Work</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div>
+                  <Label htmlFor="label">Nearby Location Name</Label>
+                  <Input
+                    id="label"
+                    value={formData.label}
+                    onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
+                    placeholder="e.g., Near Nakumatt, Close to Bank of Uganda, etc."
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter a nearby landmark or location name for easy identification
+                  </p>
                 </div>
 
                 <LocationPicker
@@ -280,46 +270,14 @@ export const AddressManager = () => {
                   }
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                      placeholder="City"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
-                      value={formData.state}
-                      onChange={(e) => setFormData(prev => ({ ...prev, state: e.target.value }))}
-                      placeholder="State"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="country">Country</Label>
-                    <Input
-                      id="country"
-                      value={formData.country}
-                      onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
-                      placeholder="Country"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="postal_code">Postal Code</Label>
-                    <Input
-                      id="postal_code"
-                      value={formData.postal_code}
-                      onChange={(e) => setFormData(prev => ({ ...prev, postal_code: e.target.value }))}
-                      placeholder="Postal Code"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                    placeholder="Kampala"
+                  />
                 </div>
 
                 <div className="flex justify-end space-x-2 pt-4">
@@ -360,9 +318,7 @@ export const AddressManager = () => {
                       )}
                     </div>
                     <p className="text-sm text-gray-600 mb-1">{address.address_line}</p>
-                    <p className="text-xs text-gray-500">
-                      {[address.city, address.state, address.country].filter(Boolean).join(', ')}
-                    </p>
+                    <p className="text-xs text-gray-500">{address.city}</p>
                   </div>
                   <div className="flex space-x-2">
                     {!address.is_default && (

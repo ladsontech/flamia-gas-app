@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Package, Phone, Mail, Settings, LogOut } from 'lucide-react';
+import { User, Package, Phone, Mail, LogOut, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
 import { AddressManager } from '@/components/account/AddressManager';
 import { PhoneManager } from '@/components/account/PhoneManager';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface Profile {
   id: string;
@@ -32,6 +33,7 @@ const Account: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   useEffect(() => {
     checkAuthStatus();
@@ -53,7 +55,6 @@ const Account: React.FC = () => {
         
         if (phoneVerified && userName) {
           setIsPhoneUser(true);
-          // Fetch phone user profile
           await fetchPhoneProfile(phoneVerified);
           setUser({ 
             id: phoneVerified, 
@@ -130,7 +131,6 @@ const Account: React.FC = () => {
   const handleSignOut = async () => {
     try {
       if (isPhoneUser) {
-        // Clear phone verification data
         localStorage.removeItem('phoneVerified');
         localStorage.removeItem('userName');
         
@@ -160,14 +160,22 @@ const Account: React.FC = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'text-green-600';
+      case 'pending':
+        return 'text-yellow-600';
+      case 'in_progress':
+        return 'text-blue-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-white shadow-sm">
-          <div className="container mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold">My Account</h1>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-50 pt-20 pb-20">
         <div className="container mx-auto px-4 py-6">
           <div className="animate-pulse space-y-4">
             {[1, 2, 3].map((i) => (
@@ -187,13 +195,7 @@ const Account: React.FC = () => {
   // If not authenticated, show guest view
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-white shadow-sm">
-          <div className="container mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold">My Account</h1>
-          </div>
-        </div>
-
+      <div className="min-h-screen bg-gray-50 pt-20 pb-20">
         <div className="container mx-auto px-4 py-6 space-y-6">
           <Card>
             <CardHeader>
@@ -237,80 +239,46 @@ const Account: React.FC = () => {
 
   // Authenticated user view
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold">My Account</h1>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gray-50 pt-20 pb-20">
       <div className="container mx-auto px-4 py-6 space-y-6">
         {/* User Profile Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <User className="w-5 h-5" />
-              <span>Profile Information</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center py-6">
-              <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                <User className="w-10 h-10 text-white" />
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
+                <User className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold">
-                {profile?.display_name || profile?.full_name || user?.user_metadata?.display_name || 'User'}
-              </h3>
-              {user.email && <p className="text-gray-600 text-sm">{user.email}</p>}
-              {(profile?.phone_number || user.phone) && (
-                <p className="text-gray-600 text-sm">{profile?.phone_number || user.phone}</p>
-              )}
-              {isPhoneUser && (
-                <span className="inline-block px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs mt-2">
-                  Phone Verified
-                </span>
-              )}
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">
+                  {profile?.display_name || profile?.full_name || user?.user_metadata?.display_name || 'User'}
+                </h3>
+                {user.email && <p className="text-gray-600 text-sm">{user.email}</p>}
+                {(profile?.phone_number || user.phone) && (
+                  <p className="text-gray-600 text-sm">{profile?.phone_number || user.phone}</p>
+                )}
+              </div>
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
             </div>
-            
-            <Button 
-              variant="outline"
-              className="w-full"
-              onClick={handleSignOut}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
           </CardContent>
         </Card>
 
-        {/* Phone Numbers Management */}
-        {!isPhoneUser && <PhoneManager />}
-
-        {/* Address Management */}
-        {!isPhoneUser && <AddressManager />}
-
-        {/* Order History */}
+        {/* Recent Orders - Activity Style */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Package className="w-5 h-5" />
-                <span>Recent Orders</span>
-              </div>
-              {orders.length > 0 && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => navigate('/orders')}
-                >
-                  View All
-                </Button>
-              )}
+            <CardTitle className="flex items-center space-x-2">
+              <Package className="w-5 h-5" />
+              <span>Recent Orders</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {orders.length === 0 ? (
-              <div className="text-center py-6">
+              <div className="text-center py-8">
                 <Package className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600 mb-4">No orders yet</p>
                 <Button onClick={() => navigate('/order')}>
@@ -319,72 +287,75 @@ const Account: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {orders.slice(0, 3).map((order) => (
-                  <div key={order.id} className="border rounded-lg p-3">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-sm font-medium">
-                        Order #{order.id.slice(0, 8)}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {format(new Date(order.created_at), 'MMM d, yyyy')}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {order.description}
-                    </p>
-                    <div className="mt-2">
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Pending'}
-                      </span>
-                    </div>
-                  </div>
+                {orders.map((order) => (
+                  <Collapsible 
+                    key={order.id} 
+                    open={expandedOrder === order.id}
+                    onOpenChange={(isOpen) => setExpandedOrder(isOpen ? order.id : null)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <div className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                            <Package className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">
+                              Order #{order.id.slice(0, 8)}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {format(new Date(order.created_at), 'dd/MM/yyyy, h:mma')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-xs font-medium ${getStatusColor(order.status)}`}>
+                            {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Pending'}
+                          </span>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </div>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="mt-2 p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-sm mb-2">Order Details</h4>
+                        <p className="text-sm text-gray-600">{order.description}</p>
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-gray-500">Order ID:</span>
+                            <span className="font-medium">{order.id}</span>
+                          </div>
+                          <div className="flex justify-between text-xs mt-1">
+                            <span className="text-gray-500">Status:</span>
+                            <span className={`font-medium ${getStatusColor(order.status)}`}>
+                              {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Pending'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 ))}
+                
+                {orders.length >= 3 && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={() => navigate('/orders')}
+                  >
+                    View All Orders
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/orders')}>
-              <Package className="w-4 h-4 mr-2" />
-              My Orders
-            </Button>
-            
-            <Button variant="outline" className="w-full justify-start">
-              <Phone className="w-4 h-4 mr-2" />
-              Contact Support
-            </Button>
-            
-            <Button variant="outline" className="w-full justify-start">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Phone Numbers Management */}
+        {!isPhoneUser && <PhoneManager />}
 
-        {/* App Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>About Flamia</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-sm text-gray-600">
-              Your trusted partner for gas cylinders, gadgets, and food delivery in Uganda.
-            </p>
-            <div className="pt-2 border-t">
-              <p className="text-xs text-gray-500">Version 1.0.0</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Address Management */}
+        {!isPhoneUser && <AddressManager />}
       </div>
     </div>
   );
