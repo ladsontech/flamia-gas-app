@@ -61,7 +61,7 @@ function ForgotPassword({ onBack }: ForgotPasswordProps) {
       if (isValidEmail(identifier)) {
         setIsPhoneReset(false);
         const { error } = await supabase.auth.resetPasswordForEmail(identifier, {
-          redirectTo: `${window.location.origin}/signin`,
+          redirectTo: `${window.location.origin}/reset-password`,
         });
 
         if (error) {

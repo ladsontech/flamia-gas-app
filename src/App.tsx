@@ -17,6 +17,7 @@ import Delivery from './pages/Delivery';
 import Account from './pages/Account';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import ResetPassword from './pages/ResetPassword';
 import UpdateNotification from './components/UpdateNotification';
 import { OnlineStatusMonitor } from './components/OnlineStatusMonitor';
 import DeepLinkHandler from './components/DeepLinkHandler';
@@ -61,6 +62,7 @@ function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
         <BottomNav isAdmin={false} />
         <UpdateNotification onUpdate={handleUpdate} />
