@@ -13,10 +13,12 @@ import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [hasValidTokens, setHasValidTokens] = useState(false);
   const [isCheckingTokens, setIsCheckingTokens] = useState(true);
+  const [mode, setMode] = useState<'request' | 'reset'>('request');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -36,16 +38,20 @@ const ResetPassword = () => {
           
           if (!error) {
             setHasValidTokens(true);
+            setMode('reset');
           } else {
             console.error('Session error:', error);
             toast.error("Invalid reset link. Please request a new password reset.");
+            setMode('request');
           }
         } catch (error) {
           console.error('Token validation error:', error);
           toast.error("Invalid reset link. Please request a new password reset.");
+          setMode('request');
         }
       } else {
-        toast.error("Invalid reset link. Please request a new password reset from the sign in page.");
+        // No tokens present, show the request form
+        setMode('request');
       }
       
       setIsCheckingTokens(false);
@@ -53,6 +59,35 @@ const ResetPassword = () => {
 
     checkTokens();
   }, [searchParams]);
+
+  const handleSendResetEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Password reset email sent! Check your inbox.");
+        setIsSuccess(true);
+      }
+    } catch (error) {
+      console.error('Reset email error:', error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,40 +148,7 @@ const ResetPassword = () => {
     );
   }
 
-  // Show error state if no valid tokens
-  if (!hasValidTokens) {
-    return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
-        <div className="w-full max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <LionFlameLogo size={64} className="animate-pulse" />
-            </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
-              Invalid Reset Link
-            </h2>
-          </div>
-
-          <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
-                <p className="text-muted-foreground">
-                  This password reset link is invalid or has expired. Please request a new password reset from the sign in page.
-                </p>
-                <Button 
-                  onClick={() => navigate('/signin')}
-                  className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent"
-                >
-                  Go to Sign In
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
+  // Success state for both email sent and password reset
   if (isSuccess) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
@@ -156,7 +158,7 @@ const ResetPassword = () => {
               <LionFlameLogo size={64} className="animate-pulse" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
-              Password Reset Successful
+              {mode === 'reset' ? 'Password Reset Successful' : 'Email Sent'}
             </h2>
           </div>
 
@@ -166,9 +168,14 @@ const ResetPassword = () => {
                 <div className="flex justify-center">
                   <CheckCircle className="h-16 w-16 text-green-500" />
                 </div>
-                <h3 className="text-xl font-semibold">All Done!</h3>
+                <h3 className="text-xl font-semibold">
+                  {mode === 'reset' ? 'All Done!' : 'Check Your Email!'}
+                </h3>
                 <p className="text-muted-foreground">
-                  Your password has been successfully updated. You can now sign in with your new password.
+                  {mode === 'reset' 
+                    ? 'Your password has been successfully updated. You can now sign in with your new password.'
+                    : 'We\'ve sent a password reset link to your email address. Click the link to reset your password.'
+                  }
                 </p>
                 <Button 
                   onClick={() => navigate('/signin')}
@@ -201,52 +208,81 @@ const ResetPassword = () => {
             <LionFlameLogo size={64} className="animate-pulse" />
           </div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
-            Reset Your Password
+            {mode === 'reset' ? 'Reset Your Password' : 'Forgot Password'}
           </h2>
-          <p className="text-muted-foreground">Enter your new password below</p>
+          <p className="text-muted-foreground">
+            {mode === 'reset' 
+              ? 'Enter your new password below' 
+              : 'Enter your email address and we\'ll send you a link to reset your password'
+            }
+          </p>
         </div>
 
         <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-center text-xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-              New Password
+              {mode === 'reset' ? 'New Password' : 'Reset Password'}
             </CardTitle>
           </CardHeader>
           
           <CardContent>
-            <form onSubmit={handleResetPassword} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter new password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <Button 
-                type="submit"
-                className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent"
-                disabled={isLoading}
-              >
-                {isLoading ? "Updating..." : "Update Password"}
-              </Button>
-            </form>
+            {mode === 'request' ? (
+              <form onSubmit={handleSendResetEmail} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Sending..." : "Send Reset Email"}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">New Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Updating..." : "Update Password"}
+                </Button>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
