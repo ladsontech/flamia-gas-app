@@ -228,6 +228,7 @@ export type Database = {
           description: string
           id: string
           status: string | null
+          user_id: string | null
         }
         Insert: {
           assigned_at?: string | null
@@ -236,6 +237,7 @@ export type Database = {
           description: string
           id?: string
           status?: string | null
+          user_id?: string | null
         }
         Update: {
           assigned_at?: string | null
@@ -244,6 +246,7 @@ export type Database = {
           description?: string
           id?: string
           status?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -273,6 +276,33 @@ export type Database = {
           created_at?: string
           expires_at?: string
           phone_number?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          full_name?: string | null
+          id: string
+          phone_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

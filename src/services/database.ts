@@ -1,3 +1,4 @@
+
 import { Order } from "@/types/order";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -81,13 +82,17 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
   }
 };
 
-// Create order - now saves to database AND opens WhatsApp
+// Create order - now saves to database AND links to authenticated user
 export const createOrder = async (orderDetails: string) => {
+  // Get the current user
+  const { data: { user } } = await supabase.auth.getUser();
+  
   const { error } = await supabase
     .from('orders')
     .insert([{
       description: orderDetails,
-      status: 'pending'
+      status: 'pending',
+      user_id: user?.id || null // Link to user if authenticated
     }]);
   
   if (error) {
