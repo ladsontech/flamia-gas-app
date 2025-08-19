@@ -15,26 +15,44 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [hasValidTokens, setHasValidTokens] = useState(false);
+  const [isCheckingTokens, setIsCheckingTokens] = useState(true);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if we have the necessary URL parameters for password reset
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    
-    if (!accessToken || !refreshToken) {
-      toast.error("Invalid reset link. Please request a new password reset.");
-      navigate('/signin');
-      return;
-    }
+    const checkTokens = async () => {
+      // Check if we have the necessary URL parameters for password reset
+      const accessToken = searchParams.get('access_token');
+      const refreshToken = searchParams.get('refresh_token');
+      
+      if (accessToken && refreshToken) {
+        try {
+          // Set the session from the URL parameters
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          
+          if (!error) {
+            setHasValidTokens(true);
+          } else {
+            console.error('Session error:', error);
+            toast.error("Invalid reset link. Please request a new password reset.");
+          }
+        } catch (error) {
+          console.error('Token validation error:', error);
+          toast.error("Invalid reset link. Please request a new password reset.");
+        }
+      } else {
+        toast.error("Invalid reset link. Please request a new password reset from the sign in page.");
+      }
+      
+      setIsCheckingTokens(false);
+    };
 
-    // Set the session from the URL parameters
-    supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken
-    });
-  }, [searchParams, navigate]);
+    checkTokens();
+  }, [searchParams]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +92,60 @@ const ResetPassword = () => {
       setIsLoading(false);
     }
   };
+
+  // Show loading while checking tokens
+  if (isCheckingTokens) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
+        <div className="w-full max-w-md mx-auto flex items-center justify-center min-h-screen">
+          <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <LionFlameLogo size={64} className="animate-pulse" />
+                </div>
+                <p className="text-muted-foreground">Verifying reset link...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no valid tokens
+  if (!hasValidTokens) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
+        <div className="w-full max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <LionFlameLogo size={64} className="animate-pulse" />
+            </div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
+              Invalid Reset Link
+            </h2>
+          </div>
+
+          <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-4">
+                <p className="text-muted-foreground">
+                  This password reset link is invalid or has expired. Please request a new password reset from the sign in page.
+                </p>
+                <Button 
+                  onClick={() => navigate('/signin')}
+                  className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent"
+                >
+                  Go to Sign In
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
