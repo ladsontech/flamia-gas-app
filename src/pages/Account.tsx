@@ -289,7 +289,7 @@ const Account: React.FC = () => {
               <div className="text-center py-6 sm:py-8">
                 <Package className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600 mb-4 text-sm sm:text-base">No orders yet</p>
-                <Button onClick={() => navigate('/order')} size="sm">
+                <Button onClick={() => navigate('/')} size="sm">
                   Place Your First Order
                 </Button>
               </div>
