@@ -16,8 +16,6 @@ const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [hasValidTokens, setHasValidTokens] = useState(false);
-  const [isCheckingTokens, setIsCheckingTokens] = useState(true);
   const [mode, setMode] = useState<'request' | 'reset'>('request');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -37,24 +35,19 @@ const ResetPassword = () => {
           });
           
           if (!error) {
-            setHasValidTokens(true);
             setMode('reset');
+            toast.success("Reset link verified! You can now set your new password.");
           } else {
             console.error('Session error:', error);
-            toast.error("Invalid reset link. Please request a new password reset.");
+            toast.error("Invalid reset link. You can still request a new password reset below.");
             setMode('request');
           }
         } catch (error) {
           console.error('Token validation error:', error);
-          toast.error("Invalid reset link. Please request a new password reset.");
+          toast.error("Invalid reset link. You can still request a new password reset below.");
           setMode('request');
         }
-      } else {
-        // No tokens present, show the request form
-        setMode('request');
       }
-      
-      setIsCheckingTokens(false);
     };
 
     checkTokens();
@@ -128,26 +121,6 @@ const ResetPassword = () => {
     }
   };
 
-  // Show loading while checking tokens
-  if (isCheckingTokens) {
-    return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
-        <div className="w-full max-w-md mx-auto flex items-center justify-center min-h-screen">
-          <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
-                <div className="flex justify-center">
-                  <LionFlameLogo size={64} className="animate-pulse" />
-                </div>
-                <p className="text-muted-foreground">Verifying reset link...</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
   // Success state for both email sent and password reset
   if (isSuccess) {
     return (
@@ -208,7 +181,7 @@ const ResetPassword = () => {
             <LionFlameLogo size={64} className="animate-pulse" />
           </div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
-            {mode === 'reset' ? 'Reset Your Password' : 'Forgot Password'}
+            {mode === 'reset' ? 'Set New Password' : 'Reset Password'}
           </h2>
           <p className="text-muted-foreground">
             {mode === 'reset' 
@@ -221,11 +194,11 @@ const ResetPassword = () => {
         <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-center text-xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-              {mode === 'reset' ? 'New Password' : 'Reset Password'}
+              {mode === 'reset' ? 'New Password' : 'Request Reset'}
             </CardTitle>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="space-y-4">
             {mode === 'request' ? (
               <form onSubmit={handleSendResetEmail} className="space-y-4">
                 <div className="space-y-2">
@@ -282,6 +255,18 @@ const ResetPassword = () => {
                   {isLoading ? "Updating..." : "Update Password"}
                 </Button>
               </form>
+            )}
+
+            {mode === 'request' && (
+              <div className="text-center">
+                <Button 
+                  variant="link" 
+                  onClick={() => setMode('reset')}
+                  className="text-accent hover:text-accent/80"
+                >
+                  Already have a reset code? Set new password directly
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
