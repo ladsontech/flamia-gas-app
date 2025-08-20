@@ -1,20 +1,20 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { BottomNav } from './components/BottomNav';
 import UpdateNotification from './components/UpdateNotification';
-import { useRegisterSW } from 'virtual:pwa-register/react';
 import { supabase } from './integrations/supabase/client';
-import AdminPage from './pages/AdminPage';
+import AdminPage from './pages/Admin';
 import Login from './pages/Login';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Account from './pages/Account';
 import Gadgets from './pages/Gadgets';
 import Foods from './pages/Foods';
-import Home from './pages/Home';
+import Home from './pages/Index';
 
 function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -46,20 +46,17 @@ function App() {
     fetchAdminStatus();
   }, [user]);
 
-  const updateSW = useRegisterSW({
-    onNeedRefresh() {
-      toast({
-        title: "Update available!",
-        description: "Click here to update the app.",
-        action: <UpdateNotification updateSW={updateSW} />,
-      })
-    },
-    onRegistered(r) {
-      r && setInterval(() => {
-        r.update()
-      }, 60 * 60 * 1000)
-    },
-  })
+  const handleUpdate = () => {
+    window.location.reload();
+  };
+
+  const showUpdateNotification = () => {
+    toast({
+      title: "Update available!",
+      description: "Click here to update the app.",
+      action: <UpdateNotification onUpdate={handleUpdate} />,
+    });
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -67,7 +64,7 @@ function App() {
         <div className="flex flex-col min-h-screen">
           <Toaster />
           
-          <main className="flex-1 pb-20 md:pb-0">
+          <main className="flex-1 pb-24 md:pb-0">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/gadgets" element={<Gadgets />} />

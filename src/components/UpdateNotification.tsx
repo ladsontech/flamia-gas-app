@@ -55,7 +55,9 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
     };
 
     // Register the listener
-    navigator.serviceWorker.addEventListener('message', handleMessage);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', handleMessage);
+    }
 
     // When this component mounts, check if we need to show the update notification
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller && isStandalone) {
@@ -67,7 +69,9 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
 
     // Clean up
     return () => {
-      navigator.serviceWorker.removeEventListener('message', handleMessage);
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', handleMessage);
+      }
     };
   }, [onUpdate, isStandalone]);
 
