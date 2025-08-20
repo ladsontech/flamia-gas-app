@@ -14,7 +14,7 @@ export const EmailSignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [confirmationSent, setConfirmationSent] = useState(false);
+  // Remove confirmationSent state as we're disabling email confirmation
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -51,13 +51,12 @@ export const EmailSignUp = () => {
 
     try {
       const displayName = extractNameFromEmail(email);
-      const redirectUrl = `${window.location.origin}/`;
 
+      // Remove emailRedirectTo to disable email confirmation
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             full_name: displayName,
             display_name: displayName
@@ -72,12 +71,13 @@ export const EmailSignUp = () => {
           variant: "destructive"
         });
       } else {
-        setConfirmationSent(true);
         toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration.",
+          title: "Account Created Successfully",
+          description: "Welcome to Flamia! You're now signed in.",
           className: "border-accent/20"
         });
+        // Navigate to home page since user is automatically signed in
+        navigate('/');
       }
     } catch (error: any) {
       toast({
@@ -89,40 +89,6 @@ export const EmailSignUp = () => {
       setLoading(false);
     }
   };
-
-  if (confirmationSent) {
-    return (
-      <div className="text-center space-y-6">
-        <div className="flex justify-center">
-          <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-full">
-            <Mail className="h-12 w-12 text-accent" />
-          </div>
-        </div>
-        <h3 className="text-lg font-semibold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-          Check Your Email
-        </h3>
-        <Alert className="border-accent/20 bg-accent/5">
-          <AlertDescription className="text-center">
-            We've sent a confirmation link to <strong className="text-accent">{email}</strong>. 
-            Please check your email and click the link to complete your registration.
-            You'll be automatically signed in after confirmation.
-          </AlertDescription>
-        </Alert>
-        <Button 
-          variant="outline" 
-          className="hover:bg-accent/10 hover:border-accent/50"
-          onClick={() => {
-            setConfirmationSent(false);
-            setEmail('');
-            setPassword('');
-            setConfirmPassword('');
-          }}
-        >
-          Try Different Email
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

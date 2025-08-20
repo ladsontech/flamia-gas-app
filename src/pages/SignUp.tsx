@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,40 +36,41 @@ const SignUp = () => {
         <Card className="glass-card border-2 border-accent/20 shadow-xl backdrop-blur-sm">
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-xl bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-              Registration Method
+              Create Account
             </CardTitle>
-            <div className="flex gap-2 mt-6">
-              <Button
-                variant={authMethod === 'email' ? 'default' : 'outline'}
-                className={`flex-1 transition-all duration-200 ${
-                  authMethod === 'email' 
-                    ? 'bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-accent' 
-                    : 'hover:bg-accent/10 hover:border-accent/50'
-                }`}
-                onClick={() => setAuthMethod('email')}
-              >
-                Email
-              </Button>
-              <Button
-                variant={authMethod === 'phone' ? 'default' : 'outline'}
-                className={`flex-1 transition-all duration-200 ${
-                  authMethod === 'phone' 
-                    ? 'bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-accent' 
-                    : 'hover:bg-accent/10 hover:border-accent/50'
-                }`}
-                onClick={() => setAuthMethod('phone')}
-              >
-                Phone
-              </Button>
-            </div>
+            {/* Phone signup option hidden for now - keeping code for later use */}
+            {false && (
+              <div className="flex gap-2 mt-6">
+                <Button
+                  variant={authMethod === 'email' ? 'default' : 'outline'}
+                  className={`flex-1 transition-all duration-200 ${
+                    authMethod === 'email' 
+                      ? 'bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-accent' 
+                      : 'hover:bg-accent/10 hover:border-accent/50'
+                  }`}
+                  onClick={() => setAuthMethod('email')}
+                >
+                  Email
+                </Button>
+                <Button
+                  variant={authMethod === 'phone' ? 'default' : 'outline'}
+                  className={`flex-1 transition-all duration-200 ${
+                    authMethod === 'phone' 
+                      ? 'bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-accent' 
+                      : 'hover:bg-accent/10 hover:border-accent/50'
+                  }`}
+                  onClick={() => setAuthMethod('phone')}
+                >
+                  Phone
+                </Button>
+              </div>
+            )}
           </CardHeader>
           
           <CardContent>
-            {authMethod === 'email' ? (
-              <EmailSignUp />
-            ) : (
-              <PhoneSignUp />
-            )}
+            {/* Always show email signup, phone signup code kept but hidden */}
+            <EmailSignUp />
+            {false && authMethod === 'phone' && <PhoneSignUp />}
           </CardContent>
           
           <div className="px-6 pb-6">
