@@ -46,7 +46,7 @@ const Account: React.FC = () => {
       if (user) {
         setUser(user);
         await fetchProfile(user.id);
-        await fetchOrders();
+        await fetchOrders(user.id); // Pass user ID to filter orders
       } else {
         // Check for phone-verified user
         const phoneVerified = localStorage.getItem('phoneVerified');
@@ -108,11 +108,14 @@ const Account: React.FC = () => {
     }
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (userId: string) => {
     try {
+      console.log('Fetching orders for user in Account page:', userId);
+      
       const { data, error } = await supabase
         .from('orders')
         .select('id, created_at, description, status')
+        .eq('user_id', userId) // Filter by user_id
         .order('created_at', { ascending: false })
         .limit(10);
 
@@ -121,6 +124,7 @@ const Account: React.FC = () => {
         return;
       }
 
+      console.log('Fetched orders for user:', data);
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching orders:', error);

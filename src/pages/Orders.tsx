@@ -15,6 +15,7 @@ interface Order {
   delivery_man_id?: string | null;
   status: 'pending' | 'assigned' | 'in_progress' | 'completed';
   assigned_at?: string | null;
+  user_id?: string | null;
 }
 
 const Orders = () => {
@@ -33,21 +34,29 @@ const Orders = () => {
         return;
       }
       setUser(user);
-      await fetchOrders();
+      await fetchOrders(user.id);
     };
 
     checkUser();
   }, [navigate]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (userId: string) => {
     try {
       setLoading(true);
+      console.log('Fetching orders for user:', userId);
+      
       const { data, error } = await supabase
         .from('orders')
-        .select('id, created_at, description, delivery_man_id, status, assigned_at')
+        .select('id, created_at, description, delivery_man_id, status, assigned_at, user_id')
+        .eq('user_id', userId) // Filter orders by user_id
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching orders:', error);
+        throw error;
+      }
+      
+      console.log('Fetched orders:', data);
       
       // Transform database orders with simple mapping
       const transformedOrders: Order[] = [];
@@ -63,7 +72,8 @@ const Orders = () => {
             status: validStatuses.includes(dbOrder.status) 
               ? dbOrder.status as 'assigned' | 'in_progress' | 'completed'
               : 'pending',
-            assigned_at: dbOrder.assigned_at
+            assigned_at: dbOrder.assigned_at,
+            user_id: dbOrder.user_id
           };
           transformedOrders.push(order);
         });
@@ -71,6 +81,7 @@ const Orders = () => {
       
       setOrders(transformedOrders);
     } catch (error: any) {
+      console.error('Error in fetchOrders:', error);
       toast({
         title: "Error",
         description: "Failed to fetch orders",
