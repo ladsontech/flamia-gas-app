@@ -116,7 +116,7 @@ const OverlayCarousel: React.FC = () => {
       <div className="relative">
         <ImageCarousel />
         
-        {/* Desktop Featured Products Overlay - Bottom Half Only */}
+        {/* Desktop Title and Description Overlay - Bottom Half Only */}
         <div className="hidden md:block absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
           <div className="p-6">
             {/* Title and Description */}
@@ -139,58 +139,6 @@ const OverlayCarousel: React.FC = () => {
               >
                 {currentSection.description}
               </motion.p>
-            </div>
-
-            {/* Featured Products Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl">
-              {currentSection.featuredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <Card
-                    className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden group"
-                    onClick={() => handleProductClick(product.id)}
-                  >
-                    <div className="aspect-square bg-gray-50 p-3">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-3">
-                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2">
-                        {product.name}
-                      </h3>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-accent">
-                            {formatPrice(product.price)}
-                          </span>
-                          {product.original_price && product.original_price > product.price && (
-                            <span className="text-sm text-gray-500 line-through">
-                              {formatPrice(product.original_price)}
-                            </span>
-                          )}
-                        </div>
-                        {product.original_price && product.original_price > product.price && (
-                          <div className="text-xs text-red-600 font-medium">
-                            Save {Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
-                          </div>
-                        )}
-                      </div>
-                      {product.brand && (
-                        <div className="text-xs text-gray-600 mt-1">
-                          {product.brand}
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
             </div>
           </div>
         </div>
