@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -23,6 +22,8 @@ const GadgetDetail = () => {
     g.id !== id && 
     (g.category === gadget?.category || g.brand === gadget?.brand)
   ).slice(0, 8);
+
+  const canonicalUrl = `https://flamia.store/gadget/${id}`;
 
   const handleOrder = () => {
     if (!gadget) return;
@@ -78,33 +79,80 @@ Please let me know about availability and delivery options.`;
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-accent" />
-        <span className="ml-2 text-gray-600">Loading product...</span>
-      </div>
+      <>
+        <Helmet>
+          <title>Loading Product - Flamia Gadgets</title>
+          <link rel="canonical" href={canonicalUrl} />
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <span className="ml-2 text-gray-600">Loading product...</span>
+        </div>
+      </>
     );
   }
 
   if (!gadget) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-          <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/gadgets')} className="bg-accent hover:bg-accent/90">
-            Back to Gadgets
-          </Button>
+      <>
+        <Helmet>
+          <title>Product Not Found - Flamia Gadgets</title>
+          <link rel="canonical" href={canonicalUrl} />
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+            <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
+            <Button onClick={() => navigate('/gadgets')} className="bg-accent hover:bg-accent/90">
+              Back to Gadgets
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Helmet>
-        <title>{gadget.name} - Flamia Gadgets</title>
-        <meta name="description" content={gadget.description} />
-        <meta name="keywords" content={`${gadget.name}, ${gadget.category}, ${gadget.brand}, gadgets, electronics`} />
+        <title>{gadget.name} - Flamia Gadgets Uganda | Best Price Electronics</title>
+        <meta name="description" content={`${gadget.description} - Order ${gadget.name} with fast delivery in Uganda. Price: UGX ${gadget.price.toLocaleString()}`} />
+        <meta name="keywords" content={`${gadget.name}, ${gadget.category}, ${gadget.brand}, gadgets Uganda, electronics Kampala`} />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={`${gadget.name} - Flamia Gadgets`} />
+        <meta property="og:description" content={gadget.description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="product" />
+        <meta property="og:image" content={gadget.image_url || '/images/gadget-fallback.jpg'} />
+        
+        {/* Product Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": gadget.name,
+            "description": gadget.description,
+            "image": gadget.image_url,
+            "brand": gadget.brand,
+            "category": gadget.category,
+            "offers": {
+              "@type": "Offer",
+              "price": gadget.price,
+              "priceCurrency": "UGX",
+              "availability": gadget.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+            }
+          })}
+        </script>
+        
+        {/* SEO */}
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
       </Helmet>
 
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8 max-w-7xl">

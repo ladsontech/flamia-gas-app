@@ -12,53 +12,59 @@ const Accessories = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const canonicalUrl = "https://flamia.store/accessories";
 
   const handleOrder = (accessoryId: string) => {
     navigate(`/order?accessory=${accessoryId}`);
   };
 
-  // SEO metadata hidden in Helmet
-  const pageTitle = "Gas Accessories - Flamia";
-  const pageDescription = "Shop for gas accessories including regulators, pipes, stoves, and more. Free delivery in Kampala.";
-
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <div className="container mx-auto px-2 py-3">
-          <div className="flex items-center justify-center min-h-[200px]">
-            <p className="text-center text-muted-foreground">Loading accessories...</p>
+      <>
+        <Helmet>
+          <title>Gas Accessories - Flamia Uganda</title>
+          <link rel="canonical" href={canonicalUrl} />
+          <meta name="robots" content="index, follow" />
+        </Helmet>
+        <div className="min-h-screen flex flex-col">
+          <div className="container mx-auto px-2 py-3">
+            <div className="flex items-center justify-center min-h-[200px]">
+              <p className="text-center text-muted-foreground">Loading accessories...</p>
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-white to-blue-50">
       <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta name="keywords" content="gas accessories, gas regulator, gas pipe, gas stove, cylinder stand, LPG accessories" />
+        <title>Gas Accessories Uganda - Regulators, Burners, Pipes | Flamia Store</title>
+        <meta name="description" content="Shop quality gas accessories in Uganda. Gas regulator, gas burner, gas pipe, cylinder stand with free delivery in Kampala, Wakiso, Mukono." />
+        <meta name="keywords" content="gas accessories Uganda, gas regulator, gas pipe, gas stove, gas burner, cylinder stand, LPG accessories Kampala" />
         
-        <meta name="geo.region" content="UG" />
-        <meta name="geo.placename" content="Kampala" />
-        <meta name="og:locale" content="en_UG" />
-        <meta name="og:type" content="product" />
-        <meta name="og:title" content="Gas Accessories & Equipment - Flamia Uganda" />
-        <meta name="og:description" content="Shop quality gas accessories with free delivery in Kampala. Gas regulators, pipes, burners, stoves, and more at best prices." />
-        <meta name="og:url" content="https://flamia.store/accessories" />
-        <meta name="og:site_name" content="Flamia Gas Delivery" />
+        {/* Canonical URL */}
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Gas Accessories & Equipment - Flamia Uganda" />
+        <meta property="og:description" content="Shop quality gas accessories with free delivery in Kampala. Gas regulators, pipes, burners, stoves, and more at best prices." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Flamia Gas Delivery" />
+        
+        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Gas Accessories & Equipment - Flamia Uganda" />
         <meta name="twitter:description" content="Shop quality gas accessories with free delivery in Kampala. Regulators, pipes, burners, stoves at best prices." />
         
-        <meta name="content-language" content="en" />
-        <meta name="rating" content="general" />
-        <meta name="revisit-after" content="7 days" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        
-        <link rel="preload" as="image" href="/images/regulator.jpeg" />
-        <link rel="preload" as="image" href="/images/horse_pipe.jpeg" />
+        {/* SEO */}
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
+        <meta name="geo.region" content="UG" />
+        <meta name="geo.placename" content="Kampala" />
+        <meta name="language" content="en" />
         
         {/* Hidden SEO-focused structured data */}
         <script type="application/ld+json">
