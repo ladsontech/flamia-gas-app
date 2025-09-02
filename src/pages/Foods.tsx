@@ -161,7 +161,7 @@ const Foods: React.FC = () => {
         />
 
         {/* Products content */}
-        <div className="container mx-auto px-4 py-6">
+        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
           {loading && (
             <div className="flex flex-col items-center justify-center py-12">
               <RefreshCw className="w-8 h-8 animate-spin text-gray-400 mb-3" />
@@ -208,7 +208,7 @@ const Foods: React.FC = () => {
     <div className="min-h-screen bg-gray-50 pt-20 pb-20">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-16 z-10 border-b border-gray-100">
-        <div className="container mx-auto px-4 py-4">
+        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-900">Food Businesses</h1>
             <Button 
@@ -235,7 +235,7 @@ const Foods: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-6">
+      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
         {loading && (
           <div className="flex flex-col items-center justify-center py-12">
             <RefreshCw className="w-8 h-8 animate-spin text-gray-400 mb-3" />

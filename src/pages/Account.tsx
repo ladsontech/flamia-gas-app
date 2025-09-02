@@ -179,7 +179,7 @@ const Account: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20">
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6">
           <div className="animate-pulse space-y-4">
             {[1, 2, 3].map((i) => (
               <Card key={i}>
@@ -199,7 +199,7 @@ const Account: React.FC = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20">
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6 space-y-4 sm:space-y-6">
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center space-x-2 text-lg">
@@ -243,7 +243,7 @@ const Account: React.FC = () => {
   // Authenticated user view
   return (
     <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20">
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* User Profile Section */}
         <Card>
           <CardContent className="p-4 sm:p-6">
