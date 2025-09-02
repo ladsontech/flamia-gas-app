@@ -2,7 +2,6 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 
 interface SEOPageTemplateProps {
   title: string;
@@ -30,7 +29,9 @@ const SEOPageTemplate: React.FC<SEOPageTemplateProps> = ({
   ctaText = "Order Gas Now",
   ctaLink = "/refill"
 }) => {
-  const navigate = useNavigate();
+  const handleCTAClick = () => {
+    window.location.href = ctaLink;
+  };
 
   return (
     <>
@@ -142,7 +143,7 @@ const SEOPageTemplate: React.FC<SEOPageTemplateProps> = ({
                   Get your gas delivered today with Flamia's fast and reliable service.
                 </p>
                 <Button
-                  onClick={() => navigate(ctaLink)}
+                  onClick={handleCTAClick}
                   size="lg"
                   className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
                 >
