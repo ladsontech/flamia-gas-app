@@ -24,6 +24,24 @@ import GadgetDetail from './pages/GadgetDetail';
 import ResetPassword from './pages/ResetPassword';
 import DeliveryLogin from './pages/DeliveryLogin';
 import Delivery from './pages/Delivery';
+
+// SEO Pages
+import AlternativeToFumbaaGas from './pages/AlternativeToFumbaaGas';
+import BrandNewGasCylindersUganda from './pages/BrandNewGasCylindersUganda';
+import CGasUganda from './pages/CGasUganda';
+import FastestGasDeliveryKampala from './pages/FastestGasDeliveryKampala';
+import GasDeliveryKampala from './pages/GasDeliveryKampala';
+import GasDeliveryMukono from './pages/GasDeliveryMukono';
+import GasDeliveryUganda from './pages/GasDeliveryUganda';
+import GasRefillWakiso from './pages/GasRefillWakiso';
+import GasVsFumbaaGas from './pages/GasVsFumbaaGas';
+import HassGasUganda from './pages/HassGasUganda';
+import OryxGasUganda from './pages/OryxGasUganda';
+import SameDayGasDeliveryUganda from './pages/SameDayGasDeliveryUganda';
+import ShellGasUganda from './pages/ShellGasUganda';
+import StabexGasUganda from './pages/StabexGasUganda';
+import TotalGasUganda from './pages/TotalGasUganda';
+import UltimateGasUganda from './pages/UltimateGasUganda';
 import { useUserRole } from './hooks/useUserRole';
 
 const queryClient = new QueryClient();
@@ -82,6 +100,24 @@ function App() {
               <Route path="/delivery-login" element={<DeliveryLogin />} />
               <Route path="/delivery" element={<Delivery />} />
               <Route path="/admin" element={<Admin />} />
+              
+              {/* SEO Pages */}
+              <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />
+              <Route path="/brand-new-gas-cylinders-uganda" element={<BrandNewGasCylindersUganda />} />
+              <Route path="/c-gas-uganda" element={<CGasUganda />} />
+              <Route path="/fastest-gas-delivery-kampala" element={<FastestGasDeliveryKampala />} />
+              <Route path="/gas-delivery-kampala" element={<GasDeliveryKampala />} />
+              <Route path="/gas-delivery-mukono" element={<GasDeliveryMukono />} />
+              <Route path="/gas-delivery-uganda" element={<GasDeliveryUganda />} />
+              <Route path="/gas-refill-wakiso" element={<GasRefillWakiso />} />
+              <Route path="/gas-vs-fumbaa-gas" element={<GasVsFumbaaGas />} />
+              <Route path="/hass-gas-uganda" element={<HassGasUganda />} />
+              <Route path="/oryx-gas-uganda" element={<OryxGasUganda />} />
+              <Route path="/same-day-gas-delivery-uganda" element={<SameDayGasDeliveryUganda />} />
+              <Route path="/shell-gas-uganda" element={<ShellGasUganda />} />
+              <Route path="/stabex-gas-uganda" element={<StabexGasUganda />} />
+              <Route path="/total-gas-uganda" element={<TotalGasUganda />} />
+              <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
             </Routes>
           </main>
 

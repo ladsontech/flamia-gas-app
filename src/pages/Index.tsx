@@ -44,7 +44,7 @@ const Index = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20 md:pt-24">
         {/* Container with larger desktop margins */}
-        <div className="px-3 sm:px-4 lg:px-8 xl:px-16 2xl:px-24 py-2 sm:py-4 lg:py-6">
+        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-2 sm:py-4 lg:py-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
