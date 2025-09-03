@@ -193,6 +193,51 @@ export type Database = {
         }
         Relationships: []
       }
+      commissions: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          created_at: string
+          id: string
+          order_id: string
+          referral_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          created_at?: string
+          id?: string
+          order_id: string
+          referral_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string
+          referral_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_men: {
         Row: {
           created_at: string
@@ -275,6 +320,7 @@ export type Database = {
           delivery_man_id: string | null
           description: string
           id: string
+          referral_id: string | null
           status: string | null
           user_id: string | null
         }
@@ -284,6 +330,7 @@ export type Database = {
           delivery_man_id?: string | null
           description: string
           id?: string
+          referral_id?: string | null
           status?: string | null
           user_id?: string | null
         }
@@ -293,6 +340,7 @@ export type Database = {
           delivery_man_id?: string | null
           description?: string
           id?: string
+          referral_id?: string | null
           status?: string | null
           user_id?: string | null
         }
@@ -336,6 +384,7 @@ export type Database = {
           id: string
           password_hash: string | null
           phone_number: string | null
+          referral_code: string | null
           updated_at: string
         }
         Insert: {
@@ -346,6 +395,7 @@ export type Database = {
           id: string
           password_hash?: string | null
           phone_number?: string | null
+          referral_code?: string | null
           updated_at?: string
         }
         Update: {
@@ -356,6 +406,7 @@ export type Database = {
           id?: string
           password_hash?: string | null
           phone_number?: string | null
+          referral_code?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -393,6 +444,36 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_user_id: string | null
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_user_id?: string | null
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_user_id?: string | null
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -405,6 +486,14 @@ export type Database = {
           id: string
           name: string
         }[]
+      }
+      calculate_commission: {
+        Args: { order_description: string }
+        Returns: number
+      }
+      generate_referral_code: {
+        Args: { user_id: string }
+        Returns: string
       }
     }
     Enums: {
