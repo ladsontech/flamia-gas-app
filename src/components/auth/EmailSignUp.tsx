@@ -1,22 +1,30 @@
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Mail, Lock, User } from "lucide-react";
+import { Loader2, Mail, Lock, User, Gift } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const EmailSignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [loading, setLoading] = useState(false);
-  // Remove confirmationSent state as we're disabling email confirmation
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Auto-fill referral code from URL parameter
+    const refParam = searchParams.get('ref');
+    if (refParam) {
+      setReferralCode(refParam);
+    }
+  }, [searchParams]);
 
   const extractNameFromEmail = (email: string) => {
     const localPart = email.split('@')[0];
@@ -52,8 +60,8 @@ export const EmailSignUp = () => {
     try {
       const displayName = extractNameFromEmail(email);
 
-      // Remove emailRedirectTo to disable email confirmation
-      const { error } = await supabase.auth.signUp({
+      // Create user account
+      const { data: authData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -70,12 +78,60 @@ export const EmailSignUp = () => {
           description: error.message,
           variant: "destructive"
         });
-      } else {
-        toast({
-          title: "Account Created Successfully",
-          description: "Welcome to Flamia! You're now signed in.",
-          className: "border-accent/20"
-        });
+        return;
+      }
+
+      if (authData.user) {
+        // Handle referral code if provided
+        if (referralCode.trim()) {
+          try {
+            // Find the referrer by referral code
+            const { data: referrerProfile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('referral_code', referralCode.trim().toUpperCase())
+              .single();
+
+            if (referrerProfile) {
+              // Create referral record
+              await supabase
+                .from('referrals')
+                .insert({
+                  referrer_id: referrerProfile.id,
+                  referred_user_id: authData.user.id,
+                  referral_code: referralCode.trim().toUpperCase(),
+                  status: 'pending'
+                });
+
+              toast({
+                title: "Account Created Successfully",
+                description: "Welcome to Flamia! Referral code applied successfully.",
+                className: "border-accent/20"
+              });
+            } else {
+              toast({
+                title: "Account Created Successfully",
+                description: "Welcome to Flamia! Invalid referral code was ignored.",
+                className: "border-accent/20"
+              });
+            }
+          } catch (referralError) {
+            console.error('Error processing referral:', referralError);
+            // Continue with signup even if referral fails
+            toast({
+              title: "Account Created Successfully",
+              description: "Welcome to Flamia! There was an issue with the referral code.",
+              className: "border-accent/20"
+            });
+          }
+        } else {
+          toast({
+            title: "Account Created Successfully",
+            description: "Welcome to Flamia! You're now signed in.",
+            className: "border-accent/20"
+          });
+        }
+
         // Navigate to home page since user is automatically signed in
         navigate('/');
       }
@@ -149,10 +205,33 @@ export const EmailSignUp = () => {
           </div>
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="referralCode" className="text-sm font-medium text-foreground">
+            Referral Code (Optional)
+          </Label>
+          <div className="relative">
+            <Gift className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              id="referralCode"
+              type="text"
+              placeholder="Enter referral code"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              className="pl-10 border-accent/20 focus:border-accent focus:ring-accent/20"
+            />
+          </div>
+        </div>
+
         <Alert className="border-accent/20 bg-accent/5">
           <User className="h-4 w-4 text-accent" />
           <AlertDescription>
             Your display name will be automatically set as: <strong className="text-accent">{extractNameFromEmail(email)}</strong>
+            {referralCode && (
+              <>
+                <br />
+                <span className="text-green-600">Referral code applied: <strong>{referralCode}</strong></span>
+              </>
+            )}
           </AlertDescription>
         </Alert>
         

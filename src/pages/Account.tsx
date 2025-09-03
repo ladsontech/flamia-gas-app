@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
 import { AddressManager } from '@/components/account/AddressManager';
 import { PhoneManager } from '@/components/account/PhoneManager';
+import { ReferralManager } from '@/components/account/ReferralManager';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface Profile {
@@ -359,6 +360,9 @@ const Account: React.FC = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Referral System */}
+        {!isPhoneUser && <ReferralManager />}
 
         {/* Phone Numbers Management */}
         {!isPhoneUser && <PhoneManager />}

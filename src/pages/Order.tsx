@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
 import { createOrder } from "@/services/database";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Order() {
   const [searchParams] = useSearchParams();
@@ -134,7 +135,29 @@ export default function Order() {
       }
 
       // Save order to database for admin/rider management
-      await createOrder(message);
+      // Get referral info if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      let referralCode = null;
+      
+      if (user) {
+        try {
+          // Check if user was referred
+          const { data: referralData } = await supabase
+            .from('referrals')
+            .select('referral_code')
+            .eq('referred_user_id', user.id)
+            .eq('status', 'pending')
+            .single();
+          
+          if (referralData) {
+            referralCode = referralData.referral_code;
+          }
+        } catch (error) {
+          console.error('Error fetching referral:', error);
+        }
+      }
+      
+      await createOrder(message, referralCode);
 
       // Also open WhatsApp for customer convenience
       const whatsappUrl = `https://wa.me/256753894149?text=${encodeURIComponent(message)}`;
