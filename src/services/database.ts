@@ -89,7 +89,7 @@ export const createOrder = async (orderDetails: string, referralCode?: string) =
   
   let referralId = null;
   
-  // Handle referral if referral code is provided and user is authenticated
+  // Handle referral if user is authenticated and we have a referral code
   if (referralCode && user) {
     try {
       // Find active referral for this user
@@ -99,7 +99,7 @@ export const createOrder = async (orderDetails: string, referralCode?: string) =
         .eq('referred_user_id', user.id)
         .eq('referral_code', referralCode.toUpperCase())
         .eq('status', 'pending')
-        .single();
+        .maybeSingle();
       
       if (referralData) {
         referralId = referralData.id;

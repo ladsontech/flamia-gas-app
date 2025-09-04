@@ -90,10 +90,10 @@ export const EmailSignUp = () => {
               .from('profiles')
               .select('id')
               .eq('referral_code', referralCode.trim().toUpperCase())
-              .single();
+              .maybeSingle();
 
             if (referrerProfile) {
-              // Create referral record
+              // Create referral record linking referrer to the new user
               await supabase
                 .from('referrals')
                 .insert({

@@ -98,10 +98,15 @@ export default function Order() {
     setLoading(true);
     
     try {
-      let message = '';
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Create different message formats for WhatsApp vs Admin
+      let whatsappMessage = '';
+      let adminMessage = '';
       
       if (accessoryData) {
-        message = `Flamia 🔥
+        whatsappMessage = `Flamia 🔥
 ------------------------
 *New Accessory Order*
 ------------------------
@@ -115,10 +120,21 @@ export default function Order() {
 *Location:* https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
 *Free Delivery:* Within Kampala
 ------------------------`;
+        
+        adminMessage = `New Accessory Order
+Item: ${accessoryData.name}
+Price: UGX ${accessoryData.price.toLocaleString()}
+Preferred Brand: ${formData.brand}
+Quantity: ${formData.quantity}
+Total Amount: UGX ${(accessoryData.price * formData.quantity).toLocaleString()}
+Contact: ${formData.contact}
+Address: ${formData.address}${formData.location ? `
+Location: https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
+Free Delivery: Within Kampala`;
       } else {
         const price = getPrice();
         
-        message = `Flamia 🔥
+        whatsappMessage = `Flamia 🔥
 ------------------------
 *New Gas Order*
 ------------------------
@@ -132,14 +148,23 @@ export default function Order() {
 *Location:* https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
 *Free Delivery:* Within Kampala
 ------------------------`;
+        
+        adminMessage = `New Gas Order
+Order Type: ${formData.type === "refill" ? "Refill" : "Full Set"}
+Brand: ${formData.brand}
+Size: ${formData.size}
+Price: ${price}
+Quantity: ${formData.quantity}
+Contact: ${formData.contact}
+Address: ${formData.address}${formData.location ? `
+Location: https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
+Free Delivery: Within Kampala`;
       }
 
-      // Save order to database for admin/rider management
-      // Get referral info if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
-      let referralCode = null;
-      
       if (user) {
+        // User is signed in - save to database only (for admin page)
+        let referralCode = null;
+        
         try {
           // Check if user was referred
           const { data: referralData } = await supabase
@@ -147,7 +172,7 @@ export default function Order() {
             .select('referral_code')
             .eq('referred_user_id', user.id)
             .eq('status', 'pending')
-            .single();
+            .maybeSingle();
           
           if (referralData) {
             referralCode = referralData.referral_code;
@@ -155,18 +180,23 @@ export default function Order() {
         } catch (error) {
           console.error('Error fetching referral:', error);
         }
+        
+        await createOrder(adminMessage, referralCode);
+        
+        toast({
+          title: "Order Submitted Successfully",
+          description: "Thank you! We have received your order and will deliver shortly.",
+        });
+      } else {
+        // Guest user - redirect to WhatsApp only
+        const whatsappUrl = `https://wa.me/256753894149?text=${encodeURIComponent(whatsappMessage)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        toast({
+          title: "Order Submitted",
+          description: "Your order has been sent via WhatsApp for processing.",
+        });
       }
-      
-      await createOrder(message, referralCode);
-
-      // Also open WhatsApp for customer convenience
-      const whatsappUrl = `https://wa.me/256753894149?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
-      
-      toast({
-        title: "Order Submitted",
-        description: "Your order has been saved and WhatsApp opened for direct contact.",
-      });
 
       // Reset form
       setFormData({
