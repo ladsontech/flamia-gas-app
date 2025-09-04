@@ -277,6 +277,12 @@ const Account: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* Address Management */}
+        {!isPhoneUser && <AddressManager />}
+
+        {/* Phone Numbers Management */}
+        {!isPhoneUser && <PhoneManager />}
+
         {/* Recent Orders - Activity Style */}
         <Card>
           <CardHeader className="pb-4">
@@ -361,14 +367,8 @@ const Account: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Referral System */}
+        {/* Referrals at the bottom */}
         {!isPhoneUser && <ReferralManager />}
-
-        {/* Phone Numbers Management */}
-        {!isPhoneUser && <PhoneManager />}
-
-        {/* Address Management */}
-        {!isPhoneUser && <AddressManager />}
       </div>
     </div>
   );

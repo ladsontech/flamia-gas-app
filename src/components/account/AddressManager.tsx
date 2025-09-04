@@ -229,14 +229,15 @@ export const AddressManager = () => {
             <MapPin className="w-5 h-5 text-primary" />
             <span className="text-lg">My Addresses</span>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" onClick={resetForm} className="h-8">
-                <Plus className="w-3 h-3 mr-1" />
-                <span className="hidden sm:inline">Add Address</span>
-                <span className="sm:hidden">Add</span>
-              </Button>
-            </DialogTrigger>
+          {addresses.length === 0 && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" onClick={resetForm} className="h-8">
+                  <Plus className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Add Address</span>
+                  <span className="sm:hidden">Add</span>
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
@@ -310,15 +311,16 @@ export const AddressManager = () => {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6 pt-0">
         {addresses.length === 0 ? (
           <div className="text-center py-8">
             <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600 mb-4 text-sm">No addresses added yet</p>
+            <p className="text-gray-600 mb-4 text-sm">No delivery address set yet</p>
             <Button onClick={() => setIsDialogOpen(true)} size="sm">
-              Add Your First Address
+              Add Your Delivery Address
             </Button>
           </div>
         ) : (
@@ -342,17 +344,7 @@ export const AddressManager = () => {
                     </div>
                   </div>
                   
-                  <div className="flex flex-wrap gap-2">
-                    {!address.is_default && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleSetDefault(address.id)}
-                        className="text-xs h-8 flex-1 sm:flex-none"
-                      >
-                        Set Default
-                      </Button>
-                    )}
+                   <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -360,16 +352,7 @@ export const AddressManager = () => {
                       className="text-xs h-8 flex-1 sm:flex-none"
                     >
                       <Edit className="w-3 h-3 mr-1" />
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(address.id)}
-                      className="text-xs h-8 flex-1 sm:flex-none"
-                    >
-                      <Trash2 className="w-3 h-3 mr-1" />
-                      Delete
+                      Edit Address
                     </Button>
                   </div>
                 </div>

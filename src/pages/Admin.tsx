@@ -14,13 +14,16 @@ import CarouselManager from '@/components/admin/CarouselManager';
 import PromotionsManager from '@/components/admin/PromotionsManager';
 import BusinessesManager from '@/components/admin/BusinessesManager';
 import BusinessProductsManager from '@/components/admin/BusinessProductsManager';
-import { verifyAdminPassword } from '@/services/database';
+import { verifyAdminPassword, fetchOrders, fetchDeliveryMen } from '@/services/database';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Order, DeliveryMan } from '@/types/order';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [deliveryMen, setDeliveryMen] = useState<DeliveryMan[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -29,8 +32,26 @@ const Admin: React.FC = () => {
     const adminAuth = sessionStorage.getItem('adminAuth');
     if (adminAuth === 'true') {
       setIsAuthenticated(true);
+      loadOrdersAndDeliveryMen();
     }
   }, []);
+
+  const loadOrdersAndDeliveryMen = async () => {
+    try {
+      const [ordersData, deliveryMenData] = await Promise.all([
+        fetchOrders(),
+        fetchDeliveryMen()
+      ]);
+      setOrders(ordersData);
+      setDeliveryMen(deliveryMenData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  };
+
+  const handleOrdersUpdate = () => {
+    loadOrdersAndDeliveryMen();
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +62,7 @@ const Admin: React.FC = () => {
       if (isValid) {
         setIsAuthenticated(true);
         sessionStorage.setItem('adminAuth', 'true');
+        await loadOrdersAndDeliveryMen();
         toast({
           title: "Welcome Admin",
           description: "Successfully logged in to admin panel"
@@ -139,7 +161,7 @@ const Admin: React.FC = () => {
           
           <div className="space-y-4">
             <TabsContent value="orders" className="mt-0">
-              <AdminOrdersView orders={[]} deliveryMen={[]} onOrdersUpdate={() => {}} />
+              <AdminOrdersView orders={orders} deliveryMen={deliveryMen} onOrdersUpdate={handleOrdersUpdate} />
             </TabsContent>
             
             <TabsContent value="promotions" className="mt-0">
