@@ -24,6 +24,7 @@ import GadgetDetail from './pages/GadgetDetail';
 import ResetPassword from './pages/ResetPassword';
 import DeliveryLogin from './pages/DeliveryLogin';
 import Delivery from './pages/Delivery';
+import Sell from './pages/Sell';
 
 // SEO Pages
 import AlternativeToFumbaaGas from './pages/AlternativeToFumbaaGas';
@@ -100,6 +101,7 @@ function App() {
               <Route path="/delivery-login" element={<DeliveryLogin />} />
               <Route path="/delivery" element={<Delivery />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/sell" element={<Sell />} />
               
               {/* SEO Pages */}
               <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />

@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { EmailSignUp } from "@/components/auth/EmailSignUp";
 import { PhoneSignUp } from "@/components/auth/PhoneSignUp";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
+import { supabase } from "@/integrations/supabase/client";
 
 const SignUp = () => {
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
@@ -71,6 +72,17 @@ const SignUp = () => {
             {/* Always show email signup, phone signup code kept but hidden */}
             <EmailSignUp />
             {false && authMethod === 'phone' && <PhoneSignUp />}
+            <div className="mt-4 flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={async () => {
+                  await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+                }}
+              >
+                Continue with Google
+              </Button>
+            </div>
           </CardContent>
           
           <div className="px-6 pb-6">
