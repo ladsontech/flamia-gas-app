@@ -9,29 +9,26 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
+interface RefereeOrder {
+  id: string;
+  description: string;
+  status: 'pending' | 'assigned' | 'completed';
+  created_at: string;
+  commission_amount: number;
+}
+
 interface Referral {
   id: string;
   referral_code: string;
-  status: string;
   created_at: string;
-  completed_at: string | null;
   referred_user_id: string | null;
-}
-
-interface Commission {
-  id: string;
-  amount: number;
-  status: string;
-  created_at: string;
-  approved_at: string | null;
-  order_id: string;
 }
 
 export const ReferralManager: React.FC = () => {
   const { toast } = useToast();
   const [referralCode, setReferralCode] = useState<string>('');
   const [referrals, setReferrals] = useState<Referral[]>([]);
-  const [commissions, setCommissions] = useState<Commission[]>([]);
+  const [refereeOrders, setRefereeOrders] = useState<RefereeOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
 
@@ -64,22 +61,47 @@ export const ReferralManager: React.FC = () => {
 
       setReferrals(referralsData || []);
 
-      // Fetch commissions
-      const { data: commissionsData } = await supabase
-        .from('commissions')
+      // Fetch orders made by referred users with commission calculation
+      const { data: ordersData } = await supabase
+        .from('orders')
         .select(`
-          *,
+          id,
+          description,
+          status,
+          created_at,
           referrals!inner(referrer_id)
         `)
         .eq('referrals.referrer_id', user.id)
         .order('created_at', { ascending: false });
 
-      setCommissions(commissionsData || []);
+      // Calculate commission for each order
+      const ordersWithCommission = (ordersData || []).map(order => ({
+        id: order.id,
+        description: order.description,
+        status: order.status as 'pending' | 'assigned' | 'completed',
+        created_at: order.created_at,
+        commission_amount: calculateCommission(order.description)
+      }));
+
+      setRefereeOrders(ordersWithCommission);
     } catch (error) {
       console.error('Error fetching referral data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateCommission = (description: string): number => {
+    if (description.toLowerCase().includes('full kit') || description.toLowerCase().includes('kit')) {
+      return 10000; // Full kits: UGX 10,000
+    } else if (description.toLowerCase().includes('12kg') || description.toLowerCase().includes('12 kg')) {
+      return 10000; // 12kg cylinder: UGX 10,000
+    } else if (description.toLowerCase().includes('6kg') || description.toLowerCase().includes('6 kg')) {
+      return 5000; // 6kg cylinder: UGX 5,000
+    } else if (description.toLowerCase().includes('3kg') || description.toLowerCase().includes('3 kg')) {
+      return 3000; // 3kg cylinder: UGX 3,000
+    }
+    return 0;
   };
 
   const generateReferralCode = async () => {
@@ -153,13 +175,13 @@ export const ReferralManager: React.FC = () => {
     }).format(amount);
   };
 
-  const totalEarnings = commissions
-    .filter(c => c.status === 'approved')
-    .reduce((sum, c) => sum + c.amount, 0);
+  const totalEarnings = refereeOrders
+    .filter(o => o.status === 'completed')
+    .reduce((sum, o) => sum + o.commission_amount, 0);
 
-  const pendingEarnings = commissions
-    .filter(c => c.status === 'pending')
-    .reduce((sum, c) => sum + c.amount, 0);
+  const pendingEarnings = refereeOrders
+    .filter(o => o.status === 'pending' || o.status === 'assigned')
+    .reduce((sum, o) => sum + o.commission_amount, 0);
 
   if (loading) {
     return (
@@ -246,91 +268,53 @@ export const ReferralManager: React.FC = () => {
               </div>
             </div>
 
-            {/* Tabs for Referrals and Commissions */}
-            <Tabs defaultValue="commissions" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="commissions" className="text-xs">Commissions</TabsTrigger>
-                <TabsTrigger value="referrals" className="text-xs">Referrals</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="commissions" className="space-y-3 mt-4">
-                {commissions.length === 0 ? (
-                  <div className="text-center py-6">
-                    <DollarSign className="w-10 h-10 mx-auto mb-3 text-gray-400" />
-                    <p className="text-gray-600 text-sm">No commissions yet</p>
-                    <p className="text-gray-500 text-xs mt-1">Start referring friends to earn commissions!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {commissions.map((commission) => (
-                      <div key={commission.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-2 h-2 rounded-full ${
-                            commission.status === 'approved' ? 'bg-green-500' : 'bg-yellow-500'
-                          }`}></div>
-                          <div>
-                            <p className="font-medium text-sm">{formatCurrency(commission.amount)}</p>
-                            <p className="text-xs text-gray-500">
-                              Order #{commission.order_id.slice(0, 8)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge 
-                            variant={commission.status === 'approved' ? 'default' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {commission.status === 'approved' ? 'Approved' : 'Pending'}
-                          </Badge>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {format(new Date(commission.created_at), 'dd/MM/yy')}
+            {/* Order Tracking Section */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-sm">Order Tracking</h3>
+              {refereeOrders.length === 0 ? (
+                <div className="text-center py-6">
+                  <DollarSign className="w-10 h-10 mx-auto mb-3 text-gray-400" />
+                  <p className="text-gray-600 text-sm">No orders from referrals yet</p>
+                  <p className="text-gray-500 text-xs mt-1">When people you refer place orders, they'll appear here!</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {refereeOrders.map((order) => (
+                    <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full ${
+                          order.status === 'completed' ? 'bg-green-500' : 
+                          order.status === 'assigned' ? 'bg-blue-500' : 'bg-yellow-500'
+                        }`}></div>
+                        <div>
+                          <p className="font-medium text-sm">{formatCurrency(order.commission_amount)}</p>
+                          <p className="text-xs text-gray-500">
+                            {order.description.length > 30 
+                              ? `${order.description.substring(0, 30)}...` 
+                              : order.description}
                           </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="referrals" className="space-y-3 mt-4">
-                {referrals.length === 0 ? (
-                  <div className="text-center py-6">
-                    <Users className="w-10 h-10 mx-auto mb-3 text-gray-400" />
-                    <p className="text-gray-600 text-sm">No referrals yet</p>
-                    <p className="text-gray-500 text-xs mt-1">Share your referral link to get started!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {referrals.map((referral) => (
-                      <div key={referral.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-2 h-2 rounded-full ${
-                            referral.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'
-                          }`}></div>
-                          <div>
-                            <p className="font-medium text-sm">Referral #{referral.id.slice(0, 8)}</p>
-                            <p className="text-xs text-gray-500">
-                              {referral.referred_user_id ? 'User Joined' : 'Link Shared'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge 
-                            variant={referral.status === 'completed' ? 'default' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {referral.status === 'completed' ? 'Completed' : 'Pending'}
-                          </Badge>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {format(new Date(referral.created_at), 'dd/MM/yy')}
-                          </p>
-                        </div>
+                      <div className="text-right">
+                        <Badge 
+                          variant={
+                            order.status === 'completed' ? 'default' : 
+                            order.status === 'assigned' ? 'secondary' : 'outline'
+                          }
+                          className="text-xs"
+                        >
+                          {order.status === 'completed' ? 'Completed' : 
+                           order.status === 'assigned' ? 'Assigned' : 'Pending'}
+                        </Badge>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {format(new Date(order.created_at), 'dd/MM/yy')}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </>
         )}
       </CardContent>
