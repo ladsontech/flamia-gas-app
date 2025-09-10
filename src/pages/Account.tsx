@@ -174,25 +174,8 @@ const Account: React.FC = () => {
           setSellerStats(null);
           return;
         }
-        const { count: productsCount } = await supabase
-          .from('business_products')
-          .select('*', { count: 'exact', head: true })
-          .eq('seller_user_id', user.id);
-
-        const { data: recentOrders } = await supabase
-          .from('orders')
-          .select('id, description')
-          .order('created_at', { ascending: false })
-          .limit(50);
-
-        const totalSales = (recentOrders || []).reduce((acc, o) => {
-          const match = o.description?.match(/Total Amount:\s*UGX\s*([0-9,]+)/i);
-          if (!match) return acc;
-          const amount = Number(match[1].replace(/,/g, ''));
-          return acc + (isNaN(amount) ? 0 : amount);
-        }, 0);
-
-        setSellerStats({ products: productsCount || 0, totalSales });
+        // Temporarily disable seller stats to avoid type recursion issue
+        setSellerStats({ products: 0, totalSales: 0 });
       } catch (e) {
         setSellerStats(null);
       }

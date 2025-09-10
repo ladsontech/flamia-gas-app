@@ -36,7 +36,24 @@ const AppBar = () => {
 
         {/* Desktop Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center gap-8">
-          {navItems.map(item => {})}
+          {navItems.map(item => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link 
+                key={item.path}
+                to={item.path} 
+                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                  isActive 
+                    ? 'text-primary bg-primary/10' 
+                    : 'text-muted-foreground hover:text-primary hover:bg-muted/50'
+                }`}
+              >
+                <Icon size={18} />
+                <span className="text-sm font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Empty div to maintain layout balance */}
