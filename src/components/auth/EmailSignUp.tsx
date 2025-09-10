@@ -71,7 +71,8 @@ export const EmailSignUp = ({ referralCodeProp }: EmailSignUpProps) => {
         options: {
           data: {
             full_name: displayName,
-            display_name: displayName
+            display_name: displayName,
+            referral_code: referralCode.trim() || undefined
           }
         }
       });
@@ -86,48 +87,14 @@ export const EmailSignUp = ({ referralCodeProp }: EmailSignUpProps) => {
       }
 
       if (authData.user) {
-        // Handle referral code if provided
+        // The referral code is now handled by the database trigger
+        // Show appropriate success message
         if (referralCode.trim()) {
-          try {
-            // Find the referrer by referral code
-            const { data: referrerProfile } = await supabase
-              .from('profiles')
-              .select('id')
-              .eq('referral_code', referralCode.trim().toUpperCase())
-              .maybeSingle();
-
-            if (referrerProfile) {
-              // Create referral record linking referrer to the new user
-              await supabase
-                .from('referrals')
-                .insert({
-                  referrer_id: referrerProfile.id,
-                  referred_user_id: authData.user.id,
-                  referral_code: referralCode.trim().toUpperCase(),
-                  status: 'pending'
-                });
-
-              toast({
-                title: "Account Created Successfully",
-                description: "Welcome to Flamia! Referral code applied successfully.",
-                className: "border-accent/20"
-              });
-            } else {
-              toast({
-                title: "Account Created Successfully",
-                description: "Welcome to Flamia! Invalid referral code was ignored.",
-                className: "border-accent/20"
-              });
-            }
-          } catch (referralError) {
-            console.error('Error processing referral:', referralError);
-            // Continue with signup even if referral fails
-            toast({
-              title: "Account Created Successfully",
-              description: "Welcome to Flamia! There was an issue with the referral code.",
-              className: "border-accent/20"
-            });
-          }
+          toast({
+            title: "Account Created Successfully", 
+            description: "Welcome to Flamia! Referral code has been processed.",
+            className: "border-accent/20"
+          });
         } else {
           toast({
             title: "Account Created Successfully",
