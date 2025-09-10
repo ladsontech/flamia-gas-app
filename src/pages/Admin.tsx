@@ -1,44 +1,77 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Shield } from "lucide-react";
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import AdminAppBar from '@/components/admin/AdminAppBar';
-import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
-import BrandsManager from '@/components/admin/BrandsManager';
-import GadgetsManager from '@/components/admin/GadgetsManager';
-import CarouselManager from '@/components/admin/CarouselManager';
-import PromotionsManager from '@/components/admin/PromotionsManager';
-import BusinessesManager from '@/components/admin/BusinessesManager';
-import BusinessProductsManager from '@/components/admin/BusinessProductsManager';
-import { verifyAdminPassword, fetchOrders, fetchDeliveryMen } from '@/services/database';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Order, DeliveryMan } from '@/types/order';
-import SellerApplicationsManager from '@/components/admin/SellerApplicationsManager';
-import MarketplaceSettings from '@/components/admin/MarketplaceSettings';
-import { useUserRole } from '@/hooks/useUserRole';
+// Import components
+import AdminAppBar from "@/components/admin/AdminAppBar";
+import { AdminOrdersView } from "@/components/admin/AdminOrdersView";
+import PromotionsManager from "@/components/admin/PromotionsManager";
+import GadgetsManager from "@/components/admin/GadgetsManager";
+import BrandsManager from "@/components/admin/BrandsManager";
+import CarouselManager from "@/components/admin/CarouselManager";
+import BusinessesManager from "@/components/admin/BusinessesManager";
+import BusinessProductsManager from "@/components/admin/BusinessProductsManager";
+import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
+import MarketplaceSettings from "@/components/admin/MarketplaceSettings";
 
-const Admin: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [deliveryMen, setDeliveryMen] = useState<DeliveryMan[]>([]);
+// Import services
+import { fetchOrders, fetchDeliveryMen } from "@/services/database";
+import { useUserRole } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase/client";
+
+const Admin = () => {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [deliveryMen, setDeliveryMen] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin } = useUserRole();
+  const { isAdmin, loading: roleLoading } = useUserRole();
 
+  // Check authentication and admin role
   useEffect(() => {
-    // Check if admin is already authenticated in this session
-    const adminAuth = sessionStorage.getItem('adminAuth');
-    if (adminAuth === 'true') {
-      setIsAuthenticated(true);
-      loadOrdersAndDeliveryMen();
-    }
-  }, []);
+    const checkAuthAndRole = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in to access admin panel",
+            variant: "destructive"
+          });
+          navigate("/signin");
+          return;
+        }
+
+        setUser(user);
+
+        if (!roleLoading && !isAdmin) {
+          toast({
+            title: "Access Denied",
+            description: "You don't have admin privileges",
+            variant: "destructive"
+          });
+          navigate("/");
+          return;
+        }
+
+        if (isAdmin) {
+          await loadOrdersAndDeliveryMen();
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        navigate("/signin");
+      }
+    };
+
+    checkAuthAndRole();
+  }, [isAdmin, roleLoading, navigate, toast]);
 
   const loadOrdersAndDeliveryMen = async () => {
     try {
@@ -50,6 +83,13 @@ const Admin: React.FC = () => {
       setDeliveryMen(deliveryMenData);
     } catch (error) {
       console.error('Error loading data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load admin data",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,74 +97,32 @@ const Admin: React.FC = () => {
     loadOrdersAndDeliveryMen();
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const isValid = await verifyAdminPassword(password);
-      if (isValid) {
-        setIsAuthenticated(true);
-        sessionStorage.setItem('adminAuth', 'true');
-        await loadOrdersAndDeliveryMen();
-        toast({
-          title: "Welcome Admin",
-          description: "Successfully logged in to admin panel"
-        });
-      } else {
-        toast({
-          title: "Invalid Password",
-          description: "Please enter the correct admin password",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Login Error",
-        description: "An error occurred during login",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-      setPassword('');
-    }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('adminAuth');
-    navigate('/');
-  };
-
-  if (!isAuthenticated || !isAdmin) {
+  if (loading || roleLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center">Admin Login</CardTitle>
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <Shield className="h-5 w-5" />
+              Access Denied
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Input
-                  type="password"
-                  placeholder="Enter admin password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={loading}
-              >
-                {loading ? 'Logging in...' : 'Login'}
-              </Button>
-            </form>
-            {!isAdmin && (
-              <p className="text-xs text-center text-muted-foreground mt-3">Log in with a super admin account.</p>
-            )}
+          <CardContent className="text-center space-y-4">
+            <p>You need admin privileges to access this page.</p>
+            <Button onClick={() => navigate("/")} variant="outline">
+              Go Home
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -133,7 +131,7 @@ const Admin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminAppBar onLogout={handleLogout} />
+      <AdminAppBar onLogout={() => navigate("/")} />
       
       <div className="container mx-auto p-2 sm:p-4 max-w-7xl">
         <Tabs defaultValue="orders" className="w-full">

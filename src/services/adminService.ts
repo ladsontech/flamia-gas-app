@@ -107,3 +107,35 @@ export const reviewSellerApplication = async (
   }
 };
 
+// Get user businesses
+export const getUserBusinesses = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select(`
+        business_id,
+        businesses:business_id (
+          id,
+          name,
+          location,
+          contact,
+          description,
+          image_url
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('role', 'business_owner')
+      .not('business_id', 'is', null);
+
+    if (error) {
+      console.error('Error fetching user businesses:', error);
+      return [];
+    }
+
+    return data?.map(item => item.businesses).filter(Boolean) || [];
+  } catch (error) {
+    console.error('Error in getUserBusinesses:', error);
+    return [];
+  }
+};
+
