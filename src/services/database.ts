@@ -54,8 +54,10 @@ export const fetchDeliveryMen = async () => {
     return [];
   }
 
-  // Then get their profiles
+  // Get user IDs
   const userIds = roleData.map(item => item.user_id);
+  
+  // Try to fetch their profiles
   const { data: profileData, error: profileError } = await supabase
     .from('profiles')
     .select('id, display_name, full_name')
@@ -63,14 +65,51 @@ export const fetchDeliveryMen = async () => {
   
   if (profileError) {
     console.error("Error fetching delivery profiles:", profileError);
-    return [];
+  }
+
+  const profiles = profileData || [];
+  const result = [];
+
+  // For each delivery man user ID, either use existing profile or create one
+  for (const userId of userIds) {
+    const existingProfile = profiles.find(p => p.id === userId);
+    
+    if (existingProfile) {
+      // Use existing profile
+      result.push({
+        id: existingProfile.id,
+        name: existingProfile.display_name || existingProfile.full_name || 'Delivery Person',
+        email: ''
+      });
+    } else {
+      // Create missing profile
+      try {
+        await supabase
+          .from('profiles')
+          .upsert({
+            id: userId,
+            display_name: 'Delivery Person',
+            full_name: 'Delivery Person'
+          });
+        
+        result.push({
+          id: userId,
+          name: 'Delivery Person',
+          email: ''
+        });
+      } catch (error) {
+        console.error("Error creating profile for delivery person:", error);
+        // Still add them to results with default name
+        result.push({
+          id: userId,
+          name: 'Delivery Person',
+          email: ''
+        });
+      }
+    }
   }
   
-  return (profileData || []).map(profile => ({
-    id: profile.id,
-    name: profile.display_name || profile.full_name || 'Unknown',
-    email: ''
-  }));
+  return result;
 };
 
 // Assign order to delivery man
