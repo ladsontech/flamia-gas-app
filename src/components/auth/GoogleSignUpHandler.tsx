@@ -18,38 +18,18 @@ export const GoogleSignUpHandler = () => {
         
         if (tempReferralCode) {
           try {
-            // Find the referrer by referral code
-            const { data: referrerProfile } = await supabase
-              .from('profiles')
-              .select('id')
-              .eq('referral_code', tempReferralCode.toUpperCase())
-              .maybeSingle();
+            // Use the database function to process the referral
+            const { data: success, error } = await supabase.rpc('process_delayed_referral', {
+              user_id_param: session.user.id,
+              referral_code_param: tempReferralCode
+            });
 
-            if (referrerProfile) {
-              // Create referral record linking referrer to the new user
-              const { error } = await supabase
-                .from('referrals')
-                .insert({
-                  referrer_id: referrerProfile.id,
-                  referred_user_id: session.user.id,
-                  referral_code: tempReferralCode.toUpperCase(),
-                  status: 'pending'
-                });
-
-              if (!error) {
-                toast({
-                  title: "Welcome to Flamia!",
-                  description: "Account created successfully with referral code applied.",
-                  className: "border-accent/20"
-                });
-              } else {
-                console.error('Error creating referral:', error);
-                toast({
-                  title: "Welcome to Flamia!",
-                  description: "Account created successfully, but referral code could not be applied.",
-                  className: "border-accent/20"
-                });
-              }
+            if (success && !error) {
+              toast({
+                title: "Welcome to Flamia!",
+                description: "Account created successfully with referral code applied.",
+                className: "border-accent/20"
+              });
             } else {
               toast({
                 title: "Welcome to Flamia!",

@@ -547,6 +547,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_delayed_referral: {
+        Args: { referral_code_param: string; user_id_param: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "super_admin" | "business_owner" | "delivery_man" | "user"
