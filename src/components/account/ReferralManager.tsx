@@ -182,6 +182,9 @@ export const ReferralManager: React.FC = () => {
   const pendingPayments = refereeOrders
     .filter(o => o.status === 'pending' || o.status === 'assigned');
 
+  const pendingEarnings = pendingPayments
+    .reduce((sum, o) => sum + o.commission_amount, 0);
+
   if (loading) {
     return (
       <Card>
@@ -253,17 +256,17 @@ export const ReferralManager: React.FC = () => {
               <div className="bg-green-50 p-3 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-600" />
-                  <span className="text-xs font-medium text-green-900">Total Earnings</span>
+                  <span className="text-xs font-medium text-green-900">Completed Earnings</span>
                 </div>
                 <p className="text-lg font-bold text-green-900 mt-1">{formatCurrency(totalEarnings)}</p>
               </div>
               
               <div className="bg-yellow-50 p-3 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-yellow-600" />
-                  <span className="text-xs font-medium text-yellow-900">Pending Payments</span>
+                  <DollarSign className="w-4 h-4 text-yellow-600" />
+                  <span className="text-xs font-medium text-yellow-900">Pending Earnings</span>
                 </div>
-                <p className="text-lg font-bold text-yellow-900 mt-1">{pendingPayments.length}</p>
+                <p className="text-lg font-bold text-yellow-900 mt-1">{formatCurrency(pendingEarnings)}</p>
               </div>
             </div>
 
