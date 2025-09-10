@@ -33,12 +33,6 @@ interface Profile {
   phone_number?: string;
 }
 
-interface Order {
-  id: string;
-  created_at: string;
-  description: string;
-  status?: string;
-}
 
 interface Business {
   id: string;
@@ -52,7 +46,7 @@ interface Business {
 const Account = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
+  
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
@@ -68,7 +62,6 @@ const Account = () => {
     const loadUserData = async () => {
       if (user && !roleLoading) {
         await fetchProfile(user.id);
-        await fetchOrders(user.id);
         
         // Fetch businesses if user is business owner
         if (isBusinessOwner) {
@@ -180,25 +173,6 @@ const Account = () => {
     }
   };
 
-  const fetchOrders = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('id, created_at, description, status')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) {
-        console.error('Error fetching orders:', error);
-        return;
-      }
-
-      setOrders(data || []);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-    }
-  };
 
   const handleSignOut = async () => {
     try {
