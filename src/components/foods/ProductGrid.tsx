@@ -54,7 +54,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                   </div>}
               </div>
               
-              <div className="space-y-3">
+                <div className="space-y-3">
                 <div className="flex flex-col">
                   <span className="text-lg font-bold text-green-600">
                     UGX {product.price.toLocaleString()}
@@ -64,7 +64,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                     </span>}
                 </div>
                 
-                
+                <Button 
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+                  onClick={() => onOrderProduct(product, business)}
+                  disabled={!product.is_available}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  {product.is_available ? 'Order Now' : 'Unavailable'}
+                </Button>
               </div>
             </div>
           </CardContent>

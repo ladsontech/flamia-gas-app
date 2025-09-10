@@ -14,6 +14,7 @@ const Foods: React.FC = () => {
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
   const [products, setProducts] = useState<BusinessProduct[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -91,6 +92,7 @@ const Foods: React.FC = () => {
     setSelectedBusiness(null);
     setProducts([]);
     setSearchTerm('');
+    setCategoryFilter('all');
   };
 
   const handleOrderProduct = (product: BusinessProduct, business: Business) => {
@@ -145,10 +147,14 @@ const Foods: React.FC = () => {
     business.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (product.category && product.category.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.category && product.category.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const availableCategories = ['all', ...new Set(products.filter(p => p.category).map(p => p.category!))];
 
   // Business detail view
   if (selectedBusiness) {
@@ -171,11 +177,32 @@ const Foods: React.FC = () => {
 
           {!loading && filteredProducts.length > 0 && (
             <>
-              <div className="mb-4">
+              <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Products ({filteredProducts.length})
                 </h2>
+                
+                {availableCategories.length > 1 && (
+                  <div className="flex flex-wrap gap-2">
+                    {availableCategories.map(category => (
+                      <Button
+                        key={category}
+                        variant={categoryFilter === category ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter(category)}
+                        className={`text-xs ${
+                          categoryFilter === category 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'hover:bg-accent/10'
+                        }`}
+                      >
+                        {category === 'all' ? 'All Categories' : category}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
+              
               <ProductGrid 
                 products={filteredProducts}
                 business={selectedBusiness}
