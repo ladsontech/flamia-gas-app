@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Note: using any to avoid strict typing mismatch with generated Database types
 
-export type UserRole = 'super_admin' | 'seller';
+export type UserRole = 'super_admin' | 'business_owner' | 'delivery_man' | 'user';
 
 export const getUserRole = async (userId: string): Promise<UserRole | null> => {
   const { data, error } = await (supabase as any)
@@ -12,9 +12,9 @@ export const getUserRole = async (userId: string): Promise<UserRole | null> => {
     .maybeSingle();
   if (error) {
     console.error('getUserRole error', error);
-    return null;
+    return 'user';
   }
-  return data?.role ?? null;
+  return data?.role ?? 'user';
 };
 
 export const setUserRole = async (userId: string, role: UserRole) => {
@@ -101,9 +101,9 @@ export const reviewSellerApplication = async (
     .single();
   if (error) throw error;
 
-  // If approved, set user role as seller
+  // If approved, set user role as business_owner
   if (data?.status === 'approved' && data?.user_id) {
-    await setUserRole(data.user_id, 'seller');
+    await setUserRole(data.user_id, 'business_owner');
   }
 };
 

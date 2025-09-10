@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { EmailSignUp } from "@/components/auth/EmailSignUp";
 import { PhoneSignUp } from "@/components/auth/PhoneSignUp";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const SignUp = () => {
