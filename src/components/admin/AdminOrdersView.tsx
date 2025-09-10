@@ -5,7 +5,7 @@ import { Order, DeliveryMan } from "@/types/order";
 import { format } from "date-fns";
 import { Calendar, User, Truck, MapPin, Phone, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { assignOrderToDeliveryMan } from "@/services/database";
+import { assignOrderToDeliveryMan, updateOrderStatus } from "@/services/database";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -49,6 +49,23 @@ export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOr
         const newSet = new Set(prev);
         newSet.delete(orderId);
         return newSet;
+      });
+    }
+  };
+
+  const handleCompleteOrder = async (orderId: string) => {
+    try {
+      await updateOrderStatus(orderId, 'completed');
+      toast({
+        title: "Order completed",
+        description: "Order has been marked as completed"
+      });
+      onOrdersUpdate();
+    } catch (error) {
+      toast({
+        title: "Failed to complete order",
+        description: "There was an error completing the order",
+        variant: "destructive"
       });
     }
   };
@@ -302,10 +319,10 @@ export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOr
                             </div>
                           </div>
 
-                          {!order.delivery_man_id && (
-                            <div className="border-t pt-4">
-                              <div className="flex items-center gap-3">
-                                <Truck className="h-4 w-4 text-muted-foreground" />
+                          <div className="border-t pt-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Truck className="h-4 w-4 text-muted-foreground" />
+                              {!order.delivery_man_id ? (
                                 <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
                                   <SelectTrigger className="w-56">
                                     <SelectValue placeholder="Assign to delivery person" />
@@ -318,12 +335,25 @@ export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOr
                                     ))}
                                   </SelectContent>
                                 </Select>
-                                {assigningOrders.has(order.id) && (
-                                  <span className="text-sm text-muted-foreground">Assigning...</span>
-                                )}
-                              </div>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">
+                                  Assigned to: <strong>{getDeliveryManName(order.delivery_man_id)}</strong>
+                                </span>
+                              )}
+                              {assigningOrders.has(order.id) && (
+                                <span className="text-sm text-muted-foreground">Assigning...</span>
+                              )}
                             </div>
-                          )}
+                            {order.status !== 'completed' && (
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleCompleteOrder(order.id)}
+                                className="ml-2"
+                              >
+                                Mark Complete
+                              </Button>
+                            )}
+                          </div>
                         </CardContent>
                       </Card>
                     );

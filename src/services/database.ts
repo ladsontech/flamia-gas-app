@@ -37,19 +37,40 @@ export const fetchOrders = async (): Promise<Order[]> => {
   return data as Order[] || [];
 };
 
-// Fetch delivery men
+// Fetch delivery men from user_roles
 export const fetchDeliveryMen = async () => {
-  const { data, error } = await supabase
-    .from('delivery_men')
-    .select('*')
-    .order('name');
+  // First get delivery men user IDs
+  const { data: roleData, error: roleError } = await supabase
+    .from('user_roles')
+    .select('user_id')
+    .eq('role', 'delivery_man');
   
-  if (error) {
-    console.error("Error fetching delivery men:", error);
+  if (roleError) {
+    console.error("Error fetching delivery roles:", roleError);
+    return [];
+  }
+
+  if (!roleData || roleData.length === 0) {
+    return [];
+  }
+
+  // Then get their profiles
+  const userIds = roleData.map(item => item.user_id);
+  const { data: profileData, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, display_name, full_name')
+    .in('id', userIds);
+  
+  if (profileError) {
+    console.error("Error fetching delivery profiles:", profileError);
     return [];
   }
   
-  return data || [];
+  return (profileData || []).map(profile => ({
+    id: profile.id,
+    name: profile.display_name || profile.full_name || 'Unknown',
+    email: ''
+  }));
 };
 
 // Assign order to delivery man

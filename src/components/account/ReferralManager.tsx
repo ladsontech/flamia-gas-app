@@ -179,9 +179,8 @@ export const ReferralManager: React.FC = () => {
     .filter(o => o.status === 'completed')
     .reduce((sum, o) => sum + o.commission_amount, 0);
 
-  const pendingEarnings = refereeOrders
-    .filter(o => o.status === 'pending' || o.status === 'assigned')
-    .reduce((sum, o) => sum + o.commission_amount, 0);
+  const pendingPayments = refereeOrders
+    .filter(o => o.status === 'pending' || o.status === 'assigned');
 
   if (loading) {
     return (
@@ -262,28 +261,27 @@ export const ReferralManager: React.FC = () => {
               <div className="bg-yellow-50 p-3 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <Clock className="w-4 h-4 text-yellow-600" />
-                  <span className="text-xs font-medium text-yellow-900">Pending</span>
+                  <span className="text-xs font-medium text-yellow-900">Pending Payments</span>
                 </div>
-                <p className="text-lg font-bold text-yellow-900 mt-1">{formatCurrency(pendingEarnings)}</p>
+                <p className="text-lg font-bold text-yellow-900 mt-1">{pendingPayments.length}</p>
               </div>
             </div>
 
-            {/* Order Tracking Section */}
+            {/* Pending Payments Section */}
             <div className="space-y-3">
-              <h3 className="font-medium text-sm">Order Tracking</h3>
-              {refereeOrders.length === 0 ? (
+              <h3 className="font-medium text-sm">Pending Payments</h3>
+              {pendingPayments.length === 0 ? (
                 <div className="text-center py-6">
                   <DollarSign className="w-10 h-10 mx-auto mb-3 text-gray-400" />
-                  <p className="text-gray-600 text-sm">No orders from referrals yet</p>
-                  <p className="text-gray-500 text-xs mt-1">When people you refer place orders, they'll appear here!</p>
+                  <p className="text-gray-600 text-sm">No pending payments</p>
+                  <p className="text-gray-500 text-xs mt-1">Orders from your referrals will show here until completed!</p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {refereeOrders.map((order) => (
+                  {pendingPayments.map((order) => (
                     <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3">
                         <div className={`w-2 h-2 rounded-full ${
-                          order.status === 'completed' ? 'bg-green-500' : 
                           order.status === 'assigned' ? 'bg-blue-500' : 'bg-yellow-500'
                         }`}></div>
                         <div>
@@ -297,14 +295,10 @@ export const ReferralManager: React.FC = () => {
                       </div>
                       <div className="text-right">
                         <Badge 
-                          variant={
-                            order.status === 'completed' ? 'default' : 
-                            order.status === 'assigned' ? 'secondary' : 'outline'
-                          }
+                          variant={order.status === 'assigned' ? 'secondary' : 'outline'}
                           className="text-xs"
                         >
-                          {order.status === 'completed' ? 'Completed' : 
-                           order.status === 'assigned' ? 'Assigned' : 'Pending'}
+                          {order.status === 'assigned' ? 'Assigned' : 'Pending'}
                         </Badge>
                         <p className="text-xs text-gray-500 mt-1">
                           {format(new Date(order.created_at), 'dd/MM/yy')}

@@ -63,13 +63,30 @@ const OrdersManager = ({ userRole, userId }: OrdersManagerProps) => {
 
       // Fetch delivery men if admin
       if (userRole === 'super_admin') {
-        const { data: deliveryData, error: deliveryError } = await supabase
-          .from('delivery_men')
-          .select('*')
-          .order('name');
+        // First get delivery men user IDs
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'delivery_man');
         
-        if (deliveryError) throw deliveryError;
-        setDeliveryMen(deliveryData || []);
+        if (roleError) throw roleError;
+
+        if (roleData && roleData.length > 0) {
+          // Then get their profiles
+          const userIds = roleData.map(item => item.user_id);
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('id, display_name, full_name')
+            .in('id', userIds);
+          
+          if (profileError) throw profileError;
+          
+          setDeliveryMen((profileData || []).map(profile => ({
+            id: profile.id,
+            name: profile.display_name || profile.full_name || 'Unknown',
+            email: ''
+          })));
+        }
       }
       
     } catch (error) {
@@ -251,9 +268,9 @@ const OrdersManager = ({ userRole, userId }: OrdersManagerProps) => {
                       </div>
                     )}
                     {orderInfo.address && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{orderInfo.address}</span>
+                      <div className="flex items-start gap-2 col-span-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <span className="text-sm break-words">{orderInfo.address}</span>
                       </div>
                     )}
                     {deliveryMan && (
@@ -301,6 +318,18 @@ const OrdersManager = ({ userRole, userId }: OrdersManagerProps) => {
                           Mark as Completed
                         </Button>
                       )}
+                    </div>
+                  )}
+
+                  {userRole === 'super_admin' && order.status !== 'completed' && (
+                    <div className="flex gap-2 pt-2">
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleUpdateStatus(order.id, 'completed')}
+                        variant="outline"
+                      >
+                        Mark as Completed
+                      </Button>
                     </div>
                   )}
                 </CardContent>
