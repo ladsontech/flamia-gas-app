@@ -56,6 +56,7 @@ const Account = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const { toast } = useToast();
   const { userRole, isAdmin, isBusinessOwner, isDeliveryMan, loading: roleLoading } = useUserRole();
 
@@ -294,155 +295,244 @@ const Account = () => {
 
   // Authenticated user view
   return (
-    <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
+    <div className="min-h-screen bg-background">
       <AppBar />
-      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Welcome Header */}
-        <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+      <div className="pt-16 pb-20">
+        {/* Mobile Header */}
+        <div className="bg-background border-b px-4 py-6">
+          <h1 className="text-2xl font-bold text-foreground">My account</h1>
+        </div>
+
+        {/* User Profile Card */}
+        <div className="p-4">
+          <Card className="mb-6">
+            <CardContent className="p-4">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary" />
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+                  <User className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold">Welcome back, {getDisplayName()}!</h1>
-                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                    {user.email && <span>{user.email}</span>}
-                    {profile?.phone_number && <span>{profile.phone_number}</span>}
+                <div className="flex-1">
+                  <h2 className="text-xl font-semibold">{getDisplayName()}</h2>
+                  <div className="space-y-1">
+                    {user.email && (
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                    )}
+                    {profile?.phone_number && (
+                      <p className="text-sm text-muted-foreground">{profile.phone_number}</p>
+                    )}
                     {userRole !== 'user' && (
-                      <Badge variant="secondary" className="ml-2">
+                      <Badge variant="secondary" className="text-xs">
                         {userRole.replace('_', ' ')}
                       </Badge>
                     )}
                   </div>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            {isBusinessOwner && <TabsTrigger value="business">Business</TabsTrigger>}
-            {!isPhoneUser && <TabsTrigger value="referrals">Referrals</TabsTrigger>}
-          </TabsList>
-          
-          <TabsContent value="orders" className="mt-6">
-            <OrdersManager userRole={userRole} userId={user?.id} />
-          </TabsContent>
-          
-          <TabsContent value="profile" className="mt-6 space-y-4">
-            {!isPhoneUser && <AddressManager />}
-            {!isPhoneUser && <PhoneManager />}
-          </TabsContent>
+          {/* Menu Items */}
+          <div className="space-y-2">
+            {/* Orders */}
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-0">
+                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <span className="font-medium">My Orders</span>
+                  </div>
+                  <div className="w-5 h-5 text-muted-foreground">→</div>
+                </div>
+              </CardContent>
+            </Card>
 
-          {isBusinessOwner && (
-            <TabsContent value="business" className="mt-6 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Store className="h-5 w-5" />
-                    My Businesses
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {businesses.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Store className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-lg font-semibold mb-2">No businesses assigned</h3>
-                      <p className="text-muted-foreground">Contact admin to get your business assigned</p>
+            {/* Profile Settings */}
+            {!isPhoneUser && (
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                        <Settings className="w-5 h-5 text-green-600" />
+                      </div>
+                      <span className="font-medium">Profile Settings</span>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {businesses.map((business) => (
-                        <Card key={business.id} className="border-l-4 border-l-primary">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              {business.image_url && (
-                                <img 
-                                  src={business.image_url} 
-                                  alt={business.name}
-                                  className="w-12 h-12 rounded-lg object-cover"
-                                />
-                              )}
-                              <div className="flex-1">
-                                <h4 className="font-semibold">{business.name}</h4>
-                                <p className="text-sm text-muted-foreground">{business.location}</p>
-                                <p className="text-sm text-muted-foreground">{business.contact}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Business Analytics */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5" />
-                    Business Analytics
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <TrendingUp className="h-8 w-8 mx-auto mb-3 text-blue-600" />
-                      <p className="text-2xl font-bold">0</p>
-                      <p className="text-sm text-muted-foreground">Total Orders</p>
-                    </div>
-                    <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                      <DollarSign className="h-8 w-8 mx-auto mb-3 text-green-600" />
-                      <p className="text-2xl font-bold">UGX 0</p>
-                      <p className="text-sm text-muted-foreground">Revenue</p>
-                    </div>
-                    <div className="text-center p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                      <Users className="h-8 w-8 mx-auto mb-3 text-purple-600" />
-                      <p className="text-2xl font-bold">0</p>
-                      <p className="text-sm text-muted-foreground">Customers</p>
-                    </div>
+                    <div className="w-5 h-5 text-muted-foreground">→</div>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-          )}
+            )}
 
-          {!isPhoneUser && (
-            <TabsContent value="referrals" className="mt-6">
-              <ReferralManager />
-            </TabsContent>
-          )}
-        </Tabs>
+            {/* Business Dashboard */}
+            {isBusinessOwner && (
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('business')}>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                        <Store className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <span className="font-medium">My Business</span>
+                    </div>
+                    <div className="w-5 h-5 text-muted-foreground">→</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-        {/* Admin Quick Access */}
-        {isAdmin && (
-          <Card className="border-orange-200 bg-orange-50 dark:bg-orange-900/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-orange-700 dark:text-orange-300">
-                <Settings className="h-5 w-5" />
-                Admin Panel Access
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Access advanced administrative features and manage the platform
-              </p>
-              <Button asChild className="w-full">
-                <Link to="/admin">Go to Admin Dashboard</Link>
+            {/* Referrals */}
+            {!isPhoneUser && (
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                        <DollarSign className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <span className="font-medium">Referrals & Earnings</span>
+                    </div>
+                    <div className="w-5 h-5 text-muted-foreground">→</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Admin Panel */}
+            {isAdmin && (
+              <Card className="cursor-pointer hover:shadow-md transition-shadow border-orange-200">
+                <CardContent className="p-0">
+                  <Link to="/admin">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                          <Settings className="w-5 h-5 text-orange-600" />
+                        </div>
+                        <span className="font-medium text-orange-700 dark:text-orange-300">Admin Panel</span>
+                      </div>
+                      <div className="w-5 h-5 text-orange-600">→</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Sign Out */}
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-0">
+                <div className="p-4 flex items-center justify-between" onClick={handleSignOut}>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                      <LogOut className="w-5 h-5 text-red-600" />
+                    </div>
+                    <span className="font-medium text-red-600">Sign Out</span>
+                  </div>
+                  <div className="w-5 h-5 text-red-600">→</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Active Section Content */}
+        {activeSection && (
+          <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
+            <div className="bg-background border-b px-4 py-4 flex items-center space-x-4">
+              <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)}>
+                ← Back
               </Button>
-            </CardContent>
-          </Card>
+              <h2 className="text-lg font-semibold">
+                {activeSection === 'orders' && 'My Orders'}
+                {activeSection === 'profile' && 'Profile Settings'}
+                {activeSection === 'business' && 'My Business'}
+                {activeSection === 'referrals' && 'Referrals & Earnings'}
+              </h2>
+            </div>
+            
+            <div className="p-4">
+              {activeSection === 'orders' && <OrdersManager userRole={userRole} userId={user?.id} />}
+              {activeSection === 'profile' && (
+                <div className="space-y-4">
+                  <AddressManager />
+                  <PhoneManager />
+                </div>
+              )}
+              {activeSection === 'business' && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Store className="h-5 w-5" />
+                        My Businesses
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {businesses.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Store className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                          <h3 className="text-lg font-semibold mb-2">No businesses assigned</h3>
+                          <p className="text-muted-foreground">Contact admin to get your business assigned</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {businesses.map((business) => (
+                            <Card key={business.id} className="border-l-4 border-l-primary">
+                              <CardContent className="p-4">
+                                <div className="flex items-start gap-3">
+                                  {business.image_url && (
+                                    <img 
+                                      src={business.image_url} 
+                                      alt={business.name}
+                                      className="w-12 h-12 rounded-lg object-cover"
+                                    />
+                                  )}
+                                  <div className="flex-1">
+                                    <h4 className="font-semibold">{business.name}</h4>
+                                    <p className="text-sm text-muted-foreground">{business.location}</p>
+                                    <p className="text-sm text-muted-foreground">{business.contact}</p>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <BarChart3 className="h-5 w-5" />
+                        Business Analytics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                          <TrendingUp className="h-8 w-8 mx-auto mb-3 text-blue-600" />
+                          <p className="text-2xl font-bold">0</p>
+                          <p className="text-sm text-muted-foreground">Total Orders</p>
+                        </div>
+                        <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          <DollarSign className="h-8 w-8 mx-auto mb-3 text-green-600" />
+                          <p className="text-2xl font-bold">UGX 0</p>
+                          <p className="text-sm text-muted-foreground">Revenue</p>
+                        </div>
+                        <div className="text-center p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                          <Users className="h-8 w-8 mx-auto mb-3 text-purple-600" />
+                          <p className="text-2xl font-bold">0</p>
+                          <p className="text-sm text-muted-foreground">Customers</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+              {activeSection === 'referrals' && <ReferralManager />}
+            </div>
+          </div>
         )}
       </div>
     </div>

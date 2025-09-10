@@ -327,12 +327,16 @@ export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOr
                                   <SelectTrigger className="w-56">
                                     <SelectValue placeholder="Assign to delivery person" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-background border shadow-md z-50">
-                                    {deliveryMen.map((deliveryMan) => (
-                                      <SelectItem key={deliveryMan.id} value={deliveryMan.id}>
-                                        {deliveryMan.name}
-                                      </SelectItem>
-                                    ))}
+                                   <SelectContent className="bg-card border border-border shadow-lg z-[100] max-h-48 overflow-y-auto">
+                                     {deliveryMen.map((deliveryMan) => (
+                                       <SelectItem 
+                                         key={deliveryMan.id} 
+                                         value={deliveryMan.id}
+                                         className="cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                                       >
+                                         {deliveryMan.name}
+                                       </SelectItem>
+                                     ))}
                                   </SelectContent>
                                 </Select>
                               ) : !order.delivery_man_id ? (
