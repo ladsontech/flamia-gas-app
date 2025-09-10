@@ -8,7 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Mail, Lock, User, Gift } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export const EmailSignUp = () => {
+interface EmailSignUpProps {
+  referralCodeProp?: string;
+}
+
+export const EmailSignUp = ({ referralCodeProp }: EmailSignUpProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -19,12 +23,12 @@ export const EmailSignUp = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    // Auto-fill referral code from URL parameter
-    const refParam = searchParams.get('ref');
+    // Auto-fill referral code from URL parameter or props
+    const refParam = searchParams.get('ref') || referralCodeProp;
     if (refParam) {
       setReferralCode(refParam);
     }
-  }, [searchParams]);
+  }, [searchParams, referralCodeProp]);
 
   const extractNameFromEmail = (email: string) => {
     const localPart = email.split('@')[0];

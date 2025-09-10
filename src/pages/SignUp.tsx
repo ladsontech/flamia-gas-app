@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,36 @@ import { PhoneSignUp } from "@/components/auth/PhoneSignUp";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const SignUp = () => {
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
+  const [referralCode, setReferralCode] = useState('');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Auto-fill referral code from URL parameter
+    const refParam = searchParams.get('ref');
+    if (refParam) {
+      setReferralCode(refParam);
+    }
+  }, [searchParams]);
+
+  const handleGoogleSignUp = async () => {
+    // Store referral code in localStorage temporarily
+    if (referralCode.trim()) {
+      localStorage.setItem('tempReferralCode', referralCode.trim().toUpperCase());
+    }
+    
+    await supabase.auth.signInWithOAuth({ 
+      provider: 'google', 
+      options: { 
+        redirectTo: `${window.location.origin}/`
+      } 
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
@@ -71,20 +97,13 @@ const SignUp = () => {
           
           <CardContent>
             {/* Always show email signup, phone signup code kept but hidden */}
-            <EmailSignUp />
+            <EmailSignUp referralCodeProp={referralCode} />
             {false && authMethod === 'phone' && <PhoneSignUp />}
             <div className="mt-4 flex flex-col gap-2">
               <Button
                 variant="outline"
                 className="w-full hover:bg-accent/10 border-accent/30"
-                onClick={async () => {
-                  await supabase.auth.signInWithOAuth({ 
-                    provider: 'google', 
-                    options: { 
-                      redirectTo: `${window.location.origin}/`
-                    } 
-                  });
-                }}
+                onClick={handleGoogleSignUp}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
