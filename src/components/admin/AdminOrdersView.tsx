@@ -322,12 +322,12 @@ export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOr
                           <div className="border-t pt-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <Truck className="h-4 w-4 text-muted-foreground" />
-                              {!order.delivery_man_id ? (
+                              {!order.delivery_man_id && deliveryMen.length > 0 ? (
                                 <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
                                   <SelectTrigger className="w-56">
                                     <SelectValue placeholder="Assign to delivery person" />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className="bg-background border shadow-md z-50">
                                     {deliveryMen.map((deliveryMan) => (
                                       <SelectItem key={deliveryMan.id} value={deliveryMan.id}>
                                         {deliveryMan.name}
@@ -335,6 +335,8 @@ export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOr
                                     ))}
                                   </SelectContent>
                                 </Select>
+                              ) : !order.delivery_man_id ? (
+                                <span className="text-sm text-muted-foreground">No delivery men available</span>
                               ) : (
                                 <span className="text-sm text-muted-foreground">
                                   Assigned to: <strong>{getDeliveryManName(order.delivery_man_id)}</strong>

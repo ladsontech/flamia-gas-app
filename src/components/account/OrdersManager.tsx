@@ -283,12 +283,12 @@ const OrdersManager = ({ userRole, userId }: OrdersManagerProps) => {
 
                   {userRole === 'super_admin' && (
                     <div className="flex gap-2 pt-2">
-                      {order.status === 'pending' && (
+                      {order.status === 'pending' && deliveryMen.length > 0 && (
                         <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
                           <SelectTrigger className="w-48">
                             <SelectValue placeholder="Assign to delivery man" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-background border shadow-md z-50">
                             {deliveryMen.map((dm) => (
                               <SelectItem key={dm.id} value={dm.id}>
                                 {dm.name}
@@ -296,6 +296,9 @@ const OrdersManager = ({ userRole, userId }: OrdersManagerProps) => {
                             ))}
                           </SelectContent>
                         </Select>
+                      )}
+                      {order.status === 'pending' && deliveryMen.length === 0 && (
+                        <span className="text-sm text-muted-foreground">No delivery men available</span>
                       )}
                     </div>
                   )}

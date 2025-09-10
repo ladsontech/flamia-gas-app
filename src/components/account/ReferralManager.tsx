@@ -92,13 +92,14 @@ export const ReferralManager: React.FC = () => {
   };
 
   const calculateCommission = (description: string): number => {
-    if (description.toLowerCase().includes('full kit') || description.toLowerCase().includes('kit')) {
+    const desc = description.toLowerCase();
+    if (desc.includes('full kit') || desc.includes('kit')) {
       return 10000; // Full kits: UGX 10,000
-    } else if (description.toLowerCase().includes('12kg') || description.toLowerCase().includes('12 kg')) {
-      return 10000; // 12kg cylinder: UGX 10,000
-    } else if (description.toLowerCase().includes('6kg') || description.toLowerCase().includes('6 kg')) {
+    } else if (desc.includes('13kg') || desc.includes('13 kg') || desc.includes('12kg') || desc.includes('12 kg')) {
+      return 10000; // 12kg/13kg cylinder: UGX 10,000
+    } else if (desc.includes('6kg') || desc.includes('6 kg')) {
       return 5000; // 6kg cylinder: UGX 5,000
-    } else if (description.toLowerCase().includes('3kg') || description.toLowerCase().includes('3 kg')) {
+    } else if (desc.includes('3kg') || desc.includes('3 kg')) {
       return 3000; // 3kg cylinder: UGX 3,000
     }
     return 0;
