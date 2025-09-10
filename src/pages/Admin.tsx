@@ -17,6 +17,9 @@ import BusinessProductsManager from '@/components/admin/BusinessProductsManager'
 import { verifyAdminPassword, fetchOrders, fetchDeliveryMen } from '@/services/database';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Order, DeliveryMan } from '@/types/order';
+import SellerApplicationsManager from '@/components/admin/SellerApplicationsManager';
+import MarketplaceSettings from '@/components/admin/MarketplaceSettings';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,6 +29,7 @@ const Admin: React.FC = () => {
   const [deliveryMen, setDeliveryMen] = useState<DeliveryMan[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isAdmin } = useUserRole();
 
   useEffect(() => {
     // Check if admin is already authenticated in this session
@@ -92,7 +96,7 @@ const Admin: React.FC = () => {
     navigate('/');
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isAdmin) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -118,6 +122,9 @@ const Admin: React.FC = () => {
                 {loading ? 'Logging in...' : 'Login'}
               </Button>
             </form>
+            {!isAdmin && (
+              <p className="text-xs text-center text-muted-foreground mt-3">Log in with a super admin account.</p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -133,7 +140,7 @@ const Admin: React.FC = () => {
           {/* Mobile-responsive tabs */}
           <div className="mb-4">
             <ScrollArea className="w-full">
-              <TabsList className="grid grid-cols-7 w-full min-w-[600px] h-auto p-1 bg-muted rounded-lg">
+              <TabsList className="grid grid-cols-9 w-full min-w-[750px] h-auto p-1 bg-muted rounded-lg">
                 <TabsTrigger value="orders" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
                   Orders
                 </TabsTrigger>
@@ -154,6 +161,12 @@ const Admin: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger value="products" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
                   Products
+                </TabsTrigger>
+                <TabsTrigger value="seller_apps" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Seller Apps
+                </TabsTrigger>
+                <TabsTrigger value="marketplace" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Marketplace
                 </TabsTrigger>
               </TabsList>
             </ScrollArea>
@@ -186,6 +199,14 @@ const Admin: React.FC = () => {
             
             <TabsContent value="products" className="mt-0">
               <BusinessProductsManager />
+            </TabsContent>
+
+            <TabsContent value="seller_apps" className="mt-0">
+              <SellerApplicationsManager />
+            </TabsContent>
+
+            <TabsContent value="marketplace" className="mt-0">
+              <MarketplaceSettings />
             </TabsContent>
           </div>
         </Tabs>

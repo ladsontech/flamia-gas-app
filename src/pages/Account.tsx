@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { AddressManager } from '@/components/account/AddressManager';
 import { PhoneManager } from '@/components/account/PhoneManager';
 import { ReferralManager } from '@/components/account/ReferralManager';
+import { useUserRole } from '@/hooks/useUserRole';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface Profile {
@@ -34,6 +35,8 @@ const Account: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const { isSeller } = useUserRole();
+  const [sellerStats, setSellerStats] = useState<{ products: number; totalSales: number } | null>(null);
 
   useEffect(() => {
     checkAuthStatus();
@@ -164,6 +167,39 @@ const Account: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const loadSellerStats = async () => {
+      try {
+        if (!isSeller || !user?.id) {
+          setSellerStats(null);
+          return;
+        }
+        const { count: productsCount } = await supabase
+          .from('business_products')
+          .select('*', { count: 'exact', head: true })
+          .eq('seller_user_id', user.id);
+
+        const { data: recentOrders } = await supabase
+          .from('orders')
+          .select('id, description')
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        const totalSales = (recentOrders || []).reduce((acc, o) => {
+          const match = o.description?.match(/Total Amount:\s*UGX\s*([0-9,]+)/i);
+          if (!match) return acc;
+          const amount = Number(match[1].replace(/,/g, ''));
+          return acc + (isNaN(amount) ? 0 : amount);
+        }, 0);
+
+        setSellerStats({ products: productsCount || 0, totalSales });
+      } catch (e) {
+        setSellerStats(null);
+      }
+    };
+    loadSellerStats();
+  }, [isSeller, user?.id]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -282,6 +318,31 @@ const Account: React.FC = () => {
 
         {/* Phone Numbers Management */}
         {!isPhoneUser && <PhoneManager />}
+
+        {/* Seller Analytics */}
+        {isSeller && (
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Seller Analytics</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              {sellerStats ? (
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="p-3 border rounded">
+                    <div className="text-muted-foreground">Active Products</div>
+                    <div className="text-xl font-semibold">{sellerStats.products}</div>
+                  </div>
+                  <div className="p-3 border rounded">
+                    <div className="text-muted-foreground">Recent Sales (from last 50 orders)</div>
+                    <div className="text-xl font-semibold">UGX {sellerStats.totalSales.toLocaleString()}</div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">No seller stats available.</p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Recent Orders - Activity Style */}
         <Card>

@@ -62,6 +62,7 @@ const Delivery = () => {
     queryKey: ['deliveryOrders'],
     queryFn: fetchOrders,
     enabled: !!deliveryMan,
+    select: (orders) => orders.filter((o) => o.delivery_man_id === deliveryMan?.id),
   });
 
   const handleLogout = () => {
@@ -256,10 +257,7 @@ const Delivery = () => {
                             <h3 className="font-medium">{order.customerName}</h3>
                             <p className="text-sm text-gray-600 line-clamp-2">{order.orderDetails}</p>
                           </div>
-                          <Badge variant={
-                            order.status === 'assigned' ? 'destructive' : 
-                            order.status === 'in_progress' ? 'default' : 'secondary'
-                          }>
+                          <Badge>
                             {order.status?.replace('_', ' ') || 'assigned'}
                           </Badge>
                         </div>
@@ -342,7 +340,7 @@ const Delivery = () => {
                       Delivery Map
                     </h2>
                     {currentLocation && (
-                      <Badge variant="outline" className="text-blue-600">
+                      <Badge>
                         <MapPin className="w-3 h-3 mr-1" />
                         Live Location
                       </Badge>
