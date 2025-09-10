@@ -238,33 +238,6 @@ export type Database = {
           },
         ]
       }
-      delivery_men: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          name: string
-          password_hash: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          name: string
-          password_hash: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          name?: string
-          password_hash?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       gadgets: {
         Row: {
           brand: string | null
@@ -344,15 +317,7 @@ export type Database = {
           status?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "orders_delivery_man_id_fkey"
-            columns: ["delivery_man_id"]
-            isOneToOne: false
-            referencedRelation: "delivery_men"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       phone_verifications: {
         Row: {
