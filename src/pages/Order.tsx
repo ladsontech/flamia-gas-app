@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { OrderHeader } from "@/components/order/OrderHeader";
 import { OrderFormFields } from "@/components/order/OrderFormFields";
@@ -14,14 +14,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { staticBrands, refillBrands } from "@/components/home/BrandsData";
 import { accessories } from "@/components/accessories/AccessoriesData";
-import { createOrder } from "@/services/database";
 import { supabase } from "@/integrations/supabase/client";
+import { OrderService } from "@/services/orderService";
 
 export default function Order() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [accessoryData, setAccessoryData] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const selectedBrand = searchParams.get("brand") || "";
   const orderType = searchParams.get("type") || "fullset";
@@ -47,21 +50,65 @@ export default function Order() {
   ];
 
   useEffect(() => {
-    const fetchAccessoryData = async () => {
-      if (accessoryId) {
-        try {
+    const checkAuthAndFetchData = async () => {
+      try {
+        // Check authentication
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in to place an order.",
+            variant: "destructive"
+          });
+          navigate('/signin');
+          return;
+        }
+        
+        setIsAuthenticated(true);
+
+        // Fetch user profile and default address
+        const [profileResponse, addressResponse] = await Promise.all([
+          supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+          supabase.from('addresses').select('*').eq('user_id', user.id).eq('is_default', true).maybeSingle()
+        ]);
+
+        const profile = profileResponse.data;
+        const defaultAddress = addressResponse.data;
+        
+        setUserProfile(profile);
+        
+        // Auto-fill form with profile data
+        setFormData(prev => ({
+          ...prev,
+          contact: profile?.phone_number || prev.contact,
+          address: defaultAddress?.address_line || prev.address,
+          location: defaultAddress?.latitude && defaultAddress?.longitude ? {
+            lat: Number(defaultAddress.latitude),
+            lng: Number(defaultAddress.longitude),
+            address: defaultAddress.address_line
+          } : prev.location
+        }));
+
+        // Fetch accessory data if needed
+        if (accessoryId) {
           const accessory = accessories.find(a => a.id === accessoryId);
           if (accessory) {
             setAccessoryData(accessory);
           }
-        } catch (error) {
-          console.error("Error fetching accessory data:", error);
         }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load user data. Please try again.",
+          variant: "destructive"
+        });
       }
     };
     
-    fetchAccessoryData();
-  }, [accessoryId]);
+    checkAuthAndFetchData();
+  }, [accessoryId, navigate, toast]);
 
   const [formData, setFormData] = useState({
     address: "",
@@ -95,33 +142,25 @@ export default function Order() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to place an order.",
+        variant: "destructive"
+      });
+      navigate('/signin');
+      return;
+    }
+    
     setLoading(true);
     
     try {
-      // Check if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Create different message formats for WhatsApp vs Admin
-      let whatsappMessage = '';
-      let adminMessage = '';
+      // Create order description for admin dashboard
+      let orderDescription = '';
       
       if (accessoryData) {
-        whatsappMessage = `Flamia 🔥
-------------------------
-*New Accessory Order*
-------------------------
-*Item:* ${accessoryData.name}
-*Price:* UGX ${accessoryData.price.toLocaleString()}
-*Preferred Brand:* ${formData.brand}
-*Quantity:* ${formData.quantity}
-*Total Amount:* UGX ${(accessoryData.price * formData.quantity).toLocaleString()}
-*Contact:* ${formData.contact}
-*Address:* ${formData.address}${formData.location ? `
-*Location:* https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
-*Free Delivery:* Within Kampala
-------------------------`;
-        
-        adminMessage = `New Accessory Order
+        orderDescription = `New Accessory Order
 Item: ${accessoryData.name}
 Price: UGX ${accessoryData.price.toLocaleString()}
 Preferred Brand: ${formData.brand}
@@ -130,26 +169,11 @@ Total Amount: UGX ${(accessoryData.price * formData.quantity).toLocaleString()}
 Contact: ${formData.contact}
 Address: ${formData.address}${formData.location ? `
 Location: https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
-Free Delivery: Within Kampala`;
+Order Type: Accessory`;
       } else {
         const price = getPrice();
         
-        whatsappMessage = `Flamia 🔥
-------------------------
-*New Gas Order*
-------------------------
-*Order Type:* ${formData.type === "refill" ? "Refill" : "Full Set"}
-*Brand:* ${formData.brand}
-*Size:* ${formData.size}
-*Price:* ${price}
-*Quantity:* ${formData.quantity}
-*Contact:* ${formData.contact}
-*Address:* ${formData.address}${formData.location ? `
-*Location:* https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
-*Free Delivery:* Within Kampala
-------------------------`;
-        
-        adminMessage = `New Gas Order
+        orderDescription = `New Gas Order
 Order Type: ${formData.type === "refill" ? "Refill" : "Full Set"}
 Brand: ${formData.brand}
 Size: ${formData.size}
@@ -157,16 +181,15 @@ Price: ${price}
 Quantity: ${formData.quantity}
 Contact: ${formData.contact}
 Address: ${formData.address}${formData.location ? `
-Location: https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}
-Free Delivery: Within Kampala`;
+Location: https://maps.google.com/maps?q=${formData.location.lat},${formData.location.lng}` : ''}`;
       }
 
+      // Check for referral code
+      const { data: { user } } = await supabase.auth.getUser();
+      let referralCode = null;
+      
       if (user) {
-        // User is signed in - save to database only (for admin page)
-        let referralCode = null;
-        
         try {
-          // Check if user was referred
           const { data: referralData } = await supabase
             .from('referrals')
             .select('referral_code')
@@ -180,35 +203,30 @@ Free Delivery: Within Kampala`;
         } catch (error) {
           console.error('Error fetching referral:', error);
         }
-        
-        await createOrder(adminMessage, referralCode);
-        
-        toast({
-          title: "Order Submitted Successfully",
-          description: "Thank you! We have received your order and will deliver shortly.",
-        });
-      } else {
-        // Guest user - redirect to WhatsApp only
-        const whatsappUrl = `https://wa.me/256753894149?text=${encodeURIComponent(whatsappMessage)}`;
-        window.open(whatsappUrl, '_blank');
-        
-        toast({
-          title: "Order Submitted",
-          description: "Your order has been sent via WhatsApp for processing.",
-        });
       }
+      
+      // Save order to database
+      await OrderService.createOrder(orderDescription, referralCode);
+      
+      toast({
+        title: "Order Submitted Successfully!",
+        description: "Your order has been received and will be processed by our team.",
+      });
 
       // Reset form
       setFormData({
-        address: "",
+        address: userProfile?.addresses?.[0]?.address_line || "",
         type: orderType,
         size: size,
         quantity: 1,
-        contact: "",
+        contact: userProfile?.phone_number || "",
         accessory_id: accessoryId || undefined,
         brand: selectedBrand || (accessoryData ? "" : "Total"),
         location: undefined
       });
+      
+      // Navigate to orders page
+      navigate('/account');
     } catch (error) {
       console.error("Order submission error:", error);
       toast({

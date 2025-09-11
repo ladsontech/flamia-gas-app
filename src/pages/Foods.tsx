@@ -5,6 +5,7 @@ import { Search, RefreshCw, AlertCircle } from 'lucide-react';
 import { Business, BusinessProduct } from '@/types/business';
 import { fetchBusinesses, fetchBusinessProducts } from '@/services/businessService';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import BusinessHeader from '@/components/foods/BusinessHeader';
 import ProductGrid from '@/components/foods/ProductGrid';
 import BusinessList from '@/components/foods/BusinessList';
@@ -18,6 +19,7 @@ const Foods: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadBusinesses();
@@ -96,9 +98,7 @@ const Foods: React.FC = () => {
   };
 
   const handleOrderProduct = (product: BusinessProduct, business: Business) => {
-    const message = `Hello! I'd like to order ${product.name} - UGX ${product.price.toLocaleString()} from ${business.name}`;
-    const whatsappUrl = `https://wa.me/${business.contact.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    navigate(`/order?type=food&business=${encodeURIComponent(business.name)}&product=${encodeURIComponent(product.name)}&price=${product.price}`);
   };
 
   const handleShareBusiness = async (business: Business) => {

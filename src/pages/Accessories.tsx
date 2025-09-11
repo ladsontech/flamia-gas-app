@@ -222,9 +222,10 @@ const Accessories = () => {
             Our gas accessories experts will help you choose the right regulator, burner, pipe, or cylinder stand.
           </p>
           <Button
-            onClick={() => window.open("https://wa.me/256789572007", "_blank")}
+            onClick={() => navigate("/order?type=accessories")}
             className="bg-accent hover:bg-accent/90 text-white px-8 py-3 text-base font-semibold"
           >
+            Order Now
             Contact Gas Expert
           </Button>
         </div>

@@ -407,11 +407,11 @@ const Refill = () => {
               <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6 max-w-2xl mx-auto">
                 Our gas experts are here to help you get the best gas refill prices in Uganda.
               </p>
-              <Button
-                onClick={() => window.open("https://wa.me/256753894149", "_blank")}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base font-semibold"
-              >
-                WhatsApp: +256 753 894 149
+            <Button
+              onClick={() => navigate("/order")}
+              className="bg-accent hover:bg-accent/90 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base font-semibold"
+            >
+              Place Order
               </Button>
             </div>
           </Card>

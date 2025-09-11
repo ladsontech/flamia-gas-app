@@ -13,22 +13,8 @@ interface GadgetCardProps {
 const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
   const navigate = useNavigate();
 
-  const handleOrder = () => {
-    const productDetailUrl = `${window.location.origin}/gadget/${gadget.id}`;
-    const message = `Hello, I'm interested in this product:
-
-*${gadget.name}*
-
-${gadget.description}
-
-Price: ${formatPrice(gadget.price)}
-
-Product Details: ${productDetailUrl}
-
-Please let me know about availability and delivery options.`;
-
-    const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+  const handleOrderClick = () => {
+    navigate("/order?type=gadget");
   };
 
   const handleCardClick = () => {
@@ -97,7 +83,7 @@ Please let me know about availability and delivery options.`;
           </span>
         </div>
         <Button
-          onClick={handleOrder}
+          onClick={handleOrderClick}
           disabled={!gadget.in_stock}
           className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-sm py-2 lg:py-3 h-9 lg:h-10 rounded-lg font-medium"
         >

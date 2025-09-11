@@ -10,11 +10,6 @@ export interface DeliveryPersonProfile {
 
 export interface OrderWithDetails extends Order {
   delivery_man?: DeliveryPersonProfile;
-  referral?: {
-    id: string;
-    referrer_id: string;
-    referral_code: string;
-  };
 }
 
 export class OrderService {
@@ -94,6 +89,8 @@ export class OrderService {
   // Fetch orders with role-based filtering
   static async fetchOrders(userRole: string, userId?: string): Promise<OrderWithDetails[]> {
     try {
+      console.log('Fetching orders for role:', userRole, 'userId:', userId);
+      
       let ordersQuery = supabase
         .from('orders')
         .select(`*`);
@@ -125,6 +122,8 @@ export class OrderService {
       const { data: ordersData, error: ordersError } = await ordersQuery
         .order('created_at', { ascending: false });
 
+      console.log('Orders query result:', ordersData, 'error:', ordersError);
+      
       if (ordersError) throw ordersError;
 
       // Fetch delivery persons for orders
@@ -159,8 +158,7 @@ export class OrderService {
         assigned_at: order.assigned_at,
         user_id: order.user_id,
         delivery_man: order.delivery_man_id ? 
-          deliveryPersons.find(dp => dp.id === order.delivery_man_id) : undefined,
-        referral: Array.isArray(order.referrals) ? order.referrals[0] : order.referrals || undefined
+          deliveryPersons.find(dp => dp.id === order.delivery_man_id) : undefined
       }));
 
       return ordersWithDetails;

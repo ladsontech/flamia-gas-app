@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Flame } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 interface PromotionalOffer {
@@ -16,6 +17,7 @@ interface PromotionalOffer {
 const PromotionsSection: React.FC = () => {
   const [promotionalOffers, setPromotionalOffers] = useState<PromotionalOffer[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPromotionalOffers();
@@ -42,18 +44,7 @@ const PromotionsSection: React.FC = () => {
   };
 
   const handleOrderClick = (offer: PromotionalOffer) => {
-    const whatsappNumber = "+256753894149";
-    const message = `Flamia 🔥
-------------------------
-*Promotional Offer Order*
-------------------------
-*Product:* ${offer.title}
-*Description:* ${offer.description || 'No description'}
-*Price:* ${offer.price || 'Contact for price'}
-------------------------
-I'm interested in this promotion.`;
-    
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    navigate(`/order?type=promotion&item=${encodeURIComponent(offer.title)}&price=${encodeURIComponent(offer.price || '')}`);
   };
 
   if (loading) {

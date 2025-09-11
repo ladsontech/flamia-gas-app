@@ -26,23 +26,7 @@ const GadgetDetail = () => {
   const canonicalUrl = `https://flamia.store/gadget/${id}`;
 
   const handleOrder = () => {
-    if (!gadget) return;
-    
-    const productDetailUrl = `${window.location.origin}/gadget/${gadget.id}`;
-    const message = `Hello, I'm interested in this product:
-
-*${gadget.name}*
-
-${gadget.description}
-
-Price: ${formatPrice(gadget.price)}
-
-Product Details: ${productDetailUrl}
-
-Please let me know about availability and delivery options.`;
-
-    const whatsappUrl = `https://wa.me/256789572007?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    navigate("/order?type=gadget");
   };
 
   const handleShare = async () => {
