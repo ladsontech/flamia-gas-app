@@ -96,10 +96,7 @@ export class OrderService {
     try {
       let ordersQuery = supabase
         .from('orders')
-        .select(`
-          *,
-          referrals!inner(id, referrer_id, referral_code)
-        `);
+        .select(`*`);
 
       // Apply role-based filtering
       switch (userRole) {
