@@ -64,11 +64,14 @@ export const EmailSignUp = ({ referralCodeProp }: EmailSignUpProps) => {
     try {
       const displayName = extractNameFromEmail(email);
 
+      const redirectUrl = `${window.location.origin}/`;
+
       // Create user account
       const { data: authData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             full_name: displayName,
             display_name: displayName,
