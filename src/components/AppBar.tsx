@@ -1,5 +1,6 @@
 import { Flame, Home, ShoppingBag, Utensils, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { NotificationBell } from "./notifications/NotificationBell";
 const AppBar = () => {
   const location = useLocation();
 
@@ -56,8 +57,10 @@ const AppBar = () => {
           })}
         </nav>
 
-        {/* Empty div to maintain layout balance */}
-        <div className="w-10 md:w-12"></div>
+        {/* Notifications */}
+        <div className="flex items-center">
+          <NotificationBell />
+        </div>
       </div>
     </header>;
 };
