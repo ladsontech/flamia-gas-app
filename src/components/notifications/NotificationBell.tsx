@@ -25,7 +25,7 @@ export const NotificationBell = () => {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
+      <PopoverContent className="w-80 p-0 backdrop-blur-md bg-background/80" align="end">
         <NotificationDropdown
           notifications={notifications}
           onMarkAsRead={markAsRead}

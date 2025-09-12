@@ -23,6 +23,33 @@ export const useNotifications = () => {
       description: notification.description,
       duration: 3000,
     });
+
+    // Also show a browser notification (via service worker) when permitted
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'granted') {
+        navigator.serviceWorker?.getRegistration()?.then((reg) => {
+          reg?.showNotification(notification.title, {
+            body: notification.description,
+            icon: '/images/icon.png',
+            badge: '/images/icon.png',
+            tag: 'flamia-notification',
+          });
+        });
+      } else if (Notification.permission === 'default') {
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            navigator.serviceWorker?.getRegistration()?.then((reg) => {
+              reg?.showNotification(notification.title, {
+                body: notification.description,
+                icon: '/images/icon.png',
+                badge: '/images/icon.png',
+                tag: 'flamia-notification',
+              });
+            });
+          }
+        });
+      }
+    }
   }, [toast]);
 
   const markAsRead = useCallback((id: string) => {
@@ -146,10 +173,10 @@ export const useNotifications = () => {
                 const order = payload.new;
                 const oldOrder = payload.old;
                 
-                if (order.status !== oldOrder.status) {
+                if (!oldOrder || order.status !== oldOrder.status) {
                   let title = 'Order Update';
                   let description = `Your order status changed to: ${order.status}`;
-                  
+
                   if (order.status === 'in_progress') {
                     title = 'Order In Progress';
                     description = 'Your order is now being prepared for delivery';
@@ -157,7 +184,7 @@ export const useNotifications = () => {
                     title = 'Order Completed';
                     description = 'Your order has been successfully delivered';
                   }
-                  
+
                   addNotification({
                     type: 'order_status',
                     title,
