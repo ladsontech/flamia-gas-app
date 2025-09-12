@@ -474,6 +474,39 @@ export type Database = {
           },
         ]
       }
+      withdrawals: {
+        Row: {
+          admin_note: string | null
+          amount: number
+          contact: string | null
+          created_at: string
+          id: string
+          processed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          amount: number
+          contact?: string | null
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          amount?: number
+          contact?: string | null
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

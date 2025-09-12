@@ -18,6 +18,7 @@ import BusinessesManager from "@/components/admin/BusinessesManager";
 import BusinessProductsManager from "@/components/admin/BusinessProductsManager";
 import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
 import MarketplaceSettings from "@/components/admin/MarketplaceSettings";
+import { WithdrawalsManager } from "@/components/admin/WithdrawalsManager";
 
 // Import services
 import { fetchOrders, fetchDeliveryMen } from "@/services/database";
@@ -138,9 +139,12 @@ const Admin = () => {
           {/* Mobile-responsive tabs */}
           <div className="mb-4">
             <ScrollArea className="w-full">
-              <TabsList className="grid grid-cols-9 w-full min-w-[750px] h-auto p-1 bg-muted rounded-lg">
+              <TabsList className="grid grid-cols-10 w-full min-w-[800px] h-auto p-1 bg-muted rounded-lg">
                 <TabsTrigger value="orders" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
                   Orders
+                </TabsTrigger>
+                <TabsTrigger value="withdrawals" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
+                  Withdrawals
                 </TabsTrigger>
                 <TabsTrigger value="promotions" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
                   Promos
@@ -173,6 +177,10 @@ const Admin = () => {
           <div className="space-y-4">
             <TabsContent value="orders" className="mt-0">
               <AdminOrdersView orders={orders} deliveryMen={deliveryMen} onOrdersUpdate={handleOrdersUpdate} />
+            </TabsContent>
+
+            <TabsContent value="withdrawals" className="mt-0">
+              <WithdrawalsManager />
             </TabsContent>
             
             <TabsContent value="promotions" className="mt-0">

@@ -211,9 +211,29 @@ export class OrderService {
         
         if (referralData) {
           referralId = referralData.id;
+        } else {
+          // Process delayed referral if no existing one found
+          const wasProcessed = await supabase.rpc('process_delayed_referral', {
+            user_id_param: user.id,
+            referral_code_param: referralCode
+          });
+          
+          if (wasProcessed.data) {
+            // Fetch the newly created referral
+            const { data: newReferralData } = await supabase
+              .from('referrals')
+              .select('id')
+              .eq('referred_user_id', user.id)
+              .eq('referral_code', referralCode.toUpperCase())
+              .maybeSingle();
+            
+            if (newReferralData) {
+              referralId = newReferralData.id;
+            }
+          }
         }
       } catch (error) {
-        console.error('Error finding referral:', error);
+        console.error('Error finding/creating referral:', error);
       }
     }
     

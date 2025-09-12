@@ -173,12 +173,10 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
     return info;
   };
 
-  const filteredOrders = orders.filter(order => {
+const filteredOrders = orders.filter(order => {
     switch (filter) {
       case 'pending':
-        return !order.delivery_man_id && order.status === 'pending';
-      case 'assigned':
-        return order.delivery_man_id && order.status === 'assigned';
+        return order.status === 'pending';
       case 'in_progress':
         return order.status === 'in_progress';
       case 'completed':
@@ -221,26 +219,21 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button
-              size="sm"
-              variant={filter === 'all' ? 'default' : 'outline'}
-              onClick={() => setFilter('all')}
-            >
-              All ({orders.length})
-            </Button>
+            {userRole === 'super_admin' && (
+              <Button
+                size="sm"
+                variant={filter === 'all' ? 'default' : 'outline'}
+                onClick={() => setFilter('all')}
+              >
+                All ({orders.length})
+              </Button>
+            )}
             <Button
               size="sm"
               variant={filter === 'pending' ? 'default' : 'outline'}
               onClick={() => setFilter('pending')}
             >
-              Pending ({orders.filter(o => !o.delivery_man_id && o.status === 'pending').length})
-            </Button>
-            <Button
-              size="sm"
-              variant={filter === 'assigned' ? 'default' : 'outline'}
-              onClick={() => setFilter('assigned')}
-            >
-              Assigned ({orders.filter(o => o.delivery_man_id && o.status === 'assigned').length})
+              Pending ({orders.filter(o => o.status === 'pending').length})
             </Button>
             <Button
               size="sm"
@@ -353,7 +346,10 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
                       <div className="flex items-center gap-3">
                         <Truck className="h-4 w-4 text-muted-foreground" />
                         {!order.delivery_man_id && deliveryPersons.length > 0 ? (
-                          <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
+                          <Select 
+                            onValueChange={(value) => handleAssignOrder(order.id, value)}
+                            disabled={assigningOrders.has(order.id)}
+                          >
                             <SelectTrigger className="w-56">
                               <SelectValue placeholder="Assign to delivery person" />
                             </SelectTrigger>

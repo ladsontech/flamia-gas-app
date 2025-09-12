@@ -7,6 +7,7 @@ import { OrderService } from "@/services/orderService";
 import { Copy, Share2, DollarSign, Clock, CheckCircle, Users } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { WithdrawalSection } from "./WithdrawalSection";
 
 interface ReferralData {
   id: string;
@@ -274,7 +275,7 @@ export const ReferralCommissionTracker = () => {
             <div className="flex items-center gap-3">
               <CheckCircle className="w-8 h-8 text-green-600" />
               <div>
-                <p className="text-sm text-muted-foreground">Completed Earnings</p>
+                <p className="text-sm text-muted-foreground">Available to Withdraw</p>
                 <p className="text-2xl font-bold">{formatCurrency(completedEarnings)}</p>
               </div>
             </div>
@@ -293,6 +294,9 @@ export const ReferralCommissionTracker = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Withdrawal Section */}
+      {completedEarnings > 0 && <WithdrawalSection completedEarnings={completedEarnings} />}
 
       {/* Commission Details */}
       {commissions.length > 0 && (
