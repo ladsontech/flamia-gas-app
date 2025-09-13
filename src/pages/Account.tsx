@@ -281,15 +281,15 @@ const Account = () => {
         <div className="p-4">
           <Card className="mb-6">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8 text-primary-foreground" />
+              <div className="flex flex-col items-start sm:flex-row sm:items-center gap-3 sm:gap-4">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-full flex items-center justify-center">
+                  <User className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground" />
                 </div>
-                <div className="flex-1">
-                  <h2 className="text-xl font-semibold">{getDisplayName()}</h2>
+                <div className="flex-1 w-full">
+                  <h2 className="text-lg sm:text-xl font-semibold">{getDisplayName()}</h2>
                   <div className="space-y-1">
                     {user.email && (
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <p className="text-sm text-muted-foreground break-all">{user.email}</p>
                     )}
                     {profile?.phone_number && (
                       <p className="text-sm text-muted-foreground">{profile.phone_number}</p>

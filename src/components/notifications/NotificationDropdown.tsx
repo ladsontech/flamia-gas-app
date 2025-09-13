@@ -2,12 +2,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Bell, Package, Users, Truck, CheckCircle, Clock } from "lucide-react";
+import { Bell, Package, Users, Truck, CheckCircle, Clock, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 
 export interface NotificationItem {
   id: string;
-  type: 'new_order' | 'order_assigned' | 'order_status' | 'new_referral';
+  type: 'new_order' | 'order_assigned' | 'order_status' | 'new_referral' | 'commission';
   title: string;
   description: string;
   timestamp: Date;
@@ -38,6 +38,8 @@ export const NotificationDropdown = ({
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'new_referral':
         return <Users className="h-4 w-4 text-purple-500" />;
+      case 'commission':
+        return <DollarSign className="h-4 w-4 text-emerald-500" />;
       default:
         return <Bell className="h-4 w-4" />;
     }

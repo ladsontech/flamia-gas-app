@@ -198,6 +198,32 @@ export const useNotifications = () => {
             )
             .subscribe();
           channels.push(orderStatusChannel);
+
+          // Commission notifications (fires only for commissions visible to this user due to RLS)
+          const commissionChannel = supabase
+            .channel('user-commission-notifications')
+            .on(
+              'postgres_changes',
+              {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'commissions'
+              },
+              (payload) => {
+                const commission = payload.new as any;
+                const amount = Number(commission.amount) || 0;
+                addNotification({
+                  type: 'commission',
+                  title: commission.status === 'approved' ? 'Commission Approved' : 'New Commission',
+                  description: `UGX ${amount.toLocaleString('en-UG')} — ${commission.status}`,
+                  timestamp: new Date(),
+                  read: false,
+                  data: commission
+                });
+              }
+            )
+            .subscribe();
+          channels.push(commissionChannel);
         }
       });
     }
