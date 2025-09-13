@@ -1,4 +1,4 @@
-import { useState } from "react";
+import * as React from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -7,7 +7,7 @@ import { NotificationDropdown } from "./NotificationDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 
 export const NotificationBell = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const { notifications, unreadCount, markAsRead, clearAll } = useNotifications();
 
   return (
