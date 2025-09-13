@@ -194,7 +194,7 @@ Location: https://maps.google.com/maps?q=${formData.location.lat},${formData.loc
             .from('referrals')
             .select('referral_code')
             .eq('referred_user_id', user.id)
-            .eq('status', 'pending')
+            .eq('status', 'active')
             .maybeSingle();
           
           if (referralData) {

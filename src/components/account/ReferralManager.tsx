@@ -8,18 +8,30 @@ import { Share2, Copy, Users, DollarSign, Clock, CheckCircle } from 'lucide-reac
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { OrderService } from '@/services/orderService';
+import { WithdrawalSection } from './WithdrawalSection';
 
-interface RefereeOrder {
+interface CommissionData {
   id: string;
-  description: string;
-  status: 'pending' | 'assigned' | 'completed';
+  amount: number;
+  status: string;
   created_at: string;
-  commission_amount: number;
+  orders: {
+    id: string;
+    description: string;
+    status: string;
+    created_at: string;
+  };
+  referrals: {
+    id: string;
+    referral_code: string;
+    referred_user_id: string;
+  };
 }
 
 interface Referral {
   id: string;
-  referral_code: string;
+  referral_code: string;  
   created_at: string;
   referred_user_id: string | null;
 }
@@ -28,7 +40,9 @@ export const ReferralManager: React.FC = () => {
   const { toast } = useToast();
   const [referralCode, setReferralCode] = useState<string>('');
   const [referrals, setReferrals] = useState<Referral[]>([]);
-  const [refereeOrders, setRefereeOrders] = useState<RefereeOrder[]>([]);
+  const [commissions, setCommissions] = useState<CommissionData[]>([]);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [pendingEarnings, setPendingEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
 
@@ -61,36 +75,14 @@ export const ReferralManager: React.FC = () => {
 
       setReferrals(referralsData || []);
 
-      // Fetch orders made by referred users with commission calculation
-      const { data: ordersData } = await supabase
-        .from('orders')
-        .select(`
-          id,
-          description,
-          status,
-          created_at,
-          referral_id,
-          referrals!inner(
-            referrer_id
-          )
-        `)
-        .not('referral_id', 'is', null)
-        .eq('referrals.referrer_id', user.id)
-        .order('created_at', { ascending: false });
+      // Fetch commission data using the OrderService
+      const commissionData = await OrderService.getReferralCommissions(user.id);
+      
+      setCommissions(commissionData.commissions);
+      setTotalEarnings(commissionData.completedEarnings);
+      setPendingEarnings(commissionData.pendingEarnings);
 
-      console.log('Raw orders data:', ordersData);
-
-      // Calculate commission for each order
-      const ordersWithCommission = (ordersData || []).map(order => ({
-        id: order.id,
-        description: order.description,
-        status: order.status as 'pending' | 'assigned' | 'completed',
-        created_at: order.created_at,
-        commission_amount: calculateCommission(order.description)
-      }));
-
-      console.log('Orders with commission:', ordersWithCommission);
-      setRefereeOrders(ordersWithCommission);
+      console.log('Commission data:', commissionData);
     } catch (error) {
       console.error('Error fetching referral data:', error);
     } finally {
@@ -98,19 +90,15 @@ export const ReferralManager: React.FC = () => {
     }
   };
 
-  const calculateCommission = (description: string): number => {
-    const desc = description.toLowerCase();
-    if (desc.includes('full kit') || desc.includes('kit')) {
-      return 10000; // Full kits: UGX 10,000
-    } else if (desc.includes('13kg') || desc.includes('13 kg') || desc.includes('12kg') || desc.includes('12 kg')) {
-      return 10000; // 12kg/13kg cylinder: UGX 10,000
-    } else if (desc.includes('6kg') || desc.includes('6 kg')) {
-      return 5000; // 6kg cylinder: UGX 5,000
-    } else if (desc.includes('3kg') || desc.includes('3 kg')) {
-      return 3000; // 3kg cylinder: UGX 3,000
-    }
-    return 0;
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-UG', {
+      style: 'currency',  
+      currency: 'UGX',
+      minimumFractionDigits: 0
+    }).format(amount);
   };
+
+  const pendingCommissions = commissions.filter(c => c.orders.status !== 'completed');
 
   const generateReferralCode = async () => {
     try {
@@ -174,31 +162,6 @@ export const ReferralManager: React.FC = () => {
       copyReferralLink();
     }
   };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-UG', {
-      style: 'currency',
-      currency: 'UGX',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
-
-  const totalEarnings = refereeOrders
-    .filter(o => o.status === 'completed')
-    .reduce((sum, o) => sum + o.commission_amount, 0);
-
-  const pendingPayments = refereeOrders
-    .filter(o => o.status === 'pending' || o.status === 'assigned');
-
-  const pendingEarnings = pendingPayments
-    .reduce((sum, o) => sum + o.commission_amount, 0);
-
-  console.log('Total earnings calculation:', { 
-    completedOrders: refereeOrders.filter(o => o.status === 'completed'),
-    totalEarnings,
-    pendingOrders: pendingPayments,
-    pendingEarnings
-  });
 
   if (loading) {
     return (
@@ -285,10 +248,15 @@ export const ReferralManager: React.FC = () => {
               </div>
             </div>
 
+            {/* Show WithdrawalSection if there are completed earnings */}
+            {totalEarnings > 0 && (
+              <WithdrawalSection completedEarnings={totalEarnings} />
+            )}
+
             {/* Pending Payments Section */}
             <div className="space-y-3">
               <h3 className="font-medium text-sm">Pending Payments</h3>
-              {pendingPayments.length === 0 ? (
+              {pendingCommissions.length === 0 ? (
                 <div className="text-center py-6">
                   <DollarSign className="w-10 h-10 mx-auto mb-3 text-gray-400" />
                   <p className="text-gray-600 text-sm">No pending payments</p>
@@ -296,30 +264,30 @@ export const ReferralManager: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {pendingPayments.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  {pendingCommissions.map((commission) => (
+                    <div key={commission.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3">
                         <div className={`w-2 h-2 rounded-full ${
-                          order.status === 'assigned' ? 'bg-blue-500' : 'bg-yellow-500'
+                          commission.orders.status === 'assigned' ? 'bg-blue-500' : 'bg-yellow-500'
                         }`}></div>
                         <div>
-                          <p className="font-medium text-sm">{formatCurrency(order.commission_amount)}</p>
+                          <p className="font-medium text-sm">{formatCurrency(Number(commission.amount))}</p>
                           <p className="text-xs text-gray-500">
-                            {order.description.length > 30 
-                              ? `${order.description.substring(0, 30)}...` 
-                              : order.description}
+                            {commission.orders.description.length > 30 
+                              ? `${commission.orders.description.substring(0, 30)}...` 
+                              : commission.orders.description}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <Badge 
-                          variant={order.status === 'assigned' ? 'secondary' : 'outline'}
+                          variant={commission.orders.status === 'assigned' ? 'secondary' : 'outline'}
                           className="text-xs"
                         >
-                          {order.status === 'assigned' ? 'Assigned' : 'Pending'}
+                          {commission.orders.status === 'assigned' ? 'Assigned' : 'Pending'}
                         </Badge>
                         <p className="text-xs text-gray-500 mt-1">
-                          {format(new Date(order.created_at), 'dd/MM/yy')}
+                          {format(new Date(commission.orders.created_at), 'dd/MM/yy')}
                         </p>
                       </div>
                     </div>
@@ -327,6 +295,46 @@ export const ReferralManager: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Commission History */}
+            {commissions.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-medium text-sm">Commission History</h3>
+                <div className="space-y-2">
+                  {commissions.map((commission) => (
+                    <div key={commission.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full ${
+                          commission.orders.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
+                        }`}></div>
+                        <div>
+                          <p className="font-medium text-sm">{formatCurrency(Number(commission.amount))}</p>
+                          <p className="text-xs text-gray-500">
+                            {commission.orders.description.length > 30 
+                              ? `${commission.orders.description.substring(0, 30)}...` 
+                              : commission.orders.description}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            Code: {commission.referrals.referral_code}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge 
+                          variant={commission.orders.status === 'completed' ? 'default' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {commission.orders.status === 'completed' ? 'Completed' : commission.orders.status}
+                        </Badge>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {format(new Date(commission.orders.created_at), 'dd/MM/yy')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </CardContent>
