@@ -69,10 +69,16 @@ export const ReferralManager: React.FC = () => {
           description,
           status,
           created_at,
-          referrals!inner(referrer_id)
+          referral_id,
+          referrals!inner(
+            referrer_id
+          )
         `)
+        .not('referral_id', 'is', null)
         .eq('referrals.referrer_id', user.id)
         .order('created_at', { ascending: false });
+
+      console.log('Raw orders data:', ordersData);
 
       // Calculate commission for each order
       const ordersWithCommission = (ordersData || []).map(order => ({
@@ -83,6 +89,7 @@ export const ReferralManager: React.FC = () => {
         commission_amount: calculateCommission(order.description)
       }));
 
+      console.log('Orders with commission:', ordersWithCommission);
       setRefereeOrders(ordersWithCommission);
     } catch (error) {
       console.error('Error fetching referral data:', error);
@@ -185,6 +192,13 @@ export const ReferralManager: React.FC = () => {
 
   const pendingEarnings = pendingPayments
     .reduce((sum, o) => sum + o.commission_amount, 0);
+
+  console.log('Total earnings calculation:', { 
+    completedOrders: refereeOrders.filter(o => o.status === 'completed'),
+    totalEarnings,
+    pendingOrders: pendingPayments,
+    pendingEarnings
+  });
 
   if (loading) {
     return (
