@@ -89,10 +89,11 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
       return;
     }
 
+    // Check against available earnings (completedEarnings already accounts for withdrawals)
     if (amount > completedEarnings) {
       toast({
-        title: "Insufficient funds",
-        description: "You cannot withdraw more than your available earnings",
+        title: "Insufficient funds", 
+        description: `You can withdraw up to ${formatCurrency(completedEarnings)} (after previous withdrawals)`,
         variant: "destructive"
       });
       return;

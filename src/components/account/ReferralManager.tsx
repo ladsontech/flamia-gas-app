@@ -79,10 +79,14 @@ export const ReferralManager: React.FC = () => {
       const commissionData = await OrderService.getReferralCommissions(user.id);
       
       setCommissions(commissionData.commissions);
-      setTotalEarnings(commissionData.completedEarnings);
+      
+      // Get available earnings (after deducting withdrawals)
+      const availableEarnings = await OrderService.getAvailableEarnings(user.id);
+      setTotalEarnings(availableEarnings);
       setPendingEarnings(commissionData.pendingEarnings);
 
       console.log('Commission data:', commissionData);
+      console.log('Available earnings after withdrawals:', availableEarnings);
     } catch (error) {
       console.error('Error fetching referral data:', error);
     } finally {
@@ -98,7 +102,7 @@ export const ReferralManager: React.FC = () => {
     }).format(amount);
   };
 
-  const pendingCommissions = commissions.filter(c => c.orders.status !== 'completed');
+  const pendingCommissions = commissions.filter(c => c.status === 'pending' || c.orders.status !== 'completed');
 
   const generateReferralCode = async () => {
     try {

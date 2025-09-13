@@ -268,12 +268,13 @@ export class OrderService {
 
       if (error) throw error;
 
+      // Calculate earnings: pending = not completed orders, completed = approved commissions only
       const pendingEarnings = (commissionsData || [])
-        .filter(c => c.orders.status !== 'completed')
+        .filter(c => c.status === 'pending' || c.orders.status !== 'completed')
         .reduce((sum, c) => sum + Number(c.amount), 0);
 
       const completedEarnings = (commissionsData || [])
-        .filter(c => c.orders.status === 'completed')
+        .filter(c => c.status === 'approved' && c.orders.status === 'completed')
         .reduce((sum, c) => sum + Number(c.amount), 0);
 
       console.log('Calculated earnings - Pending:', pendingEarnings, 'Completed:', completedEarnings);
@@ -292,6 +293,28 @@ export class OrderService {
         completedEarnings: 0,
         totalEarnings: 0
       };
+    }
+  }
+
+  // Get available earnings for withdrawal (deducting completed withdrawals)
+  static async getAvailableEarnings(referrerId: string): Promise<number> {
+    try {
+      const commissionsData = await this.getReferralCommissions(referrerId);
+      
+      // Get completed withdrawals
+      const { data: withdrawalsData } = await supabase
+        .from('withdrawals')
+        .select('amount')
+        .eq('user_id', referrerId)
+        .eq('status', 'completed');
+
+      const totalWithdrawn = (withdrawalsData || [])
+        .reduce((sum, w) => sum + Number(w.amount), 0);
+
+      return Math.max(0, commissionsData.completedEarnings - totalWithdrawn);
+    } catch (error) {
+      console.error('Error calculating available earnings:', error);
+      return 0;
     }
   }
 }

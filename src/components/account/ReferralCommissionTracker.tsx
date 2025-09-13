@@ -201,10 +201,26 @@ export const ReferralCommissionTracker = () => {
     }).format(amount);
   };
 
-  const pendingCommissions = commissions.filter(c => c.orders.status !== 'completed');
-  const completedCommissions = commissions.filter(c => c.orders.status === 'completed');
+  const pendingCommissions = commissions.filter(c => c.status === 'pending' || c.orders.status !== 'completed');
+  const completedCommissions = commissions.filter(c => c.status === 'approved' && c.orders.status === 'completed');
   const pendingEarnings = pendingCommissions.reduce((sum, c) => sum + c.amount, 0);
-  const completedEarnings = completedCommissions.reduce((sum, c) => sum + c.amount, 0);
+  
+  // Calculate available earnings (completed commissions minus withdrawals)
+  const [availableEarnings, setAvailableEarnings] = useState(0);
+  
+  useEffect(() => {
+    const calculateAvailable = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const available = await OrderService.getAvailableEarnings(user.id);
+      setAvailableEarnings(available);
+    };
+    
+    if (commissions.length > 0) {
+      calculateAvailable();
+    }
+  }, [commissions]);
 
   if (loading) {
     return (
@@ -276,7 +292,7 @@ export const ReferralCommissionTracker = () => {
               <CheckCircle className="w-8 h-8 text-green-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Available to Withdraw</p>
-                <p className="text-2xl font-bold">{formatCurrency(completedEarnings)}</p>
+                <p className="text-2xl font-bold">{formatCurrency(availableEarnings)}</p>
               </div>
             </div>
           </CardContent>
@@ -296,7 +312,7 @@ export const ReferralCommissionTracker = () => {
       </div>
 
       {/* Withdrawal Section */}
-      {completedEarnings > 0 && <WithdrawalSection completedEarnings={completedEarnings} />}
+      {availableEarnings > 0 && <WithdrawalSection completedEarnings={availableEarnings} />}
 
       {/* Commission Details */}
       {commissions.length > 0 && (
