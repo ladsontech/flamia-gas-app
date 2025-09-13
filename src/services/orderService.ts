@@ -252,6 +252,8 @@ export class OrderService {
   // Get commission data for referrals
   static async getReferralCommissions(referrerId: string) {
     try {
+      console.log('Fetching commissions for referrer:', referrerId);
+      
       const { data: commissionsData, error } = await supabase
         .from('commissions')
         .select(`
@@ -262,6 +264,8 @@ export class OrderService {
         .eq('referrals.referrer_id', referrerId)
         .order('created_at', { ascending: false });
 
+      console.log('Commissions query result:', commissionsData, 'error:', error);
+
       if (error) throw error;
 
       const pendingEarnings = (commissionsData || [])
@@ -271,6 +275,8 @@ export class OrderService {
       const completedEarnings = (commissionsData || [])
         .filter(c => c.orders.status === 'completed')
         .reduce((sum, c) => sum + Number(c.amount), 0);
+
+      console.log('Calculated earnings - Pending:', pendingEarnings, 'Completed:', completedEarnings);
 
       return {
         commissions: commissionsData || [],

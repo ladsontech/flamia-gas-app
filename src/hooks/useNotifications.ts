@@ -199,7 +199,7 @@ export const useNotifications = () => {
             .subscribe();
           channels.push(orderStatusChannel);
 
-          // Commission notifications (fires only for commissions visible to this user due to RLS)
+          // Commission notifications - listen for new commissions and join with referrals table
           const commissionChannel = supabase
             .channel('user-commission-notifications')
             .on(
@@ -209,17 +209,35 @@ export const useNotifications = () => {
                 schema: 'public',
                 table: 'commissions'
               },
-              (payload) => {
+              async (payload) => {
                 const commission = payload.new as any;
-                const amount = Number(commission.amount) || 0;
-                addNotification({
-                  type: 'commission',
-                  title: commission.status === 'approved' ? 'Commission Approved' : 'New Commission',
-                  description: `UGX ${amount.toLocaleString('en-UG')} — ${commission.status}`,
-                  timestamp: new Date(),
-                  read: false,
-                  data: commission
-                });
+                
+                // Fetch the full commission with referral info to check if it belongs to this user
+                try {
+                  const { data: commissionData } = await supabase
+                    .from('commissions')
+                    .select(`
+                      *,
+                      referrals!inner(referrer_id, referral_code)
+                    `)
+                    .eq('id', commission.id)
+                    .eq('referrals.referrer_id', user.id)
+                    .maybeSingle();
+                    
+                  if (commissionData) {
+                    const amount = Number(commission.amount) || 0;
+                    addNotification({
+                      type: 'commission',
+                      title: 'New Commission Earned!',
+                      description: `UGX ${amount.toLocaleString('en-UG')} commission from referral`,
+                      timestamp: new Date(),
+                      read: false,
+                      data: commission
+                    });
+                  }
+                } catch (error) {
+                  console.error('Error fetching commission data for notification:', error);
+                }
               }
             )
             .subscribe();
