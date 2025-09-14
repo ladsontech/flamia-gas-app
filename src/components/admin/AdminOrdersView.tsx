@@ -1,5 +1,4 @@
-import { OrderManagementHub } from "@/components/orders/OrderManagementHub";
-import { supabase } from "@/integrations/supabase/client";
+import { AdminOrdersDashboard } from "./AdminOrdersDashboard";
 import { Order, DeliveryMan } from "@/types/order";
 
 interface AdminOrdersViewProps {
@@ -8,16 +7,9 @@ interface AdminOrdersViewProps {
   onOrdersUpdate: () => void;
 }
 
-type GroupedOrders = {
-  [date: string]: {
-    orders: Order[];
-    dateObj: Date;
-  }
-};
-
 export const AdminOrdersView = ({ orders, deliveryMen, onOrdersUpdate }: AdminOrdersViewProps) => {
   return (
-    <OrderManagementHub 
+    <AdminOrdersDashboard 
       userRole="super_admin" 
       userId="" 
     />

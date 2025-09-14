@@ -499,13 +499,13 @@ export const ReferralManager: React.FC = () => {
                           <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                             <DollarSign className="w-4 h-4 text-yellow-600" />
                           </div>
-                         <div>
+                          <div>
                            <p className="font-medium text-sm">{orderDetails.brand} {orderDetails.weight && `- ${orderDetails.weight}`}</p>
                            <p className="text-xs text-gray-600">{orderDetails.type}</p>
                            <p className="text-xs text-gray-500">
                              {format(new Date(commission.orders.created_at), 'dd/MM/yy')}
                            </p>
-                         </div>
+                          </div>
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-sm">{formatCurrency(Number(commission.amount))}</p>
@@ -590,7 +590,7 @@ export const ReferralManager: React.FC = () => {
                               : commission.orders.description}
                           </p>
                           <p className="text-xs text-gray-400">
-                            Code: {commission.referrals.referral_code}
+                            Referred User
                           </p>
                         </div>
                       </div>
