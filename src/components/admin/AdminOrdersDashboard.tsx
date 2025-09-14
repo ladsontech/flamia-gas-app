@@ -480,7 +480,9 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                             </div>
                             <div>
                               <span className="text-muted-foreground">Flamia:</span>
-                              <span className="font-medium ml-1 text-primary">UGX {commission.flamiaCommission.toLocaleString()}</span>
+                              <span className="font-medium ml-1 text-primary">
+                                UGX {commission.sellingPrice.toLocaleString()} - {commission.wholesalePrice.toLocaleString()} = {commission.flamiaCommission.toLocaleString()}
+                              </span>
                             </div>
                             <div>
                               <span className="text-muted-foreground">Shop:</span>
