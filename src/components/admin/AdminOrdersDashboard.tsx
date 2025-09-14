@@ -464,7 +464,7 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                           </div>
                           <div className="text-right">
                             <div className="text-sm font-medium">
-                              {orderInfo.total || 'Price not set'}
+                              UGX {commission.totalAmount.toLocaleString()}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {format(new Date(order.created_at), 'h:mm a')}
@@ -472,7 +472,7 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                           </div>
                         </div>
                         
-                        {userRole === 'super_admin' && order.status === 'completed' && (
+                        {userRole === 'super_admin' && (
                           <div className="grid grid-cols-3 gap-2 text-xs bg-muted/30 p-2 rounded">
                             <div>
                               <span className="text-muted-foreground">Total:</span>
