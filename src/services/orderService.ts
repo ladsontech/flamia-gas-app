@@ -198,42 +198,59 @@ export class OrderService {
     
     let referralId = null;
     
-    // Handle referral if user is authenticated and we have a referral code
-    if (referralCode && user) {
-      try {
-        // Find active referral for this user
-        const { data: referralData } = await supabase
-          .from('referrals')
-          .select('id')
-          .eq('referred_user_id', user.id)
-          .eq('referral_code', referralCode.toUpperCase())
-          .maybeSingle();
-        
-        if (referralData) {
-          referralId = referralData.id;
-        } else {
-          // Process delayed referral if no existing one found
-          const wasProcessed = await supabase.rpc('process_delayed_referral', {
-            user_id_param: user.id,
-            referral_code_param: referralCode
-          });
+    // Handle referral if user is authenticated
+    if (user) {
+      if (referralCode) {
+        try {
+          // Find active referral for this user using provided code
+          const { data: referralData } = await supabase
+            .from('referrals')
+            .select('id')
+            .eq('referred_user_id', user.id)
+            .eq('referral_code', referralCode.toUpperCase())
+            .maybeSingle();
           
-          if (wasProcessed.data) {
-            // Fetch the newly created referral
-            const { data: newReferralData } = await supabase
-              .from('referrals')
-              .select('id')
-              .eq('referred_user_id', user.id)
-              .eq('referral_code', referralCode.toUpperCase())
-              .maybeSingle();
+          if (referralData) {
+            referralId = referralData.id;
+          } else {
+            // Process delayed referral if no existing one found
+            const wasProcessed = await supabase.rpc('process_delayed_referral', {
+              user_id_param: user.id,
+              referral_code_param: referralCode
+            });
             
-            if (newReferralData) {
-              referralId = newReferralData.id;
+            if (wasProcessed.data) {
+              // Fetch the newly created referral
+              const { data: newReferralData } = await supabase
+                .from('referrals')
+                .select('id')
+                .eq('referred_user_id', user.id)
+                .eq('referral_code', referralCode.toUpperCase())
+                .maybeSingle();
+              
+              if (newReferralData) {
+                referralId = newReferralData.id;
+              }
             }
           }
+        } catch (error) {
+          console.error('Error finding/creating referral with code:', error);
         }
-      } catch (error) {
-        console.error('Error finding/creating referral:', error);
+      } else {
+        try {
+          // Fallback: if user was previously referred, use that referral for all future orders
+          const { data: existingReferral } = await supabase
+            .from('referrals')
+            .select('id')
+            .eq('referred_user_id', user.id)
+            .maybeSingle();
+          
+          if (existingReferral) {
+            referralId = existingReferral.id;
+          }
+        } catch (error) {
+          console.error('Error fetching existing referral for user:', error);
+        }
       }
     }
     
