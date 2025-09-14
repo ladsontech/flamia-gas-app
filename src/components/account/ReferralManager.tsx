@@ -46,6 +46,7 @@ export const ReferralManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [showReferrals, setShowReferrals] = useState(false);
+  const [showPendingDetails, setShowPendingDetails] = useState(false);
   const [referredUsers, setReferredUsers] = useState<Array<{name: string, email: string}>>([]);
 
   useEffect(() => {
@@ -244,6 +245,39 @@ export const ReferralManager: React.FC = () => {
     setShowReferrals(!showReferrals);
   };
 
+  const parseOrderDescription = (description: string) => {
+    const desc = description.toLowerCase();
+    
+    // Extract brand name
+    let brand = 'Unknown';
+    if (desc.includes('nova')) brand = 'Nova';
+    else if (desc.includes('shell')) brand = 'Shell';
+    else if (desc.includes('total')) brand = 'Total';
+    else if (desc.includes('hass')) brand = 'Hass';
+    else if (desc.includes('oryx')) brand = 'Oryx';
+    else if (desc.includes('stabex')) brand = 'Stabex';
+    else if (desc.includes('ultimate')) brand = 'Ultimate';
+    
+    // Extract type (full/refill)
+    let type = 'Unknown';
+    if (desc.includes('refill')) type = 'Refill';
+    else if (desc.includes('full') || desc.includes('kit')) type = 'Full Kit';
+    else type = 'Gas';
+    
+    // Extract weight
+    let weight = 'Unknown';
+    if (desc.includes('12kg') || desc.includes('12 kg')) weight = '12kg';
+    else if (desc.includes('6kg') || desc.includes('6 kg')) weight = '6kg';
+    else if (desc.includes('3kg') || desc.includes('3 kg')) weight = '3kg';
+    else if (desc.includes('45kg') || desc.includes('45 kg')) weight = '45kg';
+    
+    return { brand, type, weight };
+  };
+
+  const togglePendingDetails = () => {
+    setShowPendingDetails(!showPendingDetails);
+  };
+
   if (loading) {
     return (
       <Card>
@@ -326,12 +360,18 @@ export const ReferralManager: React.FC = () => {
                 <p className="text-lg font-bold text-green-900 mt-1">{formatCurrency(totalEarnings)}</p>
               </div>
               
-              <div className="bg-yellow-50 p-3 rounded-lg">
+              <div 
+                className="bg-yellow-50 p-3 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors"
+                onClick={togglePendingDetails}
+              >
                 <div className="flex items-center space-x-2">
                   <DollarSign className="w-4 h-4 text-yellow-600" />
                   <span className="text-xs font-medium text-yellow-900">Pending Earnings</span>
                 </div>
                 <p className="text-lg font-bold text-yellow-900 mt-1">{formatCurrency(pendingEarnings)}</p>
+                {pendingCommissions.length > 0 && (
+                  <p className="text-xs text-yellow-600 mt-1">Click to view details</p>
+                )}
               </div>
             </div>
 
@@ -356,6 +396,43 @@ export const ReferralManager: React.FC = () => {
                       </Badge>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Pending Earnings Details */}
+            {showPendingDetails && pendingCommissions.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-medium text-sm">Pending Earnings Details</h3>
+                <div className="space-y-2">
+                  {pendingCommissions.map((commission) => {
+                    const orderDetails = parseOrderDescription(commission.orders.description);
+                    return (
+                      <div key={commission.id} className="flex items-center justify-between p-3 border rounded-lg bg-yellow-50">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <DollarSign className="w-4 h-4 text-yellow-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{orderDetails.brand} - {orderDetails.weight}</p>
+                            <p className="text-xs text-gray-600">{orderDetails.type}</p>
+                            <p className="text-xs text-gray-500">
+                              {format(new Date(commission.orders.created_at), 'dd/MM/yy')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-sm">{formatCurrency(Number(commission.amount))}</p>
+                          <Badge 
+                            variant={commission.orders.status === 'assigned' ? 'secondary' : 'outline'}
+                            className="text-xs mt-1"
+                          >
+                            {commission.orders.status === 'assigned' ? 'Assigned' : 'Pending'}
+                          </Badge>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
