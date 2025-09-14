@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { DollarSign, Phone, Clock, CheckCircle, X } from "lucide-react";
@@ -28,6 +29,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawalAmount, setWithdrawalAmount] = useState('');
   const [contactNumber, setContactNumber] = useState('');
+  const [contactProvider, setContactProvider] = useState('');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -99,10 +101,10 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
       return;
     }
 
-    if (!contactNumber.trim()) {
+    if (!contactNumber.trim() || !contactProvider) {
       toast({
-        title: "Contact required",
-        description: "Please enter your contact number for payment",
+        title: "Contact details required",
+        description: "Please enter your contact number and select payment method",
         variant: "destructive"
       });
       return;
@@ -119,7 +121,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
         .insert({
           user_id: user.id,
           amount,
-          contact: contactNumber.trim(),
+          contact: `${contactProvider}: ${contactNumber.trim()}`,
           status: 'pending'
         });
 
@@ -133,6 +135,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
       // Reset form
       setWithdrawalAmount('');
       setContactNumber('');
+      setContactProvider('');
       
       fetchWithdrawals();
     } catch (error: any) {
@@ -190,9 +193,9 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
             Request Withdrawal
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 sm:p-6">
           <form onSubmit={handleWithdrawal} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount (UGX)</Label>
                 <Input
@@ -204,25 +207,45 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
                   max={completedEarnings}
                   min="1000"
                   step="1000"
+                  className="text-base"
                 />
                 <p className="text-xs text-muted-foreground">
                   Available: {formatCurrency(completedEarnings)}
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="contact">Contact Number</Label>
-                <Input
-                  id="contact"
-                  type="tel"
-                  placeholder="Mobile Money number"
-                  value={contactNumber}
-                  onChange={(e) => setContactNumber(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Payment will be sent to this number
-                </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="provider">Payment Method</Label>
+                  <Select value={contactProvider} onValueChange={setContactProvider}>
+                    <SelectTrigger id="provider">
+                      <SelectValue placeholder="Select payment method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MTN Mobile Money">MTN Mobile Money</SelectItem>
+                      <SelectItem value="Airtel Money">Airtel Money</SelectItem>
+                      <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="contact">Contact Number/Account</Label>
+                  <Input
+                    id="contact"
+                    type="tel"
+                    placeholder="Enter number/account"
+                    value={contactNumber}
+                    onChange={(e) => setContactNumber(e.target.value)}
+                    className="text-base"
+                  />
+                </div>
               </div>
+              
+              <p className="text-xs text-muted-foreground">
+                Payment will be sent to the provided contact using the selected method
+              </p>
             </div>
 
             <Button 

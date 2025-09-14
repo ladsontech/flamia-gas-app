@@ -248,28 +248,47 @@ export const ReferralManager: React.FC = () => {
   const parseOrderDescription = (description: string) => {
     const desc = description.toLowerCase();
     
-    // Extract brand name
-    let brand = 'Unknown';
-    if (desc.includes('nova')) brand = 'Nova';
-    else if (desc.includes('shell')) brand = 'Shell';
-    else if (desc.includes('total')) brand = 'Total';
-    else if (desc.includes('hass')) brand = 'Hass';
-    else if (desc.includes('oryx')) brand = 'Oryx';
-    else if (desc.includes('stabex')) brand = 'Stabex';
-    else if (desc.includes('ultimate')) brand = 'Ultimate';
+    // Extract brand name with more flexible matching
+    let brand = 'Gas';
+    const brandPatterns = [
+      { pattern: /nova/i, name: 'Nova' },
+      { pattern: /shell/i, name: 'Shell' },
+      { pattern: /total/i, name: 'Total' },
+      { pattern: /hass/i, name: 'Hass' },
+      { pattern: /oryx/i, name: 'Oryx' },
+      { pattern: /stabex/i, name: 'Stabex' },
+      { pattern: /ultimate/i, name: 'Ultimate' },
+    ];
+    
+    for (const { pattern, name } of brandPatterns) {
+      if (pattern.test(description)) {
+        brand = name;
+        break;
+      }
+    }
     
     // Extract type (full/refill)
-    let type = 'Unknown';
+    let type = 'Gas';
     if (desc.includes('refill')) type = 'Refill';
     else if (desc.includes('full') || desc.includes('kit')) type = 'Full Kit';
-    else type = 'Gas';
     
-    // Extract weight
-    let weight = 'Unknown';
-    if (desc.includes('12kg') || desc.includes('12 kg')) weight = '12kg';
-    else if (desc.includes('6kg') || desc.includes('6 kg')) weight = '6kg';
-    else if (desc.includes('3kg') || desc.includes('3 kg')) weight = '3kg';
-    else if (desc.includes('45kg') || desc.includes('45 kg')) weight = '45kg';
+    // Extract weight with more patterns
+    let weight = '';
+    const weightPatterns = [
+      { pattern: /(\d+)\s*kg/i, extract: true },
+      { pattern: /45\s*kg/i, value: '45kg' },
+      { pattern: /12\s*kg/i, value: '12kg' },
+      { pattern: /6\s*kg/i, value: '6kg' },
+      { pattern: /3\s*kg/i, value: '3kg' },
+    ];
+    
+    for (const { pattern, value, extract } of weightPatterns) {
+      const match = description.match(pattern);
+      if (match) {
+        weight = extract ? `${match[1]}kg` : value;
+        break;
+      }
+    }
     
     return { brand, type, weight };
   };
@@ -299,31 +318,35 @@ export const ReferralManager: React.FC = () => {
           <span>Referrals & Commissions</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6 pt-0 space-y-6">
+      <CardContent className="p-3 sm:p-6 pt-0 space-y-4 sm:space-y-6">
         {/* Referral Code Section */}
         <div className="space-y-3">
-          <h3 className="font-medium text-sm">Your Referral Code</h3>
+          <h3 className="font-medium text-sm sm:text-base">Your Referral Code</h3>
           {!referralCode ? (
             <div className="text-center py-4">
               <p className="text-gray-600 text-sm mb-3">Generate your unique referral code to start earning commissions</p>
-              <Button onClick={generateReferralCode} disabled={generating} size="sm">
+              <Button onClick={generateReferralCode} disabled={generating} size="sm" className="w-full sm:w-auto">
                 {generating ? "Generating..." : "Generate Referral Code"}
               </Button>
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                 <Input 
                   value={`${window.location.origin}/signup?ref=${referralCode}`}
                   readOnly
-                  className="text-xs"
+                  className="text-xs flex-1"
                 />
-                <Button size="sm" variant="outline" onClick={copyReferralLink}>
-                  <Copy className="w-4 h-4" />
-                </Button>
-                <Button size="sm" onClick={shareReferralLink}>
-                  <Share2 className="w-4 h-4" />
-                </Button>
+                <div className="flex space-x-2">
+                  <Button size="sm" variant="outline" onClick={copyReferralLink} className="flex-1 sm:flex-none">
+                    <Copy className="w-4 h-4 mr-1 sm:mr-0" />
+                    <span className="sm:hidden">Copy</span>
+                  </Button>
+                  <Button size="sm" onClick={shareReferralLink} className="flex-1 sm:flex-none">
+                    <Share2 className="w-4 h-4 mr-1 sm:mr-0" />
+                    <span className="sm:hidden">Share</span>
+                  </Button>
+                </div>
               </div>
               <div className="text-center">
                 <Badge variant="secondary" className="text-xs">
@@ -337,40 +360,41 @@ export const ReferralManager: React.FC = () => {
         {referralCode && (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div 
-                className="bg-blue-50 p-3 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
+                className="bg-blue-50 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
                 onClick={toggleReferrals}
               >
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 mb-2">
                   <Users className="w-4 h-4 text-blue-600" />
-                  <span className="text-xs font-medium text-blue-900">Total Referrals</span>
+                  <span className="text-xs sm:text-sm font-medium text-blue-900">Total Referrals</span>
                 </div>
-                <p className="text-lg font-bold text-blue-900 mt-1">{referrals.length}</p>
+                <p className="text-xl sm:text-2xl font-bold text-blue-900">{referrals.length}</p>
                 {referrals.length > 0 && (
-                  <p className="text-xs text-blue-600 mt-1">Click to view details</p>
+                  <p className="text-xs text-blue-600 mt-1">Tap to view details</p>
                 )}
               </div>
               
-              <div className="bg-green-50 p-3 rounded-lg">
-                <div className="flex items-center space-x-2">
+              <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+                <div className="flex items-center space-x-2 mb-2">
                   <CheckCircle className="w-4 h-4 text-green-600" />
-                  <span className="text-xs font-medium text-green-900">Completed Earnings</span>
+                  <span className="text-xs sm:text-sm font-medium text-green-900">Available Earnings</span>
                 </div>
-                <p className="text-lg font-bold text-green-900 mt-1">{formatCurrency(totalEarnings)}</p>
+                <p className="text-xl sm:text-2xl font-bold text-green-900">{formatCurrency(totalEarnings)}</p>
+                <p className="text-xs text-green-600 mt-1">Ready to withdraw</p>
               </div>
               
               <div 
-                className="bg-yellow-50 p-3 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors"
+                className="bg-yellow-50 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors"
                 onClick={togglePendingDetails}
               >
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-yellow-600" />
-                  <span className="text-xs font-medium text-yellow-900">Pending Earnings</span>
+                <div className="flex items-center space-x-2 mb-2">
+                  <Clock className="w-4 h-4 text-yellow-600" />
+                  <span className="text-xs sm:text-sm font-medium text-yellow-900">Pending Earnings</span>
                 </div>
-                <p className="text-lg font-bold text-yellow-900 mt-1">{formatCurrency(pendingEarnings)}</p>
+                <p className="text-xl sm:text-2xl font-bold text-yellow-900">{formatCurrency(pendingEarnings)}</p>
                 {pendingCommissions.length > 0 && (
-                  <p className="text-xs text-yellow-600 mt-1">Click to view details</p>
+                  <p className="text-xs text-yellow-600 mt-1">Tap to view details</p>
                 )}
               </div>
             </div>
@@ -413,13 +437,13 @@ export const ReferralManager: React.FC = () => {
                           <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                             <DollarSign className="w-4 h-4 text-yellow-600" />
                           </div>
-                          <div>
-                            <p className="font-medium text-sm">{orderDetails.brand} - {orderDetails.weight}</p>
-                            <p className="text-xs text-gray-600">{orderDetails.type}</p>
-                            <p className="text-xs text-gray-500">
-                              {format(new Date(commission.orders.created_at), 'dd/MM/yy')}
-                            </p>
-                          </div>
+                         <div>
+                           <p className="font-medium text-sm">{orderDetails.brand} {orderDetails.weight && `- ${orderDetails.weight}`}</p>
+                           <p className="text-xs text-gray-600">{orderDetails.type}</p>
+                           <p className="text-xs text-gray-500">
+                             {format(new Date(commission.orders.created_at), 'dd/MM/yy')}
+                           </p>
+                         </div>
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-sm">{formatCurrency(Number(commission.amount))}</p>
