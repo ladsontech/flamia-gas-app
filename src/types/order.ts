@@ -4,7 +4,7 @@ export interface Order {
   created_at: string;
   description: string;
   delivery_man_id?: string | null;
-  status?: 'pending' | 'assigned' | 'in_progress' | 'completed' | null;
+  status?: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled' | null;
   assigned_at?: string | null;
   user_id?: string;
 }

@@ -286,9 +286,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           assigned_at: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           created_at: string
           delivery_man_id: string | null
           description: string
@@ -299,6 +335,9 @@ export type Database = {
         }
         Insert: {
           assigned_at?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           created_at?: string
           delivery_man_id?: string | null
           description: string
@@ -309,6 +348,9 @@ export type Database = {
         }
         Update: {
           assigned_at?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           created_at?: string
           delivery_man_id?: string | null
           description?: string
@@ -523,6 +565,14 @@ export type Database = {
       calculate_commission: {
         Args: { order_description: string }
         Returns: number
+      }
+      cancel_order_with_notification: {
+        Args: {
+          cancellation_reason_param: string
+          cancelled_by_param: string
+          order_id_param: string
+        }
+        Returns: undefined
       }
       generate_referral_code: {
         Args: { user_id: string }

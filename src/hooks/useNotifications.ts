@@ -92,6 +92,35 @@ export const useNotifications = () => {
         )
         .subscribe();
       channels.push(orderChannel);
+
+      // Admin notifications from database
+      const adminNotificationChannel = supabase
+        .channel('admin-db-notifications')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications'
+          },
+          async (payload) => {
+            const notification = payload.new as any;
+            // Check if this notification is for the current admin user
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && notification.user_id === user.id) {
+              addNotification({
+                type: notification.type,
+                title: notification.title,
+                description: notification.message,
+                timestamp: new Date(notification.created_at),
+                read: notification.read,
+                data: notification.data
+              });
+            }
+          }
+        )
+        .subscribe();
+      channels.push(adminNotificationChannel);
     }
 
     // Delivery man notifications: orders assigned to them
@@ -132,6 +161,32 @@ export const useNotifications = () => {
     if (userRole === 'user') {
       supabase.auth.getUser().then(({ data: { user } }) => {
         if (user) {
+          // Database notifications for users
+          const userNotificationChannel = supabase
+            .channel('user-db-notifications')
+            .on(
+              'postgres_changes',
+              {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'notifications',
+                filter: `user_id=eq.${user.id}`
+              },
+              (payload) => {
+                const notification = payload.new as any;
+                addNotification({
+                  type: notification.type,
+                  title: notification.title,
+                  description: notification.message,
+                  timestamp: new Date(notification.created_at),
+                  read: notification.read,
+                  data: notification.data
+                });
+              }
+            )
+            .subscribe();
+          channels.push(userNotificationChannel);
+
           // Referral notifications
           const referralChannel = supabase
             .channel('user-referral-notifications')

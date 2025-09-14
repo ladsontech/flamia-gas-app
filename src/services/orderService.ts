@@ -192,6 +192,20 @@ export class OrderService {
     if (error) throw error;
   }
 
+  // Cancel order with reason and notifications
+  static async cancelOrder(orderId: string, reason: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase.rpc('cancel_order_with_notification', {
+      order_id_param: orderId,
+      cancelled_by_param: user.id,
+      cancellation_reason_param: reason
+    });
+
+    if (error) throw error;
+  }
+
   // Create order with referral tracking
   static async createOrder(orderDetails: string, referralCode?: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();

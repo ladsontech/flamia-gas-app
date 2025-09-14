@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
-import { Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar } from "lucide-react";
+import { Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,6 +22,8 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
   const [assigningOrders, setAssigningOrders] = useState<Set<string>>(new Set());
+  const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
+  const [cancellationReason, setCancellationReason] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -113,12 +117,34 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
     }
   };
 
+  const handleCancelOrder = async () => {
+    if (!cancellingOrder || !cancellationReason.trim()) return;
+    
+    try {
+      await OrderService.cancelOrder(cancellingOrder, cancellationReason);
+      toast({
+        title: "Success",
+        description: "Order cancelled successfully"
+      });
+      setCancellingOrder(null);
+      setCancellationReason('');
+      fetchData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel order",
+        variant: "destructive"
+      });
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending': return <Clock className="h-4 w-4" />;
       case 'assigned': return <User className="h-4 w-4" />;
       case 'in_progress': return <Truck className="h-4 w-4" />;
       case 'completed': return <CheckCircle className="h-4 w-4" />;
+      case 'cancelled': return <XCircle className="h-4 w-4" />;
       default: return <Package className="h-4 w-4" />;
     }
   };
@@ -128,7 +154,8 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
       pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', label: 'Pending' },
       assigned: { color: 'bg-blue-100 text-blue-800 border-blue-200', label: 'Assigned' },
       in_progress: { color: 'bg-orange-100 text-orange-800 border-orange-200', label: 'In Progress' },
-      completed: { color: 'bg-green-100 text-green-800 border-green-200', label: 'Completed' }
+      completed: { color: 'bg-green-100 text-green-800 border-green-200', label: 'Completed' },
+      cancelled: { color: 'bg-red-100 text-red-800 border-red-200', label: 'Cancelled' }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
@@ -181,6 +208,8 @@ const filteredOrders = orders.filter(order => {
         return order.status === 'in_progress';
       case 'completed':
         return order.status === 'completed';
+      case 'cancelled':
+        return order.status === 'cancelled';
       default:
         return true;
     }
@@ -249,6 +278,15 @@ const filteredOrders = orders.filter(order => {
             >
               Completed ({orders.filter(o => o.status === 'completed').length})
             </Button>
+            {userRole === 'super_admin' && (
+              <Button
+                size="sm"
+                variant={filter === 'cancelled' ? 'default' : 'outline'}
+                onClick={() => setFilter('cancelled')}
+              >
+                Cancelled ({orders.filter(o => o.status === 'cancelled').length})
+              </Button>
+            )}
           </div>
         </div>
       </Card>
@@ -402,13 +440,65 @@ const filteredOrders = orders.filter(order => {
                         </>
                       )}
                       
-                      {userRole === 'super_admin' && order.status !== 'completed' && (
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleUpdateStatus(order.id, 'completed')}
-                        >
-                          Mark Complete
-                        </Button>
+                      {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
+                        <>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleUpdateStatus(order.id, 'completed')}
+                          >
+                            Mark Complete
+                          </Button>
+                          {order.status === 'pending' && (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setCancellingOrder(order.id);
+                                    setCancellationReason('');
+                                  }}
+                                >
+                                  Cancel Order
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Cancel Order</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <p className="text-sm text-muted-foreground">
+                                    Please provide a reason for cancelling this order. Both the customer and referrer (if any) will be notified.
+                                  </p>
+                                  <Textarea
+                                    placeholder="Enter cancellation reason..."
+                                    value={cancellationReason}
+                                    onChange={(e) => setCancellationReason(e.target.value)}
+                                    rows={3}
+                                  />
+                                  <div className="flex justify-end gap-2">
+                                    <Button 
+                                      variant="outline" 
+                                      onClick={() => {
+                                        setCancellingOrder(null);
+                                        setCancellationReason('');
+                                      }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button 
+                                      variant="destructive" 
+                                      onClick={handleCancelOrder}
+                                      disabled={!cancellationReason.trim()}
+                                    >
+                                      Confirm Cancellation
+                                    </Button>
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

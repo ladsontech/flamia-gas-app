@@ -316,13 +316,68 @@ export const ReferralManager: React.FC = () => {
       <CardHeader className="pb-4">
         <CardTitle className="text-lg sm:text-xl">Referrals & Earnings</CardTitle>
         <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20 rounded-lg p-4 mt-2">
-          <h3 className="font-semibold text-orange-900 dark:text-orange-100 mb-2">💰 Earn with Every Referral!</h3>
-          <p className="text-sm text-orange-800 dark:text-orange-200 mb-2">
-            Earn <span className="font-bold">UGX 500</span> for every successful order your friends make using your referral code.
-          </p>
-          <p className="text-xs text-orange-700 dark:text-orange-300">
-            ✨ Unlimited earnings potential - the more friends you refer, the more you earn!
-          </p>
+          <h3 className="font-semibold text-orange-900 dark:text-orange-100 mb-3">💰 How Referral Earnings Work!</h3>
+          
+          <div className="space-y-3">
+            <div className="flex items-start space-x-2">
+              <div className="w-6 h-6 bg-orange-200 dark:bg-orange-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-orange-800 dark:text-orange-200">1</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Share Your Referral Code</p>
+                <p className="text-xs text-orange-700 dark:text-orange-300">Friends sign up using your unique referral link</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-2">
+              <div className="w-6 h-6 bg-orange-200 dark:bg-orange-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-orange-800 dark:text-orange-200">2</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Friends Place Orders</p>
+                <p className="text-xs text-orange-700 dark:text-orange-300">Each order creates a commission (status: pending)</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-2">
+              <div className="w-6 h-6 bg-green-200 dark:bg-green-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-green-800 dark:text-green-200">3</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Orders Get Completed</p>
+                <p className="text-xs text-orange-700 dark:text-orange-300">Only completed orders become available for withdrawal</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+            <p className="text-sm font-bold text-orange-900 dark:text-orange-100 mb-1">💵 Commission Rates:</p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-orange-700 dark:text-orange-300">3kg Gas:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 3,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-orange-700 dark:text-orange-300">6kg Gas:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 5,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-orange-700 dark:text-orange-300">12kg Gas:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 10,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-orange-700 dark:text-orange-300">Full Kits:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 10,000</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-3 flex items-center space-x-2">
+            <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+            <p className="text-xs text-orange-700 dark:text-orange-300">
+              <span className="font-semibold">Important:</span> Earnings are only approved when orders are successfully completed. Cancelled orders won't generate commissions.
+            </p>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-3 sm:p-6 pt-0 space-y-4 sm:space-y-6">
