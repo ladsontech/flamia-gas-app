@@ -26,7 +26,11 @@ const SignIn = () => {
         
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <LionFlameLogo size={64} className="animate-pulse" />
+            <img 
+              src="/images/icon.png" 
+              alt="Flamia Logo" 
+              className="w-16 h-16 animate-pulse" 
+            />
           </div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent mb-2">
             Welcome Back
