@@ -234,12 +234,11 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
         case 'cancelled': stats.cancelled++; break;
       }
 
-      if (order.status === 'completed') {
-        const commission = calculateFlamiaCommission(order);
-        stats.totalRevenue += commission.totalAmount;
-        stats.flamiaCommission += commission.flamiaCommission;
-        stats.shopEarnings += commission.shopEarnings;
-      }
+      // Always compute monetary stats from the order values regardless of status
+      const commission = calculateFlamiaCommission(order);
+      stats.totalRevenue += commission.totalAmount;
+      stats.flamiaCommission += commission.flamiaCommission;
+      stats.shopEarnings += commission.shopEarnings;
     });
 
     return stats;
@@ -252,7 +251,7 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   });
 
   const dayGroups = groupOrdersByDay(filteredOrders);
-  const overallStats = calculateDayStats(orders.filter(o => o.status === 'completed'));
+  const overallStats = calculateDayStats(orders);
 
   const handleAssignOrder = async (orderId: string, deliveryPersonId: string) => {
     setAssigningOrders(prev => new Set(prev).add(orderId));
