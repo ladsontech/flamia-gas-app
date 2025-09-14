@@ -48,6 +48,39 @@ export const ReferralManager: React.FC = () => {
 
   useEffect(() => {
     fetchReferralData();
+    
+    // Set up real-time subscription for commission updates
+    const channel = supabase
+      .channel('commission-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'commissions'
+        },
+        () => {
+          console.log('Commission update detected, refetching data...');
+          fetchReferralData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders'
+        },
+        () => {
+          console.log('Order update detected, refetching data...');
+          fetchReferralData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchReferralData = async () => {
@@ -87,6 +120,7 @@ export const ReferralManager: React.FC = () => {
 
       console.log('Commission data:', commissionData);
       console.log('Available earnings after withdrawals:', availableEarnings);
+      console.log('Total commissions found:', commissionData.commissions.length);
     } catch (error) {
       console.error('Error fetching referral data:', error);
     } finally {

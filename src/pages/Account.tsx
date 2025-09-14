@@ -356,22 +356,20 @@ const Account = () => {
               </Card>
             )}
 
-            {/* Referrals */}
-            {!isPhoneUser && (
-              <Card className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                        <DollarSign className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <span className="font-medium">Referrals & Earnings</span>
+            {/* Referrals - Available to all users */}
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-0">
+                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-orange-600" />
                     </div>
-                    <div className="w-5 h-5 text-muted-foreground">→</div>
+                    <span className="font-medium">Referrals & Earnings</span>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                  <div className="w-5 h-5 text-muted-foreground">→</div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Admin Panel */}
             {isAdmin && (
