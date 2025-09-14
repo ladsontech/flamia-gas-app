@@ -272,21 +272,29 @@ const Account = () => {
     <div className="min-h-screen bg-background">
       <AppBar />
       <div className="pt-16 pb-20">
-        {/* Mobile Header */}
-        <div className="bg-background border-b px-4 py-6">
-          <h1 className="text-2xl font-bold text-foreground">My account</h1>
+        {/* Mobile Header with Welcome */}
+        <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 dark:from-orange-950/20 dark:via-background dark:to-orange-950/20 px-4 py-6">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Welcome back,</p>
+            <h1 className="text-2xl font-bold text-foreground">{getDisplayName()}! 👋</h1>
+          </div>
         </div>
 
         {/* User Profile Card */}
         <div className="p-4">
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <div className="flex flex-col items-start sm:flex-row sm:items-center gap-3 sm:gap-4">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-full flex items-center justify-center">
-                  <User className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground" />
+          <Card className="mb-6 overflow-hidden shadow-sm border-0 bg-gradient-to-br from-white via-orange-50/30 to-white dark:from-background dark:via-orange-950/10 dark:to-background">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
                 </div>
-                <div className="flex-1 w-full">
-                  <h2 className="text-lg sm:text-xl font-semibold">{getDisplayName()}</h2>
+                <div className="space-y-2">
+                  <h2 className="text-xl font-bold text-foreground">{getDisplayName()}</h2>
                   <div className="space-y-1">
                     {user.email && (
                       <p className="text-sm text-muted-foreground break-all">{user.email}</p>
@@ -295,7 +303,7 @@ const Account = () => {
                       <p className="text-sm text-muted-foreground">{profile.phone_number}</p>
                     )}
                     {userRole !== 'user' && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
                         {userRole.replace('_', ' ')}
                       </Badge>
                     )}
@@ -306,16 +314,19 @@ const Account = () => {
           </Card>
 
           {/* Menu Items */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             {/* Orders */}
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
               <CardContent className="p-0">
-                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
+                <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="w-5 h-5 text-blue-600" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+                      <BarChart3 className="w-6 h-6 text-white" />
                     </div>
-                    <span className="font-medium">My Orders</span>
+                    <div>
+                      <span className="font-semibold text-foreground">My Orders</span>
+                      <p className="text-xs text-muted-foreground">Track your orders</p>
+                    </div>
                   </div>
                   <div className="w-5 h-5 text-muted-foreground">→</div>
                 </div>
@@ -324,14 +335,17 @@ const Account = () => {
 
             {/* Profile Settings */}
             {!isPhoneUser && (
-              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
                 <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
+                  <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                        <Settings className="w-5 h-5 text-green-600" />
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
+                        <Settings className="w-6 h-6 text-white" />
                       </div>
-                      <span className="font-medium">Profile Settings</span>
+                      <div>
+                        <span className="font-semibold text-foreground">Profile Settings</span>
+                        <p className="text-xs text-muted-foreground">Manage your profile</p>
+                      </div>
                     </div>
                     <div className="w-5 h-5 text-muted-foreground">→</div>
                   </div>
@@ -341,14 +355,17 @@ const Account = () => {
 
             {/* Business Dashboard */}
             {isBusinessOwner && (
-              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
                 <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('business')}>
+                  <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('business')}>
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                        <Store className="w-5 h-5 text-purple-600" />
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
+                        <Store className="w-6 h-6 text-white" />
                       </div>
-                      <span className="font-medium">My Business</span>
+                      <div>
+                        <span className="font-semibold text-foreground">My Business</span>
+                        <p className="text-xs text-muted-foreground">Manage your business</p>
+                      </div>
                     </div>
                     <div className="w-5 h-5 text-muted-foreground">→</div>
                   </div>
@@ -357,14 +374,17 @@ const Account = () => {
             )}
 
             {/* Referrals - Available to all users */}
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20">
               <CardContent className="p-0">
-                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
+                <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                      <DollarSign className="w-5 h-5 text-orange-600" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
+                      <DollarSign className="w-6 h-6 text-white" />
                     </div>
-                    <span className="font-medium">Referrals & Earnings</span>
+                    <div>
+                      <span className="font-semibold text-foreground">Referrals & Earnings</span>
+                      <p className="text-xs text-orange-700 dark:text-orange-300">Earn UGX 500 per referral!</p>
+                    </div>
                   </div>
                   <div className="w-5 h-5 text-muted-foreground">→</div>
                 </div>
@@ -373,15 +393,18 @@ const Account = () => {
 
             {/* Admin Panel */}
             {isAdmin && (
-              <Card className="cursor-pointer hover:shadow-md transition-shadow border-orange-200">
+              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-orange-200 shadow-sm bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
                 <CardContent className="p-0">
                   <Link to="/admin">
-                    <div className="p-4 flex items-center justify-between">
+                    <div className="p-5 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                          <Settings className="w-5 h-5 text-orange-600" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-sm">
+                          <Settings className="w-6 h-6 text-white" />
                         </div>
-                        <span className="font-medium text-orange-700 dark:text-orange-300">Admin Panel</span>
+                        <div>
+                          <span className="font-semibold text-orange-700 dark:text-orange-300">Admin Panel</span>
+                          <p className="text-xs text-orange-600 dark:text-orange-400">System management</p>
+                        </div>
                       </div>
                       <div className="w-5 h-5 text-orange-600">→</div>
                     </div>
@@ -391,14 +414,17 @@ const Account = () => {
             )}
 
             {/* Sign Out */}
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
               <CardContent className="p-0">
-                <div className="p-4 flex items-center justify-between" onClick={handleSignOut}>
+                <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-                      <LogOut className="w-5 h-5 text-red-600" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                      <LogOut className="w-6 h-6 text-white" />
                     </div>
-                    <span className="font-medium text-red-600">Sign Out</span>
+                    <div>
+                      <span className="font-semibold text-red-600">Sign Out</span>
+                      <p className="text-xs text-muted-foreground">Logout from account</p>
+                    </div>
                   </div>
                   <div className="w-5 h-5 text-red-600">→</div>
                 </div>

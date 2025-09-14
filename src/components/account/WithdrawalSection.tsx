@@ -29,7 +29,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawalAmount, setWithdrawalAmount] = useState('');
   const [contactNumber, setContactNumber] = useState('');
-  const [contactProvider, setContactProvider] = useState('');
+  const [registeredName, setRegisteredName] = useState('');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -101,10 +101,10 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
       return;
     }
 
-    if (!contactNumber.trim() || !contactProvider) {
+    if (!contactNumber.trim() || !registeredName.trim()) {
       toast({
-        title: "Contact details required",
-        description: "Please enter your contact number and select payment method",
+        title: "Details required",
+        description: "Please enter your phone number and registered name",
         variant: "destructive"
       });
       return;
@@ -121,7 +121,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
         .insert({
           user_id: user.id,
           amount,
-          contact: `${contactProvider}: ${contactNumber.trim()}`,
+          contact: `${registeredName.trim()} - ${contactNumber.trim()}`,
           status: 'pending'
         });
 
@@ -135,7 +135,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
       // Reset form
       setWithdrawalAmount('');
       setContactNumber('');
-      setContactProvider('');
+      setRegisteredName('');
       
       fetchWithdrawals();
     } catch (error: any) {
@@ -216,26 +216,23 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="provider">Payment Method</Label>
-                  <Select value={contactProvider} onValueChange={setContactProvider}>
-                    <SelectTrigger id="provider">
-                      <SelectValue placeholder="Select payment method" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="MTN Mobile Money">MTN Mobile Money</SelectItem>
-                      <SelectItem value="Airtel Money">Airtel Money</SelectItem>
-                      <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="name">Name Registered In</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter registered name"
+                    value={registeredName}
+                    onChange={(e) => setRegisteredName(e.target.value)}
+                    className="text-base"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="contact">Contact Number/Account</Label>
+                  <Label htmlFor="contact">Phone Number</Label>
                   <Input
                     id="contact"
                     type="tel"
-                    placeholder="Enter number/account"
+                    placeholder="Enter phone number"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
                     className="text-base"
@@ -244,7 +241,7 @@ export const WithdrawalSection = ({ completedEarnings }: WithdrawalSectionProps)
               </div>
               
               <p className="text-xs text-muted-foreground">
-                Payment will be sent to the provided contact using the selected method
+                Payment will be sent via mobile money to the provided phone number
               </p>
             </div>
 

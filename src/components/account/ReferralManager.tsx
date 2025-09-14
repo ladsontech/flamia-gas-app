@@ -314,10 +314,16 @@ export const ReferralManager: React.FC = () => {
   return (
     <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center space-x-2 text-lg">
-          <Users className="w-5 h-5" />
-          <span>Referrals & Commissions</span>
-        </CardTitle>
+        <CardTitle className="text-lg sm:text-xl">Referrals & Earnings</CardTitle>
+        <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20 rounded-lg p-4 mt-2">
+          <h3 className="font-semibold text-orange-900 dark:text-orange-100 mb-2">💰 Earn with Every Referral!</h3>
+          <p className="text-sm text-orange-800 dark:text-orange-200 mb-2">
+            Earn <span className="font-bold">UGX 500</span> for every successful order your friends make using your referral code.
+          </p>
+          <p className="text-xs text-orange-700 dark:text-orange-300">
+            ✨ Unlimited earnings potential - the more friends you refer, the more you earn!
+          </p>
+        </div>
       </CardHeader>
       <CardContent className="p-3 sm:p-6 pt-0 space-y-4 sm:space-y-6">
         {/* Referral Code Section */}
