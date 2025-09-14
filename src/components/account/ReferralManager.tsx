@@ -45,6 +45,8 @@ export const ReferralManager: React.FC = () => {
   const [pendingEarnings, setPendingEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [showReferrals, setShowReferrals] = useState(false);
+  const [referredUsers, setReferredUsers] = useState<Array<{name: string, email: string}>>([]);
 
   useEffect(() => {
     fetchReferralData();
@@ -201,6 +203,47 @@ export const ReferralManager: React.FC = () => {
     }
   };
 
+  const fetchReferredUsers = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get referred users' profiles by joining the tables manually
+      const { data: referralsData } = await supabase
+        .from('referrals')
+        .select('referred_user_id')
+        .eq('referrer_id', user.id);
+
+      if (referralsData && referralsData.length > 0) {
+        const userIds = referralsData.map(ref => ref.referred_user_id).filter(Boolean);
+        
+        if (userIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, display_name, full_name')
+            .in('id', userIds);
+
+          if (profilesData) {
+            const users = profilesData.map(profile => ({
+              name: profile.display_name || profile.full_name || 'Unknown User',
+              email: profile.id || ''
+            }));
+            setReferredUsers(users);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching referred users:', error);
+    }
+  };
+
+  const toggleReferrals = async () => {
+    if (!showReferrals && referredUsers.length === 0) {
+      await fetchReferredUsers();
+    }
+    setShowReferrals(!showReferrals);
+  };
+
   if (loading) {
     return (
       <Card>
@@ -261,12 +304,18 @@ export const ReferralManager: React.FC = () => {
           <>
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-blue-50 p-3 rounded-lg">
+              <div 
+                className="bg-blue-50 p-3 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
+                onClick={toggleReferrals}
+              >
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-blue-600" />
                   <span className="text-xs font-medium text-blue-900">Total Referrals</span>
                 </div>
                 <p className="text-lg font-bold text-blue-900 mt-1">{referrals.length}</p>
+                {referrals.length > 0 && (
+                  <p className="text-xs text-blue-600 mt-1">Click to view details</p>
+                )}
               </div>
               
               <div className="bg-green-50 p-3 rounded-lg">
@@ -285,6 +334,31 @@ export const ReferralManager: React.FC = () => {
                 <p className="text-lg font-bold text-yellow-900 mt-1">{formatCurrency(pendingEarnings)}</p>
               </div>
             </div>
+
+            {/* Referred Users List */}
+            {showReferrals && referrals.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-medium text-sm">Referred Users</h3>
+                <div className="space-y-2">
+                  {referredUsers.map((user, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Users className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{user.name}</p>
+                          <p className="text-xs text-gray-500">Referred User</p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Show WithdrawalSection if there are completed earnings */}
             {totalEarnings > 0 && (

@@ -47,7 +47,7 @@ const AppBar = () => {
                 className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                   isActive 
                     ? 'text-primary bg-primary/10' 
-                    : 'text-muted-foreground hover:text-primary hover:bg-muted/50'
+                    : 'text-muted-foreground hover:text-accent hover:bg-muted/50'
                 }`}
               >
                 <Icon size={18} />
