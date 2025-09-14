@@ -260,13 +260,21 @@ export const ReferralManager: React.FC = () => {
         {referralCode && (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div className="bg-blue-50 p-3 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-blue-600" />
                   <span className="text-xs font-medium text-blue-900">Total Referrals</span>
                 </div>
                 <p className="text-lg font-bold text-blue-900 mt-1">{referrals.length}</p>
+              </div>
+              
+              <div className="bg-purple-50 p-3 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-purple-600" />
+                  <span className="text-xs font-medium text-purple-900">Total Commissions</span>
+                </div>
+                <p className="text-lg font-bold text-purple-900 mt-1">{formatCurrency(commissions.reduce((sum, c) => sum + c.amount, 0))}</p>
               </div>
               
               <div className="bg-green-50 p-3 rounded-lg">
