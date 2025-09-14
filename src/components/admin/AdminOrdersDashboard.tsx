@@ -124,16 +124,18 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   const calculateFlamiaCommission = (order: OrderWithDetails) => {
     const orderInfo = extractOrderInfo(order.description);
     const size = orderInfo.size?.toLowerCase() || '';
-    const type = orderInfo.type?.toLowerCase() || '';
     
-    // Get total amount from order
-    let totalAmount = 0;
-    if (orderInfo.total) {
+    // Get selling price from order (prioritize direct price field, fallback to total)
+    let sellingPrice = 0;
+    if (orderInfo.price) {
+      const cleanAmount = orderInfo.price.replace(/[^\d]/g, '');
+      sellingPrice = parseInt(cleanAmount) || 0;
+    } else if (orderInfo.total) {
       const cleanAmount = orderInfo.total.replace(/[^\d]/g, '');
-      totalAmount = parseInt(cleanAmount) || 0;
+      sellingPrice = parseInt(cleanAmount) || 0;
     }
 
-    // Determine wholesale price based on size
+    // Determine wholesale price based on cylinder size
     let wholesalePrice = 0;
     if (size.includes('3kg') || size.includes('3 kg')) {
       wholesalePrice = FLAMIA_WHOLESALE_PRICES['3kg'];
@@ -145,10 +147,18 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
       wholesalePrice = FLAMIA_WHOLESALE_PRICES['13kg'];
     }
 
-    const flamiaCommission = Math.max(0, totalAmount - wholesalePrice);
-    const shopEarnings = wholesalePrice;
+    // Flamia's commission is the markup above wholesale
+    const flamiaCommission = Math.max(0, sellingPrice - wholesalePrice);
+    // Shop gets the wholesale amount 
+    const shopEarnings = Math.min(sellingPrice, wholesalePrice);
 
-    return { flamiaCommission, shopEarnings, totalAmount, wholesalePrice };
+    return { 
+      flamiaCommission, 
+      shopEarnings, 
+      totalAmount: sellingPrice, 
+      wholesalePrice,
+      sellingPrice
+    };
   };
 
   const getProductType = (description: string) => {
