@@ -251,9 +251,10 @@ export const ReferralManager: React.FC = () => {
     // Extract brand name with more flexible matching
     let brand = 'Gas';
     const brandPatterns = [
+      { pattern: /c\s*[-_]?\s*gas|cgas/i, name: 'C Gas' },
       { pattern: /nova/i, name: 'Nova' },
       { pattern: /shell/i, name: 'Shell' },
-      { pattern: /total/i, name: 'Total' },
+      { pattern: /total\s*energies|totalenergies|total/i, name: 'Total' },
       { pattern: /hass/i, name: 'Hass' },
       { pattern: /oryx/i, name: 'Oryx' },
       { pattern: /stabex/i, name: 'Stabex' },
