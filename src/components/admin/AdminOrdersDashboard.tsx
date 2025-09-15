@@ -27,8 +27,6 @@ interface OrderStats {
   completed: number;
   cancelled: number;
   totalRevenue: number;
-  flamiaCommission: number;
-  shopEarnings: number;
 }
 
 interface DayGroup {
@@ -48,14 +46,6 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
   const [cancellationReason, setCancellationReason] = useState('');
   const { toast } = useToast();
-
-  // Flamia wholesale prices
-  const FLAMIA_WHOLESALE_PRICES = {
-    '3kg': 20000,
-    '6kg': 35000,
-    '12kg': 70000,
-    '13kg': 70000,
-  };
 
   useEffect(() => {
     fetchData();
@@ -121,45 +111,6 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
     return info;
   };
 
-  const calculateFlamiaCommission = (order: OrderWithDetails) => {
-    const orderInfo = extractOrderInfo(order.description);
-    const size = orderInfo.size?.toLowerCase() || '';
-    
-    // Get selling price from order (prioritize direct price field, fallback to total)
-    let sellingPrice = 0;
-    if (orderInfo.price) {
-      const cleanAmount = orderInfo.price.replace(/[^\d]/g, '');
-      sellingPrice = parseInt(cleanAmount) || 0;
-    } else if (orderInfo.total) {
-      const cleanAmount = orderInfo.total.replace(/[^\d]/g, '');
-      sellingPrice = parseInt(cleanAmount) || 0;
-    }
-
-    // Determine wholesale price based on cylinder size
-    let wholesalePrice = 0;
-    if (size.includes('3kg') || size.includes('3 kg')) {
-      wholesalePrice = FLAMIA_WHOLESALE_PRICES['3kg'];
-    } else if (size.includes('6kg') || size.includes('6 kg')) {
-      wholesalePrice = FLAMIA_WHOLESALE_PRICES['6kg'];
-    } else if (size.includes('12kg') || size.includes('12 kg')) {
-      wholesalePrice = FLAMIA_WHOLESALE_PRICES['12kg'];
-    } else if (size.includes('13kg') || size.includes('13 kg')) {
-      wholesalePrice = FLAMIA_WHOLESALE_PRICES['13kg'];
-    }
-
-    // Flamia's commission is the markup above wholesale
-    const flamiaCommission = Math.max(0, sellingPrice - wholesalePrice);
-    // Shop gets the wholesale amount 
-    const shopEarnings = Math.min(sellingPrice, wholesalePrice);
-
-    return { 
-      flamiaCommission, 
-      shopEarnings, 
-      totalAmount: sellingPrice, 
-      wholesalePrice,
-      sellingPrice
-    };
-  };
 
   const getProductType = (description: string) => {
     const desc = description.toLowerCase();
@@ -222,8 +173,6 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
       completed: 0,
       cancelled: 0,
       totalRevenue: 0,
-      flamiaCommission: 0,
-      shopEarnings: 0,
     };
 
     dayOrders.forEach(order => {
@@ -234,11 +183,17 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
         case 'cancelled': stats.cancelled++; break;
       }
 
-      // Always compute monetary stats from the order values regardless of status
-      const commission = calculateFlamiaCommission(order);
-      stats.totalRevenue += commission.totalAmount;
-      stats.flamiaCommission += commission.flamiaCommission;
-      stats.shopEarnings += commission.shopEarnings;
+      // Add order total to revenue (extract from description)
+      const orderInfo = extractOrderInfo(order.description);
+      let orderTotal = 0;
+      if (orderInfo.total) {
+        const cleanAmount = orderInfo.total.replace(/[^\d]/g, '');
+        orderTotal = parseInt(cleanAmount) || 0;
+      } else if (orderInfo.price) {
+        const cleanAmount = orderInfo.price.replace(/[^\d]/g, '');
+        orderTotal = parseInt(cleanAmount) || 0;
+      }
+      stats.totalRevenue += orderTotal;
     });
 
     return stats;
@@ -320,7 +275,7 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
     <div className="space-y-4">
       {/* Overall Statistics */}
       {userRole === 'super_admin' && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -333,19 +288,10 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Flamia Commission</p>
-                <p className="text-2xl font-bold text-primary">UGX {overallStats.flamiaCommission.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Total Orders</p>
+                <p className="text-2xl font-bold">{overallStats.total}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-primary" />
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Shop Earnings</p>
-                <p className="text-2xl font-bold text-green-600">UGX {overallStats.shopEarnings.toLocaleString()}</p>
-              </div>
-              <ShoppingCart className="h-8 w-8 text-green-600" />
+              <ShoppingCart className="h-8 w-8 text-primary" />
             </div>
           </Card>
           <Card className="p-4">
@@ -423,7 +369,7 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                   </div>
                 </div>
                 {userRole === 'super_admin' && (
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-yellow-600">{dayGroup.stats.pending}</p>
                       <p className="text-xs text-muted-foreground">Pending</p>
@@ -436,14 +382,6 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                       <p className="text-2xl font-bold text-green-600">{dayGroup.stats.completed}</p>
                       <p className="text-xs text-muted-foreground">Completed</p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-primary">UGX {dayGroup.stats.flamiaCommission.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">Flamia Comm.</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-green-600">UGX {dayGroup.stats.shopEarnings.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">Shop Earnings</p>
-                    </div>
                   </div>
                 )}
               </CardHeader>
@@ -451,7 +389,6 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                 <div className="space-y-3">
                   {dayGroup.orders.map((order) => {
                     const orderInfo = extractOrderInfo(order.description);
-                    const commission = calculateFlamiaCommission(order);
                     return (
                       <div key={order.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                         <div className="flex items-center justify-between mb-2">
@@ -463,32 +400,22 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                           </div>
                           <div className="text-right">
                             <div className="text-sm font-medium">
-                              UGX {commission.totalAmount.toLocaleString()}
+                              UGX {(() => {
+                                if (orderInfo.total) {
+                                  const cleanAmount = orderInfo.total.replace(/[^\d]/g, '');
+                                  return parseInt(cleanAmount) || 0;
+                                } else if (orderInfo.price) {
+                                  const cleanAmount = orderInfo.price.replace(/[^\d]/g, '');
+                                  return parseInt(cleanAmount) || 0;
+                                }
+                                return 'Price not set';
+                              })().toLocaleString?.() || 'Price not set'}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {format(new Date(order.created_at), 'h:mm a')}
                             </div>
                           </div>
                         </div>
-                        
-                        {userRole === 'super_admin' && (
-                          <div className="grid grid-cols-3 gap-2 text-xs bg-muted/30 p-2 rounded">
-                            <div>
-                              <span className="text-muted-foreground">Total:</span>
-                              <span className="font-medium ml-1">UGX {commission.totalAmount.toLocaleString()}</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Flamia:</span>
-                              <span className="font-medium ml-1 text-primary">
-                                UGX {commission.sellingPrice.toLocaleString()} - {commission.wholesalePrice.toLocaleString()} = {commission.flamiaCommission.toLocaleString()}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Shop:</span>
-                              <span className="font-medium ml-1 text-green-600">UGX {commission.shopEarnings.toLocaleString()}</span>
-                            </div>
-                          </div>
-                        )}
 
                         <div className="flex items-center justify-between mt-2">
                           {userRole === 'super_admin' && (

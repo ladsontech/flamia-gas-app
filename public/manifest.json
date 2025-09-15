@@ -5,11 +5,11 @@
   "description": "Quick and reliable gas delivery service in Uganda",
   "start_url": "/?source=pwa",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#FFFFFF",
   "theme_color": "#00b341",
   "orientation": "portrait-primary",
-  "categories": ["shopping", "utilities", "business"],
+  "categories": ["shopping", "utilities", "business", "productivity"],
   "iarc_rating_id": "e84b072d-71de-4d25-b5aa-cb41a3c26c6d",
   "scope_extensions": [
     {
@@ -105,9 +105,17 @@
       "action": "/order",
       "accept": {
         "text/csv": [".csv"],
-        "application/json": [".json"]
+        "application/json": [".json"],
+        "text/plain": [".txt"]
       },
       "name": "Order from file"
+    },
+    {
+      "action": "/notes",
+      "accept": {
+        "text/plain": [".txt"]
+      },
+      "name": "Gas delivery notes"
     }
   ],
   "share_target": {
