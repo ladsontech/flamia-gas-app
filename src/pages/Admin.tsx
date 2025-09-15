@@ -24,22 +24,29 @@ import { WithdrawalsManager } from "@/components/admin/WithdrawalsManager";
 import { fetchOrders, fetchDeliveryMen } from "@/services/database";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
-
 const Admin = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [deliveryMen, setDeliveryMen] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-  const { isAdmin, loading: roleLoading } = useUserRole();
+  const {
+    isAdmin,
+    loading: roleLoading
+  } = useUserRole();
 
   // Check authentication and admin role
   useEffect(() => {
     const checkAuthAndRole = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
+        const {
+          data: {
+            user
+          }
+        } = await supabase.auth.getUser();
         if (!user) {
           toast({
             title: "Authentication Required",
@@ -49,9 +56,7 @@ const Admin = () => {
           navigate("/signin");
           return;
         }
-
         setUser(user);
-
         if (!roleLoading && !isAdmin) {
           toast({
             title: "Access Denied",
@@ -61,7 +66,6 @@ const Admin = () => {
           navigate("/");
           return;
         }
-
         if (isAdmin) {
           await loadOrdersAndDeliveryMen();
         }
@@ -70,16 +74,11 @@ const Admin = () => {
         navigate("/signin");
       }
     };
-
     checkAuthAndRole();
   }, [isAdmin, roleLoading, navigate, toast]);
-
   const loadOrdersAndDeliveryMen = async () => {
     try {
-      const [ordersData, deliveryMenData] = await Promise.all([
-        fetchOrders(),
-        fetchDeliveryMen()
-      ]);
+      const [ordersData, deliveryMenData] = await Promise.all([fetchOrders(), fetchDeliveryMen()]);
       setOrders(ordersData);
       setDeliveryMen(deliveryMenData);
     } catch (error) {
@@ -93,25 +92,19 @@ const Admin = () => {
       setLoading(false);
     }
   };
-
   const handleOrdersUpdate = () => {
     loadOrdersAndDeliveryMen();
   };
-
   if (loading || roleLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p>Loading admin panel...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!user || !isAdmin) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    return <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="flex items-center justify-center gap-2">
@@ -126,12 +119,9 @@ const Admin = () => {
             </Button>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <AdminAppBar onLogout={() => navigate("/")} />
       
       <div className="container mx-auto p-4 max-w-7xl space-y-6">
@@ -161,7 +151,7 @@ const Admin = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <Tabs defaultValue="orders" className="w-full">
-                <TabsList className="grid grid-cols-2 w-full">
+                <TabsList className="grid grid-cols-2 w-full text-sm">
                   <TabsTrigger value="orders">Orders</TabsTrigger>
                   <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
                 </TabsList>
@@ -262,8 +252,6 @@ const Admin = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Admin;
