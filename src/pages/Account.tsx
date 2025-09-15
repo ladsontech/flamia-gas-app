@@ -293,7 +293,7 @@ const Account = () => {
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-100">
-                        <Settings className="w-6 h-6 text-primary bg-orange-400" />
+                        <Settings className="w-6 h-6 text-primary bg-orange-500" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">Profile Settings</span>
@@ -311,7 +311,7 @@ const Account = () => {
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('business')}>
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
-                        <Store className="w-6 h-6 text-primary" />
+                        <Store className="w-6 h-6 text-primary bg-orange-500" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">My Business</span>
@@ -347,7 +347,7 @@ const Account = () => {
                   <Link to="/admin">
                     <div className="p-5 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-500">
                           <Settings className="w-6 h-6 text-primary" />
                         </div>
                         <div>
