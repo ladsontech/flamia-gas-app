@@ -424,37 +424,37 @@ export const ReferralManager: React.FC = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div 
-                className="bg-blue-50 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
+                className="bg-primary/10 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-primary/20 transition-colors"
                 onClick={toggleReferrals}
               >
                 <div className="flex items-center space-x-2 mb-2">
-                  <Users className="w-4 h-4 text-blue-600" />
-                  <span className="text-xs sm:text-sm font-medium text-blue-900">Total Referrals</span>
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="text-xs sm:text-sm font-medium text-foreground">Total Referrals</span>
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-blue-900">{referrals.length}</p>
+                <p className="text-xl sm:text-2xl font-bold text-foreground">{referrals.length}</p>
                 {referrals.length > 0 && (
-                  <p className="text-xs text-blue-600 mt-1">Tap to view details</p>
+                  <p className="text-xs text-muted-foreground mt-1">Tap to view details</p>
                 )}
               </div>
               
-              <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+              <div className="bg-primary/10 p-3 sm:p-4 rounded-lg">
                 <div className="flex items-center space-x-2 mb-2">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                  <span className="text-xs sm:text-sm font-medium text-green-900">Available Earnings</span>
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-xs sm:text-sm font-medium text-foreground">Available Earnings</span>
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-green-900">{formatCurrency(totalEarnings)}</p>
-                <p className="text-xs text-green-600 mt-1">Ready to withdraw</p>
+                <p className="text-xl sm:text-2xl font-bold text-foreground">{formatCurrency(totalEarnings)}</p>
+                <p className="text-xs text-muted-foreground mt-1">Ready to withdraw</p>
               </div>
               
               <div 
-                className="bg-yellow-50 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors"
+                className="bg-primary/10 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-primary/20 transition-colors"
                 onClick={togglePendingDetails}
               >
                 <div className="flex items-center space-x-2 mb-2">
-                  <Clock className="w-4 h-4 text-yellow-600" />
-                  <span className="text-xs sm:text-sm font-medium text-yellow-900">Pending Earnings</span>
+                  <Clock className="w-4 h-4 text-primary" />
+                  <span className="text-xs sm:text-sm font-medium text-foreground">Pending Earnings</span>
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-yellow-900">{formatCurrency(pendingEarnings)}</p>
+                <p className="text-xl sm:text-2xl font-bold text-foreground">{formatCurrency(pendingEarnings)}</p>
                 {pendingCommissions.length > 0 && (
                   <p className="text-xs text-yellow-600 mt-1">Tap to view details</p>
                 )}

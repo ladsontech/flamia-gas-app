@@ -131,91 +131,136 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AdminAppBar onLogout={() => navigate("/")} />
       
-      <div className="container mx-auto p-2 sm:p-4 max-w-7xl">
-        <Tabs defaultValue="orders" className="w-full">
-          {/* Mobile-responsive tabs */}
-          <div className="mb-4">
-            <ScrollArea className="w-full">
-              <TabsList className="grid grid-cols-10 w-full min-w-[800px] h-auto p-1 bg-muted rounded-lg">
-                <TabsTrigger value="orders" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Orders
-                </TabsTrigger>
-                <TabsTrigger value="withdrawals" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Withdrawals
-                </TabsTrigger>
-                <TabsTrigger value="promotions" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Promos
-                </TabsTrigger>
-                <TabsTrigger value="gadgets" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Gadgets
-                </TabsTrigger>
-                <TabsTrigger value="brands" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Brands
-                </TabsTrigger>
-                <TabsTrigger value="carousel" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Carousel
-                </TabsTrigger>
-                <TabsTrigger value="businesses" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Business
-                </TabsTrigger>
-                <TabsTrigger value="products" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Products
-                </TabsTrigger>
-                <TabsTrigger value="seller_apps" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Seller Apps
-                </TabsTrigger>
-                <TabsTrigger value="marketplace" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background">
-                  Marketplace
-                </TabsTrigger>
-              </TabsList>
-            </ScrollArea>
+      <div className="container mx-auto p-4 max-w-7xl space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage your platform efficiently</p>
           </div>
-          
-          <div className="space-y-4">
-            <TabsContent value="orders" className="mt-0">
-              <AdminOrdersView orders={orders} deliveryMen={deliveryMen} onOrdersUpdate={handleOrdersUpdate} />
-            </TabsContent>
+        </div>
 
-            <TabsContent value="withdrawals" className="mt-0">
-              <WithdrawalsManager />
-            </TabsContent>
-            
-            <TabsContent value="promotions" className="mt-0">
-              <PromotionsManager />
-            </TabsContent>
-            
-            <TabsContent value="gadgets" className="mt-0">
-              <GadgetsManager />
-            </TabsContent>
-            
-            <TabsContent value="brands" className="mt-0">
-              <BrandsManager />
-            </TabsContent>
-            
-            <TabsContent value="carousel" className="mt-0">
-              <CarouselManager />
-            </TabsContent>
-            
-            <TabsContent value="businesses" className="mt-0">
-              <BusinessesManager />
-            </TabsContent>
-            
-            <TabsContent value="products" className="mt-0">
-              <BusinessProductsManager />
-            </TabsContent>
+        {/* Organized Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Gas Operations */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  🔥
+                </div>
+                Gas Operations
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Tabs defaultValue="orders" className="w-full">
+                <TabsList className="grid grid-cols-2 w-full">
+                  <TabsTrigger value="orders">Orders</TabsTrigger>
+                  <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
+                </TabsList>
+                <TabsContent value="orders" className="mt-4">
+                  <AdminOrdersView orders={orders} deliveryMen={deliveryMen} onOrdersUpdate={handleOrdersUpdate} />
+                </TabsContent>
+                <TabsContent value="withdrawals" className="mt-4">
+                  <WithdrawalsManager />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
 
-            <TabsContent value="seller_apps" className="mt-0">
-              <SellerApplicationsManager />
-            </TabsContent>
+          {/* Gadgets & Products */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  📱
+                </div>
+                Gadgets & Products
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Tabs defaultValue="gadgets" className="w-full">
+                <TabsList className="grid grid-cols-2 w-full">
+                  <TabsTrigger value="gadgets">Gadgets</TabsTrigger>
+                  <TabsTrigger value="brands">Brands</TabsTrigger>
+                </TabsList>
+                <TabsContent value="gadgets" className="mt-4">
+                  <GadgetsManager />
+                </TabsContent>
+                <TabsContent value="brands" className="mt-4">
+                  <BrandsManager />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
 
-            <TabsContent value="marketplace" className="mt-0">
-              <MarketplaceSettings />
-            </TabsContent>
-          </div>
-        </Tabs>
+          {/* Business Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  🏪
+                </div>
+                Business Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Tabs defaultValue="businesses" className="w-full">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger value="businesses">Businesses</TabsTrigger>
+                  <TabsTrigger value="products">Products</TabsTrigger>
+                  <TabsTrigger value="seller_apps">Seller Apps</TabsTrigger>
+                </TabsList>
+                <TabsContent value="businesses" className="mt-4">
+                  <BusinessesManager />
+                </TabsContent>
+                <TabsContent value="products" className="mt-4">
+                  <BusinessProductsManager />
+                </TabsContent>
+                <TabsContent value="seller_apps" className="mt-4">
+                  <SellerApplicationsManager />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Marketing & Content */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  📢
+                </div>
+                Marketing & Content
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Tabs defaultValue="promotions" className="w-full">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger value="promotions">Promotions</TabsTrigger>
+                  <TabsTrigger value="carousel">Carousel</TabsTrigger>
+                  <TabsTrigger value="marketplace">Settings</TabsTrigger>
+                </TabsList>
+                <TabsContent value="promotions" className="mt-4">
+                  <PromotionsManager />
+                </TabsContent>
+                <TabsContent value="carousel" className="mt-4">
+                  <CarouselManager />
+                </TabsContent>
+                <TabsContent value="marketplace" className="mt-4">
+                  <MarketplaceSettings />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
