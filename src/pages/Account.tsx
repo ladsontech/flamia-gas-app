@@ -8,16 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { getUserBusinesses } from "@/services/adminService";
-import { 
-  User, 
-  LogOut, 
-  Settings,
-  Store,
-  BarChart3,
-  TrendingUp,
-  DollarSign,
-  Users
-} from "lucide-react";
+import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
@@ -32,8 +23,6 @@ interface Profile {
   display_name?: string;
   phone_number?: string;
 }
-
-
 interface Business {
   id: string;
   name: string;
@@ -42,27 +31,31 @@ interface Business {
   description?: string;
   image_url?: string;
 }
-
 const Account = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const { toast } = useToast();
-  const { userRole, isAdmin, isBusinessOwner, isDeliveryMan, loading: roleLoading } = useUserRole();
-
+  const {
+    toast
+  } = useToast();
+  const {
+    userRole,
+    isAdmin,
+    isBusinessOwner,
+    isDeliveryMan,
+    loading: roleLoading
+  } = useUserRole();
   useEffect(() => {
     checkAuthStatus();
   }, []);
-
   useEffect(() => {
     const loadUserData = async () => {
       if (user && !roleLoading) {
         await fetchProfile(user.id);
-        
+
         // Fetch businesses if user is business owner
         if (isBusinessOwner) {
           try {
@@ -74,33 +67,35 @@ const Account = () => {
         }
       }
     };
-
     loadUserData();
   }, [user, isBusinessOwner, roleLoading]);
-
   const checkAuthStatus = async () => {
     try {
       // First check for Supabase authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        
+
         // Auto-sync display name if missing
         await ensureDisplayName(user);
       } else {
         // Check for phone-verified user
         const phoneVerified = localStorage.getItem('phoneVerified');
         const userName = localStorage.getItem('userName');
-        
         if (phoneVerified && userName) {
           setIsPhoneUser(true);
           await fetchPhoneProfile(phoneVerified);
-          setUser({ 
-            id: phoneVerified, 
-            email: null, 
+          setUser({
+            id: phoneVerified,
+            email: null,
             phone: phoneVerified,
-            user_metadata: { display_name: userName }
+            user_metadata: {
+              display_name: userName
+            }
           });
         }
       }
@@ -110,91 +105,73 @@ const Account = () => {
       setLoading(false);
     }
   };
-
   const ensureDisplayName = async (user: any) => {
     try {
       // Check if profile exists and has display_name
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('display_name, full_name')
-        .eq('id', user.id)
-        .single();
+      const {
+        data: existingProfile
+      } = await supabase.from('profiles').select('display_name, full_name').eq('id', user.id).single();
 
       // If no display name but we have user metadata, update profile
       if (existingProfile && !existingProfile.display_name && user.user_metadata?.full_name) {
-        await supabase
-          .from('profiles')
-          .update({ 
-            display_name: user.user_metadata.full_name,
-            full_name: user.user_metadata.full_name 
-          })
-          .eq('id', user.id);
+        await supabase.from('profiles').update({
+          display_name: user.user_metadata.full_name,
+          full_name: user.user_metadata.full_name
+        }).eq('id', user.id);
       }
     } catch (error) {
       console.error('Error ensuring display name:', error);
     }
   };
-
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
+      const {
+        data,
+        error
+      } = await supabase.from('profiles').select('*').eq('id', userId).single();
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
         return;
       }
-
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
   };
-
   const fetchPhoneProfile = async (phoneNumber: string) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('phone_number', phoneNumber)
-        .single();
-
+      const {
+        data,
+        error
+      } = await supabase.from('profiles').select('*').eq('phone_number', phoneNumber).single();
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching phone profile:', error);
         return;
       }
-
       setProfile(data);
     } catch (error) {
       console.error('Error fetching phone profile:', error);
     }
   };
-
-
   const handleSignOut = async () => {
     try {
       if (isPhoneUser) {
         localStorage.removeItem('phoneVerified');
         localStorage.removeItem('userName');
-        
         toast({
           title: "Signed out successfully",
           description: "You have been signed out of your account."
         });
-        
         navigate('/');
       } else {
-        const { error } = await supabase.auth.signOut();
+        const {
+          error
+        } = await supabase.auth.signOut();
         if (error) throw error;
-        
         toast({
           title: "Signed out successfully",
           description: "You have been signed out of your account."
         });
-        
         navigate('/');
       }
     } catch (error: any) {
@@ -205,38 +182,30 @@ const Account = () => {
       });
     }
   };
-
   const navigate = (path: string) => {
     window.location.href = path;
   };
-
   const getDisplayName = () => {
     return profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || 'User';
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
+    return <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
         <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6">
           <div className="animate-pulse space-y-4">
-            {[1, 2, 3].map((i) => (
-              <Card key={i}>
+            {[1, 2, 3].map(i => <Card key={i}>
                 <CardContent className="p-4 sm:p-6">
                   <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
                   <div className="h-4 bg-muted rounded w-1/2"></div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // If not authenticated, show guest view
   if (!user) {
-    return (
-      <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
+    return <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
         <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6 space-y-4 sm:space-y-6">
           <Card className="text-center p-8">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -246,30 +215,21 @@ const Account = () => {
             <p className="text-muted-foreground mb-6">Sign in to access your orders, preferences, and more</p>
             
             <div className="space-y-3 max-w-sm mx-auto">
-              <Button 
-                className="w-full"
-                onClick={() => navigate('/signin')}
-              >
+              <Button className="w-full" onClick={() => navigate('/signin')}>
                 Sign In
               </Button>
               
-              <Button 
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate('/signup')}
-              >
+              <Button variant="outline" className="w-full" onClick={() => navigate('/signup')}>
                 Create Account
               </Button>
             </div>
           </Card>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // Authenticated user view
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <AppBar />
       <div className="pt-16 pb-20">
         {/* Mobile Header with Welcome */}
@@ -296,17 +256,11 @@ const Account = () => {
                 <div className="space-y-2">
                   <h2 className="text-xl font-bold text-foreground">{getDisplayName()}</h2>
                   <div className="space-y-1">
-                    {user.email && (
-                      <p className="text-sm text-muted-foreground break-all">{user.email}</p>
-                    )}
-                    {profile?.phone_number && (
-                      <p className="text-sm text-muted-foreground">{profile.phone_number}</p>
-                    )}
-                    {userRole !== 'user' && (
-                      <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
+                    {user.email && <p className="text-sm text-muted-foreground break-all">{user.email}</p>}
+                    {profile?.phone_number && <p className="text-sm text-muted-foreground">{profile.phone_number}</p>}
+                    {userRole !== 'user' && <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
                         {userRole.replace('_', ' ')}
-                      </Badge>
-                    )}
+                      </Badge>}
                   </div>
                 </div>
               </div>
@@ -334,13 +288,12 @@ const Account = () => {
             </Card>
 
             {/* Profile Settings */}
-            {!isPhoneUser && (
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
+            {!isPhoneUser && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
                 <CardContent className="p-0">
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                        <Settings className="w-6 h-6 text-primary" />
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-100">
+                        <Settings className="w-6 h-6 text-primary bg-orange-400" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">Profile Settings</span>
@@ -350,16 +303,14 @@ const Account = () => {
                     <div className="w-5 h-5 text-muted-foreground">→</div>
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
 
             {/* Business Dashboard */}
-            {isBusinessOwner && (
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
+            {isBusinessOwner && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
                 <CardContent className="p-0">
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('business')}>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
                         <Store className="w-6 h-6 text-primary" />
                       </div>
                       <div>
@@ -370,8 +321,7 @@ const Account = () => {
                     <div className="w-5 h-5 text-muted-foreground">→</div>
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
 
             {/* Referrals - Available to all users */}
             <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20">
@@ -392,13 +342,12 @@ const Account = () => {
             </Card>
 
             {/* Admin Panel */}
-            {isAdmin && (
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-orange-200 shadow-sm bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
+            {isAdmin && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-orange-200 shadow-sm bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
                 <CardContent className="p-0">
                   <Link to="/admin">
                     <div className="p-5 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
                           <Settings className="w-6 h-6 text-primary" />
                         </div>
                         <div>
@@ -410,15 +359,14 @@ const Account = () => {
                     </div>
                   </Link>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
 
             {/* Sign Out */}
             <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
               <CardContent className="p-0">
                 <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
                       <LogOut className="w-6 h-6 text-primary" />
                     </div>
                     <div>
@@ -434,10 +382,9 @@ const Account = () => {
         </div>
 
         {/* Active Section Content */}
-        {activeSection && (
-          <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
+        {activeSection && <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
             <div className="bg-background border-b px-4 py-4 flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)}>
+              <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)} className="bg-orange-300">
                 ← Back
               </Button>
               <h2 className="text-lg font-semibold">
@@ -450,14 +397,11 @@ const Account = () => {
             
             <div className="p-4">
               {activeSection === 'orders' && <OrdersManager userRole={userRole} userId={user?.id} />}
-              {activeSection === 'profile' && (
-                <div className="space-y-4">
+              {activeSection === 'profile' && <div className="space-y-4">
                   <AddressManager />
                   <PhoneManager />
-                </div>
-              )}
-              {activeSection === 'business' && (
-                <div className="space-y-4">
+                </div>}
+              {activeSection === 'business' && <div className="space-y-4">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -466,25 +410,15 @@ const Account = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {businesses.length === 0 ? (
-                        <div className="text-center py-8">
+                      {businesses.length === 0 ? <div className="text-center py-8">
                           <Store className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                           <h3 className="text-lg font-semibold mb-2">No businesses assigned</h3>
                           <p className="text-muted-foreground">Contact admin to get your business assigned</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {businesses.map((business) => (
-                            <Card key={business.id} className="border-l-4 border-l-primary">
+                        </div> : <div className="space-y-4">
+                          {businesses.map(business => <Card key={business.id} className="border-l-4 border-l-primary">
                               <CardContent className="p-4">
                                 <div className="flex items-start gap-3">
-                                  {business.image_url && (
-                                    <img 
-                                      src={business.image_url} 
-                                      alt={business.name}
-                                      className="w-12 h-12 rounded-lg object-cover"
-                                    />
-                                  )}
+                                  {business.image_url && <img src={business.image_url} alt={business.name} className="w-12 h-12 rounded-lg object-cover" />}
                                   <div className="flex-1">
                                     <h4 className="font-semibold">{business.name}</h4>
                                     <p className="text-sm text-muted-foreground">{business.location}</p>
@@ -492,10 +426,8 @@ const Account = () => {
                                   </div>
                                 </div>
                               </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      )}
+                            </Card>)}
+                        </div>}
                     </CardContent>
                   </Card>
 
@@ -526,15 +458,11 @@ const Account = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </div>
-              )}
+                </div>}
               {activeSection === 'referrals' && <ReferralManager />}
             </div>
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Account;
