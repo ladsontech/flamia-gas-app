@@ -19,49 +19,50 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Orange ring with blue flame ring effect */}
+      {/* Orange ring with smooth blue flame transition */}
       {isActive && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-          {/* Outer blue flame ring - surrounding the orange ring */}
+          {/* Outer blue flame ring with smooth transition */}
           <div 
-            className="rounded-full opacity-60 animate-pulse"
+            className="rounded-full opacity-70 animate-pulse"
             style={{
-              width: '72px',
-              height: '72px',
-              border: '3px solid transparent',
-              borderImage: `conic-gradient(
+              width: '68px',
+              height: '68px',
+              background: `conic-gradient(
                 from 0deg,
-                rgba(0, 127, 255, 0.8),
-                rgba(65, 105, 225, 0.6),
-                rgba(30, 144, 255, 0.8),
-                rgba(65, 105, 225, 0.6),
-                rgba(0, 127, 255, 0.8)
-              ) 1`,
-              animationDuration: '2.5s'
-            }}
-          />
-          
-          {/* Main orange ring */}
-          <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full opacity-90"
-            style={{
-              border: '1.5px solid #FF6B00',
-              background: 'transparent'
-            }}
-          />
-          
-          {/* Inner glow to simulate heat */}
-          <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-30 animate-pulse"
-            style={{
-              background: `radial-gradient(circle, 
-                rgba(255, 107, 0, 0.3) 0%,
-                rgba(255, 140, 66, 0.2) 50%,
-                transparent 70%
+                rgba(0, 127, 255, 0.8) 0%,
+                rgba(255, 107, 0, 0.6) 25%,
+                rgba(65, 105, 225, 0.8) 50%,
+                rgba(255, 107, 0, 0.6) 75%,
+                rgba(0, 127, 255, 0.8) 100%
               )`,
-              animationDuration: '1.8s'
+              borderRadius: '50%',
+              padding: '6px',
+              animationDuration: '3s'
             }}
-          />
+          >
+            {/* Inner container for orange ring */}
+            <div 
+              className="w-full h-full rounded-full"
+              style={{
+                background: `radial-gradient(circle, 
+                  transparent 80%,
+                  rgba(255, 255, 255, 0.9) 82%,
+                  rgba(255, 255, 255, 0.95) 100%
+                )`
+              }}
+            >
+              {/* Main orange ring */}
+              <div 
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full opacity-95"
+                style={{
+                  border: '2px solid #FF6B00',
+                  background: 'transparent',
+                  boxShadow: '0 0 8px rgba(255, 107, 0, 0.4)'
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
       
