@@ -45,6 +45,7 @@ import TotalGasUganda from './pages/TotalGasUganda';
 import UltimateGasUganda from './pages/UltimateGasUganda';
 import { useUserRole } from './hooks/useUserRole';
 import { GoogleSignUpHandler } from './components/auth/GoogleSignUpHandler';
+import InstallPWA from './components/InstallPWA';
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ function App() {
         <div className="flex flex-col min-h-screen">
           <AppBar />
           <GoogleSignUpHandler />
+          <InstallPWA />
           <Toaster />
           
           <main className="flex-1 pb-24 md:pb-0">

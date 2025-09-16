@@ -354,24 +354,24 @@ export const ReferralManager: React.FC = () => {
             </div>
           </div>
           
-          <div className="mt-4 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+            <div className="mt-4 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
             <p className="text-sm font-bold text-orange-900 dark:text-orange-100 mb-1">💵 Commission Rates:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-orange-700 dark:text-orange-300">Each order from a referral creates a commission</span>
-                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 3,000</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-xs">
+              <div className="flex justify-between items-center py-0.5">
+                <span className="text-orange-700 dark:text-orange-300 text-xs sm:text-xs">Default:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200 text-xs">UGX 3,000</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-orange-700 dark:text-orange-300">6kg Gas:</span>
-                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 5,000</span>
+              <div className="flex justify-between items-center py-0.5">
+                <span className="text-orange-700 dark:text-orange-300 text-xs">6kg Gas:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200 text-xs">UGX 5,000</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-orange-700 dark:text-orange-300">12kg Gas:</span>
-                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 10,000</span>
+              <div className="flex justify-between items-center py-0.5">
+                <span className="text-orange-700 dark:text-orange-300 text-xs">12kg Gas:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200 text-xs">UGX 10,000</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-orange-700 dark:text-orange-300">Full Kits:</span>
-                <span className="font-semibold text-orange-800 dark:text-orange-200">UGX 10,000</span>
+              <div className="flex justify-between items-center py-0.5">
+                <span className="text-orange-700 dark:text-orange-300 text-xs">Full Kits:</span>
+                <span className="font-semibold text-orange-800 dark:text-orange-200 text-xs">UGX 10,000</span>
               </div>
             </div>
           </div>
