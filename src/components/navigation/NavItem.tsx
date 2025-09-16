@@ -40,7 +40,7 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           
           {/* Main orange ring - thinner */}
           <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full opacity-90"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full opacity-90"
             style={{
               border: '1.5px solid #FF6B00',
               background: 'transparent'
