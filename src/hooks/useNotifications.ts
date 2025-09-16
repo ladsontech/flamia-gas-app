@@ -62,6 +62,32 @@ export const useNotifications = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   }, []);
 
+  const getCustomerName = async (userId: string | null, description: string): Promise<string> => {
+    // First try to get name from profile if we have user_id
+    if (userId) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, display_name')
+          .eq('id', userId)
+          .single();
+        
+        if (profile?.full_name) return profile.full_name;
+        if (profile?.display_name) return profile.display_name;
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    }
+    
+    // Fallback to extracting contact info from description
+    const lines = description.split('\n');
+    const contactLine = lines.find(line => line.includes('Contact:'));
+    if (contactLine) {
+      return contactLine.split('Contact:')[1]?.trim() || 'Unknown Customer';
+    }
+    return 'Unknown Customer';
+  };
+
   useEffect(() => {
     if (loading) return;
 
@@ -78,12 +104,13 @@ export const useNotifications = () => {
             schema: 'public',
             table: 'orders'
           },
-          (payload) => {
+          async (payload) => {
             const order = payload.new;
+            const customerName = await getCustomerName(order.user_id, order.description);
             addNotification({
               type: 'new_order',
               title: 'New Order Received',
-              description: `Order from ${extractCustomerInfo(order.description)}`,
+              description: `Order from ${customerName}`,
               timestamp: new Date(),
               read: false,
               data: order
@@ -304,16 +331,7 @@ export const useNotifications = () => {
     return () => {
       channels.forEach(channel => supabase.removeChannel(channel));
     };
-  }, [userRole, loading, addNotification]);
-
-  const extractCustomerInfo = (description: string) => {
-    const lines = description.split('\n');
-    const contactLine = lines.find(line => line.includes('*Contact:*'));
-    if (contactLine) {
-      return contactLine.split('*Contact:*')[1]?.trim() || 'Unknown';
-    }
-    return 'Unknown customer';
-  };
+  }, [userRole, loading, addNotification, getCustomerName]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 

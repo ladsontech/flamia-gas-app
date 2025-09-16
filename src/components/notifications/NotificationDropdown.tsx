@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Bell, Package, Users, Truck, CheckCircle, Clock, DollarSign } from "lucide-react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 export interface NotificationItem {
   id: string;
@@ -28,6 +29,7 @@ export const NotificationDropdown = ({
   onClearAll, 
   onClose 
 }: NotificationDropdownProps) => {
+  const navigate = useNavigate();
   const getIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'new_order':
@@ -43,6 +45,29 @@ export const NotificationDropdown = ({
       default:
         return <Bell className="h-4 w-4" />;
     }
+  };
+
+  const handleNotificationClick = (notification: NotificationItem) => {
+    if (!notification.read) {
+      onMarkAsRead(notification.id);
+    }
+    
+    // Navigate based on notification type
+    switch (notification.type) {
+      case 'new_order':
+      case 'order_assigned':
+      case 'order_status':
+        navigate('/orders');
+        break;
+      case 'new_referral':
+      case 'commission':
+        navigate('/account');
+        break;
+      default:
+        break;
+    }
+    
+    onClose();
   };
 
   const unreadNotifications = notifications.filter(n => !n.read);
@@ -73,11 +98,7 @@ export const NotificationDropdown = ({
                 className={`p-4 cursor-pointer hover:bg-muted/50 ${
                   !notification.read ? 'bg-primary/5' : ''
                 }`}
-                onClick={() => {
-                  if (!notification.read) {
-                    onMarkAsRead(notification.id);
-                  }
-                }}
+                onClick={() => handleNotificationClick(notification)}
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 mt-0.5">

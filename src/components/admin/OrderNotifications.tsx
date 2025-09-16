@@ -13,6 +13,32 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
   const { toast } = useToast();
   const [isListening, setIsListening] = useState(false);
 
+  const getCustomerName = async (userId: string | null, description: string): Promise<string> => {
+    // First try to get name from profile if we have user_id
+    if (userId) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, display_name')
+          .eq('id', userId)
+          .single();
+        
+        if (profile?.full_name) return profile.full_name;
+        if (profile?.display_name) return profile.display_name;
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    }
+    
+    // Fallback to extracting contact info from description
+    const lines = description.split('\n');
+    const contactLine = lines.find(line => line.includes('Contact:'));
+    if (contactLine) {
+      return contactLine.split('Contact:')[1]?.trim() || 'Unknown Customer';
+    }
+    return 'Unknown Customer';
+  };
+
   useEffect(() => {
     // Set up real-time subscription for new orders
     const channel = supabase
@@ -24,13 +50,14 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
           schema: 'public',
           table: 'orders'
         },
-        (payload) => {
+        async (payload) => {
           const newOrder = payload.new as Order;
+          const customerName = await getCustomerName(newOrder.user_id, newOrder.description);
           
           // Show toast notification
           toast({
             title: "New Order Received!",
-            description: `Order from ${extractCustomerInfo(newOrder.description)}`,
+            description: `Order from ${customerName}`,
             duration: 5000,
           });
 
@@ -54,16 +81,7 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
       supabase.removeChannel(channel);
       setIsListening(false);
     };
-  }, [toast, onNewOrder]);
-
-  const extractCustomerInfo = (description: string) => {
-    const lines = description.split('\n');
-    const contactLine = lines.find(line => line.includes('*Contact:*'));
-    if (contactLine) {
-      return contactLine.split('*Contact:*')[1]?.trim() || 'Unknown';
-    }
-    return 'Unknown customer';
-  };
+  }, [toast, onNewOrder, getCustomerName]);
 
   return (
     <div className="flex items-center gap-2 text-sm text-muted-foreground">
