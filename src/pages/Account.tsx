@@ -233,7 +233,7 @@ const Account = () => {
       <AppBar />
       <div className="pt-16 pb-20">
         {/* Mobile Header with Welcome */}
-        <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 dark:from-orange-950/20 dark:via-background dark:to-orange-950/20 px-4 py-6">
+        <div className="bg-gradient-to-r from-background via-accent/5 to-background px-4 py-6">
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">Welcome back,</p>
             <h1 className="text-2xl font-bold text-foreground">{getDisplayName()}! 👋</h1>
@@ -242,15 +242,15 @@ const Account = () => {
 
         {/* User Profile Card */}
         <div className="p-4">
-          <Card className="mb-6 overflow-hidden shadow-sm border-0 bg-gradient-to-br from-white via-orange-50/30 to-white dark:from-background dark:via-orange-950/10 dark:to-background">
+          <Card className="mb-6 overflow-hidden shadow-sm">
             <CardContent className="p-6">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-10 h-10 text-white" />
+                  <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center shadow-lg">
+                    <User className="w-10 h-10 text-accent-foreground" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full border-2 border-card flex items-center justify-center">
+                    <div className="w-2 h-2 bg-accent-foreground rounded-full"></div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -258,7 +258,7 @@ const Account = () => {
                   <div className="space-y-1">
                     {user.email && <p className="text-sm text-muted-foreground break-all">{user.email}</p>}
                     {profile?.phone_number && <p className="text-sm text-muted-foreground">{profile.phone_number}</p>}
-                    {userRole !== 'user' && <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
+                    {userRole !== 'user' && <Badge variant="secondary" className="text-xs">
                         {userRole.replace('_', ' ')}
                       </Badge>}
                   </div>
@@ -270,7 +270,7 @@ const Account = () => {
           {/* Menu Items */}
           <div className="space-y-3">
             {/* Orders */}
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
               <CardContent className="p-0">
                 <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
                   <div className="flex items-center space-x-4">
@@ -288,12 +288,12 @@ const Account = () => {
             </Card>
 
             {/* Profile Settings */}
-            {!isPhoneUser && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
+            {!isPhoneUser && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
                 <CardContent className="p-0">
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-100">
-                        <Settings className="w-6 h-6 text-primary bg-orange-500" />
+                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                        <Settings className="w-6 h-6 text-primary" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">Profile Settings</span>
@@ -306,12 +306,12 @@ const Account = () => {
               </Card>}
 
             {/* Business Dashboard */}
-            {isBusinessOwner && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
+            {isBusinessOwner && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
                 <CardContent className="p-0">
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('business')}>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
-                        <Store className="w-6 h-6 text-primary bg-orange-500" />
+                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                        <Store className="w-6 h-6 text-primary" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">My Business</span>
@@ -324,7 +324,7 @@ const Account = () => {
               </Card>}
 
             {/* Referrals - Available to all users */}
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20">
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
               <CardContent className="p-0">
                 <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
                   <div className="flex items-center space-x-4">
@@ -333,7 +333,7 @@ const Account = () => {
                     </div>
                     <div>
                       <span className="font-semibold text-foreground">Referrals & Earnings</span>
-                      <p className="text-xs text-orange-700 dark:text-orange-300">Refer and Earn</p>
+                      <p className="text-xs text-muted-foreground">Refer and Earn</p>
                     </div>
                   </div>
                   <div className="w-5 h-5 text-muted-foreground">→</div>
@@ -342,31 +342,31 @@ const Account = () => {
             </Card>
 
             {/* Admin Panel */}
-            {isAdmin && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-orange-200 shadow-sm bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
+            {isAdmin && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
                 <CardContent className="p-0">
                   <Link to="/admin">
                     <div className="p-5 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-500">
+                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
                           <Settings className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                          <span className="font-semibold text-orange-700 dark:text-orange-300">Admin Panel</span>
-                          <p className="text-xs text-orange-600 dark:text-orange-400">System management</p>
+                          <span className="font-semibold text-foreground">Admin Panel</span>
+                          <p className="text-xs text-muted-foreground">System management</p>
                         </div>
                       </div>
-                      <div className="w-5 h-5 text-orange-600">→</div>
+                      <div className="w-5 h-5 text-muted-foreground">→</div>
                     </div>
                   </Link>
                 </CardContent>
               </Card>}
 
             {/* Sign Out */}
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-0 shadow-sm bg-white dark:bg-card">
+            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
               <CardContent className="p-0">
                 <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm bg-orange-300">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
                       <LogOut className="w-6 h-6 text-primary" />
                     </div>
                     <div>
@@ -384,7 +384,7 @@ const Account = () => {
         {/* Active Section Content */}
         {activeSection && <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
             <div className="bg-background border-b px-4 py-4 flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)} className="bg-orange-300">
+              <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)}>
                 ← Back
               </Button>
               <h2 className="text-lg font-semibold">
