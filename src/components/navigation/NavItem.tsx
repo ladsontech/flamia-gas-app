@@ -22,42 +22,41 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
       {/* Orange ring with blue flame effect */}
       {isActive && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-          {/* Outer blue flame glow */}
+          {/* Outer blue flame effect - outside the ring */}
           <div 
-            className="w-16 h-16 rounded-full opacity-40 animate-pulse"
+            className="w-16 h-16 rounded-full opacity-50 animate-pulse"
             style={{
-              background: `radial-gradient(circle, 
-                rgba(65, 105, 225, 0.3) 0%,
-                rgba(0, 127, 255, 0.2) 30%, 
-                rgba(65, 105, 225, 0.15) 60%,
-                transparent 100%
+              background: `conic-gradient(
+                from 0deg,
+                rgba(0, 127, 255, 0.6),
+                rgba(65, 105, 225, 0.4),
+                rgba(30, 144, 255, 0.6),
+                rgba(65, 105, 225, 0.4),
+                rgba(0, 127, 255, 0.6)
               )`,
-              animationDuration: '2s'
+              animationDuration: '2.5s'
             }}
           />
           
-          {/* Main orange ring */}
+          {/* Main orange ring - thinner */}
           <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border-2 opacity-90"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full opacity-90"
             style={{
-              borderColor: '#FF6B00',
+              border: '1.5px solid #FF6B00',
               background: 'transparent'
             }}
           />
           
-          {/* Inner blue flame effect */}
+          {/* Inner glow to simulate heat */}
           <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full opacity-60 animate-pulse"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-30 animate-pulse"
             style={{
-              background: `conic-gradient(
-                from 0deg,
-                rgba(0, 127, 255, 0.4),
-                rgba(65, 105, 225, 0.4),
-                rgba(30, 144, 255, 0.4),
-                rgba(65, 105, 225, 0.4),
-                rgba(0, 127, 255, 0.4)
+              background: `radial-gradient(circle, 
+                rgba(255, 107, 0, 0.3) 0%,
+                rgba(255, 140, 66, 0.2) 50%,
+                transparent 70%
               )`,
-              animationDuration: '3s'
+              animationDuration: '1.8s'
             }}
           />
         </div>
@@ -68,7 +67,7 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
         <Icon className={`mb-1 transition-all duration-300 ${
           isActive ? "h-6 w-6 drop-shadow-lg" : "h-5 w-5"
         }`} />
-        <span className={`text-xs font-medium ${isActive ? 'drop-shadow-sm font-semibold' : ''}`}>{label}</span>
+        <span className={`font-medium ${isActive ? 'drop-shadow-sm font-semibold text-[10px]' : 'text-[10px]'}`}>{label}</span>
       </div>
     </Link>
   );
