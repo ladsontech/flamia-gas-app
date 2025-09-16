@@ -19,26 +19,29 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Orange ring with blue flame effect */}
+      {/* Orange ring with blue flame ring effect */}
       {isActive && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-          {/* Outer blue flame effect - outside the ring */}
+          {/* Outer blue flame ring - surrounding the orange ring */}
           <div 
-            className="w-16 h-16 rounded-full opacity-50 animate-pulse"
+            className="rounded-full opacity-60 animate-pulse"
             style={{
-              background: `conic-gradient(
+              width: '72px',
+              height: '72px',
+              border: '3px solid transparent',
+              borderImage: `conic-gradient(
                 from 0deg,
-                rgba(0, 127, 255, 0.6),
-                rgba(65, 105, 225, 0.4),
-                rgba(30, 144, 255, 0.6),
-                rgba(65, 105, 225, 0.4),
-                rgba(0, 127, 255, 0.6)
-              )`,
+                rgba(0, 127, 255, 0.8),
+                rgba(65, 105, 225, 0.6),
+                rgba(30, 144, 255, 0.8),
+                rgba(65, 105, 225, 0.6),
+                rgba(0, 127, 255, 0.8)
+              ) 1`,
               animationDuration: '2.5s'
             }}
           />
           
-          {/* Main orange ring - thinner */}
+          {/* Main orange ring */}
           <div 
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full opacity-90"
             style={{
