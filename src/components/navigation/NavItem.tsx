@@ -19,50 +19,19 @@ export const NavItem = ({ to, icon: Icon, label, isActive }: NavItemProps) => {
           : "text-gray-500 hover:text-accent hover:bg-accent/5"
       }`}
     >
-      {/* Orange ring with smooth blue flame transition */}
+      {/* Orange ring indicator only */}
       {isActive && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-          {/* Outer blue flame ring with smooth transition */}
-          <div 
-            className="rounded-full opacity-70 animate-pulse"
+          <div
+            className="rounded-full"
             style={{
-              width: '68px',
-              height: '68px',
-              background: `conic-gradient(
-                from 0deg,
-                rgba(0, 127, 255, 0.8) 0%,
-                rgba(255, 107, 0, 0.6) 25%,
-                rgba(65, 105, 225, 0.8) 50%,
-                rgba(255, 107, 0, 0.6) 75%,
-                rgba(0, 127, 255, 0.8) 100%
-              )`,
-              borderRadius: '50%',
-              padding: '6px',
-              animationDuration: '3s'
+              width: '58px',
+              height: '58px',
+              border: '2px solid #FF6B00',
+              background: 'transparent',
+              boxShadow: '0 0 10px rgba(255, 107, 0, 0.35), 0 0 18px rgba(255, 140, 66, 0.25)'
             }}
-          >
-            {/* Inner container for orange ring */}
-            <div 
-              className="w-full h-full rounded-full"
-              style={{
-                background: `radial-gradient(circle, 
-                  transparent 80%,
-                  rgba(255, 255, 255, 0.9) 82%,
-                  rgba(255, 255, 255, 0.95) 100%
-                )`
-              }}
-            >
-              {/* Main orange ring */}
-              <div 
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full opacity-95"
-                style={{
-                  border: '2px solid #FF6B00',
-                  background: 'transparent',
-                  boxShadow: '0 0 8px rgba(255, 107, 0, 0.4)'
-                }}
-              />
-            </div>
-          </div>
+          />
         </div>
       )}
       

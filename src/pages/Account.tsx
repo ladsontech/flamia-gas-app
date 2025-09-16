@@ -275,7 +275,7 @@ const Account = () => {
                 <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                      <BarChart3 className="w-6 h-6 text-primary" />
+                      <BarChart3 className="w-6 h-6 text-accent" />
                     </div>
                     <div>
                       <span className="font-semibold text-foreground">My Orders</span>
@@ -293,7 +293,7 @@ const Account = () => {
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                        <Settings className="w-6 h-6 text-primary" />
+                        <Settings className="w-6 h-6 text-accent" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">Profile Settings</span>
@@ -311,7 +311,7 @@ const Account = () => {
                   <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('business')}>
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                        <Store className="w-6 h-6 text-primary" />
+                        <Store className="w-6 h-6 text-accent" />
                       </div>
                       <div>
                         <span className="font-semibold text-foreground">My Business</span>
@@ -329,7 +329,7 @@ const Account = () => {
                 <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                      <DollarSign className="w-6 h-6 text-primary" />
+                      <DollarSign className="w-6 h-6 text-accent" />
                     </div>
                     <div>
                       <span className="font-semibold text-foreground">Referrals & Earnings</span>
@@ -348,7 +348,7 @@ const Account = () => {
                     <div className="p-5 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                          <Settings className="w-6 h-6 text-primary" />
+                          <Settings className="w-6 h-6 text-accent" />
                         </div>
                         <div>
                           <span className="font-semibold text-foreground">Admin Panel</span>
@@ -367,7 +367,7 @@ const Account = () => {
                 <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                      <LogOut className="w-6 h-6 text-primary" />
+                      <LogOut className="w-6 h-6 text-accent" />
                     </div>
                     <div>
                       <span className="font-semibold text-foreground">Sign Out</span>
