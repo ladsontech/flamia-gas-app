@@ -19,6 +19,7 @@ import BusinessProductsManager from "@/components/admin/BusinessProductsManager"
 import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
 import MarketplaceSettings from "@/components/admin/MarketplaceSettings";
 import { WithdrawalsManager } from "@/components/admin/WithdrawalsManager";
+import { OrderNotifications } from "@/components/admin/OrderNotifications";
 
 // Import services
 import { fetchOrders, fetchDeliveryMen } from "@/services/database";
@@ -131,10 +132,11 @@ const Admin = () => {
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground">Manage your platform efficiently</p>
           </div>
+          <OrderNotifications onNewOrder={handleOrdersUpdate} />
         </div>
 
         {/* Organized Sections */}
