@@ -416,10 +416,10 @@ export const ReferralManager: React.FC = () => {
             </div>}
         </div>
 
-        {/* Referral Advert Section */}
+        {/* Flamia Promotional Poster */}
         {referralCode && (
           <div className="space-y-3">
-            <h3 className="font-medium text-sm sm:text-base">Print & Share Your Referral</h3>
+            <h3 className="font-medium text-sm sm:text-base">Print & Share Flamia Poster</h3>
             <ReferralAdvert 
               referralCode={referralCode}
               referralLink={`${window.location.origin}/signup?ref=${referralCode}`}

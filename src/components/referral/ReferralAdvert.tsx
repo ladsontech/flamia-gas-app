@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Printer, Download } from 'lucide-react';
 import { QRCodeGenerator } from './QRCodeGenerator';
-import { LionFlameLogo } from '@/components/ui/LionFlameLogo';
 
 interface ReferralAdvertProps {
   referralCode: string;
@@ -39,7 +38,7 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
         });
         
         const link = document.createElement('a');
-        link.download = `flamia-referral-${referralCode}.png`;
+        link.download = `flamia-gas-delivery.png`;
         link.href = canvas.toDataURL();
         link.click();
       } catch (error) {
@@ -53,7 +52,7 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
       <div className="flex flex-col sm:flex-row gap-2">
         <Button onClick={handlePrint} variant="outline" size="sm" className="flex-1">
           <Printer className="w-4 h-4 mr-2" />
-          Print Advert
+          Print Poster
         </Button>
         <Button onClick={handleDownload} variant="outline" size="sm" className="flex-1">
           <Download className="w-4 h-4 mr-2" />
@@ -63,64 +62,67 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
 
       <Card 
         id="referral-advert" 
-        className="w-full max-w-md mx-auto bg-white border-2 border-accent print:shadow-none"
+        className="w-full max-w-xs sm:max-w-sm mx-auto bg-white border-2 border-accent print:shadow-none print:max-w-none"
         style={{ aspectRatio: '3/4' }}
       >
-        <CardContent className="p-6 h-full flex flex-col justify-between text-center">
+        <CardContent className="p-4 sm:p-6 h-full flex flex-col justify-between text-center">
           {/* Header with Logo */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex justify-center">
-              <LionFlameLogo size={60} className="text-accent" />
+              <img 
+                src="/images/icon.png" 
+                alt="Flamia Logo" 
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+              />
             </div>
-            <h1 className="text-2xl font-bold text-accent">FLAMIA</h1>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Get your gas delivered fast & fresh!
+            <h1 className="text-xl sm:text-2xl font-bold text-accent">FLAMIA</h1>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              Uganda's fastest gas delivery service
             </p>
           </div>
 
           {/* Main Content */}
-          <div className="space-y-4">
-            <div className="bg-accent/10 rounded-lg p-4 space-y-3">
-              <h2 className="text-lg font-semibold text-accent">
-                🎉 Special Offer!
+          <div className="space-y-3 sm:space-y-4">
+            <div className="bg-accent/10 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+              <h2 className="text-base sm:text-lg font-semibold text-accent">
+                🚀 Fast Gas Delivery!
               </h2>
-              <p className="text-sm text-gray-700">
-                Order gas through Flamia using my referral code and get amazing deals!
-              </p>
-              
-              <div className="bg-white rounded-md p-3 border border-accent/20">
-                <p className="text-xs text-gray-500 mb-1">Referral Code:</p>
-                <p className="text-lg font-mono font-bold text-accent tracking-wider">
-                  {referralCode}
-                </p>
+              <div className="space-y-2 text-xs sm:text-sm text-gray-700">
+                <p>✅ Same-day delivery available</p>
+                <p>✅ All gas brands & sizes</p>
+                <p>✅ Full cylinders & refills</p>
+                <p>✅ Safe & reliable service</p>
               </div>
             </div>
 
             {/* QR Code */}
             <div className="flex justify-center">
-              <div className="bg-white p-3 rounded-lg border-2 border-accent/20">
-                <QRCodeGenerator value={referralLink} size={120} />
+              <div className="bg-white p-2 sm:p-3 rounded-lg border-2 border-accent/20">
+                <QRCodeGenerator value={referralLink} size={100} className="sm:w-28 sm:h-28" />
               </div>
             </div>
 
             <p className="text-xs text-gray-500">
-              Scan QR code or use referral code when ordering
+              Scan to order gas instantly
             </p>
           </div>
 
           {/* Footer */}
           <div className="space-y-2">
-            <div className="flex justify-center items-center space-x-4 text-xs text-gray-500">
-              <span>🚚 Fast Delivery</span>
-              <span>💯 Quality Gas</span>
-              <span>📱 Easy Ordering</span>
+            <div className="grid grid-cols-2 gap-1 text-xs text-gray-500">
+              <span>📱 Mobile App</span>
+              <span>💳 Easy Payment</span>
+              <span>🔒 Secure</span>
+              <span>⭐ Trusted</span>
             </div>
-            <p className="text-xs text-accent font-medium">
-              Order now at flamia.app
-            </p>
-            <p className="text-xs text-gray-400">
-              Referred by: {userName}
-            </p>
+            <div className="space-y-1">
+              <p className="text-xs sm:text-sm font-bold text-accent">
+                Order now at flamia.app
+              </p>
+              <p className="text-xs text-gray-400">
+                Making gas delivery simple & fast
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
