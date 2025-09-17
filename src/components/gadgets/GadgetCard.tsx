@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Gadget } from '@/types/gadget';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/components/ui/use-toast';
 
 interface GadgetCardProps {
   gadget: Gadget;
@@ -12,9 +14,24 @@ interface GadgetCardProps {
 
 const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const handleOrderClick = () => {
-    navigate("/order?type=gadget");
+    addToCart({
+      type: 'gadget',
+      name: gadget.name,
+      quantity: 1,
+      price: gadget.price,
+      description: gadget.description,
+      gadgetId: gadget.id,
+      image: gadget.image_url
+    });
+    
+    toast({
+      title: "Added to Cart!",
+      description: `${gadget.name} has been added to your cart.`,
+    });
   };
 
   const handleCardClick = () => {
@@ -82,13 +99,13 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
             {formatPrice(gadget.price)}
           </span>
         </div>
-        <Button
-          onClick={handleOrderClick}
-          disabled={!gadget.in_stock}
-          className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-sm py-2 lg:py-3 h-9 lg:h-10 rounded-lg font-medium"
-        >
-          {gadget.in_stock ? 'Order Now' : 'Out of Stock'}
-        </Button>
+          <Button
+            onClick={handleOrderClick}
+            disabled={!gadget.in_stock}
+            className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-sm py-2 lg:py-3 h-9 lg:h-10 rounded-lg font-medium"
+          >
+            {gadget.in_stock ? 'Add to Cart' : 'Out of Stock'}
+          </Button>
       </div>
     </Card>
   );

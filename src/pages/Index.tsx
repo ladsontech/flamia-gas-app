@@ -8,6 +8,7 @@ import BrandsGrid from "@/components/home/BrandsGrid";
 import PopularBrands from "@/components/home/PopularBrands";
 import PromotionsSection from "@/components/home/PromotionsSection";
 import AccessoriesSection from "@/components/home/AccessoriesSection";
+import { CartButton } from "@/components/cart/CartButton";
 
 const Index = () => {
   const canonicalUrl = "https://flamia.store/";
@@ -73,6 +74,8 @@ const Index = () => {
             </div>
           </motion.div>
         </div>
+
+        <CartButton />
       </div>
     </>
   );

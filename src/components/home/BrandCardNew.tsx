@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface BrandCardProps {
   name: string;
@@ -15,6 +17,9 @@ interface BrandCardProps {
 
 const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCardProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -22,7 +27,24 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
   const fallbackImage = '/images/gas-fallback.jpg';
 
   const handleOrder = () => {
-    navigate(`/order?brand=${brand}&name=${name}&size=${size}&price=${price}`);
+    const orderType = location.pathname.includes('refill') ? 'refill' : 'full_set';
+    const priceNumber = parseInt(price.replace(/[^0-9]/g, ''));
+    
+    addToCart({
+      type: orderType,
+      brand,
+      size,
+      name: `${brand} ${size} ${orderType === 'refill' ? 'Refill' : 'Full Set'}`,
+      quantity: 1,
+      price: priceNumber,
+      description: finalDescription,
+      image
+    });
+    
+    toast({
+      title: "Added to Cart!",
+      description: `${brand} ${size} has been added to your cart.`,
+    });
   };
 
   const getDescription = (brand: string, size: string, customDesc?: string) => {
@@ -117,12 +139,12 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
             <span className="text-xs lg:text-xs font-medium text-gray-600">Price</span>
             <span className="text-xs sm:text-sm lg:text-xs font-semibold text-accent">{price}</span>
           </div>
-          <Button
-            onClick={handleOrder}
-            className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-xs py-1.5 lg:py-1 h-7 lg:h-6 rounded-lg"
-          >
-            Order Now
-          </Button>
+            <Button
+              onClick={handleOrder}
+              className="w-full bg-accent text-white hover:bg-accent/90 text-xs lg:text-xs py-1.5 lg:py-1 h-7 lg:h-6 rounded-lg"
+            >
+              Add to Cart
+            </Button>
         </div>
       </Card>
     </motion.div>

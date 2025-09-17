@@ -6,12 +6,29 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { ArrowRight, Truck } from 'lucide-react';
 import { accessories } from '@/components/accessories/AccessoriesData';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/components/ui/use-toast';
 
 const AccessoriesSection: React.FC = () => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
-  const handleOrder = (accessoryId: string) => {
-    navigate(`/order?accessory=${accessoryId}`);
+  const handleOrder = (accessory: any) => {
+    addToCart({
+      type: 'accessory',
+      name: accessory.name,
+      quantity: 1,
+      price: accessory.price,
+      description: accessory.description,
+      accessoryId: accessory.id,
+      image: accessory.image_url
+    });
+    
+    toast({
+      title: "Added to Cart!",
+      description: `${accessory.name} has been added to your cart.`,
+    });
   };
 
   const handleViewAll = () => {
@@ -79,10 +96,10 @@ const AccessoriesSection: React.FC = () => {
               
               <CardFooter className="p-3 pt-0">
                 <Button
-                  onClick={() => handleOrder(accessory.id)}
+                  onClick={() => handleOrder(accessory)}
                   className="w-full bg-accent hover:bg-accent/90 text-white text-xs py-2 h-8 font-semibold transition-all duration-300 group-hover:shadow-lg"
                 >
-                  Order Now
+                  Add to Cart
                 </Button>
               </CardFooter>
             </Card>

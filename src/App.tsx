@@ -7,6 +7,7 @@ import { BottomNav } from './components/BottomNav';
 import AppBar from './components/AppBar';
 import UpdateNotification from './components/UpdateNotification';
 import { supabase } from './integrations/supabase/client';
+import { CartProvider } from '@/contexts/CartContext';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import SignIn from './pages/SignIn';
@@ -79,59 +80,61 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <div className="flex flex-col min-h-screen">
-          <AppBar />
-          <GoogleSignUpHandler />
-          <InstallPWA />
-          <Toaster />
-          
-          <main className="flex-1 pb-24 md:pb-0">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/gadgets" element={<Gadgets />} />
-              {/* <Route path="/foods" element={<Foods />} /> */}
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/order" element={<Order />} />
-              <Route path="/refill" element={<Refill />} />
-              <Route path="/gas-safety" element={<GasSafety />} />
-              <Route path="/accessories" element={<Accessories />} />
-              <Route path="/gadget/:id" element={<GadgetDetail />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/delivery-login" element={<DeliveryLogin />} />
-              <Route path="/delivery" element={<Delivery />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/sell" element={<Sell />} />
-              
-              {/* SEO Pages */}
-              <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />
-              <Route path="/brand-new-gas-cylinders-uganda" element={<BrandNewGasCylindersUganda />} />
-              <Route path="/c-gas-uganda" element={<CGasUganda />} />
-              <Route path="/fastest-gas-delivery-kampala" element={<FastestGasDeliveryKampala />} />
-              <Route path="/gas-delivery-kampala" element={<GasDeliveryKampala />} />
-              <Route path="/gas-delivery-mukono" element={<GasDeliveryMukono />} />
-              <Route path="/gas-delivery-uganda" element={<GasDeliveryUganda />} />
-              <Route path="/gas-refill-wakiso" element={<GasRefillWakiso />} />
-              <Route path="/gas-vs-fumbaa-gas" element={<GasVsFumbaaGas />} />
-              <Route path="/hass-gas-uganda" element={<HassGasUganda />} />
-              <Route path="/oryx-gas-uganda" element={<OryxGasUganda />} />
-              <Route path="/same-day-gas-delivery-uganda" element={<SameDayGasDeliveryUganda />} />
-              <Route path="/shell-gas-uganda" element={<ShellGasUganda />} />
-              <Route path="/stabex-gas-uganda" element={<StabexGasUganda />} />
-              <Route path="/total-gas-uganda" element={<TotalGasUganda />} />
-              <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
-            </Routes>
-          </main>
+      <CartProvider>
+        <Router>
+          <div className="flex flex-col min-h-screen">
+            <AppBar />
+            <GoogleSignUpHandler />
+            <InstallPWA />
+            <Toaster />
+            
+            <main className="flex-1 pb-24 md:pb-0">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/gadgets" element={<Gadgets />} />
+                {/* <Route path="/foods" element={<Foods />} /> */}
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/order" element={<Order />} />
+                <Route path="/refill" element={<Refill />} />
+                <Route path="/gas-safety" element={<GasSafety />} />
+                <Route path="/accessories" element={<Accessories />} />
+                <Route path="/gadget/:id" element={<GadgetDetail />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/delivery-login" element={<DeliveryLogin />} />
+                <Route path="/delivery" element={<Delivery />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/sell" element={<Sell />} />
+                
+                {/* SEO Pages */}
+                <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />
+                <Route path="/brand-new-gas-cylinders-uganda" element={<BrandNewGasCylindersUganda />} />
+                <Route path="/c-gas-uganda" element={<CGasUganda />} />
+                <Route path="/fastest-gas-delivery-kampala" element={<FastestGasDeliveryKampala />} />
+                <Route path="/gas-delivery-kampala" element={<GasDeliveryKampala />} />
+                <Route path="/gas-delivery-mukono" element={<GasDeliveryMukono />} />
+                <Route path="/gas-delivery-uganda" element={<GasDeliveryUganda />} />
+                <Route path="/gas-refill-wakiso" element={<GasRefillWakiso />} />
+                <Route path="/gas-vs-fumbaa-gas" element={<GasVsFumbaaGas />} />
+                <Route path="/hass-gas-uganda" element={<HassGasUganda />} />
+                <Route path="/oryx-gas-uganda" element={<OryxGasUganda />} />
+                <Route path="/same-day-gas-delivery-uganda" element={<SameDayGasDeliveryUganda />} />
+                <Route path="/shell-gas-uganda" element={<ShellGasUganda />} />
+                <Route path="/stabex-gas-uganda" element={<StabexGasUganda />} />
+                <Route path="/total-gas-uganda" element={<TotalGasUganda />} />
+                <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
+              </Routes>
+            </main>
 
-          <BottomNav isAdmin={isAdmin} />
-          
-          {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
-        </div>
-      </Router>
+            <BottomNav isAdmin={isAdmin} />
+            
+            {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
+          </div>
+        </Router>
+      </CartProvider>
     </QueryClientProvider>
   );
 }
