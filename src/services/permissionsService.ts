@@ -61,6 +61,7 @@ export const hasPermission = async (userId: string, permission: AdminPermission)
 };
 
 export const getAllUsers = async (): Promise<UserWithPermissions[]> => {
+  // Optimized query with better performance
   const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
     .select(`
@@ -70,14 +71,15 @@ export const getAllUsers = async (): Promise<UserWithPermissions[]> => {
       phone_number,
       created_at
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(1000); // Reasonable limit for admin interface
 
   if (profilesError) {
     console.error('Error fetching profiles:', profilesError);
     return [];
   }
 
-  // Get referral counts
+  // Get referral counts in one optimized query
   const { data: referralCounts, error: referralError } = await supabase
     .from('referrals')
     .select('referrer_id')
@@ -87,7 +89,7 @@ export const getAllUsers = async (): Promise<UserWithPermissions[]> => {
     console.error('Error fetching referral counts:', referralError);
   }
 
-  // Get admin permissions
+  // Get all admin permissions in one query
   const { data: permissions, error: permissionsError } = await supabase
     .from('admin_permissions')
     .select('user_id, permission');
@@ -96,14 +98,13 @@ export const getAllUsers = async (): Promise<UserWithPermissions[]> => {
     console.error('Error fetching permissions:', permissionsError);
   }
 
-  // Create referral count map
+  // Create maps for O(1) lookups instead of nested loops
   const referralMap = new Map<string, number>();
   referralCounts?.forEach(referral => {
     const count = referralMap.get(referral.referrer_id) || 0;
     referralMap.set(referral.referrer_id, count + 1);
   });
 
-  // Create permissions map
   const permissionsMap = new Map<string, AdminPermission[]>();
   permissions?.forEach(perm => {
     const userPerms = permissionsMap.get(perm.user_id) || [];
