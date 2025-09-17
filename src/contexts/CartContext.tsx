@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { accessories } from '@/components/accessories/AccessoriesData';
 import { staticBrands, refillBrands } from '@/components/home/BrandsData';
 
@@ -36,7 +36,7 @@ export const useCart = () => {
   return context;
 };
 
-export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
   const addToCart = (newItem: Omit<CartItem, 'id'>) => {
