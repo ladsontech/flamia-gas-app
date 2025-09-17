@@ -49,10 +49,7 @@ export const useAdminPermissions = () => {
 
   const checkPermission = async (permission: AdminPermission): Promise<boolean> => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
-    
-    // Super admins have all permissions
-    if (userRole === 'super_admin') return true;
+    if (!user || userRole !== 'super_admin') return false;
     
     return hasPermission(user.id, permission);
   };
