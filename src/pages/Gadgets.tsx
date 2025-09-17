@@ -8,6 +8,7 @@ import ImageCarousel from '@/components/home/ImageCarousel';
 import { useGadgets } from '@/hooks/useGadgets';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GadgetFilters } from '@/types/gadget';
+import { CartButton } from '@/components/cart/CartButton';
 
 const Gadgets = () => {
   const { category } = useParams();
@@ -85,6 +86,7 @@ const Gadgets = () => {
             </div>
           </div>
         </div>
+        <CartButton />
       </>
     );
   }
@@ -103,6 +105,7 @@ const Gadgets = () => {
             <p className="text-gray-600">{error}</p>
           </div>
         </div>
+        <CartButton />
       </>
     );
   }
@@ -181,6 +184,8 @@ const Gadgets = () => {
           </div>
         </div>
       </div>
+      
+      <CartButton />
     </>
   );
 };
