@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MapPin, Navigation, Check, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { MapPin, Navigation, Check, AlertCircle, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface LocationPickerProps {
@@ -14,7 +15,9 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
   const [error, setError] = useState<string>("");
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [marker, setMarker] = useState<google.maps.Marker | null>(null);
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize Google Maps
   useEffect(() => {
@@ -44,7 +47,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
     // Load Google Maps API
     if (!window.google) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD83MF_Ewc0_nljYC2HCPT-iggoW8fUaxM&libraries=geometry`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD83MF_Ewc0_nljYC2HCPT-iggoW8fUaxM&libraries=geometry,places`;
       script.async = true;
       script.defer = true;
       script.onload = initMap;
@@ -54,7 +57,30 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
     }
   }, []);
 
-  const handleLocationSelect = async (lat: number, lng: number) => {
+  // Initialize Places Autocomplete
+  useEffect(() => {
+    if (window.google && window.google.maps && window.google.maps.places && searchInputRef.current) {
+      const autocompleteInstance = new window.google.maps.places.Autocomplete(searchInputRef.current, {
+        types: ['establishment', 'geocode'],
+        componentRestrictions: { country: 'ug' }, // Restrict to Uganda
+        fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components']
+      });
+
+      autocompleteInstance.addListener('place_changed', () => {
+        const place = autocompleteInstance.getPlace();
+        if (place.geometry && place.geometry.location) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          const address = place.formatted_address || place.name || '';
+          handleLocationSelect(lat, lng, address);
+        }
+      });
+
+      setAutocomplete(autocompleteInstance);
+    }
+  }, [map]);
+
+  const handleLocationSelect = async (lat: number, lng: number, providedAddress?: string) => {
     try {
       // Update marker position
       if (marker) {
@@ -68,16 +94,20 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
         setMarker(newMarker);
       }
 
-      // Get address from coordinates
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          const address = results[0].formatted_address;
-          onLocationSelect({ lat, lng, address });
-        } else {
-          onLocationSelect({ lat, lng, address: `${lat.toFixed(6)}, ${lng.toFixed(6)}` });
-        }
-      });
+      // Use provided address or get address from coordinates
+      if (providedAddress) {
+        onLocationSelect({ lat, lng, address: providedAddress });
+      } else {
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            const address = results[0].formatted_address;
+            onLocationSelect({ lat, lng, address });
+          } else {
+            onLocationSelect({ lat, lng, address: `${lat.toFixed(6)}, ${lng.toFixed(6)}` });
+          }
+        });
+      }
 
       map?.panTo({ lat, lng });
     } catch (error) {
@@ -124,13 +154,22 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       </div>
 
       <Card className="p-3 space-y-3">
-        <div className="flex gap-2">
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              ref={searchInputRef}
+              placeholder="Search for places (e.g., Kampala Central, Garden City Mall...)"
+              className="pl-10 h-9 text-sm"
+            />
+          </div>
+          
           <Button
             type="button"
             onClick={getCurrentLocation}
             disabled={loading}
             size="sm"
-            className="flex-1 bg-accent hover:bg-accent/90 text-white h-8"
+            className="w-full bg-accent hover:bg-accent/90 text-white h-8"
           >
             {loading ? (
               <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
@@ -157,7 +196,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          Click on the map to select your exact delivery location
+          Search above or click on the map to select your delivery location
         </p>
 
         {selectedLocation && (
@@ -171,9 +210,6 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
               <span className="text-sm font-medium text-green-800">Location Selected</span>
             </div>
             <p className="text-xs text-green-700">{selectedLocation.address}</p>
-            <p className="text-xs text-green-600 mt-1">
-              Coordinates: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
-            </p>
           </motion.div>
         )}
       </Card>
