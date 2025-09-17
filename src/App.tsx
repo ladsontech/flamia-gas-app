@@ -14,7 +14,7 @@ import SignUp from './pages/SignUp';
 import Account from './pages/Account';
 import Orders from './pages/Orders';
 import Gadgets from './pages/Gadgets';
-import Foods from './pages/Foods';
+// import Foods from './pages/Foods'; // Temporarily hidden
 import Home from './pages/Index';
 import Order from './pages/Order';
 import Refill from './pages/Refill';
@@ -90,7 +90,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/gadgets" element={<Gadgets />} />
-              <Route path="/foods" element={<Foods />} />
+              {/* <Route path="/foods" element={<Foods />} /> */}
               <Route path="/orders" element={<Orders />} />
               <Route path="/account" element={<Account />} />
               <Route path="/login" element={<Login />} />

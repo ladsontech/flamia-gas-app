@@ -15,7 +15,7 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   // Define active states
   const isHomeActive = path === "/";
   const isGadgetsActive = path === "/gadgets";
-  const isFoodsActive = path === "/foods";
+  // const isFoodsActive = path === "/foods"; // Temporarily hidden
   const isAccountActive = path === "/account";
 
   return (
@@ -33,12 +33,7 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
           label="Gadgets"
           isActive={isGadgetsActive}
         />
-        <NavItem
-          to="/foods"
-          icon={Utensils}
-          label="Foods"
-          isActive={isFoodsActive}
-        />
+        {/* Foods section temporarily hidden */}
         <NavItem
           to="/account"
           icon={User}

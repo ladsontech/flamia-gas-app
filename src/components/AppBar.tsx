@@ -14,10 +14,7 @@ const AppBar = () => {
     label: 'Gadgets',
     icon: ShoppingBag
   }, {
-    path: '/foods',
-    label: 'Foods',
-    icon: Utensils
-  }, {
+    path: '/gas-safety',
     path: '/gas-safety',
     label: 'Safety',
     icon: Flame
