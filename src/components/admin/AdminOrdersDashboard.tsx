@@ -296,50 +296,53 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   }
 
   return (
-    <div className="space-y-4">
-      {/* Overall Statistics */}
+    <div className="space-y-3 px-2 sm:px-0">
+      {/* Overall Statistics - More compact on mobile */}
       {userRole === 'super_admin' && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">UGX {overallStats.totalRevenue.toLocaleString()}</p>
-              </div>
-              <DollarSign className="h-8 w-8 text-primary" />
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <Card className="p-2 sm:p-4">
+            <div className="text-center">
+              <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 text-primary mx-auto mb-1" />
+              <p className="text-xs text-muted-foreground">Revenue</p>
+              <p className="text-sm sm:text-lg font-bold">
+                {overallStats.totalRevenue > 1000000 
+                  ? `${(overallStats.totalRevenue / 1000000).toFixed(1)}M`
+                  : `${(overallStats.totalRevenue / 1000).toFixed(0)}K`}
+              </p>
             </div>
           </Card>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl font-bold">{overallStats.total}</p>
-              </div>
-              <ShoppingCart className="h-8 w-8 text-primary" />
+          <Card className="p-2 sm:p-4">
+            <div className="text-center">
+              <ShoppingCart className="h-4 w-4 sm:h-6 sm:w-6 text-primary mx-auto mb-1" />
+              <p className="text-xs text-muted-foreground">Orders</p>
+              <p className="text-sm sm:text-lg font-bold">{overallStats.total}</p>
             </div>
           </Card>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Completed Orders</p>
-                <p className="text-2xl font-bold">{overallStats.completed}</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+          <Card className="p-2 sm:p-4">
+            <div className="text-center">
+              <CheckCircle className="h-4 w-4 sm:h-6 sm:w-6 text-green-600 mx-auto mb-1" />
+              <p className="text-xs text-muted-foreground">Complete</p>
+              <p className="text-sm sm:text-lg font-bold">{overallStats.completed}</p>
             </div>
           </Card>
         </div>
       )}
 
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Orders Management</h2>
-            <p className="text-sm text-muted-foreground">Total: {orders.length} orders</p>
+      {/* Filters - Compact mobile layout */}
+      <Card className="p-3 sm:p-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold">Orders</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">{orders.length} total</p>
+            </div>
+            <Badge variant="outline" className="text-xs">
+              {filteredOrders.length} shown
+            </Badge>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="flex-1 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -351,7 +354,7 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
               </SelectContent>
             </Select>
             <Select value={productFilter} onValueChange={setProductFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="flex-1 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -369,129 +372,132 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
 
       {/* Orders by Day */}
       {dayGroups.length === 0 ? (
-        <Card className="p-8">
+        <Card className="p-6 sm:p-8">
           <div className="text-center">
-            <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No orders found</h3>
-            <p className="text-muted-foreground">Orders will appear here once customers place them.</p>
+            <Package className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-2 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">No orders found</h3>
+            <p className="text-sm text-muted-foreground">Orders will appear here once customers place them.</p>
           </div>
         </Card>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-3 sm:space-y-4">
           {dayGroups.map((dayGroup) => (
             <Card key={dayGroup.date} className="overflow-hidden">
-              <CardHeader className="pb-3">
+              <CardHeader className="p-3 sm:p-4 pb-2 sm:pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{dayGroup.displayName}</CardTitle>
-                  <div className="flex gap-2">
-                    <Badge variant="outline">{dayGroup.stats.total} orders</Badge>
+                  <CardTitle className="text-base sm:text-lg">{dayGroup.displayName}</CardTitle>
+                  <div className="flex gap-1 sm:gap-2">
+                    <Badge variant="outline" className="text-xs">{dayGroup.stats.total}</Badge>
                     {userRole === 'super_admin' && dayGroup.stats.totalRevenue > 0 && (
-                      <Badge className="bg-primary/10 text-primary">
+                      <Badge className="bg-primary/10 text-primary text-xs hidden sm:inline-flex">
                         UGX {dayGroup.stats.totalRevenue.toLocaleString()}
                       </Badge>
                     )}
                   </div>
                 </div>
                 {userRole === 'super_admin' && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  <div className="grid grid-cols-3 gap-2 mt-2">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-yellow-600">{dayGroup.stats.pending}</p>
+                      <p className="text-lg sm:text-xl font-bold text-yellow-600">{dayGroup.stats.pending}</p>
                       <p className="text-xs text-muted-foreground">Pending</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{dayGroup.stats.assigned}</p>
+                      <p className="text-lg sm:text-xl font-bold text-blue-600">{dayGroup.stats.assigned}</p>
                       <p className="text-xs text-muted-foreground">Assigned</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-green-600">{dayGroup.stats.completed}</p>
+                      <p className="text-lg sm:text-xl font-bold text-green-600">{dayGroup.stats.completed}</p>
                       <p className="text-xs text-muted-foreground">Completed</p>
                     </div>
                   </div>
                 )}
               </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-3">
+              <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="space-y-2 sm:space-y-3">
                   {dayGroup.orders.map((order) => {
                     const orderInfo = extractOrderInfo(order.description);
                     return (
-                       <div key={order.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                         <div className="flex items-center justify-between mb-3">
-                           <div className="flex items-center gap-2">
-                             <span className="font-medium text-sm">
-                               {orderInfo.brand} {orderInfo.size} {orderInfo.type}
-                             </span>
-                             {orderInfo.quantity && (
-                               <Badge variant="secondary" className="text-xs">
-                                 Qty: {orderInfo.quantity}
-                               </Badge>
-                             )}
-                             {getStatusBadge(order.status)}
-                           </div>
-                           <div className="text-right">
-                             <div className="text-xs text-muted-foreground">
-                               {format(new Date(order.created_at), 'h:mm a')}
-                             </div>
-                           </div>
-                         </div>
-
-                         {/* Customer Details */}
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3 text-sm">
-                           {orderInfo.contact && (
-                             <div className="flex items-center gap-2">
-                               <Phone className="w-4 h-4 text-muted-foreground" />
-                               <span>{orderInfo.contact}</span>
-                             </div>
-                           )}
-                           {orderInfo.address && (
-                             <div className="flex items-start gap-2">
-                               <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
-                               <span className="text-xs">{orderInfo.address}</span>
-                             </div>
-                           )}
-                         </div>
-
-                        <div className="flex items-center justify-between mt-2">
-                          {userRole === 'super_admin' && (
-                            <div className="flex items-center gap-2">
-                              {!order.delivery_man_id && deliveryPersons.length > 0 && order.status === 'pending' ? (
-                                <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
-                                  <SelectTrigger className="w-40 h-8 text-xs">
-                                    <SelectValue placeholder="Assign to..." />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {deliveryPersons.map((person) => (
-                                      <SelectItem key={person.id} value={person.id}>
-                                        {person.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              ) : order.delivery_man ? (
-                                <span className="text-xs text-muted-foreground">
-                                  Assigned to: <strong>{order.delivery_man.name}</strong>
+                       <div key={order.id} className="p-3 sm:p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                          {/* Header - Product info and status */}
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-sm truncate">
+                                  {orderInfo.brand} {orderInfo.size} {orderInfo.type}
                                 </span>
-                              ) : null}
+                                {orderInfo.quantity && (
+                                  <Badge variant="secondary" className="text-xs shrink-0">
+                                    {orderInfo.quantity}x
+                                  </Badge>
+                                )}
+                              </div>
+                              {getStatusBadge(order.status)}
                             </div>
-                          )}
-                          
-                          <div className="flex gap-1">
-                            {userRole === 'delivery_man' && order.status === 'assigned' && (
-                              <Button size="sm" onClick={() => handleUpdateStatus(order.id, 'in_progress')} className="h-7 text-xs">
-                                Start
-                              </Button>
+                            <div className="text-xs text-muted-foreground ml-2">
+                              {format(new Date(order.created_at), 'HH:mm')}
+                            </div>
+                          </div>
+
+                          {/* Customer Details - Compact mobile layout */}
+                          <div className="space-y-1 mb-3 text-sm">
+                            {orderInfo.contact && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <span className="truncate">{orderInfo.contact}</span>
+                              </div>
                             )}
-                            {userRole === 'delivery_man' && order.status === 'in_progress' && (
-                              <Button size="sm" onClick={() => handleUpdateStatus(order.id, 'completed')} className="h-7 text-xs">
-                                Complete
-                              </Button>
+                            {orderInfo.address && (
+                              <div className="flex items-start gap-2">
+                                <MapPin className="w-3 h-3 text-muted-foreground shrink-0 mt-0.5" />
+                                <span className="text-xs text-muted-foreground line-clamp-2">{orderInfo.address}</span>
+                              </div>
                             )}
-                            {userRole === 'super_admin' && order.status === 'pending' && (
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={() => setCancellingOrder(order.id)}>
-                                    Cancel
-                                  </Button>
-                                </DialogTrigger>
+                          </div>
+
+                         {/* Actions - Mobile-optimized */}
+                         <div className="flex items-center justify-between gap-2">
+                           {userRole === 'super_admin' && (
+                             <div className="flex items-center gap-1 flex-1">
+                               {!order.delivery_man_id && deliveryPersons.length > 0 && order.status === 'pending' ? (
+                                 <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
+                                   <SelectTrigger className="h-7 text-xs flex-1 min-w-0">
+                                     <SelectValue placeholder="Assign..." />
+                                   </SelectTrigger>
+                                   <SelectContent>
+                                     {deliveryPersons.map((person) => (
+                                       <SelectItem key={person.id} value={person.id}>
+                                         {person.name}
+                                       </SelectItem>
+                                     ))}
+                                   </SelectContent>
+                                 </Select>
+                               ) : order.delivery_man ? (
+                                 <span className="text-xs text-muted-foreground truncate">
+                                   <User className="w-3 h-3 inline mr-1" />
+                                   {order.delivery_man.name}
+                                 </span>
+                               ) : null}
+                             </div>
+                           )}
+                           
+                           <div className="flex gap-1 shrink-0">
+                             {userRole === 'delivery_man' && order.status === 'assigned' && (
+                               <Button size="sm" onClick={() => handleUpdateStatus(order.id, 'in_progress')} className="h-7 text-xs px-2">
+                                 Start
+                               </Button>
+                             )}
+                             {userRole === 'delivery_man' && order.status === 'in_progress' && (
+                               <Button size="sm" onClick={() => handleUpdateStatus(order.id, 'completed')} className="h-7 text-xs px-2">
+                                 Complete
+                               </Button>
+                             )}
+                             {userRole === 'super_admin' && order.status === 'pending' && (
+                               <Dialog>
+                                 <DialogTrigger asChild>
+                                   <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => setCancellingOrder(order.id)}>
+                                     Cancel
+                                   </Button>
+                                 </DialogTrigger>
                                 <DialogContent>
                                   <DialogHeader>
                                     <DialogTitle>Cancel Order</DialogTitle>
