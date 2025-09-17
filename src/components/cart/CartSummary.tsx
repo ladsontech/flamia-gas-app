@@ -42,13 +42,6 @@ export const CartSummary: React.FC = () => {
       {items.map((item) => (
         <Card key={item.id} className="p-4">
           <div className="flex items-start gap-3">
-            {item.image && (
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-16 h-16 object-contain rounded"
-              />
-            )}
             <div className="flex-1">
               <h4 className="font-medium text-sm">{item.name}</h4>
               <p className="text-xs text-muted-foreground mb-2">{item.description}</p>
