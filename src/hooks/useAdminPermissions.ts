@@ -12,34 +12,30 @@ export const useAdminPermissions = () => {
     const loadPermissions = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !isAdmin) {
+        if (!user) {
           setPermissions([]);
           setLoading(false);
           return;
         }
 
-        // If super_admin, check their specific permissions
+        // Super admins have all permissions
         if (userRole === 'super_admin') {
-          const userPermissions = await getUserPermissions(user.id);
-          // If no specific permissions set, give them all permissions (backward compatibility)
-          if (userPermissions.length === 0) {
-            setPermissions([
-              'manage_orders',
-              'manage_withdrawals',
-              'manage_gadgets',
-              'manage_brands',
-              'manage_businesses',
-              'manage_products',
-              'manage_seller_applications',
-              'manage_promotions',
-              'manage_carousel',
-              'manage_marketplace_settings'
-            ]);
-          } else {
-            setPermissions(userPermissions);
-          }
+          setPermissions([
+            'manage_orders',
+            'manage_withdrawals',
+            'manage_gadgets',
+            'manage_brands',
+            'manage_businesses',
+            'manage_products',
+            'manage_seller_applications',
+            'manage_promotions',
+            'manage_carousel',
+            'manage_marketplace_settings'
+          ]);
         } else {
-          setPermissions([]);
+          // Load specific permissions for other users
+          const userPermissions = await getUserPermissions(user.id);
+          setPermissions(userPermissions);
         }
       } catch (error) {
         console.error('Error loading permissions:', error);
@@ -54,7 +50,7 @@ export const useAdminPermissions = () => {
 
   const checkPermission = async (permission: AdminPermission): Promise<boolean> => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user || userRole !== 'super_admin') return false;
+    if (!user) return false;
     
     return hasPermission(user.id, permission);
   };

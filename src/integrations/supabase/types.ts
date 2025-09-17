@@ -67,7 +67,7 @@ export type Database = {
           created_at: string
           granted_by: string | null
           id: string
-          permission: string
+          permission: Database["public"]["Enums"]["admin_role"]
           updated_at: string
           user_id: string
         }
@@ -75,7 +75,7 @@ export type Database = {
           created_at?: string
           granted_by?: string | null
           id?: string
-          permission: string
+          permission: Database["public"]["Enums"]["admin_role"]
           updated_at?: string
           user_id: string
         }
@@ -83,7 +83,7 @@ export type Database = {
           created_at?: string
           granted_by?: string | null
           id?: string
-          permission?: string
+          permission?: Database["public"]["Enums"]["admin_role"]
           updated_at?: string
           user_id?: string
         }
@@ -632,6 +632,17 @@ export type Database = {
       }
     }
     Enums: {
+      admin_role:
+        | "manage_orders"
+        | "manage_withdrawals"
+        | "manage_gadgets"
+        | "manage_brands"
+        | "manage_businesses"
+        | "manage_products"
+        | "manage_seller_applications"
+        | "manage_promotions"
+        | "manage_carousel"
+        | "manage_marketplace_settings"
       app_role: "super_admin" | "business_owner" | "delivery_man" | "user"
     }
     CompositeTypes: {
@@ -760,6 +771,18 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_role: [
+        "manage_orders",
+        "manage_withdrawals",
+        "manage_gadgets",
+        "manage_brands",
+        "manage_businesses",
+        "manage_products",
+        "manage_seller_applications",
+        "manage_promotions",
+        "manage_carousel",
+        "manage_marketplace_settings",
+      ],
       app_role: ["super_admin", "business_owner", "delivery_man", "user"],
     },
   },

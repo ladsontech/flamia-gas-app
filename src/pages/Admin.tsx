@@ -19,6 +19,7 @@ import BusinessProductsManager from "@/components/admin/BusinessProductsManager"
 import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
 import MarketplaceSettings from "@/components/admin/MarketplaceSettings";
 import { WithdrawalsManager } from "@/components/admin/WithdrawalsManager";
+import { UserManagement } from "@/components/admin/UserManagement";
 import { OrderNotifications } from "@/components/admin/OrderNotifications";
 
 // Import services
@@ -35,7 +36,7 @@ const Admin = () => {
   const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin, loading: roleLoading } = useUserRole();
+  const { isAdmin, loading: roleLoading, userRole } = useUserRole();
   const { 
     canManageOrders, 
     canManageWithdrawals, 
@@ -191,13 +192,15 @@ const Admin = () => {
               (canManageOrders || canManageWithdrawals) ? "gas" :
               (canManageGadgets || canManageBrands) ? "products" :
               (canManageBusinesses || canManageProducts || canManageSellerApplications) ? "business" : 
-              "marketing"
+              (canManagePromotions || canManageCarousel || canManageMarketplaceSettings) ? "marketing" :
+              userRole === 'super_admin' ? "users" : "gas"
             } className="w-full">
               <TabsList className="inline-flex h-9 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground w-max">
                 {(canManageOrders || canManageWithdrawals) && <TabsTrigger value="gas" className="text-xs px-3">🔥 Gas</TabsTrigger>}
                 {(canManageGadgets || canManageBrands) && <TabsTrigger value="products" className="text-xs px-3">📱 Products</TabsTrigger>}
                 {(canManageBusinesses || canManageProducts || canManageSellerApplications) && <TabsTrigger value="business" className="text-xs px-3">🏪 Business</TabsTrigger>}
                 {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && <TabsTrigger value="marketing" className="text-xs px-3">📢 Marketing</TabsTrigger>}
+                {userRole === 'super_admin' && <TabsTrigger value="users" className="text-xs px-3">👥 Users</TabsTrigger>}
               </TabsList>
               <ScrollBar orientation="horizontal" />
               
@@ -326,6 +329,19 @@ const Admin = () => {
                           </TabsContent>
                         )}
                       </Tabs>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+
+              <TabsContent value="users" className="mt-4 space-y-4">
+                {userRole === 'super_admin' && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">User Management</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <UserManagement />
                     </CardContent>
                   </Card>
                 )}
@@ -478,6 +494,22 @@ const Admin = () => {
                     </TabsContent>
                   )}
                 </Tabs>
+              </CardContent>
+            </Card>
+          )}
+          {/* Super Admin Only - User Management */}
+          {userRole === 'super_admin' && (
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    👥
+                  </div>
+                  User Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserManagement />
               </CardContent>
             </Card>
           )}
