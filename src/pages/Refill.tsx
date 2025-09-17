@@ -8,12 +8,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet";
 import { refillBrands } from "@/components/home/BrandsData";
 import { BackButton } from "@/components/BackButton";
+import { useCart } from "@/contexts/CartContext";
 
 const staticBrands = ["Total", "Taifa", "Stabex", "Shell", "Hass", "Meru", "Ven Gas", "Ola Energy", "Oryx", "Ultimate", "K Gas", "C Gas", "Hashi", "Safe", "Nova", "Mogas", "Star"];
 
 const Refill = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const refillOptionsRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ const Refill = () => {
     }
   }, [selectedBrand]);
 
-  const handleOrder = (weight: string, price: number) => {
+  const handleAddToCart = (weight: string, price: number) => {
     if (!selectedBrand) {
       toast({
         title: "Please select a brand",
@@ -47,7 +49,26 @@ const Refill = () => {
       });
       return;
     }
-    navigate(`/order?type=refill&size=${weight}&price=${price}&brand=${selectedBrand}`);
+
+    const description = weight === "3KG" ? "Perfect for small households" :
+                       weight === "6KG" ? "Most popular choice for families" :
+                       "Ideal for large families";
+
+    addToCart({
+      type: 'refill',
+      brand: selectedBrand,
+      size: weight,
+      name: `${selectedBrand} ${weight} Refill`,
+      quantity: 1,
+      price: price,
+      description: description,
+      image: `/images/${selectedBrand.toLowerCase()}.png`
+    });
+    
+    toast({
+      title: "Added to Cart!",
+      description: `${selectedBrand} ${weight} refill has been added to your cart.`,
+    });
   };
 
   // Get prices for the selected brand with original prices for strike-through
@@ -335,14 +356,14 @@ const Refill = () => {
 
                               {/* Order Button */}
                               <Button
-                                onClick={() => handleOrder(item.weight, item.price)}
+                                onClick={() => handleAddToCart(item.weight, item.price)}
                                 className={`w-full h-10 md:h-11 text-sm md:text-base font-semibold transition-all duration-300 group ${
                                   item.popular
                                     ? 'bg-accent hover:bg-accent/90 text-white shadow-lg hover:shadow-xl'
                                     : 'bg-gray-900 hover:bg-accent text-white'
                                 }`}
                               >
-                                Order {selectedBrand} {item.weight} Refill
+                                Add to Cart
                                 <ArrowRight className="ml-2 h-3 md:h-4 w-3 md:w-4 transition-transform group-hover:translate-x-1" />
                               </Button>
                             </div>
