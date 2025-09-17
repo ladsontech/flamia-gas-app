@@ -156,62 +156,60 @@ export const UserManagement = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          <h2 className="text-xl font-semibold">User Management</h2>
-          <Badge variant="secondary">{filteredUsers.length} users</Badge>
+          <Users className="h-4 w-4" />
+          <h3 className="text-base font-medium">Users</h3>
+          <Badge variant="secondary" className="text-xs">{filteredUsers.length}</Badge>
         </div>
-        <div className="flex items-center gap-2 max-w-sm flex-1">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center gap-1 flex-1 max-w-xs">
+          <Search className="h-3 w-3 text-muted-foreground" />
           <Input
-            placeholder="Search users..."
+            placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-8"
+            className="h-7 text-sm"
           />
         </div>
       </div>
 
-      {/* User List - Compact View */}
-      <div className="space-y-2">
+      {/* User List - Mobile Optimized */}
+      <div className="space-y-1">
         {filteredUsers.map((user) => (
           <div 
             key={user.id}
-            className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer select-none"
+            className="flex items-center justify-between p-2 rounded-md border hover:bg-muted/50 transition-colors cursor-pointer select-none"
             onTouchStart={() => handleLongPressStart(user)}
             onTouchEnd={handleLongPressEnd}
             onMouseLeave={handleLongPressEnd}
             onContextMenu={(e) => handleRightClick(e, user)}
           >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-xs font-medium">
                   {(user.display_name || user.full_name || 'U').charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-medium truncate">
-                    {user.display_name || user.full_name || 'Unknown User'}
+                <div className="flex items-center gap-1">
+                  <h3 className="text-sm font-medium truncate">
+                    {user.display_name || user.full_name || 'Unknown'}
                   </h3>
                   {user.referral_count > 0 && (
-                    <Badge variant="outline" className="flex items-center gap-1 text-xs">
-                      <Crown className="h-3 w-3" />
+                    <Badge variant="outline" className="flex items-center gap-1 text-xs px-1 py-0 h-4">
+                      <Crown className="h-2 w-2" />
                       {user.referral_count}
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  {user.phone_number && <span>{user.phone_number}</span>}
-                  <span>•</span>
-                  <span>{user.permissions.length} permissions</span>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <span>{user.permissions.length}p</span>
                   {user.permissions.length > 0 && (
                     <>
                       <span>•</span>
-                      <div className="flex gap-1">
-                        {user.permissions.slice(0, 3).map(perm => {
+                      <div className="flex gap-0.5">
+                        {user.permissions.slice(0, 4).map(perm => {
                           const permData = ADMIN_PERMISSIONS.find(p => p.value === perm);
                           return (
                             <span key={perm} className="text-xs">
@@ -219,8 +217,8 @@ export const UserManagement = () => {
                             </span>
                           );
                         })}
-                        {user.permissions.length > 3 && (
-                          <span className="text-xs">+{user.permissions.length - 3}</span>
+                        {user.permissions.length > 4 && (
+                          <span className="text-xs">+{user.permissions.length - 4}</span>
                         )}
                       </div>
                     </>
@@ -233,22 +231,22 @@ export const UserManagement = () => {
             <div className="hidden md:block">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <MoreVertical className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-background border shadow-lg">
-                  <DropdownMenuLabel>Manage User</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-40 bg-background border shadow-lg z-50">
+                  <DropdownMenuLabel className="text-xs">Manage User</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={() => {
                       setSelectedUser(user);
                       setShowPermissionDialog(true);
                     }}
-                    className="cursor-pointer"
+                    className="cursor-pointer text-xs"
                   >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Manage Permissions
+                    <Settings className="mr-1 h-3 w-3" />
+                    Permissions
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -258,37 +256,37 @@ export const UserManagement = () => {
       </div>
 
       {filteredUsers.length === 0 && !loading && (
-        <div className="text-center py-8 text-muted-foreground">
-          <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p>No users found</p>
+        <div className="text-center py-4 text-muted-foreground">
+          <Users className="h-6 w-6 mx-auto mb-1 opacity-50" />
+          <p className="text-sm">No users found</p>
         </div>
       )}
 
       {/* Permission Management Dialog */}
       <Dialog open={showPermissionDialog} onOpenChange={setShowPermissionDialog}>
-        <DialogContent className="max-w-md bg-background">
+        <DialogContent className="max-w-sm bg-background mx-2">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Manage Permissions
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Settings className="h-4 w-4" />
+              Permissions
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {selectedUser?.display_name || selectedUser?.full_name || 'Unknown User'}
             </p>
           </DialogHeader>
           
-          <div className="space-y-3 mt-4">
+          <div className="space-y-2 mt-3 max-h-80 overflow-y-auto">
             {ADMIN_PERMISSIONS.map((permission) => {
               const key = `${selectedUser?.id}-${permission.value}`;
               const isChecked = selectedUser?.permissions.includes(permission.value) || false;
               const isUpdating = updatingPermissions.has(key);
 
               return (
-                <div key={permission.value} className="flex items-center justify-between p-2 rounded-lg border">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">{permission.icon}</span>
+                <div key={permission.value} className="flex items-center justify-between p-2 rounded border">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">{permission.icon}</span>
                     <div>
-                      <label className={`text-sm font-medium ${isUpdating ? 'opacity-50' : ''}`}>
+                      <label className={`text-xs font-medium ${isUpdating ? 'opacity-50' : ''}`}>
                         {permission.label}
                       </label>
                     </div>
@@ -301,6 +299,7 @@ export const UserManagement = () => {
                         handlePermissionChange(selectedUser.id, permission.value, checked as boolean);
                       }
                     }}
+                    className="h-4 w-4"
                   />
                 </div>
               );

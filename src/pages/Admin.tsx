@@ -144,16 +144,15 @@ const Admin = () => {
     <div className="min-h-screen bg-background">
       <AdminAppBar onLogout={() => navigate("/")} />
       
-      <div className="container mx-auto p-2 sm:p-4 max-w-7xl space-y-4 sm:space-y-6">
-        {/* Header - Mobile Responsive */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="flex items-center gap-2 self-start">
+      <div className="container mx-auto p-1 sm:p-4 max-w-7xl space-y-2 sm:space-y-6">
+        {/* Header - Mobile Compact */}
+        <div className="flex items-center justify-between gap-2 p-2 sm:p-0">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="flex items-center gap-1 h-8">
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back to Home</span>
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold truncate">Admin Dashboard</h1>
-            <p className="text-sm text-muted-foreground hidden sm:block">Manage your platform efficiently</p>
+          <div className="flex-1 min-w-0 text-center sm:text-left">
+            <h1 className="text-lg sm:text-2xl font-bold truncate">Admin</h1>
           </div>
           <div className="flex-shrink-0">
             <OrderNotifications onNewOrder={handleOrdersUpdate} />
@@ -164,19 +163,16 @@ const Admin = () => {
         {!canManageOrders && !canManageWithdrawals && !canManageGadgets && !canManageBrands && 
          !canManageBusinesses && !canManageProducts && !canManageSellerApplications && 
          !canManagePromotions && !canManageCarousel && !canManageMarketplaceSettings ? (
-          <Card className="w-full max-w-2xl mx-auto">
-            <CardHeader className="text-center">
-              <CardTitle className="flex items-center justify-center gap-2">
-                <Shield className="h-5 w-5" />
-                No Admin Permissions
+          <Card className="mx-2 sm:mx-auto sm:max-w-2xl">
+            <CardHeader className="text-center pb-2">
+              <CardTitle className="flex items-center justify-center gap-2 text-base">
+                <Shield className="h-4 w-4" />
+                No Permissions
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <p>You don't have any admin permissions assigned to your account.</p>
-              <p className="text-sm text-muted-foreground">
-                Contact a super admin to get permissions for specific admin functions.
-              </p>
-              <Button onClick={() => navigate("/")} variant="outline">
+            <CardContent className="text-center space-y-3 pt-0">
+              <p className="text-sm">You don't have any admin permissions.</p>
+              <Button onClick={() => navigate("/")} variant="outline" size="sm">
                 Go Home
               </Button>
             </CardContent>
@@ -186,7 +182,7 @@ const Admin = () => {
             {/* Mobile and Desktop content */}
 
         {/* Mobile Tabs */}
-        <div className="block lg:hidden">
+        <div className="block lg:hidden px-1">
           <ScrollArea className="w-full">
             <Tabs defaultValue={
               (canManageOrders || canManageWithdrawals) ? "gas" :
@@ -195,34 +191,34 @@ const Admin = () => {
               (canManagePromotions || canManageCarousel || canManageMarketplaceSettings) ? "marketing" :
               userRole === 'super_admin' ? "users" : "gas"
             } className="w-full">
-              <TabsList className="inline-flex h-9 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground w-max">
-                {(canManageOrders || canManageWithdrawals) && <TabsTrigger value="gas" className="text-xs px-3">🔥 Gas</TabsTrigger>}
-                {(canManageGadgets || canManageBrands) && <TabsTrigger value="products" className="text-xs px-3">📱 Products</TabsTrigger>}
-                {(canManageBusinesses || canManageProducts || canManageSellerApplications) && <TabsTrigger value="business" className="text-xs px-3">🏪 Business</TabsTrigger>}
-                {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && <TabsTrigger value="marketing" className="text-xs px-3">📢 Marketing</TabsTrigger>}
-                {userRole === 'super_admin' && <TabsTrigger value="users" className="text-xs px-3">👥 Users</TabsTrigger>}
+              <TabsList className="inline-flex h-8 items-center justify-start rounded-md bg-muted p-0.5 text-muted-foreground w-max mb-2">
+                {(canManageOrders || canManageWithdrawals) && <TabsTrigger value="gas" className="text-xs px-2 h-7">🔥 Gas</TabsTrigger>}
+                {(canManageGadgets || canManageBrands) && <TabsTrigger value="products" className="text-xs px-2 h-7">📱 Tech</TabsTrigger>}
+                {(canManageBusinesses || canManageProducts || canManageSellerApplications) && <TabsTrigger value="business" className="text-xs px-2 h-7">🏪 Biz</TabsTrigger>}
+                {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && <TabsTrigger value="marketing" className="text-xs px-2 h-7">📢 Ads</TabsTrigger>}
+                {userRole === 'super_admin' && <TabsTrigger value="users" className="text-xs px-2 h-7">👥 Users</TabsTrigger>}
               </TabsList>
               <ScrollBar orientation="horizontal" />
               
-              <TabsContent value="gas" className="mt-4 space-y-4">
+              <TabsContent value="gas" className="mt-0 space-y-2">
                 {(canManageOrders || canManageWithdrawals) && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">Gas Operations</CardTitle>
+                  <Card className="mx-1">
+                    <CardHeader className="pb-2 pt-3">
+                      <CardTitle className="text-base">Gas Operations</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <Tabs defaultValue={canManageOrders ? "orders" : "withdrawals"} className="w-full">
-                        <TabsList className={`grid w-full h-8 ${canManageOrders && canManageWithdrawals ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                          {canManageOrders && <TabsTrigger value="orders" className="text-xs">Orders</TabsTrigger>}
-                          {canManageWithdrawals && <TabsTrigger value="withdrawals" className="text-xs">Withdrawals</TabsTrigger>}
+                        <TabsList className={`grid w-full h-7 ${canManageOrders && canManageWithdrawals ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                          {canManageOrders && <TabsTrigger value="orders" className="text-xs h-6">Orders</TabsTrigger>}
+                          {canManageWithdrawals && <TabsTrigger value="withdrawals" className="text-xs h-6">Withdrawals</TabsTrigger>}
                         </TabsList>
                         {canManageOrders && (
-                          <TabsContent value="orders" className="mt-3">
+                          <TabsContent value="orders" className="mt-2">
                             <AdminOrdersView orders={orders} deliveryMen={deliveryMen} onOrdersUpdate={handleOrdersUpdate} />
                           </TabsContent>
                         )}
                         {canManageWithdrawals && (
-                          <TabsContent value="withdrawals" className="mt-3">
+                          <TabsContent value="withdrawals" className="mt-2">
                             <WithdrawalsManager />
                           </TabsContent>
                         )}
@@ -232,25 +228,25 @@ const Admin = () => {
                 )}
               </TabsContent>
 
-              <TabsContent value="products" className="mt-4 space-y-4">
+              <TabsContent value="products" className="mt-0 space-y-2">
                 {(canManageGadgets || canManageBrands) && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">Gadgets & Products</CardTitle>
+                  <Card className="mx-1">
+                    <CardHeader className="pb-2 pt-3">
+                      <CardTitle className="text-base">Tech & Products</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <Tabs defaultValue={canManageGadgets ? "gadgets" : "brands"} className="w-full">
-                        <TabsList className={`grid w-full h-8 ${canManageGadgets && canManageBrands ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                          {canManageGadgets && <TabsTrigger value="gadgets" className="text-xs">Gadgets</TabsTrigger>}
-                          {canManageBrands && <TabsTrigger value="brands" className="text-xs">Brands</TabsTrigger>}
+                        <TabsList className={`grid w-full h-7 ${canManageGadgets && canManageBrands ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                          {canManageGadgets && <TabsTrigger value="gadgets" className="text-xs h-6">Gadgets</TabsTrigger>}
+                          {canManageBrands && <TabsTrigger value="brands" className="text-xs h-6">Brands</TabsTrigger>}
                         </TabsList>
                         {canManageGadgets && (
-                          <TabsContent value="gadgets" className="mt-3">
+                          <TabsContent value="gadgets" className="mt-2">
                             <GadgetsManager />
                           </TabsContent>
                         )}
                         {canManageBrands && (
-                          <TabsContent value="brands" className="mt-3">
+                          <TabsContent value="brands" className="mt-2">
                             <BrandsManager />
                           </TabsContent>
                         )}
@@ -260,34 +256,34 @@ const Admin = () => {
                 )}
               </TabsContent>
 
-              <TabsContent value="business" className="mt-4 space-y-4">
+              <TabsContent value="business" className="mt-0 space-y-2">
                 {(canManageBusinesses || canManageProducts || canManageSellerApplications) && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">Business Management</CardTitle>
+                  <Card className="mx-1">
+                    <CardHeader className="pb-2 pt-3">
+                      <CardTitle className="text-base">Business</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <Tabs defaultValue={canManageBusinesses ? "businesses" : canManageProducts ? "products" : "seller_apps"} className="w-full">
-                        <TabsList className={`grid w-full h-8 text-xs ${
+                        <TabsList className={`grid w-full h-7 text-xs ${
                           [canManageBusinesses, canManageProducts, canManageSellerApplications].filter(Boolean).length === 3 ? 'grid-cols-3' :
                           [canManageBusinesses, canManageProducts, canManageSellerApplications].filter(Boolean).length === 2 ? 'grid-cols-2' : 'grid-cols-1'
                         }`}>
-                          {canManageBusinesses && <TabsTrigger value="businesses" className="text-xs px-1">Businesses</TabsTrigger>}
-                          {canManageProducts && <TabsTrigger value="products" className="text-xs px-1">Products</TabsTrigger>}
-                          {canManageSellerApplications && <TabsTrigger value="seller_apps" className="text-xs px-1">Sellers</TabsTrigger>}
+                          {canManageBusinesses && <TabsTrigger value="businesses" className="text-xs px-1 h-6">Stores</TabsTrigger>}
+                          {canManageProducts && <TabsTrigger value="products" className="text-xs px-1 h-6">Items</TabsTrigger>}
+                          {canManageSellerApplications && <TabsTrigger value="seller_apps" className="text-xs px-1 h-6">Apps</TabsTrigger>}
                         </TabsList>
                         {canManageBusinesses && (
-                          <TabsContent value="businesses" className="mt-3">
+                          <TabsContent value="businesses" className="mt-2">
                             <BusinessesManager />
                           </TabsContent>
                         )}
                         {canManageProducts && (
-                          <TabsContent value="products" className="mt-3">
+                          <TabsContent value="products" className="mt-2">
                             <BusinessProductsManager />
                           </TabsContent>
                         )}
                         {canManageSellerApplications && (
-                          <TabsContent value="seller_apps" className="mt-3">
+                          <TabsContent value="seller_apps" className="mt-2">
                             <SellerApplicationsManager />
                           </TabsContent>
                         )}
@@ -297,34 +293,34 @@ const Admin = () => {
                 )}
               </TabsContent>
 
-              <TabsContent value="marketing" className="mt-4 space-y-4">
+              <TabsContent value="marketing" className="mt-0 space-y-2">
                 {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">Marketing & Content</CardTitle>
+                  <Card className="mx-1">
+                    <CardHeader className="pb-2 pt-3">
+                      <CardTitle className="text-base">Marketing</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <Tabs defaultValue={canManagePromotions ? "promotions" : canManageCarousel ? "carousel" : "marketplace"} className="w-full">
-                        <TabsList className={`grid w-full h-8 ${
+                        <TabsList className={`grid w-full h-7 ${
                           [canManagePromotions, canManageCarousel, canManageMarketplaceSettings].filter(Boolean).length === 3 ? 'grid-cols-3' :
                           [canManagePromotions, canManageCarousel, canManageMarketplaceSettings].filter(Boolean).length === 2 ? 'grid-cols-2' : 'grid-cols-1'
                         }`}>
-                          {canManagePromotions && <TabsTrigger value="promotions" className="text-xs px-1">Promos</TabsTrigger>}
-                          {canManageCarousel && <TabsTrigger value="carousel" className="text-xs px-1">Carousel</TabsTrigger>}
-                          {canManageMarketplaceSettings && <TabsTrigger value="marketplace" className="text-xs px-1">Settings</TabsTrigger>}
+                          {canManagePromotions && <TabsTrigger value="promotions" className="text-xs px-1 h-6">Promos</TabsTrigger>}
+                          {canManageCarousel && <TabsTrigger value="carousel" className="text-xs px-1 h-6">Slides</TabsTrigger>}
+                          {canManageMarketplaceSettings && <TabsTrigger value="marketplace" className="text-xs px-1 h-6">Config</TabsTrigger>}
                         </TabsList>
                         {canManagePromotions && (
-                          <TabsContent value="promotions" className="mt-3">
+                          <TabsContent value="promotions" className="mt-2">
                             <PromotionsManager />
                           </TabsContent>
                         )}
                         {canManageCarousel && (
-                          <TabsContent value="carousel" className="mt-3">
+                          <TabsContent value="carousel" className="mt-2">
                             <CarouselManager />
                           </TabsContent>
                         )}
                         {canManageMarketplaceSettings && (
-                          <TabsContent value="marketplace" className="mt-3">
+                          <TabsContent value="marketplace" className="mt-2">
                             <MarketplaceSettings />
                           </TabsContent>
                         )}
@@ -334,13 +330,13 @@ const Admin = () => {
                 )}
               </TabsContent>
 
-              <TabsContent value="users" className="mt-4 space-y-4">
+              <TabsContent value="users" className="mt-0 space-y-2">
                 {userRole === 'super_admin' && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">User Management</CardTitle>
+                  <Card className="mx-1">
+                    <CardHeader className="pb-2 pt-3">
+                      <CardTitle className="text-base">Users</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <UserManagement />
                     </CardContent>
                   </Card>
