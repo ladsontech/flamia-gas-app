@@ -84,30 +84,54 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   };
 
   const extractOrderInfo = (description: string) => {
-    const lines = description.split('\n');
-    const info: any = {};
-    lines.forEach(line => {
-      if (line.includes('Size:') || line.includes('*Size:*')) {
-        const size = line.split(/Size:|[*]Size:[*]/)[1]?.trim();
-        info.size = size;
+    const info: any = { contact: '', address: '' };
+    
+    // New format: "Brand SIZE type (Qty: X) - Contact: PHONE - Address: ADDRESS"
+    // Extract contact
+    const contactMatch = description.match(/Contact:\s*([^-]+?)(?:\s*-|$)/);
+    if (contactMatch) {
+      info.contact = contactMatch[1].trim();
+    }
+    
+    // Extract address
+    const addressMatch = description.match(/Address:\s*(.+?)$/);
+    if (addressMatch) {
+      info.address = addressMatch[1].trim();
+    }
+    
+    // Extract quantity
+    const qtyMatch = description.match(/\(Qty:\s*(\d+)\)/);
+    if (qtyMatch) {
+      info.quantity = qtyMatch[1];
+    }
+    
+    // Extract brand, size, and type from the beginning
+    const mainPart = description.split(' - Contact:')[0];
+    const parts = mainPart.split(' ');
+    
+    if (parts.length >= 2) {
+      info.brand = parts[0];
+      
+      // Look for size pattern (3kg, 6kg, 12kg, etc.)
+      const sizeMatch = mainPart.match(/(\d+kg)/i);
+      if (sizeMatch) {
+        info.size = sizeMatch[1].toUpperCase();
       }
-      if (line.includes('Price:') || line.includes('*Price:*')) {
-        const price = line.split(/Price:|[*]Price:[*]/)[1]?.trim();
-        info.price = price;
+      
+      // Determine type
+      if (mainPart.toLowerCase().includes('refill')) {
+        info.type = 'Refill';
+      } else if (mainPart.toLowerCase().includes('full set') || mainPart.toLowerCase().includes('kit')) {
+        info.type = 'Full Set';
+      } else if (mainPart.toLowerCase().includes('accessory')) {
+        info.type = 'Accessory';
+      } else if (mainPart.toLowerCase().includes('gadget')) {
+        info.type = 'Gadget';
+      } else {
+        info.type = 'Gas Product';
       }
-      if (line.includes('Total Amount:') || line.includes('*Total Amount:*')) {
-        const total = line.split(/Total Amount:|[*]Total Amount:[*]/)[1]?.trim();
-        info.total = total;
-      }
-      if (line.includes('Order Type:') || line.includes('*Order Type:*')) {
-        const type = line.split(/Order Type:|[*]Order Type:[*]/)[1]?.trim();
-        info.type = type;
-      }
-      if (line.includes('Brand:') || line.includes('*Brand:*')) {
-        const brand = line.split(/Brand:|[*]Brand:[*]/)[1]?.trim();
-        info.brand = brand;
-      }
-    });
+    }
+    
     return info;
   };
 
@@ -390,32 +414,41 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                   {dayGroup.orders.map((order) => {
                     const orderInfo = extractOrderInfo(order.description);
                     return (
-                      <div key={order.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm">
-                              {orderInfo.brand || 'Gas'} - {orderInfo.size || 'Unknown'}
-                            </span>
-                            {getStatusBadge(order.status)}
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm font-medium">
-                              UGX {(() => {
-                                if (orderInfo.total) {
-                                  const cleanAmount = orderInfo.total.replace(/[^\d]/g, '');
-                                  return parseInt(cleanAmount) || 0;
-                                } else if (orderInfo.price) {
-                                  const cleanAmount = orderInfo.price.replace(/[^\d]/g, '');
-                                  return parseInt(cleanAmount) || 0;
-                                }
-                                return 'Price not set';
-                              })().toLocaleString?.() || 'Price not set'}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {format(new Date(order.created_at), 'h:mm a')}
-                            </div>
-                          </div>
-                        </div>
+                       <div key={order.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                         <div className="flex items-center justify-between mb-3">
+                           <div className="flex items-center gap-2">
+                             <span className="font-medium text-sm">
+                               {orderInfo.brand} {orderInfo.size} {orderInfo.type}
+                             </span>
+                             {orderInfo.quantity && (
+                               <Badge variant="secondary" className="text-xs">
+                                 Qty: {orderInfo.quantity}
+                               </Badge>
+                             )}
+                             {getStatusBadge(order.status)}
+                           </div>
+                           <div className="text-right">
+                             <div className="text-xs text-muted-foreground">
+                               {format(new Date(order.created_at), 'h:mm a')}
+                             </div>
+                           </div>
+                         </div>
+
+                         {/* Customer Details */}
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3 text-sm">
+                           {orderInfo.contact && (
+                             <div className="flex items-center gap-2">
+                               <Phone className="w-4 h-4 text-muted-foreground" />
+                               <span>{orderInfo.contact}</span>
+                             </div>
+                           )}
+                           {orderInfo.address && (
+                             <div className="flex items-start gap-2">
+                               <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
+                               <span className="text-xs">{orderInfo.address}</span>
+                             </div>
+                           )}
+                         </div>
 
                         <div className="flex items-center justify-between mt-2">
                           {userRole === 'super_admin' && (
