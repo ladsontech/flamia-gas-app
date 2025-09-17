@@ -18,23 +18,28 @@ export const useAdminPermissions = () => {
           return;
         }
 
-        // If super_admin, they have all permissions
+        // If super_admin, check their specific permissions
         if (userRole === 'super_admin') {
-          setPermissions([
-            'manage_orders',
-            'manage_withdrawals',
-            'manage_gadgets',
-            'manage_brands',
-            'manage_businesses',
-            'manage_products',
-            'manage_seller_applications',
-            'manage_promotions',
-            'manage_carousel',
-            'manage_marketplace_settings',
-          ]);
-        } else {
           const userPermissions = await getUserPermissions(user.id);
-          setPermissions(userPermissions);
+          // If no specific permissions set, give them all permissions (backward compatibility)
+          if (userPermissions.length === 0) {
+            setPermissions([
+              'manage_orders',
+              'manage_withdrawals',
+              'manage_gadgets',
+              'manage_brands',
+              'manage_businesses',
+              'manage_products',
+              'manage_seller_applications',
+              'manage_promotions',
+              'manage_carousel',
+              'manage_marketplace_settings'
+            ]);
+          } else {
+            setPermissions(userPermissions);
+          }
+        } else {
+          setPermissions([]);
         }
       } catch (error) {
         console.error('Error loading permissions:', error);
