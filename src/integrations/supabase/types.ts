@@ -62,6 +62,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_permissions: {
+        Row: {
+          created_at: string
+          granted_by: string | null
+          id: string
+          permission: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          permission: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          permission?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_products: {
         Row: {
           business_id: string
@@ -587,6 +614,10 @@ export type Database = {
       get_user_role: {
         Args: { user_uuid: string }
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_admin_permission: {
+        Args: { permission_name: string; user_uuid: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
