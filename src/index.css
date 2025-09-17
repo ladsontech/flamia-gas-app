@@ -45,4 +45,23 @@
   .fade-up {
     @apply animate-fade-up;
   }
+
+  @media print {
+    body {
+      background: white !important;
+    }
+    
+    #referral-advert {
+      background: white !important;
+      box-shadow: none !important;
+      border: 2px solid #E67E22 !important;
+      page-break-inside: avoid;
+      margin: 0;
+    }
+    
+    #referral-advert * {
+      color-adjust: exact !important;
+      -webkit-print-color-adjust: exact !important;
+    }
+  }
 }

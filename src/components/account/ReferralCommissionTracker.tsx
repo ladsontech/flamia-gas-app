@@ -8,6 +8,7 @@ import { Copy, Share2, DollarSign, Clock, CheckCircle, Users } from "lucide-reac
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { WithdrawalSection } from "./WithdrawalSection";
+import { ReferralAdvert } from "../referral/ReferralAdvert";
 
 interface ReferralData {
   id: string;
@@ -271,6 +272,24 @@ export const ReferralCommissionTracker = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Referral Advert Section */}
+      {referralCode && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Share2 className="w-5 h-5" />
+              Print & Share Referral
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ReferralAdvert 
+              referralCode={referralCode}
+              referralLink={`${window.location.origin}/signup?ref=${referralCode}`}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Commission Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

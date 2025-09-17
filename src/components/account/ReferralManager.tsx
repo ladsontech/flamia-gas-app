@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { OrderService } from '@/services/orderService';
 import { WithdrawalSection } from './WithdrawalSection';
+import { ReferralAdvert } from '../referral/ReferralAdvert';
 interface CommissionData {
   id: string;
   amount: number;
@@ -414,6 +415,17 @@ export const ReferralManager: React.FC = () => {
               </div>
             </div>}
         </div>
+
+        {/* Referral Advert Section */}
+        {referralCode && (
+          <div className="space-y-3">
+            <h3 className="font-medium text-sm sm:text-base">Print & Share Your Referral</h3>
+            <ReferralAdvert 
+              referralCode={referralCode}
+              referralLink={`${window.location.origin}/signup?ref=${referralCode}`}
+            />
+          </div>
+        )}
 
         {referralCode && <>
             {/* Stats Cards */}
