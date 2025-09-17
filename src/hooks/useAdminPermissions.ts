@@ -31,7 +31,6 @@ export const useAdminPermissions = () => {
             'manage_promotions',
             'manage_carousel',
             'manage_marketplace_settings',
-            'manage_permissions'
           ]);
         } else {
           const userPermissions = await getUserPermissions(user.id);
@@ -77,6 +76,6 @@ export const useAdminPermissions = () => {
     canManagePromotions: hasPermissionSync('manage_promotions'),
     canManageCarousel: hasPermissionSync('manage_carousel'),
     canManageMarketplaceSettings: hasPermissionSync('manage_marketplace_settings'),
-    canManagePermissions: hasPermissionSync('manage_permissions')
+    
   };
 };

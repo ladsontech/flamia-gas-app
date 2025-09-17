@@ -26,7 +26,7 @@ import { fetchOrders, fetchDeliveryMen } from "@/services/database";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { supabase } from "@/integrations/supabase/client";
-import { PermissionsManager } from "@/components/admin/PermissionsManager";
+
 
 const Admin = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -47,7 +47,7 @@ const Admin = () => {
     canManagePromotions,
     canManageCarousel,
     canManageMarketplaceSettings,
-    canManagePermissions,
+    
     loading: permissionsLoading
   } = useAdminPermissions();
 
@@ -162,7 +162,7 @@ const Admin = () => {
         {/* Check if user has any permissions */}
         {!canManageOrders && !canManageWithdrawals && !canManageGadgets && !canManageBrands && 
          !canManageBusinesses && !canManageProducts && !canManageSellerApplications && 
-         !canManagePromotions && !canManageCarousel && !canManageMarketplaceSettings && !canManagePermissions ? (
+         !canManagePromotions && !canManageCarousel && !canManageMarketplaceSettings ? (
           <Card className="w-full max-w-2xl mx-auto">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2">
@@ -197,7 +197,7 @@ const Admin = () => {
                 {(canManageOrders || canManageWithdrawals) && <TabsTrigger value="gas" className="text-xs px-3">🔥 Gas</TabsTrigger>}
                 {(canManageGadgets || canManageBrands) && <TabsTrigger value="products" className="text-xs px-3">📱 Products</TabsTrigger>}
                 {(canManageBusinesses || canManageProducts || canManageSellerApplications) && <TabsTrigger value="business" className="text-xs px-3">🏪 Business</TabsTrigger>}
-                {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings || canManagePermissions) && <TabsTrigger value="marketing" className="text-xs px-3">📢 Marketing</TabsTrigger>}
+                {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && <TabsTrigger value="marketing" className="text-xs px-3">📢 Marketing</TabsTrigger>}
               </TabsList>
               <ScrollBar orientation="horizontal" />
               
@@ -295,22 +295,20 @@ const Admin = () => {
               </TabsContent>
 
               <TabsContent value="marketing" className="mt-4 space-y-4">
-                {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings || canManagePermissions) && (
+                {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && (
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg">Marketing & Content</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Tabs defaultValue={canManagePromotions ? "promotions" : canManageCarousel ? "carousel" : canManageMarketplaceSettings ? "marketplace" : "permissions"} className="w-full">
+                      <Tabs defaultValue={canManagePromotions ? "promotions" : canManageCarousel ? "carousel" : "marketplace"} className="w-full">
                         <TabsList className={`grid w-full h-8 ${
-                          [canManagePromotions, canManageCarousel, canManageMarketplaceSettings, canManagePermissions].filter(Boolean).length === 4 ? 'grid-cols-4' :
-                          [canManagePromotions, canManageCarousel, canManageMarketplaceSettings, canManagePermissions].filter(Boolean).length === 3 ? 'grid-cols-3' :
-                          [canManagePromotions, canManageCarousel, canManageMarketplaceSettings, canManagePermissions].filter(Boolean).length === 2 ? 'grid-cols-2' : 'grid-cols-1'
+                          [canManagePromotions, canManageCarousel, canManageMarketplaceSettings].filter(Boolean).length === 3 ? 'grid-cols-3' :
+                          [canManagePromotions, canManageCarousel, canManageMarketplaceSettings].filter(Boolean).length === 2 ? 'grid-cols-2' : 'grid-cols-1'
                         }`}>
                           {canManagePromotions && <TabsTrigger value="promotions" className="text-xs px-1">Promos</TabsTrigger>}
                           {canManageCarousel && <TabsTrigger value="carousel" className="text-xs px-1">Carousel</TabsTrigger>}
                           {canManageMarketplaceSettings && <TabsTrigger value="marketplace" className="text-xs px-1">Settings</TabsTrigger>}
-                          {canManagePermissions && <TabsTrigger value="permissions" className="text-xs px-1">Permissions</TabsTrigger>}
                         </TabsList>
                         {canManagePromotions && (
                           <TabsContent value="promotions" className="mt-3">
@@ -325,11 +323,6 @@ const Admin = () => {
                         {canManageMarketplaceSettings && (
                           <TabsContent value="marketplace" className="mt-3">
                             <MarketplaceSettings />
-                          </TabsContent>
-                        )}
-                        {canManagePermissions && (
-                          <TabsContent value="permissions" className="mt-3">
-                            <PermissionsManager />
                           </TabsContent>
                         )}
                       </Tabs>
@@ -449,7 +442,7 @@ const Admin = () => {
           )}
 
           {/* Marketing & Content */}
-          {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings || canManagePermissions) && (
+          {(canManagePromotions || canManageCarousel || canManageMarketplaceSettings) && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -460,16 +453,14 @@ const Admin = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Tabs defaultValue={canManagePromotions ? "promotions" : canManageCarousel ? "carousel" : canManageMarketplaceSettings ? "marketplace" : "permissions"} className="w-full">
+                <Tabs defaultValue={canManagePromotions ? "promotions" : canManageCarousel ? "carousel" : "marketplace"} className="w-full">
                   <TabsList className={`grid w-full ${
-                    [canManagePromotions, canManageCarousel, canManageMarketplaceSettings, canManagePermissions].filter(Boolean).length === 4 ? 'grid-cols-4' :
-                    [canManagePromotions, canManageCarousel, canManageMarketplaceSettings, canManagePermissions].filter(Boolean).length === 3 ? 'grid-cols-3' :
-                    [canManagePromotions, canManageCarousel, canManageMarketplaceSettings, canManagePermissions].filter(Boolean).length === 2 ? 'grid-cols-2' : 'grid-cols-1'
+                    [canManagePromotions, canManageCarousel, canManageMarketplaceSettings].filter(Boolean).length === 3 ? 'grid-cols-3' :
+                    [canManagePromotions, canManageCarousel, canManageMarketplaceSettings].filter(Boolean).length === 2 ? 'grid-cols-2' : 'grid-cols-1'
                   }`}>
                     {canManagePromotions && <TabsTrigger value="promotions">Promotions</TabsTrigger>}
                     {canManageCarousel && <TabsTrigger value="carousel">Carousel</TabsTrigger>}
                     {canManageMarketplaceSettings && <TabsTrigger value="marketplace">Settings</TabsTrigger>}
-                    {canManagePermissions && <TabsTrigger value="permissions">Permissions</TabsTrigger>}
                   </TabsList>
                   {canManagePromotions && (
                     <TabsContent value="promotions" className="mt-4">
@@ -484,11 +475,6 @@ const Admin = () => {
                   {canManageMarketplaceSettings && (
                     <TabsContent value="marketplace" className="mt-4">
                       <MarketplaceSettings />
-                    </TabsContent>
-                  )}
-                  {canManagePermissions && (
-                    <TabsContent value="permissions" className="mt-4">
-                      <PermissionsManager />
                     </TabsContent>
                   )}
                 </Tabs>

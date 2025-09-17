@@ -11,7 +11,7 @@ export type AdminPermission =
   | 'manage_promotions'
   | 'manage_carousel'
   | 'manage_marketplace_settings'
-  | 'manage_permissions';
+  ;
 
 export interface AdminPermissionRecord {
   id: string;
@@ -33,7 +33,6 @@ export const getAllPermissions = (): AdminPermission[] => [
   'manage_promotions',
   'manage_carousel',
   'manage_marketplace_settings',
-  'manage_permissions'
 ];
 
 export const getPermissionLabels = (): Record<AdminPermission, string> => ({
@@ -47,7 +46,7 @@ export const getPermissionLabels = (): Record<AdminPermission, string> => ({
   'manage_promotions': 'Manage Promotions',
   'manage_carousel': 'Manage Carousel',
   'manage_marketplace_settings': 'Manage Marketplace Settings',
-  'manage_permissions': 'Manage Permissions'
+  
 });
 
 export const getUserPermissions = async (userId: string): Promise<AdminPermission[]> => {
