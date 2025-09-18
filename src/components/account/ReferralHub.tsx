@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Share2, Copy, Users, DollarSign, Clock, CheckCircle, ArrowRight, Info } from 'lucide-react';
+import { Share2, Copy, Users, DollarSign, Clock, CheckCircle, ArrowRight, Info, Gift, Target, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -229,87 +229,129 @@ export const ReferralHub: React.FC = () => {
     return { brand, type, weight };
   };
 
-  // Loading state
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
-        <Card>
-          <CardContent className="p-8">
-            <div className="animate-pulse space-y-6">
-              <div className="space-y-3">
-                <div className="h-6 bg-gray-200 rounded-lg w-2/3"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <Card className="bg-card/50 backdrop-blur border">
+            <CardContent className="p-8">
+              <div className="animate-pulse space-y-6">
+                <div className="space-y-3">
+                  <div className="h-8 bg-muted rounded-lg w-2/3 mx-auto"></div>
+                  <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-24 bg-muted rounded-lg"></div>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-8">
-      
-      {/* ========== HOW IT WORKS SECTION ========== */}
-      <Card className="border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-white">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-xl text-orange-700">
-            <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Info className="w-5 h-5 text-orange-600" />
-            </div>
-            How Referral Earnings Work
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Process Steps */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <span className="text-lg font-bold text-white">1</span>
-              </div>
-              <div className="space-y-1">
-                <h4 className="font-semibold text-gray-900">Share Your Code</h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Friends sign up using your referral link and create their account
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <span className="text-lg font-bold text-white">2</span>
-              </div>
-              <div className="space-y-1">
-                <h4 className="font-semibold text-gray-900">They Order Gas</h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Each completed gas order generates commission for you
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <span className="text-lg font-bold text-white">3</span>
-              </div>
-              <div className="space-y-1">
-                <h4 className="font-semibold text-gray-900">Get Paid</h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Withdraw your earnings once orders are completed
-                </p>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/30">
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        
+        {/* Hero Section */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+            <Gift className="w-8 h-8 text-primary" />
           </div>
-          
-          <Separator className="bg-orange-200" />
-          
-          {/* Commission Rates */}
-          <div className="bg-white rounded-lg p-6 border border-orange-200">
-            <h4 className="font-semibold text-gray-900 mb-4 text-center">Commission Rates</h4>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+            Earn with Every Referral
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Share Flamia with friends and earn commission on every order they make
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        {referralCode && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-card/50 backdrop-blur border hover:shadow-lg transition-all">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-blue-500/10 rounded-full">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Referrals</p>
+                    <p className="text-2xl font-bold">{referrals.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur border hover:shadow-lg transition-all">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-green-500/10 rounded-full">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Available</p>
+                    <p className="text-2xl font-bold text-green-600">{formatCurrency(totalEarnings)}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur border hover:shadow-lg transition-all">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Clock className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Pending</p>
+                    <p className="text-2xl font-bold text-primary">{formatCurrency(pendingEarnings)}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* How It Works */}
+        <Card className="bg-card/50 backdrop-blur border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              How It Works
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto">
+                  <span className="text-white font-bold">1</span>
+                </div>
+                <h3 className="font-semibold">Share Your Link</h3>
+                <p className="text-sm text-muted-foreground">Friends sign up using your referral link</p>
+              </div>
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto">
+                  <span className="text-white font-bold">2</span>
+                </div>
+                <h3 className="font-semibold">They Order Gas</h3>
+                <p className="text-sm text-muted-foreground">Each completed order generates commission</p>
+              </div>
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto">
+                  <span className="text-white font-bold">3</span>
+                </div>
+                <h3 className="font-semibold">Get Paid</h3>
+                <p className="text-sm text-muted-foreground">Withdraw your earnings instantly</p>
+              </div>
+            </div>
+
+            <Separator />
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { size: '3kg Gas', amount: 'UGX 4,000' },
@@ -317,231 +359,162 @@ export const ReferralHub: React.FC = () => {
                 { size: '12kg Gas', amount: 'UGX 10,000' },
                 { size: 'Full Kits', amount: 'UGX 10,000' }
               ].map((rate, index) => (
-                <div key={index} className="text-center p-3 bg-orange-50 rounded-lg border border-orange-100">
-                  <p className="text-sm font-medium text-gray-700">{rate.size}</p>
-                  <p className="text-lg font-bold text-orange-600">{rate.amount}</p>
+                <div key={index} className="text-center p-3 bg-primary/5 rounded-lg border">
+                  <p className="text-sm font-medium">{rate.size}</p>
+                  <p className="text-lg font-bold text-primary">{rate.amount}</p>
                 </div>
               ))}
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* ========== REFERRAL CODE SECTION ========== */}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <Share2 className="w-6 h-6" />
-            Your Referral Code
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-8">
-          {!referralCode ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Share2 className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Generate Your Referral Code
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Create your unique referral code to start earning commissions from friends' orders
-              </p>
-              <Button 
-                onClick={generateReferralCode} 
-                disabled={generating} 
-                size="lg"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3"
-              >
-                {generating ? "Generating..." : "Generate Referral Code"}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Referral Link Display */}
-              <div className="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-200">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Referral Link:
-                </label>
-                <Input 
-                  value={`${window.location.origin}/signup?ref=${referralCode}`}
-                  readOnly 
-                  className="text-sm font-mono bg-white"
-                />
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={copyReferralLink} 
-                  variant="outline" 
-                  className="flex-1 h-12 border-2 hover:border-orange-300"
-                >
-                  <Copy className="w-5 h-5 mr-2" />
-                  Copy Link
-                </Button>
-                <Button 
-                  onClick={shareReferralLink} 
-                  className="flex-1 h-12 bg-orange-500 hover:bg-orange-600"
-                >
-                  <Share2 className="w-5 h-5 mr-2" />
-                  Share Link
-                </Button>
-              </div>
-              
-              {/* Referral Code Badge */}
-              <div className="text-center">
-                <Badge 
-                  variant="secondary" 
-                  className="px-4 py-2 text-lg bg-orange-100 text-orange-700 border border-orange-200"
-                >
-                  Code: {referralCode}
-                </Badge>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* ========== PROMOTIONAL POSTER SECTION ========== */}
-      {referralCode && (
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-            <CardTitle className="text-xl">Print & Share Flamia Poster</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            <ReferralAdvert 
-              referralCode={referralCode}
-              referralLink={`${window.location.origin}/signup?ref=${referralCode}`}
-            />
           </CardContent>
         </Card>
-      )}
 
-      {/* ========== STATS OVERVIEW SECTION ========== */}
-      {referralCode && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="overflow-hidden border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Users className="w-7 h-7 text-blue-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-600">Total Referrals</p>
-                  <p className="text-3xl font-bold text-gray-900">{referrals.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="overflow-hidden border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-7 h-7 text-green-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-600">Available to Withdraw</p>
-                  <p className="text-3xl font-bold text-green-600">{formatCurrency(totalEarnings)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="overflow-hidden border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center">
-                  <Clock className="w-7 h-7 text-orange-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-600">Pending Earnings</p>
-                  <p className="text-3xl font-bold text-orange-600">{formatCurrency(pendingEarnings)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* ========== WITHDRAWAL SECTION ========== */}
-      {totalEarnings > 0 && (
-        <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-white">
-          <CardContent className="p-8">
-            <WithdrawalSection completedEarnings={totalEarnings} />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* ========== COMMISSION HISTORY SECTION ========== */}
-      {commissions.length > 0 && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <DollarSign className="w-6 h-6" />
-              Commission History
+        {/* Referral Code Section */}
+        <Card className="bg-card/50 backdrop-blur border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Share2 className="w-5 h-5 text-primary" />
+              Your Referral Code
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowCommissionDetails(!showCommissionDetails)}
-              className="text-white hover:bg-white/20 border border-white/30"
-            >
-              {showCommissionDetails ? 'Hide Details' : 'Show Details'}
-              <ArrowRight className={`w-4 h-4 ml-2 transition-transform ${showCommissionDetails ? 'rotate-90' : ''}`} />
-            </Button>
           </CardHeader>
-          
-          {showCommissionDetails && (
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                {commissions.map((commission, index) => {
-                  const orderInfo = parseOrderDescription(commission.orders.description);
-                  return (
-                    <div 
-                      key={commission.id} 
-                      className="flex items-center justify-between p-4 border-2 rounded-lg hover:shadow-md transition-shadow bg-white"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-bold text-orange-600">
-                            {index + 1}
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-semibold text-gray-900">
-                            {orderInfo.brand} {orderInfo.weight} {orderInfo.type}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {format(new Date(commission.orders.created_at), 'MMM d, yyyy • h:mm a')}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right space-y-2">
-                        <p className="text-xl font-bold text-gray-900">
-                          {formatCurrency(commission.amount)}
-                        </p>
-                        <Badge 
-                          variant={commission.orders.status === 'completed' ? 'default' : 'secondary'}
-                          className={`text-xs ${
-                            commission.orders.status === 'completed' 
-                              ? 'bg-green-100 text-green-700 border-green-200' 
-                              : 'bg-orange-100 text-orange-700 border-orange-200'
-                          }`}
-                        >
-                          {commission.orders.status === 'completed' ? 'Completed' : 'Pending'}
-                        </Badge>
-                      </div>
-                    </div>
-                  );
-                })}
+          <CardContent>
+            {!referralCode ? (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                  <Zap className="w-8 h-8 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">Generate Your Code</h3>
+                  <p className="text-muted-foreground">Create your unique referral code to start earning</p>
+                </div>
+                <Button 
+                  onClick={generateReferralCode} 
+                  disabled={generating} 
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {generating ? "Generating..." : "Generate Code"}
+                </Button>
               </div>
-            </CardContent>
-          )}
+            ) : (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <Badge variant="secondary" className="px-4 py-2 text-lg">
+                    {referralCode}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Your Referral Link</label>
+                  <Input 
+                    value={`${window.location.origin}/signup?ref=${referralCode}`}
+                    readOnly 
+                    className="font-mono text-sm"
+                  />
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    onClick={copyReferralLink} 
+                    variant="outline" 
+                    className="flex-1"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Link
+                  </Button>
+                  <Button 
+                    onClick={shareReferralLink} 
+                    className="flex-1 bg-primary hover:bg-primary/90"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share Link
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
         </Card>
-      )}
+
+        {/* Promotional Poster */}
+        {referralCode && (
+          <Card className="bg-card/50 backdrop-blur border">
+            <CardHeader>
+              <CardTitle>Share Poster</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ReferralAdvert 
+                referralCode={referralCode}
+                referralLink={`${window.location.origin}/signup?ref=${referralCode}`}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Withdrawal Section */}
+        {totalEarnings > 0 && (
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <CardContent className="p-6">
+              <WithdrawalSection completedEarnings={totalEarnings} />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Commission History */}
+        {commissions.length > 0 && (
+          <Card className="bg-card/50 backdrop-blur border">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-primary" />
+                  Commission History
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCommissionDetails(!showCommissionDetails)}
+                >
+                  {showCommissionDetails ? 'Hide' : 'Show'} Details
+                  <ArrowRight className={`w-4 h-4 ml-2 transition-transform ${showCommissionDetails ? 'rotate-90' : ''}`} />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {showCommissionDetails && (
+                <div className="space-y-3">
+                  {commissions.map((commission) => {
+                    const orderDetails = parseOrderDescription(commission.orders.description);
+                    
+                    return (
+                      <div key={commission.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant={commission.status === 'completed' ? 'default' : 'secondary'}
+                              className={commission.status === 'completed' ? 'bg-green-500 text-white' : ''}
+                            >
+                              {commission.status === 'completed' ? 'Paid' : 'Pending'}
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">
+                              {format(new Date(commission.created_at), 'MMM dd, yyyy')}
+                            </span>
+                          </div>
+                          <p className="font-medium">
+                            {orderDetails.brand} {orderDetails.type} {orderDetails.weight}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-green-600">
+                            {formatCurrency(commission.amount)}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };

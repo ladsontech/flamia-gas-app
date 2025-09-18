@@ -11,6 +11,7 @@ interface ReferralAdvertProps {
 }
 
 export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
+  referralCode,
   referralLink
 }) => {
   const handleDownload = async () => {
@@ -22,10 +23,12 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
         const canvas = await html2canvas(element, {
           backgroundColor: '#ffffff',
           scale: 2,
+          useCORS: true,
+          allowTaint: true,
         });
         
         const link = document.createElement('a');
-        link.download = `flamia-gas-delivery.png`;
+        link.download = `flamia-referral-${referralCode}.png`;
         link.href = canvas.toDataURL();
         link.click();
       } catch (error) {
@@ -35,60 +38,60 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      {/* Download Button - Fixed width and positioning */}
+    <div className="w-full max-w-sm mx-auto space-y-4">
+      {/* Download Button */}
       <div className="flex justify-center">
         <Button 
           onClick={handleDownload} 
           variant="outline" 
           size="sm" 
-          className="px-6 py-2 min-w-[140px]"
+          className="px-4 py-2"
         >
           <Download className="w-4 h-4 mr-2" />
           Download PNG
         </Button>
       </div>
 
-      {/* Main Card - Fixed overflow and improved spacing */}
+      {/* Main Card */}
       <Card 
         id="referral-advert" 
-        className="w-full max-w-[300px] mx-auto bg-white border-2 border-orange-500 shadow-lg overflow-hidden"
+        className="w-full max-w-[280px] mx-auto bg-white border-2 border-primary shadow-lg overflow-hidden"
       >
         <CardContent className="p-0">
           {/* Container with proper height and flex layout */}
-          <div className="h-[400px] flex flex-col justify-between p-6 text-center">
+          <div className="h-[380px] flex flex-col justify-between p-5 text-center">
             
-            {/* Header Section - Fixed spacing */}
+            {/* Header Section */}
             <div className="flex-shrink-0 space-y-3">
               <div className="flex justify-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                  <span className="text-orange-600 font-bold text-xl">F</span>
+                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
+                  <span className="text-primary font-bold text-lg">F</span>
                 </div>
               </div>
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-orange-600 tracking-wide">FLAMIA</h1>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Uganda's fastest gas delivery service
+                <h1 className="text-xl font-bold text-primary tracking-wide">FLAMIA</h1>
+                <p className="text-xs text-muted-foreground">
+                  Uganda's fastest gas delivery
                 </p>
               </div>
             </div>
 
-            {/* Main Content Section - Improved spacing and no overflow */}
-            <div className="flex-1 flex flex-col justify-center space-y-4 py-4">
+            {/* Main Content Section */}
+            <div className="flex-1 flex flex-col justify-center space-y-3 py-3">
               {/* Features Box */}
-              <div className="bg-orange-50 rounded-lg p-4 space-y-3 border border-orange-100">
-                <h2 className="text-lg font-semibold text-orange-600">
+              <div className="bg-primary/5 rounded-lg p-3 space-y-2 border border-primary/20">
+                <h2 className="text-base font-semibold text-primary">
                   🚀 Fast Gas Delivery!
                 </h2>
-                <div className="space-y-2 text-sm text-gray-700">
+                <div className="space-y-1 text-xs text-foreground">
                   <div className="flex items-start text-left space-x-2">
-                    <div className="flex-shrink-0 space-y-1">
+                    <div className="flex-shrink-0 space-y-0.5">
                       <p>✅</p>
                       <p>✅</p>
                       <p>✅</p>
                       <p>✅</p>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       <p>Instant delivery available</p>
                       <p>All gas brands & sizes</p>
                       <p>Full cylinders & refills</p>
@@ -98,26 +101,26 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
                 </div>
               </div>
 
-              {/* QR Code Section - Centered and properly sized */}
+              {/* QR Code Section */}
               <div className="flex flex-col items-center space-y-2">
-                <div className="bg-white p-3 rounded-lg border-2 border-orange-200 shadow-sm">
+                <div className="bg-white p-2 rounded-lg border-2 border-primary/20 shadow-sm">
                   <QRCodeGenerator 
                     value={referralLink} 
-                    size={80} 
+                    size={70} 
                   />
                 </div>
-                <p className="text-xs text-gray-500 font-medium">
+                <p className="text-xs text-muted-foreground font-medium">
                   Scan to order gas instantly
                 </p>
               </div>
             </div>
 
-            {/* Footer Section - Fixed positioning */}
-            <div className="flex-shrink-0 space-y-2 border-t border-gray-200 pt-4">
-              <p className="text-sm font-bold text-orange-600">
+            {/* Footer Section */}
+            <div className="flex-shrink-0 space-y-1 border-t border-border pt-3">
+              <p className="text-sm font-bold text-primary">
                 Order now at flamia.app
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Making gas delivery simple & fast
               </p>
             </div>
