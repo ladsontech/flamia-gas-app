@@ -174,7 +174,7 @@ const Order = () => {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/10 to-white">
-        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
+        <div className="container max-w-md px-3 py-6">
           <BackButton />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -211,7 +211,7 @@ const Order = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-white">
-      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
+      <div className="container max-w-md px-3 py-6">
         <BackButton />
         
         <motion.div

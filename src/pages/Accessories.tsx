@@ -27,7 +27,7 @@ const Accessories = () => {
           <meta name="robots" content="index, follow" />
         </Helmet>
         <div className="min-h-screen flex flex-col">
-          <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-3">
+          <div className="container mx-auto px-2 lg:px-32 xl:px-48 2xl:px-64 py-3">
             <div className="flex items-center justify-center min-h-[200px]">
               <p className="text-center text-muted-foreground">Loading accessories...</p>
             </div>
@@ -138,7 +138,7 @@ const Accessories = () => {
         </script>
       </Helmet>
       
-      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 flex-grow py-6 max-w-7xl mx-auto">
+      <div className="container mx-auto px-3 md:px-6 lg:px-32 xl:px-48 2xl:px-64 flex-grow py-6 max-w-7xl">
         {/* Hero Section */}
         <div className="text-center mb-8 lg:mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">

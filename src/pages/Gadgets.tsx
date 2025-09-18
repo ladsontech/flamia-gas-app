@@ -60,7 +60,7 @@ const Gadgets = () => {
           <meta name="robots" content="index, follow" />
         </Helmet>
         <div className="min-h-screen bg-gray-50 pt-16 md:pt-20">
-          <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 space-y-6">
+          <div className="container mx-auto px-4 py-4 space-y-6">
             {/* Carousel Skeleton */}
             <Skeleton className="w-full h-64 rounded-lg" />
             
@@ -134,7 +134,7 @@ const Gadgets = () => {
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 pt-16 md:pt-20">
-        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 space-y-6">
+        <div className="container mx-auto px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 space-y-6">
           {/* Gadgets Carousel */}
           <ImageCarousel category="gadgets" />
           
