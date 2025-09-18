@@ -4,9 +4,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Download } from 'lucide-react';
 
 // Mock QR Code component for demo
-const QRCodeGenerator = ({ value, size, className }) => (
+interface QRCodeGeneratorProps {
+  value: string;
+  size: number;
+  className?: string;
+}
+
+const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ value, size, className }) => (
   <div 
-    className={`bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-500 ${className}`}
+    className={`bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-500 ${className || ''}`}
     style={{ width: size, height: size }}
   >
     QR Code
@@ -20,9 +26,7 @@ interface ReferralAdvertProps {
 }
 
 export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
-  referralCode,
-  referralLink,
-  userName = "Friend"
+  referralLink
 }) => {
   const handleDownload = async () => {
     const element = document.getElementById('referral-advert');
@@ -139,21 +143,3 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
     </div>
   );
 };
-
-// Demo component
-export default function ReferralAdvertDemo() {
-  return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-          Referral Advert Component
-        </h1>
-        <ReferralAdvert 
-          referralCode="FLAME123"
-          referralLink="https://flamia.app/ref/FLAME123"
-          userName="John"
-        />
-      </div>
-    </div>
-  );
-}
