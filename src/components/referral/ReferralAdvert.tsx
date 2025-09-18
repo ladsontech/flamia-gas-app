@@ -2,16 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download } from 'lucide-react';
-
-// Mock QR Code component for demo
-const QRCodeGenerator = ({ value, size, className }) => (
-  <div 
-    className={`bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-500 ${className}`}
-    style={{ width: size, height: size }}
-  >
-    QR Code
-  </div>
-);
+import { QRCodeGenerator } from './QRCodeGenerator';
 
 interface ReferralAdvertProps {
   referralCode: string;
@@ -24,6 +15,7 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
   referralLink,
   userName = "Friend"
 }) => {
+
   const handleDownload = async () => {
     const element = document.getElementById('referral-advert');
     if (element) {
@@ -46,90 +38,68 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      {/* Download Button - Fixed width and positioning */}
-      <div className="flex justify-center">
-        <Button 
-          onClick={handleDownload} 
-          variant="outline" 
-          size="sm" 
-          className="px-6 py-2 min-w-[140px]"
-        >
+    <div className="space-y-4">
+      <div className="flex">
+        <Button onClick={handleDownload} variant="outline" size="sm" className="w-full">
           <Download className="w-4 h-4 mr-2" />
           Download PNG
         </Button>
       </div>
 
-      {/* Main Card - Fixed overflow and improved spacing */}
       <Card 
         id="referral-advert" 
-        className="w-full max-w-[300px] mx-auto bg-white border-2 border-orange-500 shadow-lg overflow-hidden"
+        className="w-full max-w-[280px] sm:max-w-sm mx-auto bg-white border-2 border-accent print:shadow-none print:max-w-none"
+        style={{ aspectRatio: '3/4' }}
       >
-        <CardContent className="p-0">
-          {/* Container with proper height and flex layout */}
-          <div className="h-[400px] flex flex-col justify-between p-6 text-center">
-            
-            {/* Header Section - Fixed spacing */}
-            <div className="flex-shrink-0 space-y-3">
-              <div className="flex justify-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                  <span className="text-orange-600 font-bold text-xl">F</span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-orange-600 tracking-wide">FLAMIA</h1>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Uganda's fastest gas delivery service
-                </p>
+        <CardContent className="p-4 sm:p-6 h-full flex flex-col justify-between text-center">
+          {/* Header with Logo */}
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex justify-center">
+              <img 
+                src="/images/icon.png" 
+                alt="Flamia Logo" 
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+              />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-accent">FLAMIA</h1>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              Uganda's fastest gas delivery service
+            </p>
+          </div>
+
+          {/* Main Content */}
+          <div className="space-y-3 sm:space-y-4">
+            <div className="bg-accent/10 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+              <h2 className="text-base sm:text-lg font-semibold text-accent text-center">
+                🚀 Fast Gas Delivery!
+              </h2>
+              <div className="space-y-1 text-xs sm:text-sm text-gray-700 text-left">
+                <p>✅ Same-day delivery available</p>
+                <p>✅ All gas brands & sizes</p>
+                <p>✅ Full cylinders & refills</p>
+                <p>✅ Safe & reliable service</p>
               </div>
             </div>
 
-            {/* Main Content Section - Improved spacing and no overflow */}
-            <div className="flex-1 flex flex-col justify-center space-y-4 py-4">
-              {/* Features Box */}
-              <div className="bg-orange-50 rounded-lg p-4 space-y-3 border border-orange-100">
-                <h2 className="text-lg font-semibold text-orange-600">
-                  🚀 Fast Gas Delivery!
-                </h2>
-                <div className="space-y-2 text-sm text-gray-700">
-                  <div className="flex items-start text-left space-x-2">
-                    <div className="flex-shrink-0 space-y-1">
-                      <p>✅</p>
-                      <p>✅</p>
-                      <p>✅</p>
-                      <p>✅</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p>Instant delivery available</p>
-                      <p>All gas brands & sizes</p>
-                      <p>Full cylinders & refills</p>
-                      <p>Safe & reliable service</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* QR Code Section - Centered and properly sized */}
-              <div className="flex flex-col items-center space-y-2">
-                <div className="bg-white p-3 rounded-lg border-2 border-orange-200 shadow-sm">
-                  <QRCodeGenerator 
-                    value={referralLink} 
-                    size={80} 
-                    className="w-20 h-20" 
-                  />
-                </div>
-                <p className="text-xs text-gray-500 font-medium">
-                  Scan to order gas instantly
-                </p>
+            {/* QR Code */}
+            <div className="flex justify-center">
+              <div className="bg-white p-2 sm:p-3 rounded-lg border-2 border-accent/20">
+                <QRCodeGenerator value={referralLink} size={100} className="sm:w-28 sm:h-28" />
               </div>
             </div>
 
-            {/* Footer Section - Fixed positioning */}
-            <div className="flex-shrink-0 space-y-2 border-t border-gray-200 pt-4">
-              <p className="text-sm font-bold text-orange-600">
+            <p className="text-xs text-gray-500">
+              Scan to order gas instantly
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div className="space-y-3">
+            <div className="space-y-1 border-t border-gray-200 pt-2">
+              <p className="text-xs sm:text-sm font-bold text-accent">
                 Order now at flamia.app
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-400">
                 Making gas delivery simple & fast
               </p>
             </div>
@@ -139,21 +109,3 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
     </div>
   );
 };
-
-// Demo component
-export default function ReferralAdvertDemo() {
-  return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-          Referral Advert Component
-        </h1>
-        <ReferralAdvert 
-          referralCode="FLAME123"
-          referralLink="https://flamia.app/ref/FLAME123"
-          userName="John"
-        />
-      </div>
-    </div>
-  );
-}
