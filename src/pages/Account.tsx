@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
-import { ReferralManager } from "@/components/account/ReferralManager";
+import { ReferralHub } from "@/components/account/ReferralHub";
 import OrdersManager from "@/components/account/OrdersManager";
 
 // Define interfaces
@@ -459,7 +459,7 @@ const Account = () => {
                     </CardContent>
                   </Card>
                 </div>}
-              {activeSection === 'referrals' && <ReferralManager />}
+              {activeSection === 'referrals' && <ReferralHub />}
             </div>
           </div>}
       </div>
