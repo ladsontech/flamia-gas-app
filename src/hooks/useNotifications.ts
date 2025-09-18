@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "./useUserRole";
 import { useToast } from "@/hooks/use-toast";
@@ -6,61 +6,100 @@ import type { NotificationItem } from "@/components/notifications/NotificationDr
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const initializationRef = useRef(false);
   const { userRole, loading } = useUserRole();
   const { toast } = useToast();
 
-  const addNotification = useCallback((notification: Omit<NotificationItem, 'id'>) => {
-    const newNotification: NotificationItem = {
-      ...notification,
-      id: crypto.randomUUID(),
+  // Protect against external script interference
+  useEffect(() => {
+    if (typeof window === 'undefined' || initializationRef.current) return;
+    
+    const initializeWithDelay = () => {
+      requestAnimationFrame(() => {
+        if (!initializationRef.current) {
+          initializationRef.current = true;
+          setIsInitialized(true);
+        }
+      });
     };
-    
-    setNotifications(prev => [newNotification, ...prev]);
-    
-    // Show toast for new notifications
-    toast({
-      title: notification.title,
-      description: notification.description,
-      duration: 3000,
-    });
 
-    // Also show a browser notification (via service worker) when permitted
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      if (Notification.permission === 'granted') {
-        navigator.serviceWorker?.getRegistration()?.then((reg) => {
-          reg?.showNotification(notification.title, {
-            body: notification.description,
-            icon: '/images/icon.png',
-            badge: '/images/icon.png',
-            tag: 'flamia-notification',
-          });
-        });
-      } else if (Notification.permission === 'default') {
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            navigator.serviceWorker?.getRegistration()?.then((reg) => {
-              reg?.showNotification(notification.title, {
-                body: notification.description,
-                icon: '/images/icon.png',
-                badge: '/images/icon.png',
-                tag: 'flamia-notification',
-              });
+    // Delay initialization to avoid ad script conflicts
+    const timeoutId = setTimeout(initializeWithDelay, 100);
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  const addNotification = useCallback((notification: Omit<NotificationItem, 'id'>) => {
+    if (!isInitialized) return;
+    
+    try {
+      const newNotification: NotificationItem = {
+        ...notification,
+        id: crypto.randomUUID(),
+      };
+      
+      setNotifications(prev => [newNotification, ...prev]);
+      
+      // Show toast for new notifications
+      toast({
+        title: notification.title,
+        description: notification.description,
+        duration: 3000,
+      });
+
+      // Also show a browser notification (via service worker) when permitted
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        if (Notification.permission === 'granted') {
+          navigator.serviceWorker?.getRegistration()?.then((reg) => {
+            reg?.showNotification(notification.title, {
+              body: notification.description,
+              icon: '/images/icon.png',
+              badge: '/images/icon.png',
+              tag: 'flamia-notification',
             });
-          }
-        });
+          });
+        } else if (Notification.permission === 'default') {
+          Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              navigator.serviceWorker?.getRegistration()?.then((reg) => {
+                reg?.showNotification(notification.title, {
+                  body: notification.description,
+                  icon: '/images/icon.png',
+                  badge: '/images/icon.png',
+                  tag: 'flamia-notification',
+                });
+              });
+            }
+          });
+        }
       }
+    } catch (error) {
+      console.error('Error adding notification:', error);
     }
-  }, [toast]);
+  }, [toast, isInitialized]);
 
   const markAsRead = useCallback((id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
-  }, []);
+    if (!isInitialized) return;
+    try {
+      setNotifications(prev => 
+        prev.map(n => n.id === id ? { ...n, read: true } : n)
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  }, [isInitialized]);
 
   const clearAll = useCallback(() => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  }, []);
+    if (!isInitialized) return;
+    try {
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch (error) {
+      console.error('Error clearing notifications:', error);
+    }
+  }, [isInitialized]);
 
   const getCustomerName = async (userId: string | null, description: string): Promise<string> => {
     // First try to get name from profile if we have user_id
@@ -89,7 +128,7 @@ export const useNotifications = () => {
   };
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !isInitialized) return;
 
     const channels: any[] = [];
 
@@ -331,12 +370,12 @@ export const useNotifications = () => {
     return () => {
       channels.forEach(channel => supabase.removeChannel(channel));
     };
-  }, [userRole, loading, addNotification, getCustomerName]);
+  }, [userRole, loading, addNotification, getCustomerName, isInitialized]);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = isInitialized ? notifications.filter(n => !n.read).length : 0;
 
   return {
-    notifications,
+    notifications: isInitialized ? notifications : [],
     unreadCount,
     markAsRead,
     clearAll,
