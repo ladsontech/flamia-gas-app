@@ -62,7 +62,7 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
 
       <Card 
         id="referral-advert" 
-        className="w-full max-w-xs sm:max-w-sm mx-auto bg-white border-2 border-accent print:shadow-none print:max-w-none"
+        className="w-full max-w-[280px] sm:max-w-sm mx-auto bg-white border-2 border-accent print:shadow-none print:max-w-none"
         style={{ aspectRatio: '3/4' }}
       >
         <CardContent className="p-4 sm:p-6 h-full flex flex-col justify-between text-center">
@@ -84,10 +84,10 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
           {/* Main Content */}
           <div className="space-y-3 sm:space-y-4">
             <div className="bg-accent/10 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-              <h2 className="text-base sm:text-lg font-semibold text-accent">
+              <h2 className="text-base sm:text-lg font-semibold text-accent text-center">
                 🚀 Fast Gas Delivery!
               </h2>
-              <div className="space-y-2 text-xs sm:text-sm text-gray-700">
+              <div className="space-y-1 text-xs sm:text-sm text-gray-700 text-left">
                 <p>✅ Same-day delivery available</p>
                 <p>✅ All gas brands & sizes</p>
                 <p>✅ Full cylinders & refills</p>
