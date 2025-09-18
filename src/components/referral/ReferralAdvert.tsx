@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Printer, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { QRCodeGenerator } from './QRCodeGenerator';
 
 interface ReferralAdvertProps {
@@ -15,16 +15,6 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
   referralLink,
   userName = "Friend"
 }) => {
-  const handlePrint = () => {
-    const printContent = document.getElementById('referral-advert');
-    if (printContent) {
-      const originalContent = document.body.innerHTML;
-      document.body.innerHTML = printContent.outerHTML;
-      window.print();
-      document.body.innerHTML = originalContent;
-      window.location.reload(); // Reload to restore functionality
-    }
-  };
 
   const handleDownload = async () => {
     const element = document.getElementById('referral-advert');
@@ -49,12 +39,8 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-2">
-        <Button onClick={handlePrint} variant="outline" size="sm" className="flex-1">
-          <Printer className="w-4 h-4 mr-2" />
-          Print Poster
-        </Button>
-        <Button onClick={handleDownload} variant="outline" size="sm" className="flex-1">
+      <div className="flex">
+        <Button onClick={handleDownload} variant="outline" size="sm" className="w-full">
           <Download className="w-4 h-4 mr-2" />
           Download PNG
         </Button>
@@ -109,12 +95,6 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
 
           {/* Footer */}
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
-              <div className="flex items-center justify-center">📱 Mobile App</div>
-              <div className="flex items-center justify-center">💳 Easy Payment</div>
-              <div className="flex items-center justify-center">🔒 Secure</div>
-              <div className="flex items-center justify-center">⭐ Trusted</div>
-            </div>
             <div className="space-y-1 border-t border-gray-200 pt-2">
               <p className="text-xs sm:text-sm font-bold text-accent">
                 Order now at flamia.app
