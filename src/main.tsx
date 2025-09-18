@@ -255,11 +255,39 @@ declare global {
   }
 }
 
-const root = createRoot(container);
+// Delay rendering to avoid interference from external scripts (like AdSense)
+const initializeApp = () => {
+  // Ensure React can initialize properly by delaying rendering
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      try {
+        const root = createRoot(container);
+        
+        // Render the app with proper React context
+        root.render(
+          <StrictMode>
+            <App />
+          </StrictMode>
+        );
+      } catch (error) {
+        console.error('Error initializing React app:', error);
+        // Fallback: try again after a longer delay
+        setTimeout(() => {
+          const root = createRoot(container);
+          root.render(
+            <StrictMode>
+              <App />
+            </StrictMode>
+          );
+        }, 1000);
+      }
+    }, 100);
+  });
+};
 
-// Render the app with proper React context
-root.render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+// Wait for DOM to be ready and external scripts to settle
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
