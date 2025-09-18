@@ -51,7 +51,7 @@ const DeliveryLogin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container py-6 px-4 md:px-6">
+      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
         <BackButton />
         
         <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">

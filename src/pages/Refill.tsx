@@ -128,7 +128,7 @@ const Refill = () => {
         <link rel="canonical" href="https://flamia.store/refill" />
       </Helmet>
       
-      <div className="container px-4 md:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
+      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6 max-w-7xl mx-auto">
         {/* Back Button */}
         <BackButton />
 

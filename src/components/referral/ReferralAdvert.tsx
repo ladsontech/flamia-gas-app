@@ -2,22 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download } from 'lucide-react';
-
-// Mock QR Code component for demo
-interface QRCodeGeneratorProps {
-  value: string;
-  size: number;
-  className?: string;
-}
-
-const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ value, size, className }) => (
-  <div 
-    className={`bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-500 ${className || ''}`}
-    style={{ width: size, height: size }}
-  >
-    QR Code
-  </div>
-);
+import { QRCodeGenerator } from '@/components/referral/QRCodeGenerator';
 
 interface ReferralAdvertProps {
   referralCode: string;
@@ -119,7 +104,6 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
                   <QRCodeGenerator 
                     value={referralLink} 
                     size={80} 
-                    className="w-20 h-20" 
                   />
                 </div>
                 <p className="text-xs text-gray-500 font-medium">

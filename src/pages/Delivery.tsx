@@ -208,7 +208,7 @@ const Delivery = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container max-w-6xl px-3 py-6">
+      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
         <div className="flex items-center justify-between mb-6">
           <BackButton />
           <div className="flex items-center gap-4">

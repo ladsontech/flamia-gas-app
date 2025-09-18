@@ -139,7 +139,7 @@ const GadgetDetail = () => {
         <meta name="googlebot" content="index, follow" />
       </Helmet>
 
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8 max-w-7xl">
+      <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6 lg:py-8 max-w-7xl mx-auto">
         {/* Back Button */}
         <motion.button
           initial={{ opacity: 0, x: -20 }}
