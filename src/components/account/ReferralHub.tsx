@@ -289,22 +289,22 @@ export const ReferralHub: React.FC = () => {
           
           <Separator />
           
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div className="flex justify-between py-1">
+              <span className="text-muted-foreground">3kg Gas:</span>
+              <span className="font-medium text-accent">UGX 4,000</span>
+            </div>
+            <div className="flex justify-between py-1">
               <span className="text-muted-foreground">6kg Gas:</span>
-              <span className="font-medium">UGX 5,000</span>
+              <span className="font-medium text-accent">UGX 5,000</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between py-1">
               <span className="text-muted-foreground">12kg Gas:</span>
-              <span className="font-medium">UGX 10,000</span>
+              <span className="font-medium text-accent">UGX 10,000</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between py-1">
               <span className="text-muted-foreground">Full Kits:</span>
-              <span className="font-medium">UGX 10,000</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Default:</span>
-              <span className="font-medium">UGX 3,000</span>
+              <span className="font-medium text-accent">UGX 10,000</span>
             </div>
           </div>
         </CardContent>

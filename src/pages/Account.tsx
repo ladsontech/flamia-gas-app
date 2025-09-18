@@ -382,20 +382,22 @@ const Account = () => {
         </div>
 
         {/* Active Section Content */}
-        {activeSection && <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
-            <div className="bg-background border-b px-4 py-4 flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)}>
-                ← Back
-              </Button>
-              <h2 className="text-lg font-semibold">
-                {activeSection === 'orders' && 'My Orders'}
-                {activeSection === 'profile' && 'Profile Settings'}
-                {activeSection === 'business' && 'My Business'}
-                {activeSection === 'referrals' && 'Referrals & Earnings'}
-              </h2>
-            </div>
-            
-            <div className="p-4">
+        {activeSection && <div className="fixed inset-0 bg-background z-50">
+            <div className="h-full flex flex-col">
+              <div className="bg-background border-b px-4 py-4 flex items-center space-x-4 flex-shrink-0">
+                <Button variant="ghost" size="sm" onClick={() => setActiveSection(null)}>
+                  ← Back
+                </Button>
+                <h2 className="text-lg font-semibold">
+                  {activeSection === 'orders' && 'My Orders'}
+                  {activeSection === 'profile' && 'Profile Settings'}
+                  {activeSection === 'business' && 'My Business'}
+                  {activeSection === 'referrals' && 'Referrals & Earnings'}
+                </h2>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-4">
               {activeSection === 'orders' && <OrdersManager userRole={userRole} userId={user?.id} />}
               {activeSection === 'profile' && <div className="space-y-4">
                   <AddressManager />
@@ -458,8 +460,10 @@ const Account = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </div>}
-              {activeSection === 'referrals' && <ReferralHub />}
+                 </div>}
+               {activeSection === 'referrals' && <ReferralHub />}
+                </div>
+              </div>
             </div>
           </div>}
       </div>
