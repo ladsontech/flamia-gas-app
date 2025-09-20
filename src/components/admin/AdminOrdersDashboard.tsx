@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
 import { 
   Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle,
-  DollarSign, TrendingUp, ShoppingCart, Filter, BarChart3
+  DollarSign, TrendingUp, ShoppingCart, Filter, BarChart3, ChevronDown
 } from "lucide-react";
 import { format, isToday, isYesterday, startOfWeek, isThisWeek, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -391,123 +391,220 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
                 )}
               </CardHeader>
               <CardContent className="p-3 sm:p-4 pt-0">
-                <div className="space-y-2 sm:space-y-3">
+                <div className="space-y-2">
                   {dayGroup.orders.map((order) => {
                     const orderInfo = extractOrderInfo(order.description);
                     return (
-                       <div key={order.id} className="p-3 sm:p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                          {/* Header - Product info and status */}
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium text-sm truncate">
-                                  {orderInfo.brand} {orderInfo.size} {orderInfo.type}
-                                </span>
-                                {orderInfo.quantity && (
-                                  <Badge variant="secondary" className="text-xs shrink-0">
-                                    {orderInfo.quantity}x
-                                  </Badge>
-                                )}
-                              </div>
-                              {getStatusBadge(order.status)}
-                            </div>
-                            <div className="text-xs text-muted-foreground ml-2">
-                              {format(new Date(order.created_at), 'HH:mm')}
-                            </div>
-                          </div>
-
-                          {/* Customer Details - Compact mobile layout */}
-                          <div className="space-y-1 mb-3 text-sm">
-                            {orderInfo.contact && (
-                              <div className="flex items-center gap-2">
-                                <Phone className="w-3 h-3 text-muted-foreground shrink-0" />
-                                <span className="truncate">{orderInfo.contact}</span>
-                              </div>
-                            )}
-                            {orderInfo.address && (
-                              <div className="flex items-start gap-2">
-                                <MapPin className="w-3 h-3 text-muted-foreground shrink-0 mt-0.5" />
-                                <span className="text-xs text-muted-foreground line-clamp-2">{orderInfo.address}</span>
-                              </div>
-                            )}
-                          </div>
-
-                         {/* Actions - Mobile-optimized */}
-                         <div className="flex items-center justify-between gap-2">
-                           {userRole === 'super_admin' && (
-                             <div className="flex items-center gap-1 flex-1">
-                               {!order.delivery_man_id && deliveryPersons.length > 0 && order.status === 'pending' ? (
-                                 <Select onValueChange={(value) => handleAssignOrder(order.id, value)}>
-                                   <SelectTrigger className="h-7 text-xs flex-1 min-w-0">
-                                     <SelectValue placeholder="Assign..." />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {deliveryPersons.map((person) => (
-                                       <SelectItem key={person.id} value={person.id}>
-                                         {person.name}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               ) : order.delivery_man ? (
-                                 <span className="text-xs text-muted-foreground truncate">
-                                   <User className="w-3 h-3 inline mr-1" />
-                                   {order.delivery_man.name}
-                                 </span>
-                               ) : null}
-                             </div>
-                           )}
-                           
-                           <div className="flex gap-1 shrink-0">
-                             {userRole === 'delivery_man' && order.status === 'assigned' && (
-                               <Button size="sm" onClick={() => handleUpdateStatus(order.id, 'in_progress')} className="h-7 text-xs px-2">
-                                 Start
-                               </Button>
-                             )}
-                             {userRole === 'delivery_man' && order.status === 'in_progress' && (
-                               <Button size="sm" onClick={() => handleUpdateStatus(order.id, 'completed')} className="h-7 text-xs px-2">
-                                 Complete
-                               </Button>
-                             )}
-                             {userRole === 'super_admin' && order.status === 'pending' && (
-                               <Dialog>
-                                 <DialogTrigger asChild>
-                                   <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => setCancellingOrder(order.id)}>
-                                     Cancel
-                                   </Button>
-                                 </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Cancel Order</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4">
-                                    <p>Are you sure you want to cancel this order?</p>
-                                    <Textarea 
-                                      placeholder="Reason for cancellation..."
-                                      value={cancellationReason}
-                                      onChange={(e) => setCancellationReason(e.target.value)}
-                                    />
-                                    <div className="flex gap-2">
-                                      <Button variant="destructive" onClick={handleCancelOrder}>
-                                        Cancel Order
-                                      </Button>
-                                      <Button variant="outline" onClick={() => setCancellingOrder(null)}>
-                                        Close
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                      <CompactOrderCard
+                        key={order.id}
+                        order={order}
+                        orderInfo={orderInfo}
+                        userRole={userRole}
+                        deliveryPersons={deliveryPersons}
+                        onAssignOrder={handleAssignOrder}
+                        onUpdateStatus={handleUpdateStatus}
+                        onCancelOrder={() => setCancellingOrder(order.id)}
+                        assigningOrders={assigningOrders}
+                        getStatusBadge={getStatusBadge}
+                      />
                     );
                   })}
                 </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Cancel Order Dialog */}
+      <Dialog open={!!cancellingOrder} onOpenChange={() => setCancellingOrder(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Order</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              placeholder="Reason for cancellation..."
+              value={cancellationReason}
+              onChange={(e) => setCancellationReason(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                onClick={handleCancelOrder}
+                disabled={!cancellationReason.trim()}
+              >
+                Cancel Order
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCancellingOrder(null);
+                  setCancellationReason('');
+                }}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+// Compact Order Card Component
+interface CompactOrderCardProps {
+  order: OrderWithDetails;
+  orderInfo: any;
+  userRole: string;
+  deliveryPersons: DeliveryPersonProfile[];
+  onAssignOrder: (orderId: string, deliveryPersonId: string) => void;
+  onUpdateStatus: (orderId: string, status: string) => void;
+  onCancelOrder: () => void;
+  assigningOrders: Set<string>;
+  getStatusBadge: (status?: string) => React.ReactNode;
+}
+
+const CompactOrderCard = ({ 
+  order, 
+  orderInfo, 
+  userRole, 
+  deliveryPersons, 
+  onAssignOrder, 
+  onUpdateStatus, 
+  onCancelOrder,
+  assigningOrders,
+  getStatusBadge 
+}: CompactOrderCardProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className="border rounded-lg bg-card">
+      {/* Compact Header */}
+      <div 
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <Package className="h-4 w-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-medium text-sm truncate">
+                {orderInfo.brand || 'Gas'} • {orderInfo.size || 'Standard'} • {orderInfo.type || 'Refill'}
+              </span>
+              {orderInfo.quantity && (
+                <Badge variant="secondary" className="text-xs shrink-0">
+                  {orderInfo.quantity}x
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span>{format(new Date(order.created_at), 'h:mm a')}</span>
+              {orderInfo.total && (
+                <>
+                  <span>•</span>
+                  <span className="font-medium text-primary">{orderInfo.total}</span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {getStatusBadge(order.status)}
+          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+        </div>
+      </div>
+
+      {/* Expanded Details */}
+      {isExpanded && (
+        <div className="border-t bg-muted/20 p-3 space-y-3">
+          {/* Customer Info */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Customer Details</h4>
+            <div className="grid grid-cols-1 gap-2 text-sm">
+              {orderInfo.contact && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-muted-foreground" />
+                  <span>{orderInfo.contact}</span>
+                </div>
+              )}
+              {orderInfo.address && (
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-3 w-3 text-muted-foreground mt-0.5 shrink-0" />
+                  <span className="text-xs leading-relaxed">{orderInfo.address}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Delivery Info */}
+          {order.delivery_man && (
+            <div className="space-y-2">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Delivery</h4>
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-3 w-3 text-muted-foreground" />
+                <span>Assigned to <strong>{order.delivery_man.name}</strong></span>
+                {order.assigned_at && (
+                  <span className="text-xs text-muted-foreground">
+                    on {format(new Date(order.assigned_at), 'MMM d, h:mm a')}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex items-center justify-between pt-2 border-t">
+            {userRole === 'super_admin' && !order.delivery_man_id && deliveryPersons.length > 0 && (
+              <Select onValueChange={(value) => onAssignOrder(order.id, value)}>
+                <SelectTrigger className="h-8 text-xs max-w-[150px]">
+                  <SelectValue placeholder="Assign delivery" />
+                </SelectTrigger>
+                <SelectContent>
+                  {deliveryPersons.map((person) => (
+                    <SelectItem key={person.id} value={person.id} className="text-xs">
+                      {person.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            <div className="flex gap-2 ml-auto">
+              {userRole === 'delivery_man' && order.status === 'assigned' && (
+                <Button 
+                  size="sm" 
+                  className="h-8 text-xs px-3"
+                  onClick={() => onUpdateStatus(order.id, 'in_progress')}
+                >
+                  Start Delivery
+                </Button>
+              )}
+              {userRole === 'delivery_man' && order.status === 'in_progress' && (
+                <Button 
+                  size="sm"
+                  className="h-8 text-xs px-3 bg-green-600 hover:bg-green-700"
+                  onClick={() => onUpdateStatus(order.id, 'completed')}
+                >
+                  Complete
+                </Button>
+              )}
+              {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  className="h-8 text-xs px-3"
+                  onClick={onCancelOrder}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
