@@ -47,7 +47,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
     // Load Google Maps API
     if (!window.google) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD83MF_Ewc0_nljYC2HCPT-iggoW8fUaxM&libraries=geometry,places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDXgwenEWkLBwTzrSgkJL-EsfJ3yPDd-3Y&libraries=geometry,places`;
       script.async = true;
       script.defer = true;
       script.onload = initMap;
