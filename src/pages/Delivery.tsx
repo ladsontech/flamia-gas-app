@@ -23,13 +23,12 @@ import { fetchOrders, updateOrderStatus } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { GeocodingService } from "@/utils/geocoding";
 
 interface DeliveryOrder extends Order {
   customerName: string;
   customerPhone: string;
-  address: string;
-  location: { lat: number; lng: number };
-  orderDetails: string;
+  displayAddress: string;
   estimatedTime: string;
 }
 
@@ -77,14 +76,24 @@ const Delivery = () => {
     ...order,
     customerName: `Customer ${index + 1}`,
     customerPhone: "+256700123456",
-    address: "Kampala, Uganda",
-    location: { 
-      lat: 0.3136 + (Math.random() - 0.5) * 0.1, 
-      lng: 32.5811 + (Math.random() - 0.5) * 0.1 
-    },
-    orderDetails: order.description,
+    displayAddress: order.delivery_address || "Address not available",
     estimatedTime: "30 mins"
   }));
+
+  // Get location coordinates for map markers
+  const getOrderLocation = (order: Order) => {
+    if (order.delivery_latitude && order.delivery_longitude) {
+      return {
+        lat: Number(order.delivery_latitude),
+        lng: Number(order.delivery_longitude)
+      };
+    }
+    // Fallback to Kampala coordinates with slight randomization
+    return {
+      lat: 0.3136 + (Math.random() - 0.5) * 0.1,
+      lng: 32.5811 + (Math.random() - 0.5) * 0.1
+    };
+  };
 
   // Initialize Google Maps
   useEffect(() => {
@@ -103,10 +112,12 @@ const Delivery = () => {
 
       // Add markers for assigned orders
       deliveryOrders.forEach(order => {
+        const orderLocation = getOrderLocation(order);
+        
         const marker = new window.google.maps.Marker({
-          position: order.location,
+          position: orderLocation,
           map: mapInstance,
-          title: `${order.customerName} - ${order.orderDetails}`,
+          title: `${order.customerName} - ${order.description}`,
           icon: {
             url: order.status === 'assigned' ? 
               'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiNGRjREMDAiLz4KPC9zdmc+' :
@@ -119,8 +130,8 @@ const Delivery = () => {
           content: `
             <div style="padding: 10px;">
               <h3 style="margin: 0 0 5px 0; font-weight: bold;">${order.customerName}</h3>
-              <p style="margin: 0 0 5px 0;">${order.orderDetails}</p>
-              <p style="margin: 0; color: #666;">${order.address}</p>
+              <p style="margin: 0 0 5px 0;">${order.description}</p>
+              <p style="margin: 0; color: #666;">${order.displayAddress}</p>
             </div>
           `
         });
@@ -193,7 +204,8 @@ const Delivery = () => {
   }, [map]);
 
   const handleNavigate = (order: DeliveryOrder) => {
-    const destination = `${order.location.lat},${order.location.lng}`;
+    const orderLocation = getOrderLocation(order);
+    const destination = `${orderLocation.lat},${orderLocation.lng}`;
     const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
     window.open(mapsUrl, '_blank');
   };
@@ -272,7 +284,7 @@ const Delivery = () => {
                         <div className="flex items-start justify-between">
                           <div>
                             <h3 className="font-medium">{order.customerName}</h3>
-                            <p className="text-sm text-gray-600 line-clamp-2">{order.orderDetails}</p>
+                            <p className="text-sm text-gray-600 line-clamp-2">{order.description}</p>
                           </div>
                           <Badge>
                             {order.status?.replace('_', ' ') || 'assigned'}
@@ -281,7 +293,7 @@ const Delivery = () => {
                         
                         <div className="flex items-center gap-2 text-sm text-gray-500">
                           <MapPin className="w-4 h-4" />
-                          <span className="truncate">{order.address}</span>
+                          <span className="truncate">{order.displayAddress}</span>
                         </div>
                         
                         <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -322,6 +334,7 @@ const Delivery = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleUpdateOrderStatus(order.id, 'in_progress');
+                                handleNavigate(order);
                               }}
                               className="flex-1 bg-blue-600 hover:bg-blue-700"
                             >
@@ -377,8 +390,8 @@ const Delivery = () => {
                       <h3 className="font-medium mb-2">Selected Order</h3>
                       <div className="space-y-2 text-sm">
                         <p><strong>Customer:</strong> {selectedOrder.customerName}</p>
-                        <p><strong>Order:</strong> {selectedOrder.orderDetails}</p>
-                        <p><strong>Address:</strong> {selectedOrder.address}</p>
+                        <p><strong>Order:</strong> {selectedOrder.description}</p>
+                        <p><strong>Address:</strong> {selectedOrder.displayAddress}</p>
                         <p><strong>Phone:</strong> {selectedOrder.customerPhone}</p>
                         <p><strong>Status:</strong> {selectedOrder.status?.replace('_', ' ') || 'assigned'}</p>
                       </div>

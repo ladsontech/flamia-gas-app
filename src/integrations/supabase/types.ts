@@ -353,6 +353,9 @@ export type Database = {
           cancelled_at: string | null
           cancelled_by: string | null
           created_at: string
+          delivery_address: string | null
+          delivery_latitude: number | null
+          delivery_longitude: number | null
           delivery_man_id: string | null
           description: string
           id: string
@@ -366,6 +369,9 @@ export type Database = {
           cancelled_at?: string | null
           cancelled_by?: string | null
           created_at?: string
+          delivery_address?: string | null
+          delivery_latitude?: number | null
+          delivery_longitude?: number | null
           delivery_man_id?: string | null
           description: string
           id?: string
@@ -379,6 +385,9 @@ export type Database = {
           cancelled_at?: string | null
           cancelled_by?: string | null
           created_at?: string
+          delivery_address?: string | null
+          delivery_latitude?: number | null
+          delivery_longitude?: number | null
           delivery_man_id?: string | null
           description?: string
           id?: string

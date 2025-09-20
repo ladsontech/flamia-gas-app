@@ -207,7 +207,7 @@ export class OrderService {
   }
 
   // Create order with referral tracking
-  static async createOrder(orderDetails: string, referralCode?: string): Promise<void> {
+  static async createOrder(orderDetails: string, referralCode?: string, location?: {lat: number, lng: number, address: string}): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     
     let referralId = null;
@@ -274,7 +274,10 @@ export class OrderService {
         description: orderDetails,
         status: 'pending',
         user_id: user?.id || null,
-        referral_id: referralId
+        referral_id: referralId,
+        delivery_address: location?.address || null,
+        delivery_latitude: location?.lat || null,
+        delivery_longitude: location?.lng || null
       }]);
     
     if (error) throw error;

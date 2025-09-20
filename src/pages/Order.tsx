@@ -181,7 +181,7 @@ const Order = () => {
           orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         }
         
-        await OrderService.createOrder(orderDescription, referralCode);
+        await OrderService.createOrder(orderDescription, referralCode, deliveryData.location);
       }
       
       toast({
