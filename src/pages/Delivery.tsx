@@ -22,6 +22,7 @@ import { Order } from "@/types/order";
 import { fetchOrders, updateOrderStatus } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DeliveryOrder extends Order {
   customerName: string;
@@ -131,17 +132,33 @@ const Delivery = () => {
       });
     };
 
-    // Load Google Maps API
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDXgwenEWkLBwTzrSgkJL-EsfJ3yPDd-3Y&libraries=geometry,places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = initMap;
-      document.head.appendChild(script);
-    } else {
-      initMap();
-    }
+    const loadGoogleMaps = async () => {
+      try {
+        // Fetch API key from edge function
+        const { data, error } = await supabase.functions.invoke('get-maps-api-key');
+        
+        if (error || !data?.apiKey) {
+          console.error('Google Maps API key not available');
+          return;
+        }
+
+        // Load Google Maps API
+        if (!window.google) {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=geometry,places`;
+          script.async = true;
+          script.defer = true;
+          script.onload = initMap;
+          document.head.appendChild(script);
+        } else {
+          initMap();
+        }
+      } catch (error) {
+        console.error('Error loading Google Maps:', error);
+      }
+    };
+
+    loadGoogleMaps();
   }, [deliveryOrders]);
 
   // Get current location

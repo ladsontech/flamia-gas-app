@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Check, AlertCircle, Search } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationPickerProps {
   onLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
@@ -44,17 +45,35 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       });
     };
 
-    // Load Google Maps API
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDXgwenEWkLBwTzrSgkJL-EsfJ3yPDd-3Y&libraries=geometry,places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = initMap;
-      document.head.appendChild(script);
-    } else {
-      initMap();
-    }
+    const loadGoogleMaps = async () => {
+      try {
+        // Fetch API key from edge function
+        const { data, error } = await supabase.functions.invoke('get-maps-api-key');
+        
+        if (error || !data?.apiKey) {
+          setError('Google Maps API key not available');
+          return;
+        }
+
+        // Load Google Maps API
+        if (!window.google) {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=geometry,places`;
+          script.async = true;
+          script.defer = true;
+          script.onload = initMap;
+          script.onerror = () => setError('Failed to load Google Maps');
+          document.head.appendChild(script);
+        } else {
+          initMap();
+        }
+      } catch (error) {
+        console.error('Error loading Google Maps:', error);
+        setError('Failed to load Google Maps');
+      }
+    };
+
+    loadGoogleMaps();
   }, []);
 
   // Initialize Places Autocomplete
