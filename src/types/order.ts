@@ -7,6 +7,9 @@ export interface Order {
   status?: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled' | null;
   assigned_at?: string | null;
   user_id?: string;
+  delivery_address?: string | null;
+  delivery_latitude?: number | null;
+  delivery_longitude?: number | null;
 }
 
 export interface OrderFormData {
