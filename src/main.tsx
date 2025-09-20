@@ -1,7 +1,9 @@
 
 import { StrictMode } from 'react';
+import * as React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
+import ErrorBoundary from './components/ErrorBoundary.tsx'
 import './index.css'
 
 const container = document.getElementById("root");
@@ -255,39 +257,96 @@ declare global {
   }
 }
 
-// Delay rendering to avoid interference from external scripts (like AdSense)
-const initializeApp = () => {
-  // Ensure React can initialize properly by delaying rendering
-  requestAnimationFrame(() => {
-    setTimeout(() => {
+// Ensure React is available before attempting to render
+const waitForReact = (): Promise<void> => {
+  return new Promise((resolve) => {
+    const checkReact = () => {
+      // Check if React hooks are available
       try {
+        // Test if React context is available
+        if (typeof React !== 'undefined' && React.useState) {
+          resolve();
+        } else {
+          setTimeout(checkReact, 50);
+        }
+      } catch (error) {
+        setTimeout(checkReact, 50);
+      }
+    };
+    checkReact();
+  });
+};
+
+// Safe initialization with proper React context checks
+const initializeApp = async () => {
+  try {
+    // Wait for React to be fully available
+    await waitForReact();
+    
+    // Additional delay to ensure external scripts have settled
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Verify container still exists
+    if (!container) {
+      throw new Error("Root container not found after initialization");
+    }
+
+    const root = createRoot(container);
+    
+    // Render with error boundary
+    root.render(
+      <StrictMode>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </StrictMode>
+    );
+    
+    console.log('React app initialized successfully');
+  } catch (error) {
+    console.error('Error initializing React app:', error);
+    
+    // Fallback: wait longer and try again
+    setTimeout(async () => {
+      try {
+        await waitForReact();
         const root = createRoot(container);
-        
-        // Render the app with proper React context
         root.render(
           <StrictMode>
-            <App />
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
           </StrictMode>
         );
-      } catch (error) {
-        console.error('Error initializing React app:', error);
-        // Fallback: try again after a longer delay
-        setTimeout(() => {
-          const root = createRoot(container);
-          root.render(
-            <StrictMode>
-              <App />
-            </StrictMode>
-          );
-        }, 1000);
+        console.log('React app initialized on fallback');
+      } catch (fallbackError) {
+        console.error('Fallback initialization failed:', fallbackError);
+        // Last resort: show error message
+        if (container) {
+          container.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: #ef4444;">
+              <h2>Loading Error</h2>
+              <p>Please refresh the page to continue.</p>
+              <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">
+                Refresh Page
+              </button>
+            </div>
+          `;
+        }
       }
-    }, 100);
-  });
+    }, 2000);
+  }
 };
 
 // Wait for DOM to be ready and external scripts to settle
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
-  initializeApp();
+  // Ensure React is loaded before initializing
+  if (typeof React !== 'undefined') {
+    initializeApp();
+  } else {
+    // Wait for React to load
+    setTimeout(initializeApp, 100);
+  }
 }
