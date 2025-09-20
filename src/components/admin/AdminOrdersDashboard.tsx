@@ -84,53 +84,31 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   };
 
   const extractOrderInfo = (description: string) => {
-    const info: any = { contact: '', address: '' };
+    const lines = description.split('\n');
+    const info: any = {};
     
-    // New format: "Brand SIZE type (Qty: X) - Contact: PHONE - Address: ADDRESS"
-    // Extract contact
-    const contactMatch = description.match(/Contact:\s*([^-]+?)(?:\s*-|$)/);
-    if (contactMatch) {
-      info.contact = contactMatch[1].trim();
-    }
-    
-    // Extract address
-    const addressMatch = description.match(/Address:\s*(.+?)$/);
-    if (addressMatch) {
-      info.address = addressMatch[1].trim();
-    }
-    
-    // Extract quantity
-    const qtyMatch = description.match(/\(Qty:\s*(\d+)\)/);
-    if (qtyMatch) {
-      info.quantity = qtyMatch[1];
-    }
-    
-    // Extract brand, size, and type from the beginning
-    const mainPart = description.split(' - Contact:')[0];
-    const parts = mainPart.split(' ');
-    
-    if (parts.length >= 2) {
-      info.brand = parts[0];
+    lines.forEach(line => {
+      if (line.includes('Brand:') && !line.includes('*Brand:*')) info.brand = line.split('Brand:')[1]?.trim();
+      if (line.includes('Size:') && !line.includes('*Size:*')) info.size = line.split('Size:')[1]?.trim();
+      if (line.includes('Price:') && !line.includes('*Price:*')) info.price = line.split('Price:')[1]?.trim();
+      if (line.includes('Quantity:') && !line.includes('*Quantity:*')) info.quantity = line.split('Quantity:')[1]?.trim();
+      if (line.includes('Contact:') && !line.includes('*Contact:*')) info.contact = line.split('Contact:')[1]?.trim();
+      if (line.includes('Address:') && !line.includes('*Address:*')) info.address = line.split('Address:')[1]?.trim();
+      if (line.includes('Order Type:') && !line.includes('*Order Type:*')) info.type = line.split('Order Type:')[1]?.trim();
+      if (line.includes('Item:') && !line.includes('*Item:*')) info.item = line.split('Item:')[1]?.trim();
+      if (line.includes('Total Amount:') && !line.includes('*Total Amount:*')) info.total = line.split('Total Amount:')[1]?.trim();
       
-      // Look for size pattern (3kg, 6kg, 12kg, etc.)
-      const sizeMatch = mainPart.match(/(\d+kg)/i);
-      if (sizeMatch) {
-        info.size = sizeMatch[1].toUpperCase();
-      }
-      
-      // Determine type
-      if (mainPart.toLowerCase().includes('refill')) {
-        info.type = 'Refill';
-      } else if (mainPart.toLowerCase().includes('full set') || mainPart.toLowerCase().includes('kit')) {
-        info.type = 'Full Set';
-      } else if (mainPart.toLowerCase().includes('accessory')) {
-        info.type = 'Accessory';
-      } else if (mainPart.toLowerCase().includes('gadget')) {
-        info.type = 'Gadget';
-      } else {
-        info.type = 'Gas Product';
-      }
-    }
+      // Also check for WhatsApp format
+      if (line.includes('*Brand:*')) info.brand = line.split('*Brand:*')[1]?.trim();
+      if (line.includes('*Size:*')) info.size = line.split('*Size:*')[1]?.trim();
+      if (line.includes('*Price:*')) info.price = line.split('*Price:*')[1]?.trim();
+      if (line.includes('*Quantity:*')) info.quantity = line.split('*Quantity:*')[1]?.trim();
+      if (line.includes('*Contact:*')) info.contact = line.split('*Contact:*')[1]?.trim();
+      if (line.includes('*Address:*')) info.address = line.split('*Address:*')[1]?.trim();
+      if (line.includes('*Order Type:*')) info.type = line.split('*Order Type:*')[1]?.trim();
+      if (line.includes('*Item:*')) info.item = line.split('*Item:*')[1]?.trim();
+      if (line.includes('*Total Amount:*')) info.total = line.split('*Total Amount:*')[1]?.trim();
+    });
     
     return info;
   };

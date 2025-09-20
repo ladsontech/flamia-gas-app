@@ -361,23 +361,25 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
-            {/* Sign Out */}
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
-              <CardContent className="p-0">
-                <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                      <LogOut className="w-6 h-6 text-accent" />
+            {/* Sign Out - positioned lower */}
+            <div className="mt-8">
+              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+                <CardContent className="p-0">
+                  <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                        <LogOut className="w-6 h-6 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-foreground">Sign Out</span>
+                        <p className="text-xs text-muted-foreground">Logout from account</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="font-semibold text-foreground">Sign Out</span>
-                      <p className="text-xs text-muted-foreground">Logout from account</p>
-                    </div>
+                    <div className="w-5 h-5 text-muted-foreground">→</div>
                   </div>
-                  <div className="w-5 h-5 text-muted-foreground">→</div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
 
