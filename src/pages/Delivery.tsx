@@ -172,36 +172,100 @@ const Delivery = () => {
     loadGoogleMaps();
   }, [deliveryOrders]);
 
-  // Get current location
+  // Real-time location tracking
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setCurrentLocation(location);
-          
-          // Add current location marker
-          if (map) {
-            new window.google.maps.Marker({
+    let watchId: number | null = null;
+    let currentLocationMarker: google.maps.Marker | null = null;
+    let routeRenderer: google.maps.DirectionsRenderer | null = null;
+
+    const startLocationTracking = () => {
+      if (navigator.geolocation && map) {
+        watchId = navigator.geolocation.watchPosition(
+          (position) => {
+            const location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            setCurrentLocation(location);
+            
+            // Remove previous current location marker
+            if (currentLocationMarker) {
+              currentLocationMarker.setMap(null);
+            }
+
+            // Add updated current location marker
+            currentLocationMarker = new window.google.maps.Marker({
               position: location,
               map: map,
-              title: 'Your Location',
+              title: 'Your Current Location',
               icon: {
-                url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMzQjgyRjYiLz4KPC9zdmc+',
-                scaledSize: new window.google.maps.Size(20, 20)
-              }
+                url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOCIgZmlsbD0iIzNCODJGNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4K',
+                scaledSize: new window.google.maps.Size(24, 24)
+              },
+              zIndex: 1000
             });
+
+            // If there's a selected order, show route
+            if (selectedOrder) {
+              const orderLocation = getOrderLocation(selectedOrder);
+              const directionsService = new window.google.maps.DirectionsService();
+              
+              // Remove previous route
+              if (routeRenderer) {
+                routeRenderer.setMap(null);
+              }
+
+              directionsService.route(
+                {
+                  origin: location,
+                  destination: orderLocation,
+                  travelMode: window.google.maps.TravelMode.DRIVING,
+                },
+                (result, status) => {
+                  if (status === 'OK') {
+                    routeRenderer = new window.google.maps.DirectionsRenderer({
+                      directions: result,
+                      suppressMarkers: true, // We have custom markers
+                      polylineOptions: {
+                        strokeColor: '#3B82F6',
+                        strokeWeight: 4,
+                        strokeOpacity: 0.8
+                      }
+                    });
+                    routeRenderer.setMap(map);
+                  }
+                }
+              );
+            }
+          },
+          (error) => {
+            console.error('Error tracking location:', error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 1000
           }
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-        }
-      );
+        );
+      }
+    };
+
+    if (map) {
+      startLocationTracking();
     }
-  }, [map]);
+
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+      if (currentLocationMarker) {
+        currentLocationMarker.setMap(null);
+      }
+      if (routeRenderer) {
+        routeRenderer.setMap(null);
+      }
+    };
+  }, [map, selectedOrder]);
 
   const handleNavigate = (order: DeliveryOrder) => {
     const orderLocation = getOrderLocation(order);
