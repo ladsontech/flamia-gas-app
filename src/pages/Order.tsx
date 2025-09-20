@@ -139,13 +139,13 @@ const Order = () => {
         let orderDescription = '';
         
         if (item.type === 'full_set') {
-          orderDescription = `${item.brand} ${item.size?.toUpperCase()} full set (Qty: ${item.quantity}) - Contact: ${deliveryData.contact} - Address: ${deliveryData.address}`;
+          orderDescription = `Order Type: Full Set\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         } else if (item.type === 'refill') {
-          orderDescription = `${item.brand} ${item.size?.toUpperCase()} refill (Qty: ${item.quantity}) - Contact: ${deliveryData.contact} - Address: ${deliveryData.address}`;
+          orderDescription = `Order Type: Refill\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         } else if (item.type === 'accessory') {
-          orderDescription = `${item.name} (Qty: ${item.quantity}) - Contact: ${deliveryData.contact} - Address: ${deliveryData.address}`;
+          orderDescription = `Order Type: Accessory\nItem: ${item.name}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         } else if (item.type === 'gadget') {
-          orderDescription = `${item.name} (Qty: ${item.quantity}) - Contact: ${deliveryData.contact} - Address: ${deliveryData.address}`;
+          orderDescription = `Order Type: Gadget\nItem: ${item.name}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         }
         
         await OrderService.createOrder(orderDescription, referralCode);
