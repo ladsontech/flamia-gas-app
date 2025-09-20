@@ -19,7 +19,7 @@ export class GeocodingService {
     try {
       const apiKey = await this.getGoogleMapsApiKey();
       if (!apiKey) {
-        return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        return `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       }
 
       const response = await fetch(
@@ -29,33 +29,64 @@ export class GeocodingService {
       const data = await response.json();
       
       if (data.results && data.results.length > 0) {
-        // Try to find a good address format
-        const result = data.results[0];
+        // Prioritize different address types for better readability
+        for (const result of data.results) {
+          const addressComponents = result.address_components || [];
+          
+          // Look for establishments or points of interest first
+          if (result.types.includes('establishment') || result.types.includes('point_of_interest')) {
+            const name = addressComponents.find((c: any) => c.types.includes('establishment'))?.long_name;
+            const locality = addressComponents.find((c: any) => c.types.includes('locality') || c.types.includes('sublocality'))?.long_name;
+            
+            if (name && locality) {
+              return `${name}, ${locality}`;
+            }
+          }
+        }
         
-        // Look for a formatted address that's not too long
-        const addressComponents = result.address_components || [];
+        // If no establishment found, look for street address
+        const mainResult = data.results[0];
+        const addressComponents = mainResult.address_components || [];
+        
         const route = addressComponents.find((c: any) => c.types.includes('route'))?.long_name;
         const locality = addressComponents.find((c: any) => c.types.includes('locality'))?.long_name;
-        const sublocality = addressComponents.find((c: any) => c.types.includes('sublocality'))?.long_name;
+        const sublocality = addressComponents.find((c: any) => 
+          c.types.includes('sublocality') || c.types.includes('sublocality_level_1')
+        )?.long_name;
+        const neighborhood = addressComponents.find((c: any) => c.types.includes('neighborhood'))?.long_name;
         
+        // Build a readable address
         if (route && (locality || sublocality)) {
           return `${route}, ${locality || sublocality}`;
+        } else if (sublocality && locality) {
+          return `${sublocality}, ${locality}`;
+        } else if (neighborhood && locality) {
+          return `${neighborhood}, ${locality}`;
+        } else if (locality) {
+          return locality;
         }
         
-        // Fallback to formatted address but trim if too long
-        let formattedAddress = result.formatted_address;
-        if (formattedAddress.length > 50) {
+        // Last fallback - use formatted address but make it cleaner
+        let formattedAddress = mainResult.formatted_address;
+        
+        // Remove country and postal codes for cleaner display
+        formattedAddress = formattedAddress
+          .replace(/,\s*Uganda\s*/gi, '')
+          .replace(/,\s*\d{5,}\s*/g, '');
+        
+        // Limit length
+        if (formattedAddress.length > 60) {
           const parts = formattedAddress.split(',');
-          formattedAddress = parts.slice(0, 2).join(',');
+          formattedAddress = parts.slice(0, 2).join(',').trim();
         }
         
-        return formattedAddress;
+        return formattedAddress || `Location near ${locality || 'Kampala'}`;
       }
       
-      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      return `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     } catch (error) {
       console.error('Reverse geocoding error:', error);
-      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      return `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     }
   }
 }

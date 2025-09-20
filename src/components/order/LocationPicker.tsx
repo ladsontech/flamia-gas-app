@@ -113,19 +113,14 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
         setMarker(newMarker);
       }
 
-      // Use provided address or get address from coordinates
+      // Use provided address or get a readable place name from coordinates
       if (providedAddress) {
         onLocationSelect({ lat, lng, address: providedAddress });
       } else {
-        const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-          if (status === 'OK' && results && results[0]) {
-            const address = results[0].formatted_address;
-            onLocationSelect({ lat, lng, address });
-          } else {
-            onLocationSelect({ lat, lng, address: `${lat.toFixed(6)}, ${lng.toFixed(6)}` });
-          }
-        });
+        // Use our enhanced geocoding service for better place names
+        const { GeocodingService } = await import('@/utils/geocoding');
+        const address = await GeocodingService.reverseGeocode(lat, lng);
+        onLocationSelect({ lat, lng, address });
       }
 
       map?.panTo({ lat, lng });

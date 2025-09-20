@@ -31,9 +31,8 @@ const Order = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [deliveryData, setDeliveryData] = useState({
-    address: "",
     contact: "",
-    location: undefined
+    location: null
   });
 
   useEffect(() => {
@@ -69,7 +68,11 @@ const Order = () => {
         if (defaultAddress) {
           setDeliveryData(prev => ({
             ...prev,
-            address: defaultAddress.address_line,
+            location: {
+              lat: Number(defaultAddress.latitude) || 0.3476,
+              lng: Number(defaultAddress.longitude) || 32.5825,
+              address: defaultAddress.address_line
+            },
             contact: profile.phone_number || ""
           }));
         } else if (profile.phone_number) {
@@ -160,25 +163,25 @@ const Order = () => {
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
           }
-          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
         } else if (item.type === 'refill') {
           orderDescription = `Order Type: Refill\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
           }
-          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
         } else if (item.type === 'accessory') {
           orderDescription = `Order Type: Accessory\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
           }
-          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
         } else if (item.type === 'gadget') {
           orderDescription = `Order Type: Gadget\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
           }
-          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
         }
         
         await OrderService.createOrder(orderDescription, referralCode, deliveryData.location);
@@ -303,25 +306,14 @@ const Order = () => {
               </div>
 
               <div>
-                <Label>Location</Label>
                 <LocationPicker
+                  selectedLocation={deliveryData.location}
                   onLocationSelect={(loc) => {
                     setDeliveryData(prev => ({
                       ...prev,
-                      location: loc,
-                      address: loc.address
+                      location: loc
                     }));
                   }}
-                />
-              </div>
-
-              <div>
-                <Label>Delivery Address</Label>
-                <Input
-                  value={deliveryData.address}
-                  onChange={(e) => setDeliveryData(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="Enter delivery address"
-                  required
                 />
               </div>
 
@@ -335,7 +327,7 @@ const Order = () => {
               <Button
                 type="submit"
                 className="w-full bg-accent hover:bg-accent/90 text-white"
-                disabled={loading || !deliveryData.address || !deliveryData.contact}
+                disabled={loading || !deliveryData.location || !deliveryData.contact}
               >
                 {loading ? "Processing..." : "Place Orders"}
               </Button>
