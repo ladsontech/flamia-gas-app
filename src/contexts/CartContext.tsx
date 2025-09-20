@@ -18,11 +18,16 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
+  promoCode: string;
+  promoDiscount: number;
   addToCart: (item: Omit<CartItem, 'id'>) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  applyPromoCode: (code: string) => boolean;
+  removePromoCode: () => void;
   getTotalPrice: () => number;
+  getSubtotal: () => number;
   getItemCount: () => number;
 }
 
@@ -38,6 +43,8 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [promoCode, setPromoCode] = useState<string>('');
+  const [promoDiscount, setPromoDiscount] = useState<number>(0);
 
   const addToCart = (newItem: Omit<CartItem, 'id'>) => {
     const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -81,10 +88,39 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => {
     setItems([]);
+    setPromoCode('');
+    setPromoDiscount(0);
+  };
+
+  const applyPromoCode = (code: string): boolean => {
+    const normalizedCode = code.toLowerCase().trim();
+    
+    // Check if code is valid
+    const validCodes: { [key: string]: number } = {
+      'banda': 5000,
+    };
+    
+    if (validCodes[normalizedCode]) {
+      setPromoCode(code);
+      setPromoDiscount(validCodes[normalizedCode]);
+      return true;
+    }
+    
+    return false;
+  };
+
+  const removePromoCode = () => {
+    setPromoCode('');
+    setPromoDiscount(0);
+  };
+
+  const getSubtotal = () => {
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const subtotal = getSubtotal();
+    return Math.max(0, subtotal - promoDiscount);
   };
 
   const getItemCount = () => {
@@ -93,11 +129,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const value: CartContextType = {
     items,
+    promoCode,
+    promoDiscount,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
+    applyPromoCode,
+    removePromoCode,
     getTotalPrice,
+    getSubtotal,
     getItemCount,
   };
 

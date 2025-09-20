@@ -18,7 +18,14 @@ import { OrderService } from "@/services/orderService";
 const Order = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { items, clearCart, getTotalPrice } = useCart();
+  const { 
+    items, 
+    clearCart, 
+    getTotalPrice, 
+    getSubtotal,
+    promoCode, 
+    promoDiscount 
+  } = useCart();
   const [loading, setLoading] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -137,15 +144,41 @@ const Order = () => {
       // Create orders for each item in cart
       for (const item of items) {
         let orderDescription = '';
+        let finalPrice = item.price;
+        let promoDiscountPerItem = 0;
+        
+        // Calculate promo discount per item if applicable
+        if (promoDiscount > 0) {
+          const itemTotal = item.price * item.quantity;
+          const cartSubtotal = getSubtotal();
+          promoDiscountPerItem = Math.floor((itemTotal / cartSubtotal) * promoDiscount);
+          finalPrice = Math.max(0, item.price - Math.floor(promoDiscountPerItem / item.quantity));
+        }
         
         if (item.type === 'full_set') {
-          orderDescription = `Order Type: Full Set\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription = `Order Type: Full Set\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
+          if (promoCode) {
+            orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
+          }
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         } else if (item.type === 'refill') {
-          orderDescription = `Order Type: Refill\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription = `Order Type: Refill\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
+          if (promoCode) {
+            orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
+          }
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         } else if (item.type === 'accessory') {
-          orderDescription = `Order Type: Accessory\nItem: ${item.name}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription = `Order Type: Accessory\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
+          if (promoCode) {
+            orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
+          }
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         } else if (item.type === 'gadget') {
-          orderDescription = `Order Type: Gadget\nItem: ${item.name}\nQuantity: ${item.quantity}\nPrice: UGX ${item.price.toLocaleString()}\nTotal Amount: UGX ${(item.price * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
+          orderDescription = `Order Type: Gadget\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
+          if (promoCode) {
+            orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
+          }
+          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nAddress: ${deliveryData.address}`;
         }
         
         await OrderService.createOrder(orderDescription, referralCode);
