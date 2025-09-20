@@ -29,7 +29,7 @@ const DeliveryLogin = () => {
           title: "Login successful",
           description: `Welcome back, ${deliveryMan.name}!`
         });
-        navigate('/delivery');
+        navigate('/account');
       } else {
         toast({
           title: "Login failed",

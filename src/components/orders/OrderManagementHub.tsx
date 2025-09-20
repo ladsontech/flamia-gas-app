@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
-import { Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle } from "lucide-react";
+import { Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -417,7 +417,7 @@ const filteredOrders = orders.filter(order => {
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       {userRole === 'delivery_man' && (
                         <>
                           {order.status === 'assigned' && (
@@ -435,6 +435,21 @@ const filteredOrders = orders.filter(order => {
                               className="bg-green-600 hover:bg-green-700"
                             >
                               Mark Complete
+                            </Button>
+                          )}
+                          {(order.status === 'assigned' || order.status === 'in_progress') && 
+                           order.delivery_latitude && order.delivery_longitude && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                const destination = `${order.delivery_latitude},${order.delivery_longitude}`;
+                                const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+                                window.open(url, '_blank');
+                              }}
+                            >
+                              <ExternalLink className="w-4 h-4 mr-1" />
+                              Navigate
                             </Button>
                           )}
                         </>

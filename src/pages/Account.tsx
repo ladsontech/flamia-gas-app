@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { getUserBusinesses } from "@/services/adminService";
 import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
@@ -38,6 +39,7 @@ const Account = () => {
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const {
     toast
   } = useToast();
@@ -361,24 +363,53 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
-            {/* Sign Out - positioned lower */}
+            {/* Sign Out - positioned lower with confirmation */}
             <div className="mt-8">
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
-                <CardContent className="p-0">
-                  <div className="p-5 flex items-center justify-between" onClick={handleSignOut}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                        <LogOut className="w-6 h-6 text-accent" />
+              <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+                <DialogTrigger asChild>
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+                    <CardContent className="p-0">
+                      <div className="p-5 flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
+                            <LogOut className="w-6 h-6 text-accent" />
+                          </div>
+                          <div>
+                            <span className="font-semibold text-foreground">Sign Out</span>
+                            <p className="text-xs text-muted-foreground">Logout from account</p>
+                          </div>
+                        </div>
+                        <div className="w-5 h-5 text-muted-foreground">→</div>
                       </div>
-                      <div>
-                        <span className="font-semibold text-foreground">Sign Out</span>
-                        <p className="text-xs text-muted-foreground">Logout from account</p>
-                      </div>
-                    </div>
-                    <div className="w-5 h-5 text-muted-foreground">→</div>
+                    </CardContent>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Confirm Sign Out</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to sign out of your account?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowLogoutDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => {
+                        setShowLogoutDialog(false);
+                        handleSignOut();
+                      }}
+                    >
+                      Sign Out
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
