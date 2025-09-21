@@ -220,7 +220,7 @@ const PopularBrands: React.FC = () => {
                   </div>
                   
                   {/* Free delivery note */}
-                  <div className="text-xs text-green-700 mt-1 font-medium">
+                  <div className="text-xs text-accent mt-1 font-medium">
                     FREE delivery
                   </div>
                 </div>
