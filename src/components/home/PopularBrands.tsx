@@ -79,7 +79,7 @@ const PopularBrands: React.FC = () => {
   };
 
   const handleGadgetClick = (gadget: Gadget) => {
-    navigate(`/gadgets/${gadget.id}`);
+    navigate(`/gadget/${gadget.id}`);
   };
 
   const formatPrice = (price: number) => {
