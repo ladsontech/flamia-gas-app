@@ -35,12 +35,12 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   // Define active states
   const isHomeActive = path === "/";
   const isGadgetsActive = path === "/gadgets";
-  const isSignInActive = path === "/signin" || path === "/signup";
+  const isAccountActive = path === "/account";
 
   // Determine account navigation
-  const accountPath = isAuthenticated ? "/orders" : "/signin";
-  const accountLabel = isAuthenticated ? "Orders" : "Sign In";
-  const isAccountActive = isAuthenticated ? (path === "/orders") : isSignInActive;
+  const accountPath = "/account";
+  const accountLabel = isAuthenticated ? "Account" : "Sign In";
+  const isSignInActive = path === "/signin" || path === "/signup";
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg md:hidden">

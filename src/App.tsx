@@ -9,7 +9,7 @@ import UpdateNotification from './components/UpdateNotification';
 import { supabase } from './integrations/supabase/client';
 import { CartProvider } from '@/contexts/CartContext';
 import Admin from './pages/Admin';
-import Login from './pages/Login';
+
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Account from './pages/Account';
@@ -92,12 +92,12 @@ function App() {
             
             <main className="flex-1 pb-24 md:pb-0">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Navigate to="/account" replace />} />
                 <Route path="/gadgets" element={<Gadgets />} />
                 {/* <Route path="/foods" element={<Foods />} /> */}
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/account" element={<Account />} />
-                <Route path="/login" element={<Login />} />
+                
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/order" element={<Order />} />
