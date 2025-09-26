@@ -2,6 +2,8 @@
 import { useLocation } from "react-router-dom";
 import { Home, ShoppingBag, User, RotateCw, Utensils } from "lucide-react";
 import { NavItem } from "./navigation/NavItem";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BottomNavProps {
   isAdmin: boolean | null;
@@ -11,12 +13,34 @@ interface BottomNavProps {
 export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   const location = useLocation();
   const path = location.pathname;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const phoneVerified = localStorage.getItem('phoneVerified');
+      setIsAuthenticated(!!(user || phoneVerified));
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const phoneVerified = localStorage.getItem('phoneVerified');
+      setIsAuthenticated(!!(session?.user || phoneVerified));
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Define active states
   const isHomeActive = path === "/";
   const isGadgetsActive = path === "/gadgets";
-  // const isFoodsActive = path === "/foods"; // Temporarily hidden
-  const isAccountActive = path === "/account";
+  const isSignInActive = path === "/signin" || path === "/signup";
+
+  // Determine account navigation
+  const accountPath = isAuthenticated ? "/orders" : "/signin";
+  const accountLabel = isAuthenticated ? "Orders" : "Sign In";
+  const isAccountActive = isAuthenticated ? (path === "/orders") : isSignInActive;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg md:hidden">
@@ -35,9 +59,9 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
         />
         {/* Foods section temporarily hidden */}
         <NavItem
-          to="/account"
+          to={accountPath}
           icon={User}
-          label="Account"
+          label={accountLabel}
           isActive={isAccountActive}
         />
       </div>

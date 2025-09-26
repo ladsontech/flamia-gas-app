@@ -46,6 +46,8 @@ import UltimateGasUganda from './pages/UltimateGasUganda';
 import { useUserRole } from './hooks/useUserRole';
 import { GoogleSignUpHandler } from './components/auth/GoogleSignUpHandler';
 import InstallPWA from './components/InstallPWA';
+import OccasionalSignInPopup from './components/auth/OccasionalSignInPopup';
+import { Navigate } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
@@ -85,6 +87,7 @@ function App() {
             <AppBar />
             <GoogleSignUpHandler />
             <InstallPWA />
+            <OccasionalSignInPopup />
             <Toaster />
             
             <main className="flex-1 pb-24 md:pb-0">
@@ -93,7 +96,7 @@ function App() {
                 <Route path="/gadgets" element={<Gadgets />} />
                 {/* <Route path="/foods" element={<Foods />} /> */}
                 <Route path="/orders" element={<Orders />} />
-                <Route path="/account" element={<Account />} />
+                <Route path="/account" element={<Navigate to="/signin" replace />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
