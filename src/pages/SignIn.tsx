@@ -73,10 +73,7 @@ const SignIn = () => {
           </CardHeader>
           
           <CardContent>
-            {/* Always show email signin, phone signin code kept but hidden */}
-            <EmailSignInOnly />
-            {false && authMethod === 'phone' && <PhoneSignInOnly />}
-            <div className="mt-4 flex flex-col gap-2">
+            <div className="mb-4 flex flex-col gap-2">
               <Button
                 variant="outline"
                 className="w-full hover:bg-accent/10 border-accent/30"
@@ -98,6 +95,19 @@ const SignIn = () => {
                 Continue with Google
               </Button>
             </div>
+            
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-accent/20" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">or</span>
+              </div>
+            </div>
+            
+            {/* Always show email signin, phone signin code kept but hidden */}
+            <EmailSignInOnly />
+            {false && authMethod === 'phone' && <PhoneSignInOnly />}
           </CardContent>
           
           <div className="px-6 pb-6">
