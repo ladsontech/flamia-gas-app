@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,25 @@ import { supabase } from "@/integrations/supabase/client";
 const SignIn = () => {
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already authenticated and redirect to account
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        navigate('/account');
+        return;
+      }
+      
+      // Also check for phone verification
+      const phoneVerified = localStorage.getItem('phoneVerified');
+      if (phoneVerified) {
+        navigate('/account');
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
@@ -81,8 +100,8 @@ const SignIn = () => {
                   await supabase.auth.signInWithOAuth({ 
                     provider: 'google', 
                     options: { 
-                      redirectTo: `${window.location.origin}/`
-                    } 
+                      redirectTo: `${window.location.origin}/account`
+                    }
                   });
                 }}
               >

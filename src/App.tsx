@@ -96,7 +96,7 @@ function App() {
                 <Route path="/gadgets" element={<Gadgets />} />
                 {/* <Route path="/foods" element={<Foods />} /> */}
                 <Route path="/orders" element={<Orders />} />
-                <Route path="/account" element={<Navigate to="/signin" replace />} />
+                <Route path="/account" element={<Account />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
