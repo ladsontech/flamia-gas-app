@@ -205,29 +205,10 @@ const Account = () => {
       </div>;
   }
 
-  // If not authenticated, show guest view
+  // If not authenticated, redirect to sign in
   if (!user) {
-    return <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
-        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6 space-y-4 sm:space-y-6">
-          <Card className="text-center p-8">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-10 h-10 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">Welcome to Your Account</h2>
-            <p className="text-muted-foreground mb-6">Sign in to access your orders, preferences, and more</p>
-            
-            <div className="space-y-3 max-w-sm mx-auto">
-              <Button className="w-full" onClick={() => navigate('/signin')}>
-                Sign In
-              </Button>
-              
-              <Button variant="outline" className="w-full" onClick={() => navigate('/signup')}>
-                Create Account
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>;
+    navigate('/signin');
+    return null;
   }
 
   // Authenticated user view
