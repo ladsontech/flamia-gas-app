@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
@@ -70,16 +70,11 @@ const OccasionalSignInPopup = () => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-accent" />
-              </div>
-              <DialogTitle className="text-xl">Join Flamia!</DialogTitle>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-accent" />
             </div>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="w-4 h-4" />
-            </Button>
+            <DialogTitle className="text-xl">Join Flamia!</DialogTitle>
           </div>
           <DialogDescription className="text-left mt-2">
             Sign up now to track your orders, earn rewards, and get faster checkout!
