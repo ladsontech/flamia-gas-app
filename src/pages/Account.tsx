@@ -215,152 +215,139 @@ const Account = () => {
   return <div className="min-h-screen bg-background">
       <AppBar />
       <div className="pt-16 pb-20">
-        {/* Mobile Header with Welcome */}
-        <div className="bg-gradient-to-r from-background via-accent/5 to-background px-4 py-6">
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Welcome back,</p>
-            <h1 className="text-2xl font-bold text-foreground">{getDisplayName()}! 👋</h1>
+        {/* Compact Mobile Header */}
+        <div className="bg-gradient-to-r from-background via-accent/5 to-background px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-semibold text-foreground">{getDisplayName()}</h1>
+              <div className="flex items-center gap-2 mt-1">
+                {userRole !== 'user' && <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                    {userRole.replace('_', ' ')}
+                  </Badge>}
+                <p className="text-xs text-muted-foreground">
+                  {user.email ? user.email.split('@')[0] : profile?.phone_number}
+                </p>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
+              <User className="w-6 h-6 text-accent" />
+            </div>
           </div>
         </div>
 
-        {/* User Profile Card */}
-        <div className="p-4">
-          <Card className="mb-6 overflow-hidden shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-10 h-10 text-accent-foreground" />
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full border-2 border-card flex items-center justify-center">
-                    <div className="w-2 h-2 bg-accent-foreground rounded-full"></div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-foreground">{getDisplayName()}</h2>
-                  <div className="space-y-1">
-                    {user.email && <p className="text-sm text-muted-foreground break-all">{user.email}</p>}
-                    {profile?.phone_number && <p className="text-sm text-muted-foreground">{profile.phone_number}</p>}
-                    {userRole !== 'user' && <Badge variant="secondary" className="text-xs">
-                        {userRole.replace('_', ' ')}
-                      </Badge>}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="px-4 pt-2">
 
-          {/* Menu Items */}
-          <div className="space-y-3">
+          {/* Compact Menu Items */}
+          <div className="space-y-2">
             {/* Orders */}
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+            <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
               <CardContent className="p-0">
-                <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                      <BarChart3 className="w-6 h-6 text-accent" />
+                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-accent" />
                     </div>
                     <div>
-                      <span className="font-semibold text-foreground">My Orders</span>
-                      <p className="text-xs text-muted-foreground">Track your orders</p>
+                      <span className="font-medium text-foreground">My Orders</span>
+                      <p className="text-xs text-muted-foreground">Track orders</p>
                     </div>
                   </div>
-                  <div className="w-5 h-5 text-muted-foreground">→</div>
+                  <div className="text-muted-foreground">›</div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Profile Settings */}
-            {!isPhoneUser && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+            {!isPhoneUser && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
-                  <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                        <Settings className="w-6 h-6 text-accent" />
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('profile')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Settings className="w-5 h-5 text-accent" />
                       </div>
                       <div>
-                        <span className="font-semibold text-foreground">Profile Settings</span>
-                        <p className="text-xs text-muted-foreground">Manage your profile</p>
+                        <span className="font-medium text-foreground">Profile Settings</span>
+                        <p className="text-xs text-muted-foreground">Manage profile</p>
                       </div>
                     </div>
-                    <div className="w-5 h-5 text-muted-foreground">→</div>
+                    <div className="text-muted-foreground">›</div>
                   </div>
                 </CardContent>
               </Card>}
 
             {/* Business Dashboard */}
-            {isBusinessOwner && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+            {isBusinessOwner && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
-                  <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('business')}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                        <Store className="w-6 h-6 text-accent" />
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('business')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Store className="w-5 h-5 text-accent" />
                       </div>
                       <div>
-                        <span className="font-semibold text-foreground">My Business</span>
-                        <p className="text-xs text-muted-foreground">Manage your business</p>
+                        <span className="font-medium text-foreground">My Business</span>
+                        <p className="text-xs text-muted-foreground">Manage business</p>
                       </div>
                     </div>
-                    <div className="w-5 h-5 text-muted-foreground">→</div>
+                    <div className="text-muted-foreground">›</div>
                   </div>
                 </CardContent>
               </Card>}
 
-            {/* Referrals - Available to all users */}
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+            {/* Referrals */}
+            <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
               <CardContent className="p-0">
-                <div className="p-5 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                      <DollarSign className="w-6 h-6 text-accent" />
+                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-accent" />
                     </div>
                     <div>
-                      <span className="font-semibold text-foreground">Referrals & Earnings</span>
+                      <span className="font-medium text-foreground">Referrals & Earnings</span>
                       <p className="text-xs text-muted-foreground">Refer and Earn</p>
                     </div>
                   </div>
-                  <div className="w-5 h-5 text-muted-foreground">→</div>
+                  <div className="text-muted-foreground">›</div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Admin Panel */}
-            {isAdmin && <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+            {isAdmin && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-accent/20">
                 <CardContent className="p-0">
                   <Link to="/admin">
-                    <div className="p-5 flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                          <Settings className="w-6 h-6 text-accent" />
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
+                          <Settings className="w-5 h-5 text-accent" />
                         </div>
                         <div>
-                          <span className="font-semibold text-foreground">Admin Panel</span>
+                          <span className="font-medium text-foreground">Admin Panel</span>
                           <p className="text-xs text-muted-foreground">System management</p>
                         </div>
                       </div>
-                      <div className="w-5 h-5 text-muted-foreground">→</div>
+                      <div className="text-muted-foreground">›</div>
                     </div>
                   </Link>
                 </CardContent>
               </Card>}
 
-            {/* Sign Out - positioned lower with confirmation */}
-            <div className="mt-8">
+            {/* Sign Out */}
+            <div className="mt-6">
               <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <DialogTrigger asChild>
-                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] shadow-sm">
+                  <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-destructive/20">
                     <CardContent className="p-0">
-                      <div className="p-5 flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                            <LogOut className="w-6 h-6 text-accent" />
+                      <div className="p-4 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
+                            <LogOut className="w-5 h-5 text-destructive" />
                           </div>
                           <div>
-                            <span className="font-semibold text-foreground">Sign Out</span>
+                            <span className="font-medium text-foreground">Sign Out</span>
                             <p className="text-xs text-muted-foreground">Logout from account</p>
                           </div>
                         </div>
-                        <div className="w-5 h-5 text-muted-foreground">→</div>
+                        <div className="text-muted-foreground">›</div>
                       </div>
                     </CardContent>
                   </Card>
