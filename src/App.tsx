@@ -48,6 +48,7 @@ import { GoogleSignUpHandler } from './components/auth/GoogleSignUpHandler';
 import InstallPWA from './components/InstallPWA';
 import OccasionalSignInPopup from './components/auth/OccasionalSignInPopup';
 import { Navigate } from 'react-router-dom';
+import { CartButton } from './components/cart/CartButton';
 
 const queryClient = new QueryClient();
 
@@ -131,6 +132,7 @@ function App() {
             </main>
 
             <BottomNav isAdmin={isAdmin} />
+            <CartButton />
             
             {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
           </div>

@@ -1,7 +1,6 @@
 import { Flame, Home, ShoppingBag, Utensils, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { NotificationBell } from "./notifications/NotificationBell";
-import { CartButton } from "./cart/CartButton";
 const AppBar = () => {
   const location = useLocation();
 
@@ -54,11 +53,8 @@ const AppBar = () => {
           })}
         </nav>
 
-        {/* Notifications and Cart */}
+        {/* Notifications */}
         <div className="flex items-center gap-4">
-          <div className="hidden md:block">
-            <CartButton />
-          </div>
           <NotificationBell />
         </div>
       </div>
