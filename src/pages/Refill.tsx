@@ -330,21 +330,10 @@ const Refill = () => {
                                 </div>
                               </div>
 
-                              {/* Price with Strike-through */}
+                              {/* Clean Price Display */}
                               <div className="text-center mb-4 md:mb-6">
-                                <div className="flex items-center justify-center gap-2 mb-1">
-                                  <span className="text-lg text-gray-400 line-through">
-                                    UGX {item.originalPrice.toLocaleString()}
-                                  </span>
-                                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                                    -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
-                                  </span>
-                                </div>
-                                <div className="text-2xl md:text-3xl font-bold text-accent mb-1">
+                                <div className="text-2xl md:text-3xl font-bold text-accent">
                                   UGX {item.price.toLocaleString()}
-                                </div>
-                                <div className="text-xs text-green-600 font-medium">
-                                  Save UGX {(item.originalPrice - item.price).toLocaleString()}
                                 </div>
                               </div>
 
