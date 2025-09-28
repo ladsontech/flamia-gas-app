@@ -57,7 +57,6 @@ export const UserManagement = () => {
       setLoading(true);
       const userData = await getAllUsers();
       setUsers(userData);
-      setFilteredUsers(userData);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -101,7 +100,18 @@ export const UserManagement = () => {
         await removePermission(userId, permission);
       }
       
-      await loadUsers();
+      // Update local state instead of reloading all users to prevent freezing
+      setUsers(prevUsers => 
+        prevUsers.map(user => {
+          if (user.id === userId) {
+            const newPermissions = checked 
+              ? [...user.permissions, permission]
+              : user.permissions.filter(p => p !== permission);
+            return { ...user, permissions: newPermissions };
+          }
+          return user;
+        })
+      );
       
       toast({
         title: "Success",

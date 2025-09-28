@@ -82,9 +82,9 @@ export const ReferralAdvert: React.FC<ReferralAdvertProps> = ({
             </div>
 
             {/* QR Code */}
-            <div className="flex justify-center">
-              <div className="bg-white p-2 sm:p-3 rounded-lg border-2 border-accent/20">
-                <QRCodeGenerator value={referralLink} size={100} className="sm:w-28 sm:h-28" />
+            <div className="flex justify-center overflow-hidden">
+              <div className="bg-white p-2 sm:p-3 rounded-lg border-2 border-accent/20 flex-shrink-0">
+                <QRCodeGenerator value={referralLink} size={80} className="w-20 h-20 sm:w-24 sm:h-24" />
               </div>
             </div>
 
