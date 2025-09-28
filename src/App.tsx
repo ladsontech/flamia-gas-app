@@ -93,7 +93,8 @@ function App() {
             
             <main className="flex-1 pb-24 md:pb-0">
               <Routes>
-                <Route path="/" element={<Navigate to="/account" replace />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/gadgets" element={<Gadgets />} />
                 {/* <Route path="/foods" element={<Foods />} /> */}
                 <Route path="/orders" element={<Orders />} />

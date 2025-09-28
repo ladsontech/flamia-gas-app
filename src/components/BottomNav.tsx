@@ -33,14 +33,14 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   }, []);
 
   // Define active states
-  const isHomeActive = path === "/";
+  const isSignInActive = path === "/signin" || path === "/signup";
+  const isHomeActive = path === "/" || path === "/home";
   const isGadgetsActive = path === "/gadgets";
-  const isAccountActive = path === "/account";
+  const isAccountActive = path === "/account" || isSignInActive;
 
   // Determine account navigation
   const accountPath = "/account";
   const accountLabel = isAuthenticated ? "Account" : "Sign In";
-  const isSignInActive = path === "/signin" || path === "/signup";
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg md:hidden">
