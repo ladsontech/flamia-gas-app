@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { MapPin, Navigation, Check, AlertCircle, Search } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { MapPin, Navigation, Search, AlertCircle, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,20 +11,25 @@ interface LocationPickerProps {
   selectedLocation?: { lat: number; lng: number; address: string } | null;
 }
 
-export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationPickerProps) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+export const LocationPicker: React.FC<LocationPickerProps> = ({ 
+  onLocationSelect, 
+  selectedLocation 
+}) => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [marker, setMarker] = useState<google.maps.Marker | null>(null);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [mapsLoaded, setMapsLoaded] = useState(false);
 
-  // Initialize Google Maps
-  useEffect(() => {
-    const initMap = () => {
-      if (!mapRef.current) return;
+  const initMap = () => {
+    if (!mapRef.current) return;
 
+    console.log('Initializing Google Map...');
+    
+    try {
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
         zoom: 15,
@@ -108,73 +113,114 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       });
 
       setMap(mapInstance);
+      setMapsLoaded(true);
 
       // Add click listener to map
       mapInstance.addListener('click', (e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
+          console.log('Map clicked at:', lat, lng);
           handleLocationSelect(lat, lng);
         }
       });
-    };
 
-    const loadGoogleMaps = async () => {
-      try {
-        // Fetch API key from edge function
-        const { data, error } = await supabase.functions.invoke('get-maps-api-key');
-        
-        if (error || !data?.apiKey) {
-          setError('Google Maps API key not available');
-          return;
-        }
+      console.log('Google Map initialized successfully');
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      setError('Failed to initialize map');
+    }
+  };
 
-        // Load Google Maps API
-        if (!window.google) {
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=geometry,places`;
-          script.async = true;
-          script.defer = true;
-          script.onload = initMap;
-          script.onerror = () => setError('Failed to load Google Maps');
-          document.head.appendChild(script);
-        } else {
-          initMap();
-        }
-      } catch (error) {
-        console.error('Error loading Google Maps:', error);
-        setError('Failed to load Google Maps');
+  const loadGoogleMaps = async () => {
+    try {
+      console.log('Loading Google Maps API...');
+      
+      // Fetch API key from edge function
+      const { data, error } = await supabase.functions.invoke('get-maps-api-key');
+      
+      if (error || !data?.apiKey) {
+        console.error('Google Maps API key error:', error);
+        setError('Google Maps API key not available');
+        return;
       }
-    };
 
+      console.log('Google Maps API key retrieved successfully');
+
+      // Load Google Maps API
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=geometry,places&callback=initGoogleMaps`;
+        script.async = true;
+        script.defer = true;
+        
+        // Create global callback for Google Maps
+        (window as any).initGoogleMaps = () => {
+          console.log('Google Maps loaded via callback');
+          initMap();
+        };
+        
+        script.onerror = (error) => {
+          console.error('Failed to load Google Maps script:', error);
+          setError('Failed to load Google Maps');
+        };
+        
+        document.head.appendChild(script);
+      } else {
+        console.log('Google Maps already loaded');
+        initMap();
+      }
+    } catch (error) {
+      console.error('Error loading Google Maps:', error);
+      setError('Failed to load Google Maps');
+    }
+  };
+
+  // Initialize Google Maps
+  useEffect(() => {
     loadGoogleMaps();
   }, []);
 
-  // Initialize Places Autocomplete
+  // Initialize Places Autocomplete when map and input are ready
   useEffect(() => {
-    if (window.google && window.google.maps && window.google.maps.places && searchInputRef.current) {
-      const autocompleteInstance = new window.google.maps.places.Autocomplete(searchInputRef.current, {
-        types: ['establishment', 'geocode'],
-        componentRestrictions: { country: 'ug' }, // Restrict to Uganda
-        fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components']
-      });
+    if (mapsLoaded && window.google?.maps?.places && searchInputRef.current && !autocomplete) {
+      console.log('Initializing Places Autocomplete...');
+      
+      try {
+        const autocompleteInstance = new window.google.maps.places.Autocomplete(searchInputRef.current, {
+          types: ['establishment', 'geocode'],
+          componentRestrictions: { country: 'ug' }, // Restrict to Uganda
+          fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components']
+        });
 
-      autocompleteInstance.addListener('place_changed', () => {
-        const place = autocompleteInstance.getPlace();
-        if (place.geometry && place.geometry.location) {
-          const lat = place.geometry.location.lat();
-          const lng = place.geometry.location.lng();
-          const address = place.formatted_address || place.name || '';
-          handleLocationSelect(lat, lng, address);
-        }
-      });
+        autocompleteInstance.addListener('place_changed', () => {
+          console.log('Place changed event triggered');
+          const place = autocompleteInstance.getPlace();
+          
+          if (place.geometry && place.geometry.location) {
+            const lat = place.geometry.location.lat();
+            const lng = place.geometry.location.lng();
+            const address = place.formatted_address || place.name || '';
+            console.log('Autocomplete selected place:', { lat, lng, address });
+            handleLocationSelect(lat, lng, address);
+          } else {
+            console.warn('Place has no geometry');
+          }
+        });
 
-      setAutocomplete(autocompleteInstance);
+        setAutocomplete(autocompleteInstance);
+        console.log('Places Autocomplete initialized successfully');
+      } catch (error) {
+        console.error('Error initializing autocomplete:', error);
+        setError('Failed to initialize place search');
+      }
     }
-  }, [map]);
+  }, [mapsLoaded, autocomplete]);
 
   const handleLocationSelect = async (lat: number, lng: number, providedAddress?: string) => {
     try {
+      console.log('Selecting location:', { lat, lng, providedAddress });
+      
       // Update marker position
       if (marker) {
         marker.setPosition({ lat, lng });
@@ -183,7 +229,19 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
           position: { lat, lng },
           map: map,
           title: 'Delivery Location',
+          draggable: true
         });
+        
+        // Make marker draggable
+        newMarker.addListener('dragend', (e: google.maps.MapMouseEvent) => {
+          if (e.latLng) {
+            const newLat = e.latLng.lat();
+            const newLng = e.latLng.lng();
+            console.log('Marker dragged to:', newLat, newLng);
+            handleLocationSelect(newLat, newLng);
+          }
+        });
+        
         setMarker(newMarker);
       }
 
@@ -198,6 +256,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       }
 
       map?.panTo({ lat, lng });
+      setError(""); // Clear any previous errors
     } catch (error) {
       console.error('Error selecting location:', error);
       setError('Failed to select location');
@@ -205,11 +264,14 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
   };
 
   const getCurrentLocation = () => {
+    console.log('Getting current location...');
     setLoading(true);
     setError("");
 
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by this browser");
+      const errorMsg = "Geolocation is not supported by this browser";
+      console.error(errorMsg);
+      setError(errorMsg);
       setLoading(false);
       return;
     }
@@ -218,17 +280,36 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+        console.log('Current location obtained:', { lat, lng });
         handleLocationSelect(lat, lng);
         setLoading(false);
       },
       (error) => {
         console.error('Geolocation error:', error);
-        setError("Unable to get your location. Please select manually on the map.");
+        let errorMessage = "Unable to get your location. ";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage += "Location access denied. Please enable location permissions.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage += "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage += "Location request timed out.";
+            break;
+          default:
+            errorMessage += "An unknown error occurred.";
+            break;
+        }
+        
+        errorMessage += " Please select manually on the map.";
+        setError(errorMessage);
         setLoading(false);
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 15000,
         maximumAge: 60000
       }
     );
@@ -284,7 +365,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          Search above or click on the map to select your delivery location
+          Search above, click "Use Current Location", or click on the map to select your delivery location
         </p>
 
         {selectedLocation && (
