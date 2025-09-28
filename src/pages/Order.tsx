@@ -177,7 +177,7 @@ const Order = () => {
           }
           orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
         } else if (item.type === 'gadget') {
-          orderDescription = `Order Type: Gadget\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
+          orderDescription = `Order Type: Gadget/Promotion\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
           }

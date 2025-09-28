@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
 import { 
   Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle,
-  DollarSign, TrendingUp, ShoppingCart, Filter, BarChart3, ChevronDown
+  DollarSign, TrendingUp, ShoppingCart, Filter, BarChart3, ChevronDown, Navigation
 } from "lucide-react";
 import { format, isToday, isYesterday, startOfWeek, isThisWeek, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -536,6 +536,33 @@ const CompactOrderCard = ({
                 <div className="flex items-start gap-2">
                   <MapPin className="h-3 w-3 text-muted-foreground mt-0.5 shrink-0" />
                   <span className="text-xs leading-relaxed">{orderInfo.address}</span>
+                </div>
+              )}
+              
+              {/* Location coordinates and navigation */}
+              {(order.delivery_latitude && order.delivery_longitude) && (
+                <div className="mt-2 p-2 bg-muted/50 rounded border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Navigation className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {order.delivery_latitude.toFixed(6)}, {order.delivery_longitude.toFixed(6)}
+                      </span>
+                    </div>
+                    {(userRole === 'delivery_man' || userRole === 'super_admin') && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 px-2 text-xs"
+                        onClick={() => {
+                          const url = `https://www.google.com/maps/dir/?api=1&destination=${order.delivery_latitude},${order.delivery_longitude}`;
+                          window.open(url, '_blank');
+                        }}
+                      >
+                        Navigate
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
-import { Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle, ExternalLink } from "lucide-react";
+import { Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle, ExternalLink, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -130,9 +130,10 @@ export const OrderManagementHub = ({ userRole, userId }: OrderManagementHubProps
       setCancellationReason('');
       fetchData();
     } catch (error) {
+      console.error('Order cancellation error:', error);
       toast({
         title: "Error",
-        description: "Failed to cancel order",
+        description: "Failed to cancel order. Please try again.",
         variant: "destructive"
       });
     }
@@ -372,6 +373,33 @@ const filteredOrders = orders.filter(order => {
                           <div className="flex items-start gap-2">
                             <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
                             <span className="break-words">{orderInfo.address}</span>
+                          </div>
+                        )}
+                        
+                        {/* Location coordinates and navigation */}
+                        {(order.delivery_latitude && order.delivery_longitude) && (
+                          <div className="mt-2 p-2 bg-muted/30 rounded border">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Navigation className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-xs text-muted-foreground font-mono">
+                                  {order.delivery_latitude.toFixed(6)}, {order.delivery_longitude.toFixed(6)}
+                                </span>
+                              </div>
+                              {(userRole === 'delivery_man' || userRole === 'super_admin') && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => {
+                                    const url = `https://www.google.com/maps/dir/?api=1&destination=${order.delivery_latitude},${order.delivery_longitude}`;
+                                    window.open(url, '_blank');
+                                  }}
+                                >
+                                  Navigate
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>

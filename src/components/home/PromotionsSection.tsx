@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Flame } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 
 interface PromotionalOffer {
@@ -18,6 +19,7 @@ const PromotionsSection: React.FC = () => {
   const [promotionalOffers, setPromotionalOffers] = useState<PromotionalOffer[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchPromotionalOffers();
@@ -44,7 +46,25 @@ const PromotionsSection: React.FC = () => {
   };
 
   const handleOrderClick = (offer: PromotionalOffer) => {
-    navigate(`/order?type=promotion&item=${encodeURIComponent(offer.title)}&price=${encodeURIComponent(offer.price || '')}`);
+    // Add promotional item to cart
+    if (offer.price) {
+      const numericPrice = parseFloat(offer.price.replace(/[^0-9.-]/g, '')) || 0;
+      const promotionalItem = {
+        id: offer.id,
+        name: offer.title,
+        price: numericPrice,
+        type: 'gadget' as const, // Use gadget type for promotions
+        quantity: 1,
+        description: offer.description || '',
+        image_url: offer.image_url || ''
+      };
+      
+      addToCart(promotionalItem);
+      navigate('/order');
+    } else {
+      // For contact-based pricing, navigate to order page
+      navigate('/order');
+    }
   };
 
   if (loading) {
