@@ -27,29 +27,57 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
 
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
-        zoom: 13,
+        zoom: 15,
         mapTypeControl: true,
         streetViewControl: true,
         fullscreenControl: true,
         zoomControl: true,
         rotateControl: true,
         scaleControl: true,
+        gestureHandling: 'cooperative',
         mapTypeId: google.maps.MapTypeId.ROADMAP,
+        maxZoom: 20,
+        minZoom: 10,
         styles: [
           {
             featureType: "all",
-            elementType: "geometry.fill",
-            stylers: [{ saturation: -5 }]
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#333333" }]
+          },
+          {
+            featureType: "all",
+            elementType: "labels.text.stroke",
+            stylers: [{ color: "#ffffff" }, { weight: 2 }]
           },
           {
             featureType: "road",
             elementType: "geometry",
-            stylers: [{ visibility: "on" }]
+            stylers: [{ color: "#ffffff" }]
+          },
+          {
+            featureType: "road",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#cccccc" }, { weight: 1 }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "geometry",
+            stylers: [{ color: "#ffffff" }]
           },
           {
             featureType: "road.highway",
             elementType: "geometry.stroke",
-            stylers: [{ color: "#1976d2" }, { weight: 2 }]
+            stylers: [{ color: "#2563eb" }, { weight: 3 }]
+          },
+          {
+            featureType: "road.arterial",
+            elementType: "geometry",
+            stylers: [{ color: "#ffffff" }]
+          },
+          {
+            featureType: "road.arterial",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#d1d5db" }, { weight: 2 }]
           },
           {
             featureType: "poi",
@@ -57,9 +85,24 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
             stylers: [{ visibility: "on" }]
           },
           {
+            featureType: "poi.business",
+            elementType: "labels",
+            stylers: [{ visibility: "simplified" }]
+          },
+          {
             featureType: "transit",
             elementType: "labels",
             stylers: [{ visibility: "on" }]
+          },
+          {
+            featureType: "water",
+            elementType: "geometry",
+            stylers: [{ color: "#e0f2fe" }]
+          },
+          {
+            featureType: "landscape",
+            elementType: "geometry",
+            stylers: [{ color: "#f5f5f5" }]
           }
         ]
       });

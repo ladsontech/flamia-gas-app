@@ -102,29 +102,67 @@ const Delivery = () => {
 
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
-        zoom: 13,
+        zoom: 14,
         mapTypeControl: true,
         streetViewControl: true,
         fullscreenControl: true,
         zoomControl: true,
         rotateControl: true,
         scaleControl: true,
+        gestureHandling: 'cooperative',
         mapTypeId: google.maps.MapTypeId.ROADMAP,
+        maxZoom: 20,
+        minZoom: 8,
         styles: [
           {
             featureType: "all",
-            elementType: "geometry.fill",
-            stylers: [{ saturation: -15 }]
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#2d3748" }]
+          },
+          {
+            featureType: "all",
+            elementType: "labels.text.stroke",
+            stylers: [{ color: "#ffffff" }, { weight: 3 }]
           },
           {
             featureType: "road",
             elementType: "geometry",
-            stylers: [{ visibility: "on" }]
+            stylers: [{ color: "#ffffff" }]
+          },
+          {
+            featureType: "road",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#e2e8f0" }, { weight: 1 }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "geometry",
+            stylers: [{ color: "#ffffff" }]
           },
           {
             featureType: "road.highway",
             elementType: "geometry.stroke",
-            stylers: [{ color: "#2563eb" }, { weight: 3 }]
+            stylers: [{ color: "#2563eb" }, { weight: 4 }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#1e40af" }]
+          },
+          {
+            featureType: "road.arterial",
+            elementType: "geometry",
+            stylers: [{ color: "#ffffff" }]
+          },
+          {
+            featureType: "road.arterial",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#cbd5e0" }, { weight: 2 }]
+          },
+          {
+            featureType: "road.local",
+            elementType: "geometry",
+            stylers: [{ color: "#f7fafc" }]
           },
           {
             featureType: "poi",
@@ -132,9 +170,34 @@ const Delivery = () => {
             stylers: [{ visibility: "on" }]
           },
           {
+            featureType: "poi.business",
+            elementType: "labels",
+            stylers: [{ visibility: "simplified" }]
+          },
+          {
             featureType: "transit",
             elementType: "labels",
             stylers: [{ visibility: "on" }]
+          },
+          {
+            featureType: "transit.line",
+            elementType: "geometry",
+            stylers: [{ color: "#e2e8f0" }]
+          },
+          {
+            featureType: "water",
+            elementType: "geometry",
+            stylers: [{ color: "#dbeafe" }]
+          },
+          {
+            featureType: "landscape",
+            elementType: "geometry",
+            stylers: [{ color: "#f9fafb" }]
+          },
+          {
+            featureType: "landscape.natural",
+            elementType: "geometry",
+            stylers: [{ color: "#f0fdf4" }]
           }
         ]
       });
