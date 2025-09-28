@@ -153,114 +153,55 @@ const Refill = () => {
           </p>
         </motion.div>
 
-        {/* Brand Selection - Desktop Style for All Devices */}
+        {/* Brand Selection - Unified Grid */}
         <div className="mb-8 md:mb-12">
           <Card className="p-4 md:p-8 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            {/* Popular Brands Section */}
-            <div className="mb-6 md:mb-10">
-              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-                  <Crown className="w-3 md:w-5 h-3 md:h-5 text-white" />
-                </div>
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Popular Brands</h2>
-                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+              <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-accent to-accent/80 rounded-lg flex items-center justify-center">
+                <Flame className="w-3 md:w-5 h-3 md:h-5 text-white" />
               </div>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-6">
-                {popularBrands.map((brand, index) => (
-                  <motion.div
-                    key={brand}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.4 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`relative p-3 md:p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-                      selectedBrand === brand
-                        ? 'border-accent bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl shadow-accent/20'
-                        : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10'
-                    }`}
-                    onClick={() => handleBrandSelect(brand)}
-                  >
-                    {/* Popular Badge */}
-                    <div className="absolute -top-1 md:-top-2 -right-1 md:-right-2 w-4 md:w-6 h-4 md:h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                      <Star className="w-2 md:w-3 h-2 md:h-3 text-white fill-current" />
-                    </div>
-                    
-                    <div className="text-center">
-                      <div className={`w-10 md:w-16 h-10 md:h-16 mx-auto mb-2 md:mb-4 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                        selectedBrand === brand 
-                          ? 'bg-accent/20 shadow-lg' 
-                          : 'bg-gray-100 group-hover:bg-accent/10'
-                      }`}>
-                        <Flame className={`w-5 md:w-8 h-5 md:h-8 transition-colors duration-300 ${
-                          selectedBrand === brand ? 'text-accent' : 'text-gray-600'
-                        }`} />
-                      </div>
-                      <h3 className="font-bold text-sm md:text-lg text-gray-900 mb-1">{brand}</h3>
-                      <p className="text-xs md:text-sm text-gray-500">Premium Gas</p>
-                      {selectedBrand === brand && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="mt-2 md:mt-3 w-1.5 md:w-2 h-1.5 md:h-2 bg-accent rounded-full mx-auto"
-                        />
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">Choose Your Gas Brand</h2>
+              <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
             </div>
-
-            {/* All Other Brands Section */}
-            <div>
-              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Zap className="w-3 md:w-5 h-3 md:h-5 text-white" />
-                </div>
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">All Brands</h2>
-                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
-              </div>
-              
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 md:gap-4">
-                {otherBrands.map((brand, index) => (
-                  <motion.div
-                    key={brand}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: (index + 5) * 0.05, duration: 0.3 }}
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    className={`p-2 md:p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
-                      selectedBrand === brand
-                        ? 'border-accent bg-accent/10 shadow-lg'
-                        : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
-                    }`}
-                    onClick={() => handleBrandSelect(brand)}
-                  >
-                    <div className="text-center">
-                      <div className={`w-8 md:w-12 h-8 md:h-12 mx-auto mb-2 md:mb-3 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        selectedBrand === brand 
-                          ? 'bg-accent/20' 
-                          : 'bg-gray-100 hover:bg-accent/10'
-                      }`}>
-                        <Flame className={`w-4 md:w-6 h-4 md:h-6 transition-colors duration-300 ${
-                          selectedBrand === brand ? 'text-accent' : 'text-gray-600'
-                        }`} />
-                      </div>
-                      <h4 className="font-semibold text-xs md:text-sm text-gray-900">{brand}</h4>
-                      <p className="text-xs text-gray-500">Gas</p>
-                      {selectedBrand === brand && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="mt-1 md:mt-2 w-1 md:w-1.5 h-1 md:h-1.5 bg-accent rounded-full mx-auto"
-                        />
-                      )}
+            
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4">
+              {staticBrands.map((brand, index) => (
+                <motion.div
+                  key={brand}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
+                    selectedBrand === brand
+                      ? 'border-accent bg-accent/10 shadow-lg'
+                      : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
+                  }`}
+                  onClick={() => handleBrandSelect(brand)}
+                >
+                  <div className="text-center">
+                    <div className={`w-10 md:w-12 h-10 md:h-12 mx-auto mb-2 md:mb-3 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      selectedBrand === brand 
+                        ? 'bg-accent/20' 
+                        : 'bg-gray-100 hover:bg-accent/10'
+                    }`}>
+                      <Flame className={`w-5 md:w-6 h-5 md:h-6 transition-colors duration-300 ${
+                        selectedBrand === brand ? 'text-accent' : 'text-gray-600'
+                      }`} />
                     </div>
-                  </motion.div>
-                ))}
-              </div>
+                    <h4 className="font-semibold text-xs md:text-sm text-gray-900">{brand}</h4>
+                    <p className="text-xs text-gray-500">Gas</p>
+                    {selectedBrand === brand && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="mt-1 md:mt-2 w-1.5 md:w-2 h-1.5 md:h-2 bg-accent rounded-full mx-auto"
+                      />
+                    )}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </Card>
         </div>
