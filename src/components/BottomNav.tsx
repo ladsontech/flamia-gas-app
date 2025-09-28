@@ -54,7 +54,7 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
         <NavItem
           to="/gadgets"
           icon={ShoppingBag}
-          label="Gadgets"
+          label="Shop"
           isActive={isGadgetsActive}
         />
         {/* Foods section temporarily hidden */}

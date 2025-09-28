@@ -395,173 +395,198 @@ const Delivery = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container max-w-6xl px-3 py-6">
-        <div className="flex items-center justify-between mb-6">
+      {/* Top Header - Fixed */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3">
           <BackButton />
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Welcome, {deliveryMan.name}</span>
+            <span className="text-sm text-gray-600 font-medium">Welcome, {deliveryMan.name}</span>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-1" />
               Logout
             </Button>
           </div>
         </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">Delivery Dashboard</h1>
-            <p className="text-gray-600">Manage your assigned orders</p>
+      </div>
+
+      {/* Main Layout - Full Screen */}
+      <div className="flex h-screen pt-16">
+        {/* Orders Sidebar - Fixed width */}
+        <div className="w-80 bg-white border-r border-gray-200 flex flex-col shadow-lg">
+          <div className="p-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Truck className="w-5 h-5 text-blue-600" />
+              Your Orders ({deliveryOrders.length})
+            </h2>
           </div>
-
-          {isLoading ? (
-            <Card className="p-6">
-              <p className="text-center text-gray-600">Loading orders...</p>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Orders List */}
-              <div className="lg:col-span-1 space-y-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-blue-600" />
-                  Your Orders ({deliveryOrders.length})
-                </h2>
-                
-                {deliveryOrders.length === 0 ? (
-                  <Card className="p-4">
-                    <p className="text-center text-gray-600">No orders assigned</p>
-                  </Card>
-                ) : (
-                  deliveryOrders.map((order) => (
-                    <Card key={order.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                          onClick={() => setSelectedOrder(order)}>
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-medium">{order.customerName}</h3>
-                            <p className="text-sm text-gray-600 line-clamp-2">{order.description}</p>
-                          </div>
-                          <Badge>
-                            {order.status?.replace('_', ' ') || 'assigned'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <MapPin className="w-4 h-4" />
-                          <span className="truncate">{order.displayAddress}</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <Clock className="w-4 h-4" />
-                          <span>ETA: {order.estimatedTime}</span>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCallCustomer(order.customerPhone);
-                            }}
-                            className="flex-1"
-                          >
-                            <Phone className="w-4 h-4 mr-1" />
-                            Call
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleNavigate(order);
-                            }}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Navigation className="w-4 h-4 mr-1" />
-                            Navigate
-                          </Button>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          {order.status === 'assigned' && (
-                            <Button 
-                              size="sm" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateOrderStatus(order.id, 'in_progress');
-                                handleNavigate(order);
-                              }}
-                              className="flex-1 bg-blue-600 hover:bg-blue-700"
-                            >
-                              Start Delivery
-                            </Button>
-                          )}
-                          {order.status === 'in_progress' && (
-                            <Button 
-                              size="sm" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateOrderStatus(order.id, 'completed');
-                              }}
-                              className="flex-1 bg-green-600 hover:bg-green-700"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Mark Completed
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                )}
+          
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-32">
+                <p className="text-gray-600">Loading orders...</p>
               </div>
-
-              {/* Map */}
-              <div className="lg:col-span-2">
-                <Card className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold flex items-center gap-2">
-                      <Map className="w-5 h-5 text-blue-600" />
-                      Delivery Map
-                    </h2>
-                    {currentLocation && (
-                      <Badge>
-                        <MapPin className="w-3 h-3 mr-1" />
-                        Live Location
+            ) : deliveryOrders.length === 0 ? (
+              <div className="flex items-center justify-center h-32">
+                <p className="text-gray-600">No orders assigned</p>
+              </div>
+            ) : (
+              deliveryOrders.map((order) => (
+                <Card key={order.id} className={`p-3 hover:shadow-md transition-all cursor-pointer border-2 ${
+                  selectedOrder?.id === order.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}
+                      onClick={() => setSelectedOrder(order)}>
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm truncate">{order.customerName}</h3>
+                        <p className="text-xs text-gray-600 line-clamp-2">{order.description}</p>
+                      </div>
+                      <Badge className="ml-2 text-xs">
+                        {order.status?.replace('_', ' ') || 'assigned'}
                       </Badge>
-                    )}
+                    </div>
+                    
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <MapPin className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">{order.displayAddress}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Clock className="w-3 h-3 flex-shrink-0" />
+                      <span>ETA: {order.estimatedTime}</span>
+                    </div>
+                    
+                    <div className="flex gap-1">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCallCustomer(order.customerPhone);
+                        }}
+                        className="flex-1 h-7 text-xs"
+                      >
+                        <Phone className="w-3 h-3 mr-1" />
+                        Call
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNavigate(order);
+                        }}
+                        className="flex-1 h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Navigation className="w-3 h-3 mr-1" />
+                        Navigate
+                      </Button>
+                    </div>
+                    
+                    <div className="flex gap-1">
+                      {order.status === 'assigned' && (
+                        <Button 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateOrderStatus(order.id, 'in_progress');
+                          }}
+                          className="flex-1 h-7 text-xs bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Start
+                        </Button>
+                      )}
+                      {order.status === 'in_progress' && (
+                        <Button 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateOrderStatus(order.id, 'completed');
+                          }}
+                          className="flex-1 h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Complete
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                  
-                  <div className="h-96 rounded-lg overflow-hidden border">
-                    <div ref={mapRef} className="w-full h-full" />
-                  </div>
-                  
-                  {selectedOrder && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200"
-                    >
-                      <h3 className="font-medium mb-2">Selected Order</h3>
-                      <div className="space-y-2 text-sm">
-                        <p><strong>Customer:</strong> {selectedOrder.customerName}</p>
-                        <p><strong>Order:</strong> {selectedOrder.description}</p>
-                        <p><strong>Address:</strong> {selectedOrder.displayAddress}</p>
-                        <p><strong>Phone:</strong> {selectedOrder.customerPhone}</p>
-                        <p><strong>Status:</strong> {selectedOrder.status?.replace('_', ' ') || 'assigned'}</p>
-                      </div>
-                    </motion.div>
-                  )}
                 </Card>
-              </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Map - Full Screen */}
+        <div className="flex-1 relative">
+          <div 
+            ref={mapRef} 
+            className="w-full h-full"
+          />
+          
+          {/* Selected Order Info Overlay */}
+          {selectedOrder && (
+            <div className="absolute top-4 left-4 right-4 z-10">
+              <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">{selectedOrder.customerName}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{selectedOrder.description}</p>
+                    <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                      <MapPin className="w-4 h-4" />
+                      <span>{selectedOrder.displayAddress}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                      <Phone className="w-4 h-4" />
+                      <span>{selectedOrder.customerPhone}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 ml-4">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleCallCustomer(selectedOrder.customerPhone)}
+                    >
+                      <Phone className="w-4 h-4 mr-1" />
+                      Call
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleNavigate(selectedOrder)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Navigation className="w-4 h-4 mr-1" />
+                      Navigate
+                    </Button>
+                  </div>
+                </div>
+                
+                {currentLocation && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span className="text-blue-700 font-medium">Live tracking active</span>
+                      <span className="text-blue-600">• Route displayed on map</span>
+                    </div>
+                  </div>
+                )}
+              </Card>
             </div>
           )}
-        </motion.div>
+          
+          {/* Current Location Indicator */}
+          {currentLocation && !selectedOrder && (
+            <div className="absolute top-4 left-4 z-10">
+              <Card className="p-3 bg-white/95 backdrop-blur-sm shadow-lg">
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-blue-700 font-medium">Your location is being tracked</span>
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
-      <Footer />
     </div>
   );
 };
