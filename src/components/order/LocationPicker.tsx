@@ -28,9 +28,40 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
         zoom: 13,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+        zoomControl: true,
+        rotateControl: true,
+        scaleControl: true,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+          {
+            featureType: "all",
+            elementType: "geometry.fill",
+            stylers: [{ saturation: -5 }]
+          },
+          {
+            featureType: "road",
+            elementType: "geometry",
+            stylers: [{ visibility: "on" }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#1976d2" }, { weight: 2 }]
+          },
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "on" }]
+          },
+          {
+            featureType: "transit",
+            elementType: "labels",
+            stylers: [{ visibility: "on" }]
+          }
+        ]
       });
 
       setMap(mapInstance);
@@ -205,7 +236,7 @@ export const LocationPicker = ({ onLocationSelect, selectedLocation }: LocationP
           </motion.div>
         )}
 
-        <div className="h-48 rounded-md overflow-hidden border">
+        <div className="h-64 rounded-md overflow-hidden border bg-gray-100">
           <div ref={mapRef} className="w-full h-full" />
         </div>
 

@@ -102,10 +102,41 @@ const Delivery = () => {
 
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
-        zoom: 12,
+        zoom: 13,
         mapTypeControl: true,
         streetViewControl: true,
         fullscreenControl: true,
+        zoomControl: true,
+        rotateControl: true,
+        scaleControl: true,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+          {
+            featureType: "all",
+            elementType: "geometry.fill",
+            stylers: [{ saturation: -15 }]
+          },
+          {
+            featureType: "road",
+            elementType: "geometry",
+            stylers: [{ visibility: "on" }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#2563eb" }, { weight: 3 }]
+          },
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "on" }]
+          },
+          {
+            featureType: "transit",
+            elementType: "labels",
+            stylers: [{ visibility: "on" }]
+          }
+        ]
       });
 
       setMap(mapInstance);
