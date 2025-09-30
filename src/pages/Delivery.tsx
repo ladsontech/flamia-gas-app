@@ -9,21 +9,17 @@ import {
   MapPin, 
   Navigation, 
   Phone, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle,
+  CheckCircle,
   Truck,
   Map,
   LogOut
 } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
 import Footer from "@/components/Footer";
 import { Order } from "@/types/order";
 import { fetchOrders, updateOrderStatus } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { GeocodingService } from "@/utils/geocoding";
 
 interface DeliveryOrder extends Order {
   customerName: string;
@@ -103,16 +99,16 @@ const Delivery = () => {
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
         zoom: 14,
-        mapTypeControl: true,
-        streetViewControl: true,
-        fullscreenControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
         zoomControl: true,
-        rotateControl: true,
+        rotateControl: false,
         scaleControl: true,
-        gestureHandling: 'cooperative',
+        gestureHandling: 'greedy',
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         maxZoom: 20,
-        minZoom: 8,
+        minZoom: 10,
         styles: [
           {
             featureType: "all",
@@ -120,21 +116,6 @@ const Delivery = () => {
             stylers: [{ color: "#2d3748" }]
           },
           {
-            featureType: "all",
-            elementType: "labels.text.stroke",
-            stylers: [{ color: "#ffffff" }, { weight: 3 }]
-          },
-          {
-            featureType: "road",
-            elementType: "geometry",
-            stylers: [{ color: "#ffffff" }]
-          },
-          {
-            featureType: "road",
-            elementType: "geometry.stroke",
-            stylers: [{ color: "#e2e8f0" }, { weight: 1 }]
-          },
-          {
             featureType: "road.highway",
             elementType: "geometry",
             stylers: [{ color: "#ffffff" }]
@@ -142,62 +123,12 @@ const Delivery = () => {
           {
             featureType: "road.highway",
             elementType: "geometry.stroke",
-            stylers: [{ color: "#2563eb" }, { weight: 4 }]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "labels.text.fill",
-            stylers: [{ color: "#1e40af" }]
-          },
-          {
-            featureType: "road.arterial",
-            elementType: "geometry",
-            stylers: [{ color: "#ffffff" }]
-          },
-          {
-            featureType: "road.arterial",
-            elementType: "geometry.stroke",
-            stylers: [{ color: "#cbd5e0" }, { weight: 2 }]
-          },
-          {
-            featureType: "road.local",
-            elementType: "geometry",
-            stylers: [{ color: "#f7fafc" }]
-          },
-          {
-            featureType: "poi",
-            elementType: "labels",
-            stylers: [{ visibility: "on" }]
-          },
-          {
-            featureType: "poi.business",
-            elementType: "labels",
-            stylers: [{ visibility: "simplified" }]
-          },
-          {
-            featureType: "transit",
-            elementType: "labels",
-            stylers: [{ visibility: "on" }]
-          },
-          {
-            featureType: "transit.line",
-            elementType: "geometry",
-            stylers: [{ color: "#e2e8f0" }]
+            stylers: [{ color: "#3B82F6" }, { weight: 4 }]
           },
           {
             featureType: "water",
             elementType: "geometry",
             stylers: [{ color: "#dbeafe" }]
-          },
-          {
-            featureType: "landscape",
-            elementType: "geometry",
-            stylers: [{ color: "#f9fafb" }]
-          },
-          {
-            featureType: "landscape.natural",
-            elementType: "geometry",
-            stylers: [{ color: "#f0fdf4" }]
           }
         ]
       });
@@ -213,33 +144,24 @@ const Delivery = () => {
           map: mapInstance,
           title: `${order.customerName} - ${order.description}`,
           icon: {
-            url: order.status === 'assigned' ? 
-              'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiNGRjREMDAiLz4KPC9zdmc+' :
-              'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMxMEI5ODEiLz4KPC9zdmc+',
-            scaledSize: new window.google.maps.Size(30, 30)
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: '#EF4444',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 3,
+            scale: 12
           }
         });
 
-        const infoWindow = new window.google.maps.InfoWindow({
-          content: `
-            <div style="padding: 10px;">
-              <h3 style="margin: 0 0 5px 0; font-weight: bold;">${order.customerName}</h3>
-              <p style="margin: 0 0 5px 0;">${order.description}</p>
-              <p style="margin: 0; color: #666;">${order.displayAddress}</p>
-            </div>
-          `
-        });
-
         marker.addListener('click', () => {
-          infoWindow.open(mapInstance, marker);
           setSelectedOrder(order);
+          mapInstance.panTo(orderLocation);
         });
       });
     };
 
     const loadGoogleMaps = async () => {
       try {
-        // Fetch API key from edge function
         const { data, error } = await supabase.functions.invoke('get-maps-api-key');
         
         if (error || !data?.apiKey) {
@@ -247,7 +169,6 @@ const Delivery = () => {
           return;
         }
 
-        // Load Google Maps API
         if (!window.google) {
           const script = document.createElement('script');
           script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=geometry,places`;
@@ -266,7 +187,7 @@ const Delivery = () => {
     loadGoogleMaps();
   }, [deliveryOrders]);
 
-  // Real-time location tracking
+  // Real-time location tracking with route
   useEffect(() => {
     let watchId: number | null = null;
     let currentLocationMarker: google.maps.Marker | null = null;
@@ -282,29 +203,32 @@ const Delivery = () => {
             };
             setCurrentLocation(location);
             
-            // Remove previous current location marker
+            // Remove previous marker
             if (currentLocationMarker) {
               currentLocationMarker.setMap(null);
             }
 
-            // Add updated current location marker
+            // Add current location marker (blue dot)
             currentLocationMarker = new window.google.maps.Marker({
               position: location,
               map: map,
-              title: 'Your Current Location',
+              title: 'Your Location',
               icon: {
-                url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOCIgZmlsbD0iIzNCODJGNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4K',
-                scaledSize: new window.google.maps.Size(24, 24)
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: '#3B82F6',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 4,
+                scale: 10
               },
               zIndex: 1000
             });
 
-            // If there's a selected order, show route
+            // Show route to selected order
             if (selectedOrder) {
               const orderLocation = getOrderLocation(selectedOrder);
               const directionsService = new window.google.maps.DirectionsService();
               
-              // Remove previous route
               if (routeRenderer) {
                 routeRenderer.setMap(null);
               }
@@ -319,10 +243,10 @@ const Delivery = () => {
                   if (status === 'OK') {
                     routeRenderer = new window.google.maps.DirectionsRenderer({
                       directions: result,
-                      suppressMarkers: true, // We have custom markers
+                      suppressMarkers: true,
                       polylineOptions: {
                         strokeColor: '#3B82F6',
-                        strokeWeight: 4,
+                        strokeWeight: 5,
                         strokeOpacity: 0.8
                       }
                     });
@@ -394,199 +318,119 @@ const Delivery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Top Header - Fixed */}
+    <div className="min-h-screen bg-white">
+      {/* Top Header - Mobile Optimized */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3">
-          <BackButton />
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 font-medium">Welcome, {deliveryMan.name}</span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-1" />
-              Logout
-            </Button>
+        <div className="flex items-center justify-between px-3 py-2">
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-600">
+            <LogOut className="w-4 h-4" />
+          </Button>
+          <span className="text-sm text-gray-700 font-medium truncate">{deliveryMan.name}</span>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              {deliveryOrders.length} Orders
+            </Badge>
           </div>
         </div>
       </div>
 
-      {/* Main Layout - Full Screen */}
-      <div className="flex h-screen pt-16">
-        {/* Orders Sidebar - Fixed width */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col shadow-lg">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Truck className="w-5 h-5 text-blue-600" />
-              Your Orders ({deliveryOrders.length})
-            </h2>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-32">
-                <p className="text-gray-600">Loading orders...</p>
-              </div>
-            ) : deliveryOrders.length === 0 ? (
-              <div className="flex items-center justify-center h-32">
-                <p className="text-gray-600">No orders assigned</p>
-              </div>
-            ) : (
-              deliveryOrders.map((order) => (
-                <Card key={order.id} className={`p-3 hover:shadow-md transition-all cursor-pointer border-2 ${
-                  selectedOrder?.id === order.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}
-                      onClick={() => setSelectedOrder(order)}>
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm truncate">{order.customerName}</h3>
-                        <p className="text-xs text-gray-600 line-clamp-2">{order.description}</p>
-                      </div>
-                      <Badge className="ml-2 text-xs">
-                        {order.status?.replace('_', ' ') || 'assigned'}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <MapPin className="w-3 h-3 flex-shrink-0" />
-                      <span className="truncate">{order.displayAddress}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Clock className="w-3 h-3 flex-shrink-0" />
-                      <span>ETA: {order.estimatedTime}</span>
-                    </div>
-                    
-                    <div className="flex gap-1">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCallCustomer(order.customerPhone);
-                        }}
-                        className="flex-1 h-7 text-xs"
-                      >
-                        <Phone className="w-3 h-3 mr-1" />
-                        Call
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNavigate(order);
-                        }}
-                        className="flex-1 h-7 text-xs bg-blue-600 hover:bg-blue-700"
-                      >
-                        <Navigation className="w-3 h-3 mr-1" />
-                        Navigate
-                      </Button>
-                    </div>
-                    
-                    <div className="flex gap-1">
-                      {order.status === 'assigned' && (
-                        <Button 
-                          size="sm" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateOrderStatus(order.id, 'in_progress');
-                          }}
-                          className="flex-1 h-7 text-xs bg-green-600 hover:bg-green-700"
-                        >
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          Start
-                        </Button>
-                      )}
-                      {order.status === 'in_progress' && (
-                        <Button 
-                          size="sm" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateOrderStatus(order.id, 'completed');
-                          }}
-                          className="flex-1 h-7 text-xs bg-blue-600 hover:bg-blue-700"
-                        >
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          Complete
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Map - Full Screen */}
-        <div className="flex-1 relative">
-          <div 
-            ref={mapRef} 
-            className="w-full h-full"
-          />
-          
-          {/* Selected Order Info Overlay */}
-          {selectedOrder && (
-            <div className="absolute top-4 left-4 right-4 z-10">
-              <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg">
+      {/* Full Screen Map */}
+      <div className="fixed inset-0 pt-12">
+        <div ref={mapRef} className="w-full h-full" />
+        
+        {/* Floating Order Card */}
+        {selectedOrder && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="absolute bottom-4 left-4 right-4 z-40"
+          >
+            <Card className="bg-white shadow-2xl border-2 border-blue-500">
+              <div className="p-4 space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{selectedOrder.customerName}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{selectedOrder.description}</p>
-                    <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
-                      <MapPin className="w-4 h-4" />
-                      <span>{selectedOrder.displayAddress}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
-                      <Phone className="w-4 h-4" />
-                      <span>{selectedOrder.customerPhone}</span>
-                    </div>
+                    <h3 className="font-bold text-lg text-gray-900">{selectedOrder.customerName}</h3>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{selectedOrder.description}</p>
                   </div>
-                  <div className="flex gap-2 ml-4">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleCallCustomer(selectedOrder.customerPhone)}
-                    >
-                      <Phone className="w-4 h-4 mr-1" />
-                      Call
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      onClick={() => handleNavigate(selectedOrder)}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      <Navigation className="w-4 h-4 mr-1" />
-                      Navigate
-                    </Button>
-                  </div>
+                  <Badge className="ml-2">
+                    {selectedOrder.status?.replace('_', ' ') || 'assigned'}
+                  </Badge>
+                </div>
+                
+                <div className="flex items-start gap-2 text-sm text-gray-700">
+                  <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-600" />
+                  <span className="flex-1">{selectedOrder.displayAddress}</span>
                 </div>
                 
                 {currentLocation && (
-                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span className="text-blue-700 font-medium">Live tracking active</span>
-                      <span className="text-blue-600">• Route displayed on map</span>
-                    </div>
+                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <Navigation className="w-4 h-4" />
+                    <span>Route shown on map</span>
                   </div>
                 )}
-              </Card>
-            </div>
-          )}
-          
-          {/* Current Location Indicator */}
-          {currentLocation && !selectedOrder && (
-            <div className="absolute top-4 left-4 z-10">
-              <Card className="p-3 bg-white/95 backdrop-blur-sm shadow-lg">
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-blue-700 font-medium">Your location is being tracked</span>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={() => handleCallCustomer(selectedOrder.customerPhone)}
+                    className="flex-1"
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    Call
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigate(selectedOrder)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Map className="w-4 h-4 mr-2" />
+                    Open in Maps
+                  </Button>
                 </div>
-              </Card>
-            </div>
-          )}
+                
+                <div className="flex gap-2">
+                  {selectedOrder.status === 'assigned' && (
+                    <Button 
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'in_progress')}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      <Truck className="w-4 h-4 mr-2" />
+                      Start Delivery
+                    </Button>
+                  )}
+                  {selectedOrder.status === 'in_progress' && (
+                    <Button 
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'completed')}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Complete
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+        
+        {/* Orders List Toggle Button */}
+        <div className="absolute bottom-4 left-4 z-30">
+          <Button
+            onClick={() => {
+              // Cycle through orders
+              const currentIndex = deliveryOrders.findIndex(o => o.id === selectedOrder?.id);
+              const nextIndex = (currentIndex + 1) % deliveryOrders.length;
+              setSelectedOrder(deliveryOrders[nextIndex] || null);
+            }}
+            className="bg-white hover:bg-gray-100 text-gray-900 shadow-xl"
+            disabled={deliveryOrders.length === 0}
+          >
+            <Truck className="w-4 h-4 mr-2" />
+            {selectedOrder ? 'Next Order' : 'View Orders'}
+          </Button>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

@@ -212,8 +212,18 @@ export class OrderService {
     
     let referralId = null;
     
-    // Handle referral if user is authenticated
+    // Get customer name for WhatsApp message
+    let customerName = 'Customer';
     if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, display_name')
+        .eq('id', user.id)
+        .single();
+      
+      customerName = profile?.full_name || profile?.display_name || 'Customer';
+      
+      // Handle referral if user is authenticated
       if (referralCode) {
         try {
           // Find active referral for this user using provided code
@@ -268,6 +278,7 @@ export class OrderService {
       }
     }
     
+    // Insert order to database
     const { error } = await supabase
       .from('orders')
       .insert([{
@@ -281,6 +292,14 @@ export class OrderService {
       }]);
     
     if (error) throw error;
+
+    // Send order to WhatsApp
+    const whatsappNumber = '256753894149';
+    const whatsappMessage = `🔥 FLAMIA 🔥\n\n*New Order from ${customerName}*\n\n${orderDetails}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+    
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, '_blank');
   }
 
   // Get commission data for referrals

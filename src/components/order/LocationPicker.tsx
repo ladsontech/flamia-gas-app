@@ -276,43 +276,57 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        console.log('Current location obtained:', { lat, lng });
-        handleLocationSelect(lat, lng);
+    // Request permission explicitly
+    navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+      if (result.state === 'denied') {
+        setError("Location permission denied. Please enable location access in your browser settings.");
         setLoading(false);
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        let errorMessage = "Unable to get your location. ";
-        
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage += "Location access denied. Please enable location permissions.";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage += "Location information is unavailable.";
-            break;
-          case error.TIMEOUT:
-            errorMessage += "Location request timed out.";
-            break;
-          default:
-            errorMessage += "An unknown error occurred.";
-            break;
-        }
-        
-        errorMessage += " Please select manually on the map.";
-        setError(errorMessage);
-        setLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 60000
+        return;
       }
-    );
+      
+      // Get current position
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          console.log('Current location obtained:', { lat, lng });
+          handleLocationSelect(lat, lng);
+          setLoading(false);
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          let errorMessage = "Unable to get your location. ";
+          
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += "Location access denied. Please enable location permissions in your browser settings.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage += "Location request timed out.";
+              break;
+            default:
+              errorMessage += "An unknown error occurred.";
+              break;
+          }
+          
+          errorMessage += " Please select manually on the map.";
+          setError(errorMessage);
+          setLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }).catch((error) => {
+      console.error('Permission query error:', error);
+      setError("Unable to check location permission. Please try selecting manually on the map.");
+      setLoading(false);
+    });
   };
 
   return (
