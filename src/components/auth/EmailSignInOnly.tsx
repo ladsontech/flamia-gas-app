@@ -36,15 +36,20 @@ export const EmailSignInOnly = () => {
         // Check user role and redirect accordingly
         const role = await getUserRole(data.user.id);
         
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-          className: "border-accent/20"
-        });
-        
         if (role === 'delivery_man') {
-          navigate('/delivery');
+          toast({
+            title: "Welcome back!",
+            description: "Redirecting to delivery dashboard...",
+            className: "border-accent/20"
+          });
+          // Use window.location for delivery to avoid state issues
+          window.location.href = '/delivery';
         } else {
+          toast({
+            title: "Welcome back!",
+            description: "You have successfully signed in.",
+            className: "border-accent/20"
+          });
           navigate('/account');
         }
       }

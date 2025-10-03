@@ -41,6 +41,8 @@ const Delivery = () => {
 
   // Check authentication and role on mount
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -49,13 +51,16 @@ const Delivery = () => {
       }
       
       const role = await getUserRole(user.id);
+      
+      if (!isMounted) return;
+      
       if (role !== 'delivery_man') {
         toast({
           title: "Access Denied",
           description: "You don't have delivery permissions",
           variant: "destructive"
         });
-        navigate('/account');
+        navigate('/signin');
         return;
       }
       
@@ -64,7 +69,11 @@ const Delivery = () => {
     };
     
     checkAuth();
-  }, [navigate, toast]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const { 
     data: orders = [], 

@@ -51,13 +51,6 @@ const Account = () => {
     isDeliveryMan,
     loading: roleLoading
   } = useUserRole();
-  
-  // Redirect delivery men to delivery dashboard
-  useEffect(() => {
-    if (!roleLoading && isDeliveryMan) {
-      navigateRouter('/delivery');
-    }
-  }, [isDeliveryMan, roleLoading, navigateRouter]);
   useEffect(() => {
     checkAuthStatus();
   }, []);

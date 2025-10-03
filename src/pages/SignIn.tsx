@@ -17,7 +17,7 @@ const SignIn = () => {
       if (user) {
         const role = await getUserRole(user.id);
         if (role === 'delivery_man') {
-          navigate('/delivery');
+          window.location.href = '/delivery';
         } else {
           navigate('/account');
         }
