@@ -23,7 +23,7 @@ import GasSafety from './pages/GasSafety';
 import Accessories from './pages/Accessories';
 import GadgetDetail from './pages/GadgetDetail';
 import ResetPassword from './pages/ResetPassword';
-import DeliveryLogin from './pages/DeliveryLogin';
+import Delivery from './pages/Delivery';
 import Sell from './pages/Sell';
 
 // SEO Pages
@@ -108,7 +108,7 @@ function App() {
                 <Route path="/accessories" element={<Accessories />} />
                 <Route path="/gadget/:id" element={<GadgetDetail />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/delivery-login" element={<DeliveryLogin />} />
+                <Route path="/delivery" element={<Delivery />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/sell" element={<Sell />} />
                 

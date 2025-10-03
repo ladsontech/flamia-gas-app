@@ -20,6 +20,7 @@ import { fetchOrders, updateOrderStatus } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserRole } from "@/services/adminService";
 
 interface DeliveryOrder extends Order {
   customerName: string;
@@ -34,37 +35,51 @@ const Delivery = () => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<DeliveryOrder | null>(null);
-  const [deliveryMan, setDeliveryMan] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('');
   const mapRef = useRef<HTMLDivElement>(null);
 
-  // Check authentication on mount
+  // Check authentication and role on mount
   useEffect(() => {
-    const deliveryManData = localStorage.getItem('deliveryMan');
-    const userRole = localStorage.getItem('userRole');
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/signin');
+        return;
+      }
+      
+      const role = await getUserRole(user.id);
+      if (role !== 'delivery_man') {
+        toast({
+          title: "Access Denied",
+          description: "You don't have delivery permissions",
+          variant: "destructive"
+        });
+        navigate('/account');
+        return;
+      }
+      
+      setUserId(user.id);
+      setUserName(user.email?.split('@')[0] || 'Delivery');
+    };
     
-    if (!deliveryManData || userRole !== 'delivery') {
-      navigate('/delivery-login');
-      return;
-    }
-    
-    setDeliveryMan(JSON.parse(deliveryManData));
-  }, [navigate]);
+    checkAuth();
+  }, [navigate, toast]);
 
   const { 
     data: orders = [], 
     isLoading,
     refetch: refetchOrders
   } = useQuery({
-    queryKey: ['deliveryOrders'],
+    queryKey: ['deliveryOrders', userId],
     queryFn: fetchOrders,
-    enabled: !!deliveryMan,
-    select: (orders) => orders.filter((o) => o.delivery_man_id === deliveryMan?.id),
+    enabled: !!userId,
+    select: (orders) => orders.filter((o) => o.delivery_man_id === userId),
   });
 
-  const handleLogout = () => {
-    localStorage.removeItem('deliveryMan');
-    localStorage.removeItem('userRole');
-    navigate('/delivery-login');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/signin');
   };
 
   // Convert orders to delivery orders format for map display
@@ -313,8 +328,15 @@ const Delivery = () => {
     }
   };
 
-  if (!deliveryMan) {
-    return <div>Loading...</div>;
+  if (!userId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -325,7 +347,7 @@ const Delivery = () => {
           <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-600">
             <LogOut className="w-4 h-4" />
           </Button>
-          <span className="text-sm text-gray-700 font-medium truncate">{deliveryMan.name}</span>
+          <span className="text-sm text-gray-700 font-medium truncate">{userName}</span>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-xs">
               {deliveryOrders.length} Orders

@@ -10,7 +10,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { getUserBusinesses } from "@/services/adminService";
 import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
@@ -33,6 +33,7 @@ interface Business {
   image_url?: string;
 }
 const Account = () => {
+  const navigateRouter = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -50,6 +51,13 @@ const Account = () => {
     isDeliveryMan,
     loading: roleLoading
   } = useUserRole();
+  
+  // Redirect delivery men to delivery dashboard
+  useEffect(() => {
+    if (!roleLoading && isDeliveryMan) {
+      navigateRouter('/delivery');
+    }
+  }, [isDeliveryMan, roleLoading, navigateRouter]);
   useEffect(() => {
     checkAuthStatus();
   }, []);

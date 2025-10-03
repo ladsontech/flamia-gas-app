@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Mail, Lock } from "lucide-react";
+import { getUserRole } from "@/services/adminService";
 
 export const EmailSignInOnly = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ export const EmailSignInOnly = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -31,13 +32,21 @@ export const EmailSignInOnly = () => {
           description: error.message,
           variant: "destructive"
         });
-      } else {
+      } else if (data.user) {
+        // Check user role and redirect accordingly
+        const role = await getUserRole(data.user.id);
+        
         toast({
           title: "Welcome back!",
           description: "You have successfully signed in.",
           className: "border-accent/20"
         });
-        navigate('/account');
+        
+        if (role === 'delivery_man') {
+          navigate('/delivery');
+        } else {
+          navigate('/account');
+        }
       }
     } catch (error: any) {
       toast({

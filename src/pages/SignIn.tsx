@@ -5,16 +5,22 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserRole } from "@/services/adminService";
 
 const SignIn = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already authenticated and redirect to account
+    // Check if user is already authenticated and redirect based on role
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        navigate('/account');
+        const role = await getUserRole(user.id);
+        if (role === 'delivery_man') {
+          navigate('/delivery');
+        } else {
+          navigate('/account');
+        }
         return;
       }
       
