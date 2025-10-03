@@ -16,6 +16,7 @@ import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
 import { ReferralHub } from "@/components/account/ReferralHub";
 import OrdersManager from "@/components/account/OrdersManager";
+import { DeliveryDashboard } from "@/components/account/DeliveryDashboard";
 
 // Define interfaces
 interface Profile {
@@ -216,6 +217,13 @@ const Account = () => {
   return <div className="min-h-screen bg-background">
       <AppBar />
       <div className="pt-16 pb-20">
+        {/* Show Delivery Dashboard for Delivery Men */}
+        {!roleLoading && isDeliveryMan ? (
+          <div className="px-4 py-6">
+            <DeliveryDashboard userId={user.id} />
+          </div>
+        ) : (
+          <>
         {/* Compact Mobile Header */}
         <div className="bg-gradient-to-r from-background via-accent/5 to-background px-4 py-4">
           <div className="flex items-center justify-between">
@@ -464,10 +472,12 @@ const Account = () => {
                   </Card>
                  </div>}
                {activeSection === 'referrals' && <ReferralHub />}
-                </div>
-              </div>
-            </div>
-          </div>}
+                 </div>
+               </div>
+             </div>
+           </div>}
+          </>
+        )}
       </div>
     </div>;
 };
