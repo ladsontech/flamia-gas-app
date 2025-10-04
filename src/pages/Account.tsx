@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { getUserBusinesses } from "@/services/adminService";
-import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users } from "lucide-react";
+import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
@@ -214,16 +214,10 @@ const Account = () => {
   }
 
   // Authenticated user view
-  return <div className="min-h-screen bg-background">
+  return (
+    <div className="min-h-screen bg-background">
       <AppBar />
       <div className="pt-16 pb-20">
-        {/* Show Delivery Dashboard for Delivery Men */}
-        {!roleLoading && isDeliveryMan ? (
-          <div className="px-4 py-6">
-            <DeliveryDashboard userId={user.id} />
-          </div>
-        ) : (
-          <>
         {/* Compact Mobile Header */}
         <div className="bg-gradient-to-r from-background via-accent/5 to-background px-4 py-4">
           <div className="flex items-center justify-between">
@@ -295,6 +289,24 @@ const Account = () => {
                       <div>
                         <span className="font-medium text-foreground">My Business</span>
                         <p className="text-xs text-muted-foreground">Manage business</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>}
+
+            {/* Deliveries - Only for Delivery Men */}
+            {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('deliveries')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Truck className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Deliveries</span>
+                        <p className="text-xs text-muted-foreground">Assigned orders & map</p>
                       </div>
                     </div>
                     <div className="text-muted-foreground">›</div>
@@ -402,6 +414,7 @@ const Account = () => {
                   {activeSection === 'orders' && 'My Orders'}
                   {activeSection === 'profile' && 'Profile Settings'}
                   {activeSection === 'business' && 'My Business'}
+                  {activeSection === 'deliveries' && 'Deliveries'}
                   {activeSection === 'referrals' && 'Referrals & Earnings'}
                 </h2>
               </div>
@@ -413,6 +426,7 @@ const Account = () => {
                   <AddressManager />
                   <PhoneManager />
                 </div>}
+              {activeSection === 'deliveries' && <DeliveryDashboard userId={user.id} />}
               {activeSection === 'business' && <div className="space-y-4">
                   <Card>
                     <CardHeader>
@@ -469,16 +483,16 @@ const Account = () => {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
+                   </Card>
                  </div>}
                {activeSection === 'referrals' && <ReferralHub />}
-                 </div>
-               </div>
-             </div>
-           </div>}
-          </>
-        )}
+                </div>
+              </div>
+            </div>
+          </div>}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Account;

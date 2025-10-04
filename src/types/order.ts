@@ -10,6 +10,7 @@ export interface Order {
   delivery_address?: string | null;
   delivery_latitude?: number | null;
   delivery_longitude?: number | null;
+  total_amount?: number | null;
 }
 
 export interface OrderFormData {

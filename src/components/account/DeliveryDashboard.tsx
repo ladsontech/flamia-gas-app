@@ -362,20 +362,25 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                     }}
                   >
                     <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-base">{order.customerName}</h4>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {format(parseISO(order.created_at), "h:mm a")}
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {order.description}
-                          </p>
-                        </div>
-                        <Badge className="ml-2">
-                          {order.status?.replace('_', ' ') || 'assigned'}
-                        </Badge>
-                      </div>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-base">{order.customerName}</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {format(parseISO(order.created_at), "h:mm a")}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                        {order.description}
+                      </p>
+                      {order.total_amount && (
+                        <p className="text-sm font-semibold text-primary mt-1">
+                          UGX {order.total_amount.toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                    <Badge className="ml-2">
+                      {order.status?.replace('_', ' ') || 'assigned'}
+                    </Badge>
+                  </div>
                       
                       <div className="flex items-start gap-2 text-sm">
                         <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
