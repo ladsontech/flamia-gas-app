@@ -16,6 +16,7 @@ import { Order } from "@/types/order";
 import { fetchOrders, updateOrderStatus } from "@/services/database";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
+import { format, isToday, isYesterday, parseISO } from "date-fns";
 
 interface DeliveryOrder extends Order {
   customerName: string;
@@ -45,14 +46,43 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
     select: (orders) => orders.filter((o) => o.delivery_man_id === userId),
   });
 
-  // Convert orders to delivery orders format for map display
-  const deliveryOrders: DeliveryOrder[] = orders.map((order, index) => ({
-    ...order,
-    customerName: `Customer ${index + 1}`,
-    customerPhone: "+256700123456",
-    displayAddress: order.delivery_address || "Address not available",
-    estimatedTime: "30 mins"
-  }));
+  // Convert orders to delivery orders format and sort by date (newest first)
+  const deliveryOrders: DeliveryOrder[] = orders
+    .map((order, index) => ({
+      ...order,
+      customerName: `Customer ${index + 1}`,
+      customerPhone: "+256700123456",
+      displayAddress: order.delivery_address || "Address not available",
+      estimatedTime: "30 mins"
+    }))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  // Group orders by date
+  const groupOrdersByDate = (orders: DeliveryOrder[]) => {
+    const groups: { [key: string]: DeliveryOrder[] } = {};
+    
+    orders.forEach(order => {
+      const orderDate = parseISO(order.created_at);
+      let dateLabel: string;
+      
+      if (isToday(orderDate)) {
+        dateLabel = "Today";
+      } else if (isYesterday(orderDate)) {
+        dateLabel = "Yesterday";
+      } else {
+        dateLabel = format(orderDate, "EEEE, MMM d"); // e.g., "Monday, Jan 15"
+      }
+      
+      if (!groups[dateLabel]) {
+        groups[dateLabel] = [];
+      }
+      groups[dateLabel].push(order);
+    });
+    
+    return groups;
+  };
+
+  const groupedOrders = groupOrdersByDate(deliveryOrders);
 
   // Get location coordinates for map markers
   const getOrderLocation = (order: Order) => {
@@ -309,97 +339,107 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
       ) : (
         <div className="grid lg:grid-cols-2 gap-4">
           {/* Orders List */}
-          <div className="space-y-3 lg:max-h-[600px] lg:overflow-y-auto">
+          <div className="space-y-4 lg:max-h-[600px] lg:overflow-y-auto">
             <h3 className="text-lg font-semibold mb-3">Assigned Orders</h3>
-            {deliveryOrders.map((order) => (
-              <Card
-                key={order.id}
-                className={`p-4 cursor-pointer transition-all hover:shadow-md ${
-                  selectedOrder?.id === order.id ? 'border-2 border-primary ring-2 ring-primary/20' : ''
-                }`}
-                onClick={() => {
-                  setSelectedOrder(order);
-                  if (map) {
-                    const location = getOrderLocation(order);
-                    map.panTo(location);
-                    map.setZoom(16);
-                  }
-                }}
-              >
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-base">{order.customerName}</h4>
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                        {order.description}
-                      </p>
+            {Object.entries(groupedOrders).map(([dateLabel, orders]) => (
+              <div key={dateLabel} className="space-y-3">
+                <h4 className="text-sm font-semibold text-muted-foreground sticky top-0 bg-background py-2">
+                  {dateLabel}
+                </h4>
+                {orders.map((order) => (
+                  <Card
+                    key={order.id}
+                    className={`p-4 cursor-pointer transition-all hover:shadow-md ${
+                      selectedOrder?.id === order.id ? 'border-2 border-primary ring-2 ring-primary/20' : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      if (map) {
+                        const location = getOrderLocation(order);
+                        map.panTo(location);
+                        map.setZoom(16);
+                      }
+                    }}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-base">{order.customerName}</h4>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {format(parseISO(order.created_at), "h:mm a")}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {order.description}
+                          </p>
+                        </div>
+                        <Badge className="ml-2">
+                          {order.status?.replace('_', ' ') || 'assigned'}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-start gap-2 text-sm">
+                        <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
+                        <span className="flex-1 text-muted-foreground line-clamp-2">
+                          {order.displayAddress}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCallCustomer(order.customerPhone);
+                          }}
+                          className="flex-1"
+                        >
+                          <Phone className="w-3 h-3 mr-1" />
+                          Call
+                        </Button>
+                        <Button 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNavigate(order);
+                          }}
+                          className="flex-1"
+                        >
+                          <Navigation className="w-3 h-3 mr-1" />
+                          Navigate
+                        </Button>
+                      </div>
+
+                      {order.status === 'assigned' && (
+                        <Button 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateOrderStatus(order.id, 'in_progress');
+                          }}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          <Truck className="w-3 h-3 mr-1" />
+                          Start Delivery
+                        </Button>
+                      )}
+                      {order.status === 'in_progress' && (
+                        <Button 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateOrderStatus(order.id, 'completed');
+                          }}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Complete Delivery
+                        </Button>
+                      )}
                     </div>
-                    <Badge className="ml-2">
-                      {order.status?.replace('_', ' ') || 'assigned'}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-start gap-2 text-sm">
-                    <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
-                    <span className="flex-1 text-muted-foreground line-clamp-2">
-                      {order.displayAddress}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2 pt-2">
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCallCustomer(order.customerPhone);
-                      }}
-                      className="flex-1"
-                    >
-                      <Phone className="w-3 h-3 mr-1" />
-                      Call
-                    </Button>
-                    <Button 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNavigate(order);
-                      }}
-                      className="flex-1"
-                    >
-                      <Navigation className="w-3 h-3 mr-1" />
-                      Navigate
-                    </Button>
-                  </div>
-
-                  {order.status === 'assigned' && (
-                    <Button 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUpdateOrderStatus(order.id, 'in_progress');
-                      }}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      <Truck className="w-3 h-3 mr-1" />
-                      Start Delivery
-                    </Button>
-                  )}
-                  {order.status === 'in_progress' && (
-                    <Button 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUpdateOrderStatus(order.id, 'completed');
-                      }}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Complete Delivery
-                    </Button>
-                  )}
-                </div>
-              </Card>
+                  </Card>
+                ))}
+              </div>
             ))}
           </div>
 
