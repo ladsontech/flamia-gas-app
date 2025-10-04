@@ -300,109 +300,132 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
         </Badge>
       </div>
 
-      {/* Map Container */}
-      <div className="relative h-[500px] rounded-lg overflow-hidden border-2 border-accent/20">
-        <div ref={mapRef} className="w-full h-full" />
-        
-        {/* Floating Order Card */}
-        {selectedOrder && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="absolute bottom-4 left-4 right-4 z-40"
-          >
-            <Card className="bg-white shadow-2xl border-2 border-blue-500">
-              <div className="p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-900">{selectedOrder.customerName}</h3>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{selectedOrder.description}</p>
-                  </div>
-                  <Badge className="ml-2">
-                    {selectedOrder.status?.replace('_', ' ') || 'assigned'}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-start gap-2 text-sm text-gray-700">
-                  <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-600" />
-                  <span className="flex-1">{selectedOrder.displayAddress}</span>
-                </div>
-                
-                {currentLocation && (
-                  <div className="flex items-center gap-2 text-sm text-blue-600">
-                    <Navigation className="w-4 h-4" />
-                    <span>Route shown on map</span>
-                  </div>
-                )}
-                
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline"
-                    onClick={() => handleCallCustomer(selectedOrder.customerPhone)}
-                    className="flex-1"
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call
-                  </Button>
-                  <Button 
-                    onClick={() => handleNavigate(selectedOrder)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Map className="w-4 h-4 mr-2" />
-                    Open in Maps
-                  </Button>
-                </div>
-                
-                <div className="flex gap-2">
-                  {selectedOrder.status === 'assigned' && (
-                    <Button 
-                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'in_progress')}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                    >
-                      <Truck className="w-4 h-4 mr-2" />
-                      Start Delivery
-                    </Button>
-                  )}
-                  {selectedOrder.status === 'in_progress' && (
-                    <Button 
-                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'completed')}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Complete
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-        
-        {/* Orders List Toggle Button */}
-        {deliveryOrders.length > 0 && (
-          <div className="absolute bottom-4 left-4 z-30">
-            <Button
-              onClick={() => {
-                // Cycle through orders
-                const currentIndex = deliveryOrders.findIndex(o => o.id === selectedOrder?.id);
-                const nextIndex = (currentIndex + 1) % deliveryOrders.length;
-                setSelectedOrder(deliveryOrders[nextIndex] || null);
-              }}
-              className="bg-white hover:bg-gray-100 text-gray-900 shadow-xl"
-            >
-              <Truck className="w-4 h-4 mr-2" />
-              {selectedOrder ? 'Next Order' : 'View Orders'}
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {deliveryOrders.length === 0 && (
+      {deliveryOrders.length === 0 ? (
         <Card className="p-8 text-center">
           <Truck className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="text-lg font-semibold mb-2">No Deliveries Assigned</h3>
           <p className="text-muted-foreground">You don't have any deliveries assigned yet.</p>
         </Card>
+      ) : (
+        <div className="grid lg:grid-cols-2 gap-4">
+          {/* Orders List */}
+          <div className="space-y-3 lg:max-h-[600px] lg:overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-3">Assigned Orders</h3>
+            {deliveryOrders.map((order) => (
+              <Card
+                key={order.id}
+                className={`p-4 cursor-pointer transition-all hover:shadow-md ${
+                  selectedOrder?.id === order.id ? 'border-2 border-primary ring-2 ring-primary/20' : ''
+                }`}
+                onClick={() => {
+                  setSelectedOrder(order);
+                  if (map) {
+                    const location = getOrderLocation(order);
+                    map.panTo(location);
+                    map.setZoom(16);
+                  }
+                }}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-base">{order.customerName}</h4>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                        {order.description}
+                      </p>
+                    </div>
+                    <Badge className="ml-2">
+                      {order.status?.replace('_', ' ') || 'assigned'}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-start gap-2 text-sm">
+                    <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
+                    <span className="flex-1 text-muted-foreground line-clamp-2">
+                      {order.displayAddress}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCallCustomer(order.customerPhone);
+                      }}
+                      className="flex-1"
+                    >
+                      <Phone className="w-3 h-3 mr-1" />
+                      Call
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNavigate(order);
+                      }}
+                      className="flex-1"
+                    >
+                      <Navigation className="w-3 h-3 mr-1" />
+                      Navigate
+                    </Button>
+                  </div>
+
+                  {order.status === 'assigned' && (
+                    <Button 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUpdateOrderStatus(order.id, 'in_progress');
+                      }}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      <Truck className="w-3 h-3 mr-1" />
+                      Start Delivery
+                    </Button>
+                  )}
+                  {order.status === 'in_progress' && (
+                    <Button 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUpdateOrderStatus(order.id, 'completed');
+                      }}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Complete Delivery
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Map Container */}
+          <div className="relative h-[600px] rounded-lg overflow-hidden border-2 border-accent/20">
+            <div ref={mapRef} className="w-full h-full" />
+            
+            {/* Selected Order Info Overlay */}
+            {selectedOrder && currentLocation && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute top-4 left-4 right-4 z-40"
+              >
+                <Card className="bg-white/95 backdrop-blur shadow-lg border">
+                  <div className="p-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Navigation className="w-4 h-4 text-primary" />
+                      <span className="font-medium">Route shown to selected order</span>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
