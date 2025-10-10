@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface AdminOrdersDashboardProps {
   userRole: 'super_admin' | 'business_owner' | 'delivery_man' | 'user';
   userId: string;
+  orderType?: 'all' | 'gas' | 'shop';
 }
 
 interface OrderStats {
@@ -36,7 +37,7 @@ interface DayGroup {
   stats: OrderStats;
 }
 
-export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardProps) => {
+export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: AdminOrdersDashboardProps) => {
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
   const [deliveryPersons, setDeliveryPersons] = useState<DeliveryPersonProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,6 +126,15 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
     return 'other';
   };
 
+  const isGasOrder = (description: string) => {
+    const desc = description.toLowerCase();
+    return desc.includes('kg') || desc.includes('gas') || desc.includes('refill') || desc.includes('cylinder');
+  };
+
+  const isShopOrder = (description: string) => {
+    return !isGasOrder(description);
+  };
+
   const groupOrdersByDay = (orders: OrderWithDetails[]): DayGroup[] => {
     const groups: { [key: string]: OrderWithDetails[] } = {};
     
@@ -204,7 +214,16 @@ export const AdminOrdersDashboard = ({ userRole, userId }: AdminOrdersDashboardP
   const filteredOrders = orders.filter(order => {
     const statusMatch = statusFilter === 'all' || order.status === statusFilter;
     const productMatch = productFilter === 'all' || getProductType(order.description) === productFilter;
-    return statusMatch && productMatch;
+    
+    // Apply order type filter
+    let typeMatch = true;
+    if (orderType === 'gas') {
+      typeMatch = isGasOrder(order.description);
+    } else if (orderType === 'shop') {
+      typeMatch = isShopOrder(order.description);
+    }
+    
+    return statusMatch && productMatch && typeMatch;
   });
 
   const dayGroups = groupOrdersByDay(filteredOrders);

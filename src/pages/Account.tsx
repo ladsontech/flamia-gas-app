@@ -17,6 +17,7 @@ import { PhoneManager } from "@/components/account/PhoneManager";
 import { ReferralHub } from "@/components/account/ReferralHub";
 import OrdersManager from "@/components/account/OrdersManager";
 import { DeliveryDashboard } from "@/components/account/DeliveryDashboard";
+import { AdminOrdersManager } from "@/components/admin/AdminOrdersManager";
 
 // Define interfaces
 interface Profile {
@@ -242,23 +243,45 @@ const Account = () => {
 
           {/* Compact Menu Items */}
           <div className="space-y-2">
-            {/* Orders */}
-            <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-              <CardContent className="p-0">
-                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="w-5 h-5 text-accent" />
+            {/* Orders - Only for non-super-admin users */}
+            {!isAdmin && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <BarChart3 className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">My Orders</span>
+                        <p className="text-xs text-muted-foreground">Track orders</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="font-medium text-foreground">My Orders</span>
-                      <p className="text-xs text-muted-foreground">Track orders</p>
-                    </div>
+                    <div className="text-muted-foreground">›</div>
                   </div>
-                  <div className="text-muted-foreground">›</div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Order Management - Only for super admin */}
+            {isAdmin && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('order-management')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <BarChart3 className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Order Management</span>
+                        <p className="text-xs text-muted-foreground">Manage all orders</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Profile Settings */}
             {!isPhoneUser && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
@@ -314,23 +337,25 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
-            {/* Referrals */}
-            <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-              <CardContent className="p-0">
-                <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <DollarSign className="w-5 h-5 text-accent" />
+            {/* Referrals - Not for super admin */}
+            {!isAdmin && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('referrals')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <DollarSign className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Referrals & Earnings</span>
+                        <p className="text-xs text-muted-foreground">Refer and Earn</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="font-medium text-foreground">Referrals & Earnings</span>
-                      <p className="text-xs text-muted-foreground">Refer and Earn</p>
-                    </div>
+                    <div className="text-muted-foreground">›</div>
                   </div>
-                  <div className="text-muted-foreground">›</div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Admin Panel */}
             {isAdmin && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-accent/20">
@@ -412,6 +437,7 @@ const Account = () => {
                 </Button>
                 <h2 className="text-lg font-semibold">
                   {activeSection === 'orders' && 'My Orders'}
+                  {activeSection === 'order-management' && 'Order Management'}
                   {activeSection === 'profile' && 'Profile Settings'}
                   {activeSection === 'business' && 'My Business'}
                   {activeSection === 'deliveries' && 'Deliveries'}
@@ -421,7 +447,10 @@ const Account = () => {
               
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4">
-              {activeSection === 'orders' && <OrdersManager userRole={userRole} userId={user?.id} />}
+              {activeSection === 'orders' && !isAdmin && <OrdersManager userRole={userRole} userId={user?.id} />}
+              {activeSection === 'order-management' && isAdmin && (
+                <AdminOrdersManager />
+              )}
               {activeSection === 'profile' && <div className="space-y-4">
                   <AddressManager />
                   <PhoneManager />
