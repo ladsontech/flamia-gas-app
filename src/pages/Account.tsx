@@ -20,6 +20,7 @@ import { DeliveryDashboard } from "@/components/account/DeliveryDashboard";
 import { AdminOrdersDashboard } from "@/components/admin/AdminOrdersDashboard";
 import { BulkSmsMarketing } from "@/components/admin/BulkSmsMarketing";
 import { CommissionsWithdrawalsManager } from "@/components/admin/CommissionsWithdrawalsManager";
+import { UserManagement } from "@/components/admin/UserManagement";
 
 // Define interfaces
 interface Profile {
@@ -284,6 +285,25 @@ const Account = () => {
                   </CardContent>
                 </Card>
 
+
+                {/* Users */}
+                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('users')}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                          <Users className="w-5 h-5 text-accent" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Users</span>
+                          <p className="text-xs text-muted-foreground">Manage users</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Commissions & Withdrawals */}
                 <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                   <CardContent className="p-0">
@@ -498,6 +518,7 @@ const Account = () => {
                   {activeSection === 'orders' && 'My Orders'}
                   {activeSection === 'gas-orders' && 'Gas Orders'}
                   {activeSection === 'shop-orders' && 'Shop Orders'}
+                  {activeSection === 'users' && 'Users Management'}
                   {activeSection === 'commissions' && 'Commissions & Withdrawals'}
                   {activeSection === 'marketing' && 'Marketing'}
                   {activeSection === 'profile' && 'Profile Settings'}
@@ -525,6 +546,9 @@ const Account = () => {
                   userId="" 
                   orderType="shop"
                 />
+              )}
+              {activeSection === 'users' && isAdmin && (
+                <UserManagement />
               )}
               {activeSection === 'commissions' && isAdmin && (
                 <CommissionsWithdrawalsManager />
