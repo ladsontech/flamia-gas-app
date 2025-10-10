@@ -20,6 +20,7 @@ import { DeliveryDashboard } from "@/components/account/DeliveryDashboard";
 import { AdminOrdersDashboard } from "@/components/admin/AdminOrdersDashboard";
 import { BulkSmsMarketing } from "@/components/admin/BulkSmsMarketing";
 import { CommissionsWithdrawalsManager } from "@/components/admin/CommissionsWithdrawalsManager";
+import { UserManagement } from "@/components/admin/UserManagement";
 
 // Define interfaces
 interface Profile {
@@ -546,11 +547,7 @@ const Account = () => {
                 />
               )}
               {activeSection === 'users' && isAdmin && (
-                <div className="text-center p-8">
-                  <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">Users Management</h3>
-                  <p className="text-muted-foreground">User management features coming soon</p>
-                </div>
+                <UserManagement />
               )}
               {activeSection === 'commissions' && isAdmin && (
                 <CommissionsWithdrawalsManager />
