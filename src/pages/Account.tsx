@@ -17,7 +17,8 @@ import { PhoneManager } from "@/components/account/PhoneManager";
 import { ReferralHub } from "@/components/account/ReferralHub";
 import OrdersManager from "@/components/account/OrdersManager";
 import { DeliveryDashboard } from "@/components/account/DeliveryDashboard";
-import { AdminOrdersManager } from "@/components/admin/AdminOrdersManager";
+import { AdminOrdersDashboard } from "@/components/admin/AdminOrdersDashboard";
+import { BulkSmsMarketing } from "@/components/admin/BulkSmsMarketing";
 
 // Define interfaces
 interface Profile {
@@ -243,7 +244,84 @@ const Account = () => {
 
           {/* Compact Menu Items */}
           <div className="space-y-2">
-            {/* Orders - Only for non-super-admin users */}
+            {/* Super Admin Menu */}
+            {isAdmin && (
+              <>
+                {/* Gas Orders */}
+                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('gas-orders')}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="w-5 h-5 text-accent" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Gas Orders</span>
+                          <p className="text-xs text-muted-foreground">Manage gas orders</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Shop Orders */}
+                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('shop-orders')}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                          <Store className="w-5 h-5 text-accent" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Shop Orders</span>
+                          <p className="text-xs text-muted-foreground">Manage shop orders</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Users */}
+                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('users')}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                          <Users className="w-5 h-5 text-accent" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Users</span>
+                          <p className="text-xs text-muted-foreground">Manage users</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Marketing */}
+                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('marketing')}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                          <BarChart3 className="w-5 h-5 text-accent" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Marketing</span>
+                          <p className="text-xs text-muted-foreground">Bulk SMS & Ads</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {/* Regular User Menu - Orders */}
             {!isAdmin && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
@@ -255,26 +333,6 @@ const Account = () => {
                       <div>
                         <span className="font-medium text-foreground">My Orders</span>
                         <p className="text-xs text-muted-foreground">Track orders</p>
-                      </div>
-                    </div>
-                    <div className="text-muted-foreground">›</div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Order Management - Only for super admin */}
-            {isAdmin && (
-              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('order-management')}>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                        <BarChart3 className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <span className="font-medium text-foreground">Order Management</span>
-                        <p className="text-xs text-muted-foreground">Manage all orders</p>
                       </div>
                     </div>
                     <div className="text-muted-foreground">›</div>
@@ -337,7 +395,7 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
-            {/* Referrals - Not for super admin */}
+            {/* Referrals - Only for non-admin users */}
             {!isAdmin && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
@@ -437,7 +495,10 @@ const Account = () => {
                 </Button>
                 <h2 className="text-lg font-semibold">
                   {activeSection === 'orders' && 'My Orders'}
-                  {activeSection === 'order-management' && 'Order Management'}
+                  {activeSection === 'gas-orders' && 'Gas Orders'}
+                  {activeSection === 'shop-orders' && 'Shop Orders'}
+                  {activeSection === 'users' && 'Users Management'}
+                  {activeSection === 'marketing' && 'Marketing'}
                   {activeSection === 'profile' && 'Profile Settings'}
                   {activeSection === 'business' && 'My Business'}
                   {activeSection === 'deliveries' && 'Deliveries'}
@@ -448,9 +509,33 @@ const Account = () => {
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4">
               {activeSection === 'orders' && !isAdmin && <OrdersManager userRole={userRole} userId={user?.id} />}
-              {activeSection === 'order-management' && isAdmin && (
-                <AdminOrdersManager />
+              
+              {/* Super Admin Sections */}
+              {activeSection === 'gas-orders' && isAdmin && (
+                <AdminOrdersDashboard 
+                  userRole="super_admin" 
+                  userId="" 
+                  orderType="gas"
+                />
               )}
+              {activeSection === 'shop-orders' && isAdmin && (
+                <AdminOrdersDashboard 
+                  userRole="super_admin" 
+                  userId="" 
+                  orderType="shop"
+                />
+              )}
+              {activeSection === 'users' && isAdmin && (
+                <div className="text-center p-8">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">Users Management</h3>
+                  <p className="text-muted-foreground">User management features coming soon</p>
+                </div>
+              )}
+              {activeSection === 'marketing' && isAdmin && (
+                <BulkSmsMarketing />
+              )}
+              
               {activeSection === 'profile' && <div className="space-y-4">
                   <AddressManager />
                   <PhoneManager />
