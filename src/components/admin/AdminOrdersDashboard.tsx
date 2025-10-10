@@ -350,19 +350,21 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={productFilter} onValueChange={setProductFilter}>
-              <SelectTrigger className="flex-1 h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Products</SelectItem>
-                <SelectItem value="3kg">3kg</SelectItem>
-                <SelectItem value="6kg">6kg</SelectItem>
-                <SelectItem value="12kg">12kg/13kg</SelectItem>
-                <SelectItem value="refill">Refills</SelectItem>
-                <SelectItem value="full_kit">Full Kits</SelectItem>
-              </SelectContent>
-            </Select>
+            {orderType !== 'shop' && (
+              <Select value={productFilter} onValueChange={setProductFilter}>
+                <SelectTrigger className="flex-1 h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Products</SelectItem>
+                  <SelectItem value="3kg">3kg</SelectItem>
+                  <SelectItem value="6kg">6kg</SelectItem>
+                  <SelectItem value="12kg">12kg/13kg</SelectItem>
+                  <SelectItem value="refill">Refills</SelectItem>
+                  <SelectItem value="full_kit">Full Kits</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
       </Card>
