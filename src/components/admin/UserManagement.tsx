@@ -202,35 +202,19 @@ export const UserManagement = () => {
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1">
-                  <h3 className="text-sm font-medium truncate">
-                    {user.display_name || user.full_name || 'Unknown'}
-                  </h3>
-                  {user.referral_count > 0 && (
-                    <Badge variant="outline" className="flex items-center gap-1 text-xs px-1 py-0 h-4">
-                      <Crown className="h-2 w-2" />
-                      {user.referral_count}
-                    </Badge>
-                  )}
-                </div>
+                <h3 className="text-sm font-medium truncate">
+                  {user.display_name || user.full_name || 'Unknown'} ({user.referral_count})
+                </h3>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <span>{user.permissions.length}p</span>
+                  {user.phone_number && (
+                    <>
+                      <span>{user.phone_number}</span>
+                      {user.permissions.length > 0 && <span>•</span>}
+                    </>
+                  )}
                   {user.permissions.length > 0 && (
                     <>
-                      <span>•</span>
-                      <div className="flex gap-0.5">
-                        {user.permissions.slice(0, 4).map(perm => {
-                          const permData = ADMIN_PERMISSIONS.find(p => p.value === perm);
-                          return (
-                            <span key={perm} className="text-xs">
-                              {permData?.icon}
-                            </span>
-                          );
-                        })}
-                        {user.permissions.length > 4 && (
-                          <span className="text-xs">+{user.permissions.length - 4}</span>
-                        )}
-                      </div>
+                      <span>{user.permissions.length} permission{user.permissions.length !== 1 ? 's' : ''}</span>
                     </>
                   )}
                 </div>
