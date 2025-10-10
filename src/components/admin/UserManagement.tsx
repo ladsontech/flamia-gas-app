@@ -1,300 +1,304 @@
-import { useState, useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { 
+  ShoppingCart, 
+  Package, 
+  DollarSign, 
+  Users, 
+  Megaphone,
+  Smartphone,
+  Tag,
+  Building2,
+  ShoppingBag,
+  UserCheck,
+  Sparkles,
+  Image
+} from "lucide-react";
+import type { AdminPermission, UserWithPermissions } from "@/services/permissionsService";
+import { getAllUsers, assignPermission, removePermission } from "@/services/permissionsService";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu";
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { 
-  getAllUsers, 
-  assignPermission, 
-  removePermission, 
-  AdminPermission, 
-  UserWithPermissions 
-} from "@/services/permissionsService";
-import { Users, Crown, MoreVertical, Search, Settings } from "lucide-react";
 
-const ADMIN_PERMISSIONS: { value: AdminPermission; label: string; icon: string }[] = [
-  { value: 'manage_orders', label: 'Manage Orders', icon: '📦' },
-  { value: 'manage_withdrawals', label: 'Manage Withdrawals', icon: '💰' },
-  { value: 'manage_gadgets', label: 'Manage Gadgets', icon: '📱' },
-  { value: 'manage_brands', label: 'Manage Brands', icon: '🏷️' },
-  { value: 'manage_businesses', label: 'Manage Businesses', icon: '🏪' },
-  { value: 'manage_products', label: 'Manage Products', icon: '🛍️' },
-  { value: 'manage_seller_applications', label: 'Manage Seller Applications', icon: '📋' },
-  { value: 'manage_promotions', label: 'Manage Promotions', icon: '🎯' },
-  { value: 'manage_carousel', label: 'Manage Carousel', icon: '🎠' },
-  { value: 'manage_marketplace_settings', label: 'Manage Marketplace Settings', icon: '⚙️' },
+const ADMIN_PERMISSIONS: Array<{
+  value: AdminPermission;
+  label: string;
+  icon: any;
+  description: string;
+}> = [
+  {
+    value: 'manage_gas_orders',
+    label: 'Gas Orders',
+    icon: ShoppingCart,
+    description: 'Manage gas cylinder orders'
+  },
+  {
+    value: 'manage_shop_orders',
+    label: 'Shop Orders',
+    icon: Package,
+    description: 'Manage shop and marketplace orders'
+  },
+  {
+    value: 'manage_commissions',
+    label: 'Commissions & Withdrawals',
+    icon: DollarSign,
+    description: 'Manage referral commissions and withdrawals'
+  },
+  {
+    value: 'manage_users',
+    label: 'Users',
+    icon: Users,
+    description: 'Manage user permissions'
+  },
+  {
+    value: 'manage_marketing',
+    label: 'Marketing',
+    icon: Megaphone,
+    description: 'Manage bulk SMS and marketing campaigns'
+  },
+  {
+    value: 'manage_gadgets',
+    label: 'Gadgets',
+    icon: Smartphone,
+    description: 'Manage gadget listings'
+  },
+  {
+    value: 'manage_brands',
+    label: 'Brands',
+    icon: Tag,
+    description: 'Manage gas cylinder brands'
+  },
+  {
+    value: 'manage_businesses',
+    label: 'Businesses',
+    icon: Building2,
+    description: 'Manage business listings'
+  },
+  {
+    value: 'manage_products',
+    label: 'Products',
+    icon: ShoppingBag,
+    description: 'Manage business products'
+  },
+  {
+    value: 'manage_seller_applications',
+    label: 'Seller Applications',
+    icon: UserCheck,
+    description: 'Manage seller applications'
+  },
+  {
+    value: 'manage_promotions',
+    label: 'Promotions',
+    icon: Sparkles,
+    description: 'Manage promotional offers'
+  },
+  {
+    value: 'manage_carousel',
+    label: 'Carousel',
+    icon: Image,
+    description: 'Manage carousel images'
+  }
 ];
 
 export const UserManagement = () => {
   const [users, setUsers] = useState<UserWithPermissions[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserWithPermissions[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserWithPermissions | null>(null);
-  const [showPermissionDialog, setShowPermissionDialog] = useState(false);
-  const [updatingPermissions, setUpdatingPermissions] = useState<Set<string>>(new Set());
-  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
-  const { toast } = useToast();
-
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const userData = await getAllUsers();
-      setUsers(userData);
-    } catch (error) {
-      console.error('Error loading users:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load users",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadUsers();
   }, []);
 
   useEffect(() => {
-    const filtered = users.filter(user => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        user.display_name?.toLowerCase().includes(searchLower) ||
-        user.full_name?.toLowerCase().includes(searchLower) ||
-        user.phone_number?.includes(searchTerm)
+    if (searchTerm.trim() === "") {
+      setFilteredUsers(users);
+    } else {
+      const term = searchTerm.toLowerCase();
+      setFilteredUsers(
+        users.filter(
+          (user) =>
+            user.full_name?.toLowerCase().includes(term) ||
+            user.display_name?.toLowerCase().includes(term) ||
+            user.phone_number?.toLowerCase().includes(term)
+        )
       );
-    });
-    setFilteredUsers(filtered);
+    }
   }, [searchTerm, users]);
 
-  const handlePermissionChange = async (
-    userId: string, 
-    permission: AdminPermission, 
-    checked: boolean
-  ) => {
-    const key = `${userId}-${permission}`;
-    setUpdatingPermissions(prev => new Set(prev).add(key));
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const allUsers = await getAllUsers();
+      setUsers(allUsers);
+      setFilteredUsers(allUsers);
+    } catch (error) {
+      console.error("Error loading users:", error);
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePermissionChange = async (permission: AdminPermission, hasPermission: boolean) => {
+    if (!selectedUser) return;
 
     try {
-      if (checked) {
-        await assignPermission(userId, permission);
+      if (hasPermission) {
+        await removePermission(selectedUser.id, permission);
+        toast.success(`Removed ${permission} permission`);
       } else {
-        await removePermission(userId, permission);
+        await assignPermission(selectedUser.id, permission);
+        toast.success(`Granted ${permission} permission`);
       }
       
-      // Update local state instead of reloading all users to prevent freezing
-      setUsers(prevUsers => 
-        prevUsers.map(user => {
-          if (user.id === userId) {
-            const newPermissions = checked 
-              ? [...user.permissions, permission]
-              : user.permissions.filter(p => p !== permission);
-            return { ...user, permissions: newPermissions };
-          }
-          return user;
-        })
-      );
+      await loadUsers();
       
-      toast({
-        title: "Success",
-        description: `Permission ${checked ? 'assigned' : 'removed'} successfully`
-      });
+      const updatedUser = users.find(u => u.id === selectedUser.id);
+      if (updatedUser) {
+        setSelectedUser(updatedUser);
+      }
     } catch (error) {
-      console.error('Error updating permission:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update permission",
-        variant: "destructive"
-      });
-    } finally {
-      setUpdatingPermissions(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(key);
-        return newSet;
-      });
+      console.error("Error updating permission:", error);
+      toast.error("Failed to update permission");
     }
   };
 
-  const handleLongPressStart = (user: UserWithPermissions) => {
-    const timer = setTimeout(() => {
-      setSelectedUser(user);
-      setShowPermissionDialog(true);
-    }, 500); // 500ms long press
-    setLongPressTimer(timer);
-  };
-
-  const handleLongPressEnd = () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
-    }
-  };
-
-  const handleRightClick = (e: React.MouseEvent, user: UserWithPermissions) => {
-    e.preventDefault();
+  const openPermissionsDialog = (user: UserWithPermissions) => {
     setSelectedUser(user);
-    setShowPermissionDialog(true);
+    setDialogOpen(true);
+  };
+
+  const handleLongPress = (user: UserWithPermissions) => {
+    let pressTimer: NodeJS.Timeout;
+    
+    const startPress = () => {
+      pressTimer = setTimeout(() => {
+        openPermissionsDialog(user);
+      }, 500);
+    };
+    
+    const cancelPress = () => {
+      clearTimeout(pressTimer);
+    };
+    
+    return { startPress, cancelPress };
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading users...</p>
-        </div>
+        <div className="text-muted-foreground">Loading users...</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          <h3 className="text-base font-medium">Users</h3>
-          <Badge variant="secondary" className="text-xs">{filteredUsers.length}</Badge>
-        </div>
-        <div className="flex items-center gap-1 flex-1 max-w-xs">
-          <Search className="h-3 w-3 text-muted-foreground" />
-          <Input
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-7 text-sm"
-          />
-        </div>
-      </div>
+    <div className="space-y-4">
+      <Input
+        type="text"
+        placeholder="Search by name or phone..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="max-w-md"
+      />
 
-      {/* User List - Mobile Optimized */}
-      <div className="space-y-1">
-        {filteredUsers.map((user) => (
-          <div 
-            key={user.id}
-            className="flex items-center justify-between p-2 rounded-md border hover:bg-muted/50 transition-colors cursor-pointer select-none"
-            onTouchStart={() => handleLongPressStart(user)}
-            onTouchEnd={handleLongPressEnd}
-            onMouseLeave={handleLongPressEnd}
-            onContextMenu={(e) => handleRightClick(e, user)}
-          >
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-xs font-medium">
-                  {(user.display_name || user.full_name || 'U').charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium truncate">
-                  {user.display_name || user.full_name || 'Unknown'} ({user.referral_count})
-                </h3>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  {user.phone_number && (
-                    <>
-                      <span>{user.phone_number}</span>
-                      {user.permissions.length > 0 && <span>•</span>}
-                    </>
-                  )}
-                  {user.permissions.length > 0 && (
-                    <>
-                      <span>{user.permissions.length} permission{user.permissions.length !== 1 ? 's' : ''}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Desktop 3-dots menu */}
-            <div className="hidden md:block">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <MoreVertical className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40 bg-background border shadow-lg z-50">
-                  <DropdownMenuLabel className="text-xs">Manage User</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => {
-                      setSelectedUser(user);
-                      setShowPermissionDialog(true);
-                    }}
-                    className="cursor-pointer text-xs"
-                  >
-                    <Settings className="mr-1 h-3 w-3" />
-                    Permissions
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {filteredUsers.length === 0 && !loading && (
-        <div className="text-center py-4 text-muted-foreground">
-          <Users className="h-6 w-6 mx-auto mb-1 opacity-50" />
-          <p className="text-sm">No users found</p>
-        </div>
-      )}
-
-      {/* Permission Management Dialog */}
-      <Dialog open={showPermissionDialog} onOpenChange={setShowPermissionDialog}>
-        <DialogContent className="max-w-sm bg-background mx-2">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
-              Permissions
-            </DialogTitle>
-            <p className="text-xs text-muted-foreground">
-              {selectedUser?.display_name || selectedUser?.full_name || 'Unknown User'}
-            </p>
-          </DialogHeader>
+      <div className="grid gap-3">
+        {filteredUsers.map((user) => {
+          const { startPress, cancelPress } = handleLongPress(user);
           
-          <div className="space-y-2 mt-3 max-h-80 overflow-y-auto">
+          return (
+            <Card 
+              key={user.id}
+              className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] select-none"
+              onMouseDown={startPress}
+              onMouseUp={cancelPress}
+              onMouseLeave={cancelPress}
+              onTouchStart={startPress}
+              onTouchEnd={cancelPress}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                openPermissionsDialog(user);
+              }}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="font-medium text-foreground">
+                      {user.full_name || user.display_name || 'No name'}
+                    </div>
+                    {user.phone_number && (
+                      <div className="text-sm text-muted-foreground">
+                        {user.phone_number}
+                      </div>
+                    )}
+                    {user.permissions.length > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {user.permissions.length} permission(s)
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-muted-foreground text-sm">
+                    Long press
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+
+        {filteredUsers.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            No users found
+          </div>
+        )}
+      </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Manage Permissions: {selectedUser?.full_name || selectedUser?.display_name || 'User'}
+            </DialogTitle>
+            {selectedUser?.phone_number && (
+              <div className="text-sm text-muted-foreground">
+                {selectedUser.phone_number}
+              </div>
+            )}
+          </DialogHeader>
+
+          <div className="space-y-4 mt-4">
             {ADMIN_PERMISSIONS.map((permission) => {
-              const key = `${selectedUser?.id}-${permission.value}`;
-              const isChecked = selectedUser?.permissions.includes(permission.value) || false;
-              const isUpdating = updatingPermissions.has(key);
+              const hasPermission = selectedUser?.permissions.includes(permission.value) || false;
+              const Icon = permission.icon;
 
               return (
-                <div key={permission.value} className="flex items-center justify-between p-2 rounded border">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm">{permission.icon}</span>
-                    <div>
-                      <label className={`text-xs font-medium ${isUpdating ? 'opacity-50' : ''}`}>
-                        {permission.label}
-                      </label>
-                    </div>
-                  </div>
+                <div
+                  key={permission.value}
+                  className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent/5 transition-colors"
+                >
                   <Checkbox
-                    checked={isChecked}
-                    disabled={isUpdating || !selectedUser}
-                    onCheckedChange={(checked) => {
-                      if (selectedUser) {
-                        handlePermissionChange(selectedUser.id, permission.value, checked as boolean);
-                      }
-                    }}
-                    className="h-4 w-4"
+                    id={permission.value}
+                    checked={hasPermission}
+                    onCheckedChange={() => handlePermissionChange(permission.value, hasPermission)}
                   />
+                  <div className="flex-1">
+                    <Label
+                      htmlFor={permission.value}
+                      className="flex items-center gap-2 cursor-pointer font-medium"
+                    >
+                      <Icon className="w-4 h-4" />
+                      {permission.label}
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {permission.description}
+                    </p>
+                  </div>
                 </div>
               );
             })}

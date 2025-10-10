@@ -21,16 +21,18 @@ export const useAdminPermissions = () => {
         // Super admins have all permissions
         if (userRole === 'super_admin') {
           setPermissions([
-            'manage_orders',
-            'manage_withdrawals',
+            'manage_gas_orders',
+            'manage_shop_orders',
+            'manage_commissions',
+            'manage_users',
+            'manage_marketing',
             'manage_gadgets',
             'manage_brands',
             'manage_businesses',
             'manage_products',
             'manage_seller_applications',
             'manage_promotions',
-            'manage_carousel',
-            'manage_marketplace_settings'
+            'manage_carousel'
           ]);
         } else {
           // Load specific permissions for other users
@@ -64,8 +66,11 @@ export const useAdminPermissions = () => {
     loading,
     checkPermission,
     hasPermission: hasPermissionSync,
-    canManageOrders: hasPermissionSync('manage_orders'),
-    canManageWithdrawals: hasPermissionSync('manage_withdrawals'),
+    canManageGasOrders: hasPermissionSync('manage_gas_orders'),
+    canManageShopOrders: hasPermissionSync('manage_shop_orders'),
+    canManageCommissions: hasPermissionSync('manage_commissions'),
+    canManageUsers: hasPermissionSync('manage_users'),
+    canManageMarketing: hasPermissionSync('manage_marketing'),
     canManageGadgets: hasPermissionSync('manage_gadgets'),
     canManageBrands: hasPermissionSync('manage_brands'),
     canManageBusinesses: hasPermissionSync('manage_businesses'),
@@ -73,7 +78,5 @@ export const useAdminPermissions = () => {
     canManageSellerApplications: hasPermissionSync('manage_seller_applications'),
     canManagePromotions: hasPermissionSync('manage_promotions'),
     canManageCarousel: hasPermissionSync('manage_carousel'),
-    canManageMarketplaceSettings: hasPermissionSync('manage_marketplace_settings'),
-    
   };
 };

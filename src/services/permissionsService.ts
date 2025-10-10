@@ -1,16 +1,18 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export type AdminPermission = 
-  | 'manage_orders'
-  | 'manage_withdrawals' 
+  | 'manage_gas_orders'
+  | 'manage_shop_orders'
+  | 'manage_commissions'
+  | 'manage_users'
+  | 'manage_marketing'
   | 'manage_gadgets'
   | 'manage_brands'
   | 'manage_businesses'
   | 'manage_products'
   | 'manage_seller_applications'
   | 'manage_promotions'
-  | 'manage_carousel'
-  | 'manage_marketplace_settings';
+  | 'manage_carousel';
 
 export interface AdminPermissionRecord {
   id: string;
