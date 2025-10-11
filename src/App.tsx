@@ -49,6 +49,8 @@ import InstallPWA from './components/InstallPWA';
 import OccasionalSignInPopup from './components/auth/OccasionalSignInPopup';
 import { Navigate } from 'react-router-dom';
 import { CartButton } from './components/cart/CartButton';
+import OnboardingScreen from './components/onboarding/OnboardingScreen';
+import { useOnboarding } from './hooks/useOnboarding';
 
 const queryClient = new QueryClient();
 
@@ -56,6 +58,7 @@ function App() {
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   
   const { isAdmin } = useUserRole();
+  const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
 
   useEffect(() => {
     const checkForUpdates = () => {
@@ -85,6 +88,9 @@ function App() {
       <CartProvider>
         <Router>
           <div className="flex flex-col min-h-screen">
+            {showOnboarding && !onboardingLoading && (
+              <OnboardingScreen onComplete={completeOnboarding} />
+            )}
             <AppBar />
             <GoogleSignUpHandler />
             <InstallPWA />
