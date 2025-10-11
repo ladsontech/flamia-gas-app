@@ -294,47 +294,47 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
 
   return (
     <div className="space-y-3 px-2 sm:px-0">
-      {/* Overall Statistics - More compact on mobile */}
+      {/* Overall Statistics - Compact mobile */}
       {userRole === 'super_admin' && (
-        <div className="grid grid-cols-3 gap-2 sm:gap-4">
-          <Card className="p-2 sm:p-4">
+        <div className="grid grid-cols-3 gap-2">
+          <Card className="p-2">
             <div className="text-center">
-              <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 text-primary mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Revenue</p>
-              <p className="text-sm sm:text-lg font-bold">
+              <DollarSign className="h-4 w-4 text-primary mx-auto mb-0.5" />
+              <p className="text-[10px] text-muted-foreground">Revenue</p>
+              <p className="text-xs sm:text-sm font-bold">
                 {overallStats.totalRevenue > 1000000 
                   ? `${(overallStats.totalRevenue / 1000000).toFixed(1)}M`
                   : `${(overallStats.totalRevenue / 1000).toFixed(0)}K`}
               </p>
             </div>
           </Card>
-          <Card className="p-2 sm:p-4">
+          <Card className="p-2">
             <div className="text-center">
-              <ShoppingCart className="h-4 w-4 sm:h-6 sm:w-6 text-primary mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Orders</p>
-              <p className="text-sm sm:text-lg font-bold">{overallStats.total}</p>
+              <ShoppingCart className="h-4 w-4 text-primary mx-auto mb-0.5" />
+              <p className="text-[10px] text-muted-foreground">Orders</p>
+              <p className="text-xs sm:text-sm font-bold">{overallStats.total}</p>
             </div>
           </Card>
-          <Card className="p-2 sm:p-4">
+          <Card className="p-2">
             <div className="text-center">
-              <CheckCircle className="h-4 w-4 sm:h-6 sm:w-6 text-green-600 mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Complete</p>
-              <p className="text-sm sm:text-lg font-bold">{overallStats.completed}</p>
+              <CheckCircle className="h-4 w-4 text-green-600 mx-auto mb-0.5" />
+              <p className="text-[10px] text-muted-foreground">Done</p>
+              <p className="text-xs sm:text-sm font-bold">{overallStats.completed}</p>
             </div>
           </Card>
         </div>
       )}
 
-      {/* Filters - Compact mobile layout */}
-      <Card className="p-3 sm:p-4">
-        <div className="space-y-3">
+      {/* Filters - Compact */}
+      <Card className="p-2 sm:p-3">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg sm:text-xl font-semibold">Orders</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground">{orders.length} total</p>
+              <h2 className="text-base sm:text-lg font-semibold">Orders</h2>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">{orders.length} total</p>
             </div>
-            <Badge variant="outline" className="text-xs">
-              {filteredOrders.length} shown
+            <Badge variant="outline" className="text-[10px] sm:text-xs">
+              {filteredOrders.length}
             </Badge>
           </div>
           <div className="flex gap-2">

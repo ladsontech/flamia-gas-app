@@ -356,12 +356,10 @@ const Delivery = () => {
           <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-600">
             <LogOut className="w-4 h-4" />
           </Button>
-          <span className="text-sm text-gray-700 font-medium truncate">{userName}</span>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              {deliveryOrders.length} Orders
-            </Badge>
-          </div>
+          <span className="text-xs sm:text-sm text-gray-700 font-medium truncate">{userName}</span>
+          <Badge variant="secondary" className="text-xs">
+            {deliveryOrders.length}
+          </Badge>
         </div>
       </div>
 
@@ -377,63 +375,67 @@ const Delivery = () => {
             className="absolute bottom-4 left-4 right-4 z-40"
           >
             <Card className="bg-white shadow-2xl border-2 border-blue-500">
-              <div className="p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-900">{selectedOrder.customerName}</h3>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{selectedOrder.description}</p>
+              <div className="p-3 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-sm text-gray-900 truncate">{selectedOrder.customerName}</h3>
+                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{selectedOrder.description}</p>
                   </div>
-                  <Badge className="ml-2">
+                  <Badge className="text-xs shrink-0">
                     {selectedOrder.status?.replace('_', ' ') || 'assigned'}
                   </Badge>
                 </div>
                 
-                <div className="flex items-start gap-2 text-sm text-gray-700">
-                  <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-600" />
-                  <span className="flex-1">{selectedOrder.displayAddress}</span>
+                <div className="flex items-start gap-1.5 text-xs text-gray-700">
+                  <MapPin className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-red-600" />
+                  <span className="flex-1 line-clamp-2">{selectedOrder.displayAddress}</span>
                 </div>
                 
                 {currentLocation && (
-                  <div className="flex items-center gap-2 text-sm text-blue-600">
-                    <Navigation className="w-4 h-4" />
-                    <span>Route shown on map</span>
+                  <div className="flex items-center gap-1.5 text-xs text-blue-600">
+                    <Navigation className="w-3.5 h-3.5" />
+                    <span>Route shown</span>
                   </div>
                 )}
                 
                 <div className="flex gap-2">
                   <Button 
                     variant="outline"
+                    size="sm"
                     onClick={() => handleCallCustomer(selectedOrder.customerPhone)}
                     className="flex-1"
                   >
-                    <Phone className="w-4 h-4 mr-2" />
+                    <Phone className="w-3.5 h-3.5 mr-1" />
                     Call
                   </Button>
                   <Button 
+                    size="sm"
                     onClick={() => handleNavigate(selectedOrder)}
                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                   >
-                    <Map className="w-4 h-4 mr-2" />
-                    Open in Maps
+                    <Map className="w-3.5 h-3.5 mr-1" />
+                    Maps
                   </Button>
                 </div>
                 
                 <div className="flex gap-2">
                   {selectedOrder.status === 'assigned' && (
                     <Button 
+                      size="sm"
                       onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'in_progress')}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
-                      <Truck className="w-4 h-4 mr-2" />
-                      Start Delivery
+                      <Truck className="w-3.5 h-3.5 mr-1" />
+                      Start
                     </Button>
                   )}
                   {selectedOrder.status === 'in_progress' && (
                     <Button 
+                      size="sm"
                       onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'completed')}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
-                      <CheckCircle className="w-4 h-4 mr-2" />
+                      <CheckCircle className="w-3.5 h-3.5 mr-1" />
                       Complete
                     </Button>
                   )}
@@ -446,6 +448,7 @@ const Delivery = () => {
         {/* Orders List Toggle Button */}
         <div className="absolute bottom-4 left-4 z-30">
           <Button
+            size="sm"
             onClick={() => {
               // Cycle through orders
               const currentIndex = deliveryOrders.findIndex(o => o.id === selectedOrder?.id);
@@ -455,8 +458,8 @@ const Delivery = () => {
             className="bg-white hover:bg-gray-100 text-gray-900 shadow-xl"
             disabled={deliveryOrders.length === 0}
           >
-            <Truck className="w-4 h-4 mr-2" />
-            {selectedOrder ? 'Next Order' : 'View Orders'}
+            <Truck className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">{selectedOrder ? 'Next' : 'Orders'}</span>
           </Button>
         </div>
       </div>

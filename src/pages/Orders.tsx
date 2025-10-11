@@ -143,52 +143,53 @@ const Orders = () => {
       <AppBar />
       <div className="pt-20 px-4 pb-20">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-2 mb-4">
             <Button 
               variant="ghost" 
+              size="sm"
               onClick={() => navigate('/')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Home
+              <span className="hidden sm:inline">Back</span>
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">My Orders</h1>
-              <p className="text-muted-foreground">View your order history</p>
+              <h1 className="text-xl sm:text-2xl font-bold">My Orders</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Order history</p>
             </div>
           </div>
 
           {orders.length === 0 ? (
-            <Card className="p-8 text-center">
-              <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
-              <p className="text-muted-foreground mb-4">
-                You haven't placed any orders yet. Start by placing your first order!
+            <Card className="p-6 text-center">
+              <Package className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+              <h3 className="text-base font-semibold mb-1">No orders yet</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Place your first order!
               </p>
-              <Button onClick={() => navigate('/order')}>
-                Place Your First Order
+              <Button onClick={() => navigate('/order')} size="sm">
+                Order Now
               </Button>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {orders.map((order) => (
-                <Card key={order.id} className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                <Card key={order.id} className="p-3">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
                         {getStatusIcon(order.status)}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                        <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
-                        <span className="text-sm text-muted-foreground">
-                          {format(new Date(order.created_at), 'MMM d, yyyy at h:mm a')}
-                        </span>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Order #{order.id.slice(0, 8)}
-                      </p>
-                      <p className="font-medium">{order.description}</p>
+                      <span className="text-xs text-muted-foreground">
+                        {format(new Date(order.created_at), 'MMM d, h:mm a')}
+                      </span>
                     </div>
+                    <p className="text-xs text-muted-foreground">
+                      #{order.id.slice(0, 8)}
+                    </p>
+                    <p className="text-sm font-medium line-clamp-2">{order.description}</p>
                   </div>
                 </Card>
               ))}
