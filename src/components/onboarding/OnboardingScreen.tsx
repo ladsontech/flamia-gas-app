@@ -24,35 +24,35 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const slides: OnboardingSlide[] = [
     {
       id: 1,
-      icon: <Flame className="w-12 h-12" />,
+      icon: <Flame className="w-10 h-10" />,
       title: "Welcome to Flamia",
-      description: "Your trusted partner for LPG gas delivery and kitchen essentials in Uganda. Fast, reliable, and convenient service right to your doorstep."
+      description: "Fast LPG gas delivery & kitchen essentials in Uganda."
     },
     {
       id: 2,
-      icon: <Package className="w-12 h-12" />,
-      title: "Gas Cylinders & Refills",
-      description: "Brand new cylinders (6KG, 12KG, 13KG, 45KG) from trusted brands like Shell, Total, Hass, Oryx, and Stabex. Quick refills with same-day delivery in Kampala.",
+      icon: <Package className="w-10 h-10" />,
+      title: "Gas & Refills",
+      description: "6KG-45KG cylinders from Shell, Total, Hass, Oryx & Stabex. Same-day delivery.",
       image: "/images/Nova 6kg.png"
     },
     {
       id: 3,
-      icon: <Wrench className="w-12 h-12" />,
-      title: "Gas Accessories",
-      description: "Complete range of gas accessories including regulators, pipes, burners, stoves, cylinder stands, and lighters. Everything you need for your kitchen.",
+      icon: <Wrench className="w-10 h-10" />,
+      title: "Accessories",
+      description: "Regulators, pipes, burners, stoves & more for your kitchen.",
       image: "/images/regulator.jpeg"
     },
     {
       id: 4,
-      icon: <Smartphone className="w-12 h-12" />,
-      title: "Electronics & Gadgets",
-      description: "Browse our collection of quality electronics and gadgets. From phones to appliances, find great deals on brand new and used items.",
+      icon: <Smartphone className="w-10 h-10" />,
+      title: "Gadgets",
+      description: "Quality electronics & appliances. Brand new and used items.",
     },
     {
       id: 5,
-      icon: <ShoppingBag className="w-12 h-12" />,
-      title: "Food & Marketplace",
-      description: "Order fresh food from local restaurants and discover products from verified sellers. Support local businesses while enjoying convenient delivery.",
+      icon: <ShoppingBag className="w-10 h-10" />,
+      title: "Marketplace",
+      description: "Fresh food from local restaurants & products from verified sellers.",
     }
   ];
 
@@ -84,7 +84,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       </div>
 
       {/* Slide content */}
-      <div className="flex-1 flex items-center justify-center p-6">
+      <div className="flex-1 flex items-center justify-center px-4 py-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -92,11 +92,11 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-md w-full space-y-6 text-center"
+            className="max-w-md w-full space-y-4 text-center"
           >
             {/* Icon */}
             <div className="flex justify-center">
-              <div className="p-4 bg-primary/10 rounded-full text-primary">
+              <div className="p-3 bg-primary/10 rounded-full text-primary">
                 {slides[currentSlide].icon}
               </div>
             </div>
@@ -107,18 +107,18 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 <img
                   src={slides[currentSlide].image}
                   alt={slides[currentSlide].title}
-                  className="w-48 h-48 object-contain rounded-lg"
+                  className="w-32 h-32 object-contain rounded-lg"
                 />
               </div>
             )}
 
             {/* Title */}
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground">
               {slides[currentSlide].title}
             </h2>
 
             {/* Description */}
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
+            <p className="text-muted-foreground text-sm md:text-base leading-snug px-4">
               {slides[currentSlide].description}
             </p>
           </motion.div>
@@ -126,25 +126,25 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       </div>
 
       {/* Bottom navigation */}
-      <div className="p-6 space-y-4">
+      <div className="p-4 space-y-3">
         {/* Terms acceptance checkbox on last slide */}
         {currentSlide === slides.length - 1 && (
-          <div className="flex items-start gap-3 max-w-md mx-auto mb-4">
+          <div className="flex items-start gap-2 max-w-md mx-auto mb-2 px-2">
             <Checkbox
               id="terms"
               checked={acceptedTerms}
               onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
-              className="mt-1"
+              className="mt-0.5"
             />
             <label
               htmlFor="terms"
-              className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+              className="text-xs text-muted-foreground leading-tight cursor-pointer"
             >
-              I agree to Flamia's{' '}
+              I agree to{' '}
               <Link to="/terms-and-conditions" className="text-primary hover:underline">
-                Terms and Conditions
+                Terms
               </Link>{' '}
-              and{' '}
+              &{' '}
               <Link to="/privacy-policy" className="text-primary hover:underline">
                 Privacy Policy
               </Link>
@@ -153,15 +153,15 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
         )}
 
         {/* Progress dots */}
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center gap-1.5">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all ${
+              className={`h-1.5 rounded-full transition-all ${
                 index === currentSlide
-                  ? 'w-8 bg-primary'
-                  : 'w-2 bg-muted-foreground/30'
+                  ? 'w-6 bg-primary'
+                  : 'w-1.5 bg-muted-foreground/30'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -173,10 +173,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
           onClick={handleNext}
           disabled={currentSlide === slides.length - 1 && !acceptedTerms}
           className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
-          size="lg"
         >
           {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
     </div>
