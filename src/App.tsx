@@ -25,6 +25,8 @@ import GadgetDetail from './pages/GadgetDetail';
 import ResetPassword from './pages/ResetPassword';
 import Delivery from './pages/Delivery';
 import Sell from './pages/Sell';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 // SEO Pages
 import AlternativeToFumbaaGas from './pages/AlternativeToFumbaaGas';
@@ -117,6 +119,8 @@ function App() {
                 <Route path="/delivery" element={<Delivery />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/sell" element={<Sell />} />
+                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 
                 {/* SEO Pages */}
                 <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />

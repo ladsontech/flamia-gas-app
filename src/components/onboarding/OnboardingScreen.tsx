@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronRight, Flame, Package, Wrench, Smartphone, ShoppingBag, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface OnboardingSlide {
   id: number;
@@ -17,6 +19,7 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const slides: OnboardingSlide[] = [
     {
@@ -56,7 +59,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
-    } else {
+    } else if (acceptedTerms) {
       onComplete();
     }
   };
@@ -124,6 +127,31 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
       {/* Bottom navigation */}
       <div className="p-6 space-y-4">
+        {/* Terms acceptance checkbox on last slide */}
+        {currentSlide === slides.length - 1 && (
+          <div className="flex items-start gap-3 max-w-md mx-auto mb-4">
+            <Checkbox
+              id="terms"
+              checked={acceptedTerms}
+              onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+              className="mt-1"
+            />
+            <label
+              htmlFor="terms"
+              className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+            >
+              I agree to Flamia's{' '}
+              <Link to="/terms-and-conditions" className="text-primary hover:underline">
+                Terms and Conditions
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy-policy" className="text-primary hover:underline">
+                Privacy Policy
+              </Link>
+            </label>
+          </div>
+        )}
+
         {/* Progress dots */}
         <div className="flex justify-center gap-2">
           {slides.map((_, index) => (
@@ -143,6 +171,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
         {/* Next/Get Started button */}
         <Button
           onClick={handleNext}
+          disabled={currentSlide === slides.length - 1 && !acceptedTerms}
           className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
           size="lg"
         >
