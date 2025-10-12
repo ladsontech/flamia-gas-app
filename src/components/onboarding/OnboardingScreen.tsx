@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronRight, Flame, Package, Wrench, Smartphone, ShoppingBag, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronRight, Flame, Package, Wrench, Smartphone, ShoppingBag, X, FileText, Shield } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface OnboardingSlide {
   id: number;
@@ -19,6 +19,9 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const navigate = useNavigate();
 
   const slides: OnboardingSlide[] = [
     {
@@ -53,20 +56,36 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       title: "Marketplace",
       description: "General online market for all products from verified sellers.",
       image: "/images/marketplace_shop.jpeg"
+    },
+    {
+      id: 6,
+      icon: <FileText className="w-16 h-16" />,
+      title: "Terms and Conditions",
+      description: "Please review and accept our terms to continue."
+    },
+    {
+      id: 7,
+      icon: <Shield className="w-16 h-16" />,
+      title: "Privacy Policy",
+      description: "Please review and accept our privacy policy to continue."
     }
   ];
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
+      // On Terms slide, save acceptance
+      if (currentSlide === 5 && termsAccepted) {
+        localStorage.setItem('flamia_terms_accepted', 'true');
+      }
+      // On Privacy slide (second to last), save acceptance and complete
+      if (currentSlide === 6 && privacyAccepted) {
+        localStorage.setItem('flamia_privacy_accepted', 'true');
+      }
       setCurrentSlide(currentSlide + 1);
     } else {
-      // Check if both policies are accepted
-      const termsAccepted = localStorage.getItem('flamia_terms_accepted') === 'true';
-      const privacyAccepted = localStorage.getItem('flamia_privacy_accepted') === 'true';
-      
-      if (termsAccepted && privacyAccepted) {
-        onComplete();
-      }
+      // Final slide - complete onboarding and navigate home
+      onComplete();
+      navigate('/');
     }
   };
 
@@ -128,6 +147,60 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
               <p className="text-muted-foreground text-base md:text-lg lg:text-xl leading-relaxed px-4 md:px-6">
                 {slides[currentSlide].description}
               </p>
+
+              {/* Terms Acceptance on slide 6 */}
+              {currentSlide === 5 && (
+                <div className="max-w-md mx-auto mt-6 md:mt-8 space-y-4 md:space-y-6">
+                  <div className="flex items-start space-x-3 md:space-x-4 p-4 md:p-6 bg-card border border-border rounded-lg">
+                    <Checkbox
+                      id="terms"
+                      checked={termsAccepted}
+                      onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <label htmlFor="terms" className="text-sm md:text-base text-foreground cursor-pointer">
+                        I accept the{' '}
+                        <Link
+                          to="/terms-and-conditions"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary underline hover:text-primary/80"
+                        >
+                          Terms and Conditions
+                        </Link>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Privacy Acceptance on slide 7 */}
+              {currentSlide === 6 && (
+                <div className="max-w-md mx-auto mt-6 md:mt-8 space-y-4 md:space-y-6">
+                  <div className="flex items-start space-x-3 md:space-x-4 p-4 md:p-6 bg-card border border-border rounded-lg">
+                    <Checkbox
+                      id="privacy"
+                      checked={privacyAccepted}
+                      onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <label htmlFor="privacy" className="text-sm md:text-base text-foreground cursor-pointer">
+                        I accept the{' '}
+                        <Link
+                          to="/privacy-policy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary underline hover:text-primary/80"
+                        >
+                          Privacy Policy
+                        </Link>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -135,38 +208,6 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
       {/* Bottom navigation - fixed at bottom */}
       <div className="flex-shrink-0 p-4 md:p-8 space-y-4 md:space-y-6 bg-background border-t border-border">
-        {/* Policy acceptance links on last slide */}
-        {currentSlide === slides.length - 1 && (
-          <div className="max-w-lg mx-auto mb-2 md:mb-4">
-            <div className="bg-card border border-border rounded-xl shadow-lg p-4 md:p-8 space-y-3 md:space-y-5">
-              <p className="text-sm md:text-lg text-center text-foreground mb-2 md:mb-4">
-                Please review and accept our policies to continue:
-              </p>
-              
-              {/* Terms and Conditions */}
-              <Link 
-                to="/terms-and-conditions"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 md:p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
-              >
-                <span className="text-sm md:text-lg text-foreground">Terms and Conditions</span>
-                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
-              </Link>
-
-              {/* Privacy Policy */}
-              <Link 
-                to="/privacy-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 md:p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
-              >
-                <span className="text-sm md:text-lg text-foreground">Privacy Policy</span>
-                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
-              </Link>
-            </div>
-          </div>
-        )}
 
         {/* Progress dots */}
         <div className="flex justify-center gap-1.5 md:gap-2">
@@ -187,7 +228,10 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
         {/* Next/Get Started button */}
         <Button
           onClick={handleNext}
-          disabled={currentSlide === slides.length - 1 && (localStorage.getItem('flamia_terms_accepted') !== 'true' || localStorage.getItem('flamia_privacy_accepted') !== 'true')}
+          disabled={
+            (currentSlide === 5 && !termsAccepted) ||
+            (currentSlide === 6 && !privacyAccepted)
+          }
           className="w-full max-w-lg mx-auto flex items-center justify-center gap-2 md:gap-3 h-12 md:h-14 text-base md:text-lg"
           size="lg"
         >
