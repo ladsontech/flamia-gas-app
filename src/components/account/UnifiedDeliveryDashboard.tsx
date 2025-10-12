@@ -10,7 +10,9 @@ import {
   Phone, 
   CheckCircle,
   Truck,
-  Map
+  Package,
+  TrendingUp,
+  Clock
 } from "lucide-react";
 import { Order } from "@/types/order";
 import { fetchOrders, updateOrderStatus } from "@/services/database";
@@ -22,14 +24,13 @@ interface DeliveryOrder extends Order {
   customerName: string;
   customerPhone: string;
   displayAddress: string;
-  estimatedTime: string;
 }
 
-interface DeliveryDashboardProps {
+interface UnifiedDeliveryDashboardProps {
   userId: string;
 }
 
-export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
+export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardProps) => {
   const { toast } = useToast();
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -53,9 +54,13 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
       customerName: `Customer ${index + 1}`,
       customerPhone: "+256700123456",
       displayAddress: order.delivery_address || "Address not available",
-      estimatedTime: "30 mins"
     }))
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  // Calculate statistics
+  const completedDeliveries = deliveryOrders.filter(o => o.status === 'completed').length;
+  const inProgressDeliveries = deliveryOrders.filter(o => o.status === 'in_progress').length;
+  const pendingDeliveries = deliveryOrders.filter(o => o.status === 'assigned').length;
 
   // Group orders by date
   const groupOrdersByDate = (orders: DeliveryOrder[]) => {
@@ -70,7 +75,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
       } else if (isYesterday(orderDate)) {
         dateLabel = "Yesterday";
       } else {
-        dateLabel = format(orderDate, "EEEE, MMM d"); // e.g., "Monday, Jan 15"
+        dateLabel = format(orderDate, "EEEE, MMM d");
       }
       
       if (!groups[dateLabel]) {
@@ -92,7 +97,6 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
         lng: Number(order.delivery_longitude)
       };
     }
-    // Fallback to Kampala coordinates with slight randomization
     return {
       lat: 0.3136 + (Math.random() - 0.5) * 0.1,
       lng: 32.5811 + (Math.random() - 0.5) * 0.1
@@ -105,45 +109,23 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
       if (!mapRef.current) return;
 
       const mapInstance = new window.google.maps.Map(mapRef.current, {
-        center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
+        center: { lat: 0.3476, lng: 32.5825 },
         zoom: 14,
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
         zoomControl: true,
-        rotateControl: false,
-        scaleControl: true,
-        gestureHandling: 'greedy',
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        maxZoom: 20,
-        minZoom: 10,
         styles: [
-          {
-            featureType: "all",
-            elementType: "labels.text.fill",
-            stylers: [{ color: "#2d3748" }]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "geometry",
-            stylers: [{ color: "#ffffff" }]
-          },
           {
             featureType: "road.highway",
             elementType: "geometry.stroke",
-            stylers: [{ color: "#3B82F6" }, { weight: 4 }]
-          },
-          {
-            featureType: "water",
-            elementType: "geometry",
-            stylers: [{ color: "#dbeafe" }]
+            stylers: [{ color: "#E67E22" }, { weight: 4 }]
           }
         ]
       });
 
       setMap(mapInstance);
 
-      // Add markers for assigned orders
       deliveryOrders.forEach(order => {
         const orderLocation = getOrderLocation(order);
         
@@ -153,7 +135,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
           title: `${order.customerName} - ${order.description}`,
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
-            fillColor: '#EF4444',
+            fillColor: '#E67E22',
             fillOpacity: 1,
             strokeColor: '#ffffff',
             strokeWeight: 3,
@@ -195,7 +177,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
     loadGoogleMaps();
   }, [deliveryOrders.length]);
 
-  // Real-time location tracking with route
+  // Real-time location tracking
   useEffect(() => {
     let watchId: number | null = null;
     let currentLocationMarker: google.maps.Marker | null = null;
@@ -211,12 +193,10 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
             };
             setCurrentLocation(location);
             
-            // Remove previous marker
             if (currentLocationMarker) {
               currentLocationMarker.setMap(null);
             }
 
-            // Add current location marker (blue dot)
             currentLocationMarker = new window.google.maps.Marker({
               position: location,
               map: map,
@@ -232,7 +212,6 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
               zIndex: 1000
             });
 
-            // Show route to selected order
             if (selectedOrder) {
               const orderLocation = getOrderLocation(selectedOrder);
               const directionsService = new window.google.maps.DirectionsService();
@@ -253,7 +232,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                       directions: result,
                       suppressMarkers: true,
                       polylineOptions: {
-                        strokeColor: '#3B82F6',
+                        strokeColor: '#E67E22',
                         strokeWeight: 5,
                         strokeOpacity: 0.8
                       }
@@ -322,35 +301,73 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">Delivery Dashboard</h2>
-        <Badge variant="secondary">
-          {deliveryOrders.length} Orders
-        </Badge>
+    <div className="space-y-6">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-800">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Total Deliveries</p>
+                <p className="text-3xl font-bold text-orange-700 dark:text-orange-300 mt-2">{completedDeliveries}</p>
+              </div>
+              <div className="h-12 w-12 bg-orange-500/20 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">In Progress</p>
+                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{inProgressDeliveries}</p>
+              </div>
+              <div className="h-12 w-12 bg-blue-500/20 rounded-full flex items-center justify-center">
+                <Truck className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Pending</p>
+                <p className="text-3xl font-bold text-amber-700 dark:text-amber-300 mt-2">{pendingDeliveries}</p>
+              </div>
+              <div className="h-12 w-12 bg-amber-500/20 rounded-full flex items-center justify-center">
+                <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
 
+      {/* Main Content */}
       {deliveryOrders.length === 0 ? (
-        <Card className="p-8 text-center">
-          <Truck className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-semibold mb-2">No Deliveries Assigned</h3>
+        <Card className="p-12 text-center">
+          <Truck className="w-16 h-16 mx-auto mb-4 text-orange-400" />
+          <h3 className="text-xl font-semibold mb-2">No Deliveries Assigned</h3>
           <p className="text-muted-foreground">You don't have any deliveries assigned yet.</p>
         </Card>
       ) : (
-        <div className="grid lg:grid-cols-2 gap-4">
+        <div className="grid lg:grid-cols-2 gap-6">
           {/* Orders List */}
-          <div className="space-y-4 lg:max-h-[600px] lg:overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-3">Assigned Orders</h3>
+          <div className="space-y-4 lg:max-h-[600px] lg:overflow-y-auto pr-2">
             {Object.entries(groupedOrders).map(([dateLabel, orders]) => (
               <div key={dateLabel} className="space-y-3">
-                <h4 className="text-sm font-semibold text-muted-foreground sticky top-0 bg-background py-2">
+                <h4 className="text-sm font-semibold text-orange-600 dark:text-orange-400 sticky top-0 bg-background py-2">
                   {dateLabel}
                 </h4>
                 {orders.map((order) => (
                   <Card
                     key={order.id}
-                    className={`p-4 cursor-pointer transition-all hover:shadow-md ${
-                      selectedOrder?.id === order.id ? 'border-2 border-primary ring-2 ring-primary/20' : ''
+                    className={`p-4 cursor-pointer transition-all hover:shadow-lg hover:border-orange-300 ${
+                      selectedOrder?.id === order.id ? 'border-2 border-orange-500 ring-2 ring-orange-500/20' : ''
                     }`}
                     onClick={() => {
                       setSelectedOrder(order);
@@ -362,28 +379,31 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                     }}
                   >
                     <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-base">{order.customerName}</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {format(parseISO(order.created_at), "h:mm a")}
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                        {order.description}
-                      </p>
-                      {order.total_amount && (
-                        <p className="text-sm font-semibold text-primary mt-1">
-                          UGX {order.total_amount.toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                    <Badge className="ml-2">
-                      {order.status?.replace('_', ' ') || 'assigned'}
-                    </Badge>
-                  </div>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <Package className="w-4 h-4 text-orange-500" />
+                            <h4 className="font-semibold text-base">{order.customerName}</h4>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {format(parseISO(order.created_at), "h:mm a")}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                            {order.description}
+                          </p>
+                          {order.total_amount && (
+                            <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 mt-2">
+                              UGX {order.total_amount.toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                        <Badge className="ml-2 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                          {order.status?.replace('_', ' ') || 'assigned'}
+                        </Badge>
+                      </div>
                       
                       <div className="flex items-start gap-2 text-sm">
-                        <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-destructive" />
+                        <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-orange-500" />
                         <span className="flex-1 text-muted-foreground line-clamp-2">
                           {order.displayAddress}
                         </span>
@@ -397,7 +417,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                             e.stopPropagation();
                             handleCallCustomer(order.customerPhone);
                           }}
-                          className="flex-1"
+                          className="flex-1 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-900/20"
                         >
                           <Phone className="w-3 h-3 mr-1" />
                           Call
@@ -408,7 +428,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                             e.stopPropagation();
                             handleNavigate(order);
                           }}
-                          className="flex-1"
+                          className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
                         >
                           <Navigation className="w-3 h-3 mr-1" />
                           Navigate
@@ -422,7 +442,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                             e.stopPropagation();
                             handleUpdateOrderStatus(order.id, 'in_progress');
                           }}
-                          className="w-full bg-green-600 hover:bg-green-700"
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                         >
                           <Truck className="w-3 h-3 mr-1" />
                           Start Delivery
@@ -435,7 +455,7 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
                             e.stopPropagation();
                             handleUpdateOrderStatus(order.id, 'completed');
                           }}
-                          className="w-full bg-green-600 hover:bg-green-700"
+                          className="w-full bg-green-600 hover:bg-green-700 text-white"
                         >
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Complete Delivery
@@ -449,20 +469,19 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
           </div>
 
           {/* Map Container */}
-          <div className="relative h-[600px] rounded-lg overflow-hidden border-2 border-accent/20">
+          <div className="relative h-[600px] rounded-lg overflow-hidden border-2 border-orange-200 dark:border-orange-800">
             <div ref={mapRef} className="w-full h-full" />
             
-            {/* Selected Order Info Overlay */}
             {selectedOrder && currentLocation && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="absolute top-4 left-4 right-4 z-40"
               >
-                <Card className="bg-white/95 backdrop-blur shadow-lg border">
+                <Card className="bg-white/95 backdrop-blur shadow-lg border-orange-200">
                   <div className="p-3">
                     <div className="flex items-center gap-2 text-sm">
-                      <Navigation className="w-4 h-4 text-primary" />
+                      <Navigation className="w-4 h-4 text-orange-500" />
                       <span className="font-medium">Route shown to selected order</span>
                     </div>
                   </div>
@@ -471,6 +490,41 @@ export const DeliveryDashboard = ({ userId }: DeliveryDashboardProps) => {
             )}
           </div>
         </div>
+      )}
+
+      {/* Delivery Report Summary */}
+      {completedDeliveries > 0 && (
+        <Card className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 dark:border-orange-800">
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-12 w-12 bg-orange-500 rounded-full flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-orange-700 dark:text-orange-300">Delivery Performance</h3>
+                <p className="text-sm text-orange-600 dark:text-orange-400">Your delivery statistics</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{completedDeliveries}</p>
+                <p className="text-xs text-muted-foreground mt-1">Completed</p>
+              </div>
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{inProgressDeliveries}</p>
+                <p className="text-xs text-muted-foreground mt-1">In Progress</p>
+              </div>
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{pendingDeliveries}</p>
+                <p className="text-xs text-muted-foreground mt-1">Pending</p>
+              </div>
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{deliveryOrders.length}</p>
+                <p className="text-xs text-muted-foreground mt-1">Total Orders</p>
+              </div>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );

@@ -16,7 +16,7 @@ import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
 import { ReferralHub } from "@/components/account/ReferralHub";
 import OrdersManager from "@/components/account/OrdersManager";
-import { DeliveryDashboard } from "@/components/account/DeliveryDashboard";
+import { UnifiedDeliveryDashboard } from "@/components/account/UnifiedDeliveryDashboard";
 import { AdminOrdersDashboard } from "@/components/admin/AdminOrdersDashboard";
 import { BulkSmsMarketing } from "@/components/admin/BulkSmsMarketing";
 import { CommissionsWithdrawalsManager } from "@/components/admin/CommissionsWithdrawalsManager";
@@ -342,8 +342,8 @@ const Account = () => {
               </>
             )}
 
-            {/* Regular User Menu - Orders */}
-            {!isAdmin && (
+            {/* Regular User Menu - Orders (Hide for delivery men) */}
+            {!isAdmin && !isDeliveryMan && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
                   <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
@@ -561,7 +561,7 @@ const Account = () => {
                   <AddressManager />
                   <PhoneManager />
                 </div>}
-              {activeSection === 'deliveries' && <DeliveryDashboard userId={user.id} />}
+              {activeSection === 'deliveries' && <UnifiedDeliveryDashboard userId={user.id} />}
               {activeSection === 'business' && <div className="space-y-4">
                   <Card>
                     <CardHeader>
