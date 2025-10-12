@@ -57,10 +57,14 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
     }))
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  // Calculate statistics
-  const completedDeliveries = deliveryOrders.filter(o => o.status === 'completed').length;
-  const inProgressDeliveries = deliveryOrders.filter(o => o.status === 'in_progress').length;
-  const pendingDeliveries = deliveryOrders.filter(o => o.status === 'assigned').length;
+  // Calculate daily statistics (today only)
+  const todaysOrders = deliveryOrders.filter(order => isToday(parseISO(order.created_at)));
+  const completedDeliveries = todaysOrders.filter(o => o.status === 'completed').length;
+  const inProgressDeliveries = todaysOrders.filter(o => o.status === 'in_progress').length;
+  const pendingDeliveries = todaysOrders.filter(o => o.status === 'assigned').length;
+  
+  // Total all-time statistics
+  const totalCompletedAllTime = deliveryOrders.filter(o => o.status === 'completed').length;
 
   // Group orders by date
   const groupOrdersByDate = (orders: DeliveryOrder[]) => {
@@ -302,14 +306,30 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
 
   return (
     <div className="space-y-6">
+      {/* Daily Statistics Header */}
+      <Card className="bg-gradient-to-r from-orange-500 to-amber-500 text-white">
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-orange-100">Today's Performance</p>
+              <p className="text-2xl font-bold mt-1">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+            </div>
+            <div className="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Clock className="h-6 w-6" />
+            </div>
+          </div>
+        </div>
+      </Card>
+
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-800">
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Total Deliveries</p>
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Completed Today</p>
                 <p className="text-3xl font-bold text-orange-700 dark:text-orange-300 mt-2">{completedDeliveries}</p>
+                <p className="text-xs text-muted-foreground mt-1">Total: {totalCompletedAllTime}</p>
               </div>
               <div className="h-12 w-12 bg-orange-500/20 rounded-full flex items-center justify-center">
                 <CheckCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
@@ -322,8 +342,9 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">In Progress</p>
+                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">In Progress Today</p>
                 <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{inProgressDeliveries}</p>
+                <p className="text-xs text-muted-foreground mt-1">Active deliveries</p>
               </div>
               <div className="h-12 w-12 bg-blue-500/20 rounded-full flex items-center justify-center">
                 <Truck className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -336,8 +357,9 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Pending</p>
+                <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Pending Today</p>
                 <p className="text-3xl font-bold text-amber-700 dark:text-amber-300 mt-2">{pendingDeliveries}</p>
+                <p className="text-xs text-muted-foreground mt-1">Awaiting pickup</p>
               </div>
               <div className="h-12 w-12 bg-amber-500/20 rounded-full flex items-center justify-center">
                 <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
@@ -492,8 +514,8 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
         </div>
       )}
 
-      {/* Delivery Report Summary */}
-      {completedDeliveries > 0 && (
+      {/* Daily Delivery Report Summary */}
+      {todaysOrders.length > 0 && (
         <Card className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 dark:border-orange-800">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-4">
@@ -501,14 +523,14 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-orange-700 dark:text-orange-300">Delivery Performance</h3>
-                <p className="text-sm text-orange-600 dark:text-orange-400">Your delivery statistics</p>
+                <h3 className="text-lg font-bold text-orange-700 dark:text-orange-300">Today's Delivery Report</h3>
+                <p className="text-sm text-orange-600 dark:text-orange-400">{format(new Date(), "MMMM d, yyyy")}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
                 <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{completedDeliveries}</p>
-                <p className="text-xs text-muted-foreground mt-1">Completed</p>
+                <p className="text-xs text-muted-foreground mt-1">Completed Today</p>
               </div>
               <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{inProgressDeliveries}</p>
@@ -519,8 +541,14 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                 <p className="text-xs text-muted-foreground mt-1">Pending</p>
               </div>
               <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{deliveryOrders.length}</p>
-                <p className="text-xs text-muted-foreground mt-1">Total Orders</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{todaysOrders.length}</p>
+                <p className="text-xs text-muted-foreground mt-1">Total Today</p>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">All-Time Completed:</span>
+                <span className="font-bold text-orange-600 dark:text-orange-400">{totalCompletedAllTime} deliveries</span>
               </div>
             </div>
           </div>
