@@ -6,10 +6,17 @@ const ONBOARDING_KEY = 'flamia_onboarding_completed';
 export const useOnboarding = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    checkOnboardingStatus();
+    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      checkOnboardingStatus();
+    }
+  }, [mounted]);
 
   const checkOnboardingStatus = async () => {
     try {
