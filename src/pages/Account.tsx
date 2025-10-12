@@ -456,55 +456,56 @@ const Account = () => {
                   </Link>
                 </CardContent>
               </Card>}
+          </div>
 
-            {/* Sign Out */}
-            <div className="mt-6">
-              <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                <DialogTrigger asChild>
-                  <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-destructive/20">
-                    <CardContent className="p-0">
-                      <div className="p-4 flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
-                            <LogOut className="w-5 h-5 text-destructive" />
-                          </div>
-                          <div>
-                            <span className="font-medium text-foreground">Sign Out</span>
-                            <p className="text-xs text-muted-foreground">Logout from account</p>
-                          </div>
+          {/* Sign Out - Separated at Bottom */}
+          <div className="mt-8 pt-6 border-t border-border">
+            <p className="text-xs text-center text-muted-foreground mb-3">Account Actions</p>
+            <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-destructive/30">
+                  <CardContent className="p-0">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
+                          <LogOut className="w-5 h-5 text-destructive" />
                         </div>
-                        <div className="text-muted-foreground">›</div>
+                        <div>
+                          <span className="font-medium text-destructive">Sign Out</span>
+                          <p className="text-xs text-muted-foreground">Logout from account</p>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Confirm Sign Out</DialogTitle>
-                    <DialogDescription>
-                      Are you sure you want to sign out of your account?
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex justify-end gap-2 mt-4">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowLogoutDialog(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      variant="destructive" 
-                      onClick={() => {
-                        setShowLogoutDialog(false);
-                        handleSignOut();
-                      }}
-                    >
-                      Sign Out
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirm Sign Out</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to sign out of your account?
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowLogoutDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => {
+                      setShowLogoutDialog(false);
+                      handleSignOut();
+                    }}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
