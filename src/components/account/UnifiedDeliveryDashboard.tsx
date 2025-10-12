@@ -49,12 +49,18 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
 
   // Convert orders to delivery orders format and sort by date (newest first)
   const deliveryOrders: DeliveryOrder[] = orders
-    .map((order) => ({
-      ...order,
-      customerName: "", // Will be set when grouping by date
-      customerPhone: "+256700123456",
-      displayAddress: order.delivery_address || "Address not available",
-    }))
+    .map((order) => {
+      // Extract phone number from description if available (pattern: 07XXXXXXXX or +2567XXXXXXXX)
+      const phoneMatch = order.description?.match(/(\+256|0)?7\d{8}/);
+      const customerPhone = phoneMatch ? phoneMatch[0] : "+256700000000";
+      
+      return {
+        ...order,
+        customerName: "", // Will be set when grouping by date
+        customerPhone,
+        displayAddress: order.delivery_address || "Address not available",
+      };
+    })
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   // Calculate daily statistics (today only)
@@ -418,6 +424,12 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                           <p className="text-xs text-muted-foreground mt-1">
                             {format(parseISO(order.created_at), "h:mm a")}
                           </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Phone className="w-3 h-3 text-orange-500" />
+                            <p className="text-sm font-medium text-foreground">
+                              {order.customerPhone}
+                            </p>
+                          </div>
                           <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                             {order.description}
                           </p>
