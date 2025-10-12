@@ -20,6 +20,7 @@ interface OnboardingScreenProps {
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
   const slides: OnboardingSlide[] = [
     {
@@ -59,7 +60,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
-    } else if (acceptedTerms) {
+    } else if (acceptedTerms && acceptedPrivacy) {
       onComplete();
     }
   };
@@ -127,28 +128,54 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
       {/* Bottom navigation */}
       <div className="p-6 space-y-4">
-        {/* Terms acceptance checkbox on last slide */}
+        {/* Terms acceptance checkboxes on last slide */}
         {currentSlide === slides.length - 1 && (
-          <div className="flex items-start gap-3 max-w-md mx-auto mb-4 p-4 bg-muted/50 rounded-lg">
-            <Checkbox
-              id="terms"
-              checked={acceptedTerms}
-              onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
-              className="mt-1 h-5 w-5"
-            />
-            <label
-              htmlFor="terms"
-              className="text-sm text-foreground leading-relaxed cursor-pointer flex-1"
-            >
-              I agree to the{' '}
-              <Link to="/terms-and-conditions" className="text-primary hover:underline font-medium">
-                Terms and Conditions
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy-policy" className="text-primary hover:underline font-medium">
-                Privacy Policy
-              </Link>
-            </label>
+          <div className="max-w-md mx-auto mb-4 space-y-3">
+            {/* Terms and Conditions */}
+            <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                className="mt-1 h-6 w-6 border-2 border-foreground"
+              />
+              <label
+                htmlFor="terms"
+                className="text-base text-foreground leading-relaxed cursor-pointer flex-1"
+              >
+                I agree to the{' '}
+                <Link 
+                  to="/terms-and-conditions" 
+                  className="text-primary hover:underline font-semibold"
+                  target="_blank"
+                >
+                  Terms and Conditions
+                </Link>
+              </label>
+            </div>
+
+            {/* Privacy Policy */}
+            <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+              <Checkbox
+                id="privacy"
+                checked={acceptedPrivacy}
+                onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
+                className="mt-1 h-6 w-6 border-2 border-foreground"
+              />
+              <label
+                htmlFor="privacy"
+                className="text-base text-foreground leading-relaxed cursor-pointer flex-1"
+              >
+                I agree to the{' '}
+                <Link 
+                  to="/privacy-policy" 
+                  className="text-primary hover:underline font-semibold"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
           </div>
         )}
 
@@ -171,7 +198,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
         {/* Next/Get Started button */}
         <Button
           onClick={handleNext}
-          disabled={currentSlide === slides.length - 1 && !acceptedTerms}
+          disabled={currentSlide === slides.length - 1 && (!acceptedTerms || !acceptedPrivacy)}
           className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
         >
           {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
