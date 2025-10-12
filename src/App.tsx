@@ -61,6 +61,8 @@ function App() {
   
   const { isAdmin } = useUserRole();
   const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
+  const path = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isPolicyRoute = path.startsWith('/terms-and-conditions') || path.startsWith('/privacy-policy');
 
   useEffect(() => {
     const checkForUpdates = () => {
@@ -90,7 +92,7 @@ function App() {
       <CartProvider>
         <Router>
           <div className="flex flex-col min-h-screen">
-            {showOnboarding && !onboardingLoading && (
+            {showOnboarding && !onboardingLoading && !isPolicyRoute && (
               <OnboardingScreen onComplete={completeOnboarding} />
             )}
             <AppBar />
