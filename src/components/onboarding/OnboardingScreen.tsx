@@ -84,7 +84,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       </div>
 
       {/* Slide content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-6">
+      <div className="flex-1 flex items-center justify-center px-6 py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -92,18 +92,18 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-md w-full space-y-4 text-center"
+            className="max-w-md w-full space-y-8 text-center"
           >
             {/* Icon */}
             <div className="flex justify-center">
-              <div className="p-3 bg-primary/10 rounded-full text-primary">
+              <div className="p-4 bg-primary/10 rounded-full text-primary">
                 {slides[currentSlide].icon}
               </div>
             </div>
 
             {/* Image if available */}
             {slides[currentSlide].image && (
-              <div className="flex justify-center">
+              <div className="flex justify-center my-6">
                 <img
                   src={slides[currentSlide].image}
                   alt={slides[currentSlide].title}
@@ -113,12 +113,12 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             )}
 
             {/* Title */}
-            <h2 className="text-xl md:text-2xl font-bold text-foreground">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
               {slides[currentSlide].title}
             </h2>
 
             {/* Description */}
-            <p className="text-muted-foreground text-sm md:text-base leading-snug px-4">
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed px-4">
               {slides[currentSlide].description}
             </p>
           </motion.div>
@@ -126,26 +126,26 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       </div>
 
       {/* Bottom navigation */}
-      <div className="p-4 space-y-3">
+      <div className="p-6 space-y-4">
         {/* Terms acceptance checkbox on last slide */}
         {currentSlide === slides.length - 1 && (
-          <div className="flex items-start gap-2 max-w-md mx-auto mb-2 px-2">
+          <div className="flex items-start gap-3 max-w-md mx-auto mb-4 p-4 bg-muted/50 rounded-lg">
             <Checkbox
               id="terms"
               checked={acceptedTerms}
               onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
-              className="mt-0.5"
+              className="mt-1 h-5 w-5"
             />
             <label
               htmlFor="terms"
-              className="text-xs text-muted-foreground leading-tight cursor-pointer"
+              className="text-sm text-foreground leading-relaxed cursor-pointer flex-1"
             >
-              I agree to{' '}
-              <Link to="/terms-and-conditions" className="text-primary hover:underline">
-                Terms
+              I agree to the{' '}
+              <Link to="/terms-and-conditions" className="text-primary hover:underline font-medium">
+                Terms and Conditions
               </Link>{' '}
-              &{' '}
-              <Link to="/privacy-policy" className="text-primary hover:underline">
+              and{' '}
+              <Link to="/privacy-policy" className="text-primary hover:underline font-medium">
                 Privacy Policy
               </Link>
             </label>
