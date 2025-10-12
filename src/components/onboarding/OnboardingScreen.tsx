@@ -130,51 +130,53 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       <div className="p-6 space-y-4">
         {/* Terms acceptance checkboxes on last slide */}
         {currentSlide === slides.length - 1 && (
-          <div className="max-w-md mx-auto mb-4 space-y-3">
-            {/* Terms and Conditions */}
-            <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <Checkbox
-                id="terms"
-                checked={acceptedTerms}
-                onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
-                className="mt-1 h-6 w-6 border-2 border-foreground"
-              />
-              <label
-                htmlFor="terms"
-                className="text-base text-foreground leading-relaxed cursor-pointer flex-1"
-              >
-                I agree to the{' '}
-                <Link 
-                  to="/terms-and-conditions" 
-                  className="text-primary hover:underline font-semibold"
-                  target="_blank"
+          <div className="max-w-md mx-auto mb-6">
+            <div className="bg-card border border-border rounded-xl shadow-lg p-6 space-y-4">
+              {/* Terms and Conditions */}
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                  className="h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-base text-foreground cursor-pointer flex-1"
                 >
-                  Terms and Conditions
-                </Link>
-              </label>
-            </div>
+                  I accept the{' '}
+                  <Link 
+                    to="/terms-and-conditions" 
+                    className="text-blue-600 underline hover:text-blue-700 font-normal"
+                    target="_blank"
+                  >
+                    terms and conditions
+                  </Link>
+                </label>
+              </div>
 
-            {/* Privacy Policy */}
-            <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <Checkbox
-                id="privacy"
-                checked={acceptedPrivacy}
-                onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
-                className="mt-1 h-6 w-6 border-2 border-foreground"
-              />
-              <label
-                htmlFor="privacy"
-                className="text-base text-foreground leading-relaxed cursor-pointer flex-1"
-              >
-                I agree to the{' '}
-                <Link 
-                  to="/privacy-policy" 
-                  className="text-primary hover:underline font-semibold"
-                  target="_blank"
+              {/* Privacy Policy */}
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="privacy"
+                  checked={acceptedPrivacy}
+                  onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
+                  className="h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
+                />
+                <label
+                  htmlFor="privacy"
+                  className="text-base text-foreground cursor-pointer flex-1"
                 >
-                  Privacy Policy
-                </Link>
-              </label>
+                  I accept the{' '}
+                  <Link 
+                    to="/privacy-policy" 
+                    className="text-blue-600 underline hover:text-blue-700 font-normal"
+                    target="_blank"
+                  >
+                    privacy policy
+                  </Link>
+                </label>
+              </div>
             </div>
           </div>
         )}
