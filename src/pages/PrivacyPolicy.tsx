@@ -170,7 +170,12 @@ const PrivacyPolicy = () => {
               </label>
             </div>
             <Button
-              onClick={() => { if (agree) { localStorage.setItem('flamia_privacy_accepted', 'true'); navigate(-1); } }}
+              onClick={() => { 
+                if (agree) { 
+                  localStorage.setItem('flamia_privacy_accepted', 'true'); 
+                  navigate('/'); 
+                } 
+              }}
               disabled={!agree}
               className="h-10"
             >

@@ -165,7 +165,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                           to="/terms-and-conditions"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-primary underline hover:text-primary/80"
+                          className="text-blue-600 underline hover:text-blue-700"
                         >
                           Terms and Conditions
                         </Link>
@@ -192,7 +192,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                           to="/privacy-policy"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-primary underline hover:text-primary/80"
+                          className="text-blue-600 underline hover:text-blue-700"
                         >
                           Privacy Policy
                         </Link>

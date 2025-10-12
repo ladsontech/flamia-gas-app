@@ -134,7 +134,12 @@ const TermsAndConditions = () => {
               </label>
             </div>
             <Button
-              onClick={() => { if (agree) { localStorage.setItem('flamia_terms_accepted', 'true'); navigate(-1); } }}
+              onClick={() => { 
+                if (agree) { 
+                  localStorage.setItem('flamia_terms_accepted', 'true'); 
+                  navigate('/privacy-policy'); 
+                } 
+              }}
               disabled={!agree}
               className="h-10"
             >
