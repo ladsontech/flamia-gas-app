@@ -342,6 +342,24 @@ const Account = () => {
               </>
             )}
 
+            {/* Deliveries - Only for Delivery Men (Shown first) */}
+            {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('deliveries')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Truck className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Deliveries</span>
+                        <p className="text-xs text-muted-foreground">Assigned orders & map</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>}
+
             {/* Regular User Menu - Orders (Hide for delivery men) */}
             {!isAdmin && !isDeliveryMan && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
@@ -398,23 +416,6 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
-            {/* Deliveries - Only for Delivery Men */}
-            {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('deliveries')}>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                        <Truck className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <span className="font-medium text-foreground">Deliveries</span>
-                        <p className="text-xs text-muted-foreground">Assigned orders & map</p>
-                      </div>
-                    </div>
-                    <div className="text-muted-foreground">›</div>
-                  </div>
-                </CardContent>
-              </Card>}
 
             {/* Referrals - Only for non-admin users */}
             {!isAdmin && (
@@ -557,7 +558,30 @@ const Account = () => {
                 <BulkSmsMarketing />
               )}
               
-              {activeSection === 'profile' && <div className="space-y-4">
+              {activeSection === 'profile' && <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <User className="h-5 w-5" />
+                        Profile Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center justify-between py-3 border-b border-border">
+                        <span className="text-sm text-muted-foreground">Name</span>
+                        <span className="text-sm font-medium">{getDisplayName()}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-3 border-b border-border">
+                        <span className="text-sm text-muted-foreground">Email</span>
+                        <span className="text-sm font-medium">{user.email || 'Not set'}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-3">
+                        <span className="text-sm text-muted-foreground">Phone</span>
+                        <span className="text-sm font-medium">{profile?.phone_number || 'Not set'}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
                   <AddressManager />
                   <PhoneManager />
                 </div>}

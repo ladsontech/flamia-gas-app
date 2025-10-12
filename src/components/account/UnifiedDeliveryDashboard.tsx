@@ -321,15 +321,15 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
   return (
     <div className="space-y-6">
       {/* Daily Statistics Header */}
-      <Card className="bg-gradient-to-r from-orange-500 to-amber-500 text-white">
+      <Card className="border-border bg-card">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-orange-100">Today's Performance</p>
-              <p className="text-2xl font-bold mt-1">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+              <p className="text-sm font-medium text-muted-foreground">Today's Performance</p>
+              <p className="text-xl font-semibold mt-1 text-foreground">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
             </div>
-            <div className="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Clock className="h-6 w-6" />
+            <div className="h-10 w-10 bg-accent/10 rounded-full flex items-center justify-center">
+              <Clock className="h-5 w-5 text-accent" />
             </div>
           </div>
         </div>
@@ -337,45 +337,45 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-800">
-          <div className="p-6">
+        <Card className="border-border bg-card">
+          <div className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Completed Today</p>
-                <p className="text-3xl font-bold text-orange-700 dark:text-orange-300 mt-2">{completedDeliveries}</p>
+                <p className="text-sm font-medium text-muted-foreground">Completed Today</p>
+                <p className="text-3xl font-bold text-foreground mt-2">{completedDeliveries}</p>
               </div>
-              <div className="h-12 w-12 bg-orange-500/20 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+              <div className="h-12 w-12 bg-accent/10 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-accent" />
               </div>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
-          <div className="p-6">
+        <Card className="border-border bg-card">
+          <div className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">In Progress Today</p>
-                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{inProgressDeliveries}</p>
+                <p className="text-sm font-medium text-muted-foreground">In Progress Today</p>
+                <p className="text-3xl font-bold text-foreground mt-2">{inProgressDeliveries}</p>
                 <p className="text-xs text-muted-foreground mt-1">Active deliveries</p>
               </div>
-              <div className="h-12 w-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                <Truck className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <div className="h-12 w-12 bg-accent/10 rounded-full flex items-center justify-center">
+                <Truck className="h-6 w-6 text-accent" />
               </div>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800">
-          <div className="p-6">
+        <Card className="border-border bg-card">
+          <div className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Pending Today</p>
-                <p className="text-3xl font-bold text-amber-700 dark:text-amber-300 mt-2">{pendingDeliveries}</p>
+                <p className="text-sm font-medium text-muted-foreground">Pending Today</p>
+                <p className="text-3xl font-bold text-foreground mt-2">{pendingDeliveries}</p>
                 <p className="text-xs text-muted-foreground mt-1">Awaiting pickup</p>
               </div>
-              <div className="h-12 w-12 bg-amber-500/20 rounded-full flex items-center justify-center">
-                <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <div className="h-12 w-12 bg-accent/10 rounded-full flex items-center justify-center">
+                <Clock className="h-6 w-6 text-accent" />
               </div>
             </div>
           </div>
@@ -395,14 +395,14 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
           <div className="space-y-4 lg:max-h-[600px] lg:overflow-y-auto pr-2">
             {Object.entries(groupedOrders).map(([dateLabel, orders]) => (
               <div key={dateLabel} className="space-y-3">
-                <h4 className="text-sm font-semibold text-orange-600 dark:text-orange-400 sticky top-0 bg-background py-2">
+                <h4 className="text-sm font-semibold text-accent sticky top-0 bg-background py-2">
                   {dateLabel}
                 </h4>
                 {orders.map((order) => (
                   <Card
                     key={order.id}
-                    className={`p-4 cursor-pointer transition-all hover:shadow-lg hover:border-orange-300 ${
-                      selectedOrder?.id === order.id ? 'border-2 border-orange-500 ring-2 ring-orange-500/20' : ''
+                    className={`p-4 cursor-pointer transition-all hover:shadow-md ${
+                      selectedOrder?.id === order.id ? 'border-2 border-accent ring-2 ring-accent/20' : 'border-border'
                     }`}
                     onClick={() => {
                       setSelectedOrder(order);
@@ -415,16 +415,16 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
+                          <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <Package className="w-4 h-4 text-orange-500" />
+                            <Package className="w-4 h-4 text-accent" />
                             <h4 className="font-semibold text-base">{order.customerName}</h4>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
                             {format(parseISO(order.created_at), "h:mm a")}
                           </p>
                           <div className="flex items-center gap-2 mt-2">
-                            <Phone className="w-3 h-3 text-orange-500" />
+                            <Phone className="w-3 h-3 text-accent" />
                             <p className="text-sm font-medium text-foreground">
                               {order.customerPhone}
                             </p>
@@ -433,18 +433,18 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                             {order.description}
                           </p>
                           {order.total_amount && (
-                            <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 mt-2">
+                            <p className="text-sm font-semibold text-accent mt-2">
                               UGX {order.total_amount.toLocaleString()}
                             </p>
                           )}
                         </div>
-                        <Badge className="ml-2 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                        <Badge variant="secondary" className="ml-2">
                           {order.status?.replace('_', ' ') || 'assigned'}
                         </Badge>
                       </div>
                       
                       <div className="flex items-start gap-2 text-sm">
-                        <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-orange-500" />
+                        <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-accent" />
                         <span className="flex-1 text-muted-foreground line-clamp-2">
                           {order.displayAddress}
                         </span>
@@ -458,7 +458,7 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                             e.stopPropagation();
                             handleCallCustomer(order.customerPhone);
                           }}
-                          className="flex-1 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-900/20"
+                          className="flex-1"
                         >
                           <Phone className="w-3 h-3 mr-1" />
                           Call
@@ -469,7 +469,7 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                             e.stopPropagation();
                             handleNavigate(order);
                           }}
-                          className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                          className="flex-1 bg-accent hover:bg-accent/90 text-white"
                         >
                           <Navigation className="w-3 h-3 mr-1" />
                           Navigate
@@ -483,7 +483,7 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                             e.stopPropagation();
                             handleUpdateOrderStatus(order.id, 'in_progress');
                           }}
-                          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                          className="w-full bg-accent hover:bg-accent/90 text-white"
                         >
                           <Truck className="w-3 h-3 mr-1" />
                           Start Delivery
@@ -510,7 +510,7 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
           </div>
 
           {/* Map Container */}
-          <div className="relative h-[600px] rounded-lg overflow-hidden border-2 border-orange-200 dark:border-orange-800">
+          <div className="relative h-[600px] rounded-lg overflow-hidden border border-border">
             <div ref={mapRef} className="w-full h-full" />
             
             {selectedOrder && currentLocation && (
@@ -519,11 +519,11 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
                 animate={{ opacity: 1 }}
                 className="absolute top-4 left-4 right-4 z-40"
               >
-                <Card className="bg-white/95 backdrop-blur shadow-lg border-orange-200">
+                <Card className="bg-card/95 backdrop-blur shadow-lg">
                   <div className="p-3">
                     <div className="flex items-center gap-2 text-sm">
-                      <Navigation className="w-4 h-4 text-orange-500" />
-                      <span className="font-medium">Route shown to selected order</span>
+                      <Navigation className="w-4 h-4 text-accent" />
+                      <span className="font-medium text-foreground">Route shown to selected order</span>
                     </div>
                   </div>
                 </Card>
@@ -535,39 +535,39 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
 
       {/* Daily Delivery Report Summary */}
       {todaysOrders.length > 0 && (
-        <Card className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 dark:border-orange-800">
+        <Card className="border-border bg-card">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 bg-orange-500 rounded-full flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 bg-accent/10 rounded-full flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-accent" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-orange-700 dark:text-orange-300">Today's Delivery Report</h3>
-                <p className="text-sm text-orange-600 dark:text-orange-400">{format(new Date(), "MMMM d, yyyy")}</p>
+                <h3 className="text-lg font-bold text-foreground">Today's Delivery Report</h3>
+                <p className="text-sm text-muted-foreground">{format(new Date(), "MMMM d, yyyy")}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{completedDeliveries}</p>
+              <div className="text-center p-4 bg-accent/5 rounded-lg border border-border">
+                <p className="text-2xl font-bold text-foreground">{completedDeliveries}</p>
                 <p className="text-xs text-muted-foreground mt-1">Completed Today</p>
               </div>
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{inProgressDeliveries}</p>
+              <div className="text-center p-4 bg-accent/5 rounded-lg border border-border">
+                <p className="text-2xl font-bold text-foreground">{inProgressDeliveries}</p>
                 <p className="text-xs text-muted-foreground mt-1">In Progress</p>
               </div>
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{pendingDeliveries}</p>
+              <div className="text-center p-4 bg-accent/5 rounded-lg border border-border">
+                <p className="text-2xl font-bold text-foreground">{pendingDeliveries}</p>
                 <p className="text-xs text-muted-foreground mt-1">Pending</p>
               </div>
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{todaysOrders.length}</p>
+              <div className="text-center p-4 bg-accent/5 rounded-lg border border-border">
+                <p className="text-2xl font-bold text-foreground">{todaysOrders.length}</p>
                 <p className="text-xs text-muted-foreground mt-1">Total Today</p>
               </div>
             </div>
-            <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">
+            <div className="mt-4 pt-4 border-t border-border">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">All-Time Completed:</span>
-                <span className="font-bold text-orange-600 dark:text-orange-400">{totalCompletedAllTime} deliveries</span>
+                <span className="font-bold text-accent">{totalCompletedAllTime} deliveries</span>
               </div>
             </div>
           </div>

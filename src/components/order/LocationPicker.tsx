@@ -330,7 +330,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pb-4">
       <div className="flex items-center gap-2 mb-2">
         <MapPin className="w-4 h-4 text-accent" />
         <span className="text-sm font-medium">Delivery Location</span>
@@ -374,11 +374,11 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
           </motion.div>
         )}
 
-        <div className="h-64 rounded-md overflow-hidden border bg-gray-100">
+        <div className="h-48 sm:h-56 md:h-64 rounded-md overflow-hidden border bg-gray-100">
           <div ref={mapRef} className="w-full h-full" />
         </div>
 
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-xs text-muted-foreground text-center px-2">
           Search above, click "Use Current Location", or click on the map to select your delivery location
         </p>
 
@@ -392,7 +392,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
               <Check className="w-4 h-4 text-green-600" />
               <span className="text-sm font-medium text-green-800">Location Selected</span>
             </div>
-            <p className="text-xs text-green-700">{selectedLocation.address}</p>
+            <p className="text-xs text-green-700 break-words">{selectedLocation.address}</p>
           </motion.div>
         )}
       </Card>
