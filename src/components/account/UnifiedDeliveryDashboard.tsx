@@ -49,9 +49,9 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
 
   // Convert orders to delivery orders format and sort by date (newest first)
   const deliveryOrders: DeliveryOrder[] = orders
-    .map((order, index) => ({
+    .map((order) => ({
       ...order,
-      customerName: `Customer ${index + 1}`,
+      customerName: "", // Will be set when grouping by date
       customerPhone: "+256700123456",
       displayAddress: order.delivery_address || "Address not available",
     }))
@@ -66,7 +66,7 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
   // Total all-time statistics
   const totalCompletedAllTime = deliveryOrders.filter(o => o.status === 'completed').length;
 
-  // Group orders by date
+  // Group orders by date and assign order numbers for each day
   const groupOrdersByDate = (orders: DeliveryOrder[]) => {
     const groups: { [key: string]: DeliveryOrder[] } = {};
     
@@ -86,6 +86,14 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
         groups[dateLabel] = [];
       }
       groups[dateLabel].push(order);
+    });
+    
+    // Assign order numbers for each day
+    Object.keys(groups).forEach(dateLabel => {
+      groups[dateLabel] = groups[dateLabel].map((order, index) => ({
+        ...order,
+        customerName: `Order ${index + 1}`
+      }));
     });
     
     return groups;
