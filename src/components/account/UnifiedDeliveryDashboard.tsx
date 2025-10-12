@@ -343,7 +343,6 @@ export const UnifiedDeliveryDashboard = ({ userId }: UnifiedDeliveryDashboardPro
               <div>
                 <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Completed Today</p>
                 <p className="text-3xl font-bold text-orange-700 dark:text-orange-300 mt-2">{completedDeliveries}</p>
-                <p className="text-xs text-muted-foreground mt-1">Total: {totalCompletedAllTime}</p>
               </div>
               <div className="h-12 w-12 bg-orange-500/20 rounded-full flex items-center justify-center">
                 <CheckCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
