@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const PrivacyPolicy = () => {
   const navigate = useNavigate();
+  const [agree, setAgree] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -151,6 +153,30 @@ const PrivacyPolicy = () => {
               If you have questions about this Privacy Policy or how we handle your data, please contact our customer service team.
             </p>
           </section>
+        </div>
+
+        {/* Accept card */}
+        <div className="mt-8 max-w-2xl mx-auto">
+          <div className="bg-card border border-border rounded-xl shadow p-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Checkbox
+                id="accept-privacy"
+                checked={agree}
+                onCheckedChange={(c) => setAgree(!!c)}
+                className="h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
+              />
+              <label htmlFor="accept-privacy" className="text-base text-foreground cursor-pointer">
+                I accept the Privacy Policy
+              </label>
+            </div>
+            <Button
+              onClick={() => { if (agree) { localStorage.setItem('flamia_privacy_accepted', 'true'); navigate(-1); } }}
+              disabled={!agree}
+              className="h-10"
+            >
+              Accept
+            </Button>
+          </div>
         </div>
       </div>
     </div>

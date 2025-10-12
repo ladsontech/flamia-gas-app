@@ -19,49 +19,54 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
   const slides: OnboardingSlide[] = [
     {
       id: 1,
-      icon: <Flame className="w-10 h-10" />,
+      icon: <Flame className="w-16 h-16" />,
       title: "Welcome to Flamia",
       description: "Fast LPG gas delivery & kitchen essentials in Uganda."
     },
     {
       id: 2,
-      icon: <Package className="w-10 h-10" />,
+      icon: <Package className="w-16 h-16" />,
       title: "Gas & Refills",
       description: "6KG-45KG cylinders from Shell, Total, Hass, Oryx & Stabex. Same-day delivery.",
       image: "/images/Nova 6kg.png"
     },
     {
       id: 3,
-      icon: <Wrench className="w-10 h-10" />,
+      icon: <Wrench className="w-16 h-16" />,
       title: "Accessories",
       description: "Regulators, pipes, burners, stoves & more for your kitchen.",
       image: "/images/regulator.jpeg"
     },
     {
       id: 4,
-      icon: <Smartphone className="w-10 h-10" />,
+      icon: <Smartphone className="w-16 h-16" />,
       title: "Gadgets",
       description: "Quality electronics & appliances. Brand new and used items.",
     },
     {
       id: 5,
-      icon: <ShoppingBag className="w-10 h-10" />,
+      icon: <ShoppingBag className="w-16 h-16" />,
       title: "Marketplace",
-      description: "Fresh food from local restaurants & products from verified sellers.",
+      description: "General online market for all products from verified sellers.",
+      image: "/images/marketplace_icon.png"
     }
   ];
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
-    } else if (acceptedTerms && acceptedPrivacy) {
-      onComplete();
+    } else {
+      // Check if both policies are accepted
+      const termsAccepted = localStorage.getItem('flamia_terms_accepted') === 'true';
+      const privacyAccepted = localStorage.getItem('flamia_privacy_accepted') === 'true';
+      
+      if (termsAccepted && privacyAccepted) {
+        onComplete();
+      }
     }
   };
 
@@ -72,20 +77,20 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Skip button */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-6 right-6 z-10">
         <Button
           variant="ghost"
-          size="sm"
+          size="lg"
           onClick={handleSkip}
-          className="text-muted-foreground"
+          className="text-muted-foreground text-base"
         >
           Skip
-          <X className="w-4 h-4 ml-1" />
+          <X className="w-5 h-5 ml-2" />
         </Button>
       </div>
 
       {/* Slide content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
+      <div className="flex-1 flex items-center justify-center px-8 py-12">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -93,33 +98,33 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-md w-full space-y-8 text-center"
+            className="max-w-lg w-full space-y-10 text-center"
           >
             {/* Icon */}
             <div className="flex justify-center">
-              <div className="p-4 bg-primary/10 rounded-full text-primary">
+              <div className="p-6 bg-primary/10 rounded-full text-primary">
                 {slides[currentSlide].icon}
               </div>
             </div>
 
             {/* Image if available */}
             {slides[currentSlide].image && (
-              <div className="flex justify-center my-6">
+              <div className="flex justify-center my-8">
                 <img
                   src={slides[currentSlide].image}
                   alt={slides[currentSlide].title}
-                  className="w-32 h-32 object-contain rounded-lg"
+                  className="w-48 h-48 object-contain rounded-lg"
                 />
               </div>
             )}
 
             {/* Title */}
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
               {slides[currentSlide].title}
             </h2>
 
             {/* Description */}
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed px-4">
+            <p className="text-muted-foreground text-lg md:text-xl leading-relaxed px-6">
               {slides[currentSlide].description}
             </p>
           </motion.div>
@@ -127,70 +132,46 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       </div>
 
       {/* Bottom navigation */}
-      <div className="p-6 space-y-4">
-        {/* Terms acceptance checkboxes on last slide */}
+      <div className="p-8 space-y-6">
+        {/* Policy acceptance links on last slide */}
         {currentSlide === slides.length - 1 && (
-          <div className="max-w-md mx-auto mb-6">
-            <div className="bg-card border border-border rounded-xl shadow-lg p-6 space-y-4">
+          <div className="max-w-lg mx-auto mb-8">
+            <div className="bg-card border border-border rounded-xl shadow-lg p-8 space-y-5">
+              <p className="text-lg text-center text-foreground mb-4">
+                Please review and accept our policies to continue:
+              </p>
+              
               {/* Terms and Conditions */}
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="terms"
-                  checked={acceptedTerms}
-                  onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
-                  className="h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
-                />
-                <label
-                  htmlFor="terms"
-                  className="text-base text-foreground cursor-pointer flex-1"
-                >
-                  I accept the{' '}
-                  <Link 
-                    to="/terms-and-conditions" 
-                    className="text-blue-600 underline hover:text-blue-700 font-normal"
-                    target="_blank"
-                  >
-                    terms and conditions
-                  </Link>
-                </label>
-              </div>
+              <Link 
+                to="/terms-and-conditions"
+                className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
+              >
+                <span className="text-lg text-foreground">Terms and Conditions</span>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </Link>
 
               {/* Privacy Policy */}
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="privacy"
-                  checked={acceptedPrivacy}
-                  onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
-                  className="h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
-                />
-                <label
-                  htmlFor="privacy"
-                  className="text-base text-foreground cursor-pointer flex-1"
-                >
-                  I accept the{' '}
-                  <Link 
-                    to="/privacy-policy" 
-                    className="text-blue-600 underline hover:text-blue-700 font-normal"
-                    target="_blank"
-                  >
-                    privacy policy
-                  </Link>
-                </label>
-              </div>
+              <Link 
+                to="/privacy-policy"
+                className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
+              >
+                <span className="text-lg text-foreground">Privacy Policy</span>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </Link>
             </div>
           </div>
         )}
 
         {/* Progress dots */}
-        <div className="flex justify-center gap-1.5">
+        <div className="flex justify-center gap-2">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-1.5 rounded-full transition-all ${
+              className={`h-2 rounded-full transition-all ${
                 index === currentSlide
-                  ? 'w-6 bg-primary'
-                  : 'w-1.5 bg-muted-foreground/30'
+                  ? 'w-8 bg-primary'
+                  : 'w-2 bg-muted-foreground/30'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -200,11 +181,12 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
         {/* Next/Get Started button */}
         <Button
           onClick={handleNext}
-          disabled={currentSlide === slides.length - 1 && (!acceptedTerms || !acceptedPrivacy)}
-          className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
+          disabled={currentSlide === slides.length - 1 && (localStorage.getItem('flamia_terms_accepted') !== 'true' || localStorage.getItem('flamia_privacy_accepted') !== 'true')}
+          className="w-full max-w-lg mx-auto flex items-center justify-center gap-3 h-14 text-lg"
+          size="lg"
         >
           {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-6 h-6" />
         </Button>
       </div>
     </div>
