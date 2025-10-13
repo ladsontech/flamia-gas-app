@@ -49,6 +49,7 @@ import { useUserRole } from './hooks/useUserRole';
 import { GoogleSignUpHandler } from './components/auth/GoogleSignUpHandler';
 import InstallPWA from './components/InstallPWA';
 import OccasionalSignInPopup from './components/auth/OccasionalSignInPopup';
+import { PushNotificationPrompt } from './components/notifications/PushNotificationPrompt';
 import { Navigate } from 'react-router-dom';
 import { CartButton } from './components/cart/CartButton';
 import OnboardingScreen from './components/onboarding/OnboardingScreen';
@@ -99,6 +100,7 @@ function App() {
             <GoogleSignUpHandler />
             <InstallPWA />
             <OccasionalSignInPopup />
+            <PushNotificationPrompt />
             <Toaster />
             
             <main className="flex-1 pb-24 md:pb-0">

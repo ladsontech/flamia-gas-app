@@ -1,0 +1,109 @@
+import { useState, useEffect } from "react";
+import { Bell, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { pushNotificationService } from "@/services/pushNotifications";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+export const PushNotificationPrompt = () => {
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check if we should show the prompt
+      const hasShownPrompt = localStorage.getItem('push-notification-prompt-shown');
+      const isSubscribed = await pushNotificationService.getSubscriptionStatus();
+      const permission = Notification.permission;
+
+      // Show prompt if not shown before, user is logged in, not subscribed, and permission is default
+      if (!hasShownPrompt && !isSubscribed && permission === 'default') {
+        // Wait a bit before showing to not be intrusive
+        setTimeout(() => setShow(true), 3000);
+      }
+    };
+
+    checkPermission();
+  }, []);
+
+  const handleEnable = async () => {
+    setLoading(true);
+    try {
+      const permission = await pushNotificationService.requestPermission();
+      
+      if (permission === 'granted') {
+        await pushNotificationService.subscribe();
+        toast({
+          title: "Notifications Enabled",
+          description: "You'll receive important updates about your orders",
+        });
+        setShow(false);
+      } else {
+        toast({
+          title: "Permission Denied",
+          description: "You can enable notifications later from your browser settings",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error enabling notifications:', error);
+      toast({
+        title: "Error",
+        description: "Failed to enable notifications",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+      localStorage.setItem('push-notification-prompt-shown', 'true');
+    }
+  };
+
+  const handleDismiss = () => {
+    setShow(false);
+    localStorage.setItem('push-notification-prompt-shown', 'true');
+  };
+
+  if (!show) return null;
+
+  return (
+    <div className="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
+      <Card className="border-2 border-primary shadow-lg">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Bell className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold mb-1">Stay Updated</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Get notified about your order status, special offers, and more
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleEnable}
+                  disabled={loading}
+                  size="sm"
+                  className="flex-1"
+                >
+                  {loading ? 'Enabling...' : 'Enable Notifications'}
+                </Button>
+                <Button
+                  onClick={handleDismiss}
+                  variant="ghost"
+                  size="sm"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
