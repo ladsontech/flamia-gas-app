@@ -12,24 +12,39 @@ export const PushNotificationPrompt = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkPermission = async () => {
+    const checkAndAutoSubscribe = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Check if we should show the prompt
-      const hasShownPrompt = localStorage.getItem('push-notification-prompt-shown');
       const isSubscribed = await pushNotificationService.getSubscriptionStatus();
       const permission = Notification.permission;
 
-      // Show prompt if not shown before, user is logged in, not subscribed, and permission is default
-      if (!hasShownPrompt && !isSubscribed && permission === 'default') {
-        // Wait a bit before showing to not be intrusive
-        setTimeout(() => setShow(true), 3000);
+      // If already subscribed, do nothing
+      if (isSubscribed) return;
+
+      // If permission already granted, automatically subscribe
+      if (permission === 'granted') {
+        try {
+          await pushNotificationService.subscribe();
+          toast({
+            title: "Notifications Enabled",
+            description: "You'll receive important updates about your orders",
+          });
+        } catch (error) {
+          console.error('Auto-subscribe error:', error);
+        }
+        return;
+      }
+
+      // If permission is default, show prompt
+      const hasShownPrompt = localStorage.getItem('push-notification-prompt-shown');
+      if (!hasShownPrompt && permission === 'default') {
+        setTimeout(() => setShow(true), 2000);
       }
     };
 
-    checkPermission();
-  }, []);
+    checkAndAutoSubscribe();
+  }, [toast]);
 
   const handleEnable = async () => {
     setLoading(true);
