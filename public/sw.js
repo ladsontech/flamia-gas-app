@@ -504,8 +504,8 @@ self.addEventListener('push', event => {
   
   const options = {
     body: data.body || 'New update from Flamia Gas',
-    icon: '/lovable-uploads/icon.png',
-    badge: '/lovable-uploads/icon.png',
+    icon: '/images/icon.png',
+    badge: '/images/icon.png',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/'

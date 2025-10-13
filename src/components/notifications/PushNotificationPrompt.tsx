@@ -46,6 +46,20 @@ export const PushNotificationPrompt = () => {
     checkAndAutoSubscribe();
   }, [toast]);
 
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const permission = Notification.permission;
+        if (permission === 'granted') {
+          pushNotificationService.subscribe().catch((e) => console.error('Auth subscribe error:', e));
+        } else if (permission === 'default') {
+          setTimeout(() => setShow(true), 1500);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
   const handleEnable = async () => {
     setLoading(true);
     try {
