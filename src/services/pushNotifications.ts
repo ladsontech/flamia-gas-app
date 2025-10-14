@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-
-const VAPID_PUBLIC_KEY = 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww';
+import { getFirebaseMessaging, getToken, onMessage } from "@/config/firebase";
 
 export const pushNotificationService = {
   async requestPermission(): Promise<NotificationPermission> {
@@ -11,50 +10,68 @@ export const pushNotificationService = {
     return await Notification.requestPermission();
   },
 
-  async subscribe(): Promise<PushSubscription | null> {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.error('Push notifications not supported');
+  async subscribe(): Promise<string | null> {
+    if (!('serviceWorker' in navigator)) {
+      console.error('Service workers not supported');
       return null;
     }
 
     try {
-      const registration = await navigator.serviceWorker.ready;
-      
-      // Check if already subscribed
-      let subscription = await registration.pushManager.getSubscription();
-      
-      if (!subscription) {
-        // Subscribe to push notifications
-        const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-        subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: applicationServerKey as BufferSource
-        });
+      const messaging = getFirebaseMessaging();
+      if (!messaging) {
+        console.error('Firebase Messaging not available');
+        return null;
       }
 
-      // Save subscription to database
-      await this.saveSubscription(subscription);
+      // Request permission
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        console.log('Notification permission denied');
+        return null;
+      }
+
+      // Get FCM token
+      const registration = await navigator.serviceWorker.ready;
+      const token = await getToken(messaging, {
+        vapidKey: 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww',
+        serviceWorkerRegistration: registration
+      });
+
+      if (token) {
+        // Save token to database
+        await this.saveSubscription(token);
+        
+        // Listen for foreground messages
+        onMessage(messaging, (payload) => {
+          console.log('Message received in foreground:', payload);
+          if (payload.notification) {
+            new Notification(payload.notification.title || 'New notification', {
+              body: payload.notification.body,
+              icon: payload.notification.icon || '/icon.png'
+            });
+          }
+        });
+      }
       
-      return subscription;
+      return token;
     } catch (error) {
       console.error('Error subscribing to push notifications:', error);
       return null;
     }
   },
 
-  async saveSubscription(subscription: PushSubscription): Promise<void> {
+  async saveSubscription(fcmToken: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const subscriptionJson = subscription.toJSON();
-    
     await supabase
       .from('push_subscriptions')
       .upsert({
         user_id: user.id,
-        endpoint: subscription.endpoint,
-        p256dh: subscriptionJson.keys?.p256dh || '',
-        auth: subscriptionJson.keys?.auth || ''
+        fcm_token: fcmToken,
+        endpoint: `fcm:${fcmToken}`, // Use FCM token as endpoint identifier
+        p256dh: '',
+        auth: ''
       }, {
         onConflict: 'endpoint'
       });
@@ -62,21 +79,16 @@ export const pushNotificationService = {
 
   async unsubscribe(): Promise<boolean> {
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      // Remove from database
+      await supabase
+        .from('push_subscriptions')
+        .delete()
+        .eq('user_id', user.id);
       
-      if (subscription) {
-        await subscription.unsubscribe();
-        
-        // Remove from database
-        await supabase
-          .from('push_subscriptions')
-          .delete()
-          .eq('endpoint', subscription.endpoint);
-        
-        return true;
-      }
-      return false;
+      return true;
     } catch (error) {
       console.error('Error unsubscribing from push notifications:', error);
       return false;
@@ -84,31 +96,19 @@ export const pushNotificationService = {
   },
 
   async getSubscriptionStatus(): Promise<boolean> {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      return false;
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
 
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      return subscription !== null;
+      const { data } = await supabase
+        .from('push_subscriptions')
+        .select('fcm_token')
+        .eq('user_id', user.id)
+        .single();
+      
+      return !!data?.fcm_token;
     } catch (error) {
       return false;
     }
   }
 };
-
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
