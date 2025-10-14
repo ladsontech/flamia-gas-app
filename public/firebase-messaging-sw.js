@@ -9,8 +9,8 @@ firebase.initializeApp({
   projectId: "flamia-d69dd",
   storageBucket: "flamia-d69dd.firebasestorage.app",
   messagingSenderId: "148091057599",
-  appId: "1:148091057599:web:e1a997bd3c0153b28a9d0a",
-  measurementId: "G-4031DNBFR5"
+  appId: "1:148091057599:web:9381e131defae2078a9d0a",
+  measurementId: "G-TQFJ2LRX7J"
 });
 
 const messaging = firebase.messaging();
