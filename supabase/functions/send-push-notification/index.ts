@@ -5,10 +5,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const FCM_ENDPOINT = 'https://fcm.googleapis.com/fcm/send';
+
 interface PushSubscription {
   endpoint: string;
   p256dh: string;
   auth: string;
+  fcm_token?: string;
 }
 
 Deno.serve(async (req) => {
@@ -62,10 +65,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get all push subscriptions
+    // Get all push subscriptions with FCM tokens
     const { data: subscriptions, error: subError } = await supabase
       .from('push_subscriptions')
-      .select('endpoint, p256dh, auth');
+      .select('endpoint, p256dh, auth, fcm_token');
 
     if (subError) {
       console.error('Error fetching subscriptions:', subError);
@@ -82,10 +85,12 @@ Deno.serve(async (req) => {
       );
     }
 
-    const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
-    if (!vapidPrivateKey) {
+    // Get FCM Server Key
+    const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
+    if (!fcmServerKey) {
+      console.error('FCM_SERVER_KEY not configured');
       return new Response(
-        JSON.stringify({ error: 'VAPID keys not configured' }),
+        JSON.stringify({ error: 'FCM not configured. Please add FCM_SERVER_KEY to secrets.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -95,31 +100,52 @@ Deno.serve(async (req) => {
     const failedEndpoints: string[] = [];
 
     for (const sub of subscriptions as PushSubscription[]) {
+      // Skip if no FCM token
+      if (!sub.fcm_token) {
+        console.log(`Skipping subscription without FCM token: ${sub.endpoint}`);
+        continue;
+      }
+
       try {
-        const payload = JSON.stringify({
-          title,
-          body: message,
-          icon: '/images/icon.png',
-          badge: '/images/icon.png',
+        const fcmPayload = {
+          to: sub.fcm_token,
+          notification: {
+            title,
+            body: message,
+            icon: '/icon.png',
+            click_action: targetPage || '/'
+          },
           data: {
             url: targetPage || '/'
           }
+        };
+
+        const response = await fetch(FCM_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Authorization': `key=${fcmServerKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(fcmPayload),
         });
 
-        const response = await sendWebPush(sub, payload, vapidPrivateKey);
+        const result = await response.json();
         
-        if (response.ok) {
+        if (response.ok && result.success === 1) {
           successCount++;
+          console.log(`Successfully sent to FCM token: ${sub.fcm_token.substring(0, 20)}...`);
         } else {
-          console.error(`Failed to send to ${sub.endpoint}:`, response.status);
+          console.error(`Failed to send to ${sub.fcm_token}:`, result);
           failedEndpoints.push(sub.endpoint);
           
-          // Remove invalid subscriptions
-          if (response.status === 410 || response.status === 404) {
+          // Remove invalid tokens (NotRegistered or InvalidRegistration)
+          if (result.results?.[0]?.error === 'NotRegistered' || 
+              result.results?.[0]?.error === 'InvalidRegistration') {
             await supabase
               .from('push_subscriptions')
               .delete()
               .eq('endpoint', sub.endpoint);
+            console.log(`Removed invalid token: ${sub.endpoint}`);
           }
         }
       } catch (error) {
@@ -144,7 +170,8 @@ Deno.serve(async (req) => {
         message: 'Notifications sent',
         sent: successCount,
         failed: failedEndpoints.length,
-        total: subscriptions.length
+        total: subscriptions.length,
+        failedEndpoints: failedEndpoints.length > 0 ? failedEndpoints : undefined
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -156,116 +183,3 @@ Deno.serve(async (req) => {
     );
   }
 });
-
-async function sendWebPush(
-  subscription: PushSubscription,
-  payload: string,
-  vapidPrivateKey: string
-): Promise<Response> {
-  const { endpoint, p256dh, auth } = subscription;
-  
-  // Import web-push crypto utilities
-  const encoder = new TextEncoder();
-  const payloadBytes = encoder.encode(payload);
-  
-  // Generate VAPID headers
-  const vapidPublicKey = 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww';
-  
-  const url = new URL(endpoint);
-  const audience = `${url.protocol}//${url.host}`;
-  
-  const vapidHeaders = await generateVAPIDHeaders(
-    audience,
-    'mailto:support@flamia.com',
-    vapidPublicKey,
-    vapidPrivateKey
-  );
-
-  // Encrypt payload
-  const encryptedPayload = await encryptPayload(payloadBytes, p256dh, auth);
-
-  return fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'TTL': '86400',
-      'Content-Encoding': 'aes128gcm',
-      'Authorization': vapidHeaders.Authorization,
-      'Crypto-Key': vapidHeaders['Crypto-Key'],
-    },
-    body: encryptedPayload,
-  });
-}
-
-async function generateVAPIDHeaders(
-  audience: string,
-  subject: string,
-  publicKey: string,
-  privateKey: string
-): Promise<{ Authorization: string; 'Crypto-Key': string }> {
-  const exp = Math.floor(Date.now() / 1000) + 12 * 60 * 60; // 12 hours
-
-  const header = { typ: 'JWT', alg: 'ES256' };
-  const payload = { aud: audience, exp, sub: subject };
-
-  // Base64URL encode
-  const headerB64 = base64UrlEncode(JSON.stringify(header));
-  const payloadB64 = base64UrlEncode(JSON.stringify(payload));
-  const unsignedToken = `${headerB64}.${payloadB64}`;
-
-  // Sign with private key
-  const signature = await signJWT(unsignedToken, privateKey);
-  const jwt = `${unsignedToken}.${signature}`;
-
-  return {
-    Authorization: `vapid t=${jwt}, k=${publicKey}`,
-    'Crypto-Key': `p256ecdsa=${publicKey}`,
-  };
-}
-
-function base64UrlEncode(str: string): string {
-  const base64 = btoa(str);
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-async function signJWT(data: string, privateKey: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const dataBytes = encoder.encode(data);
-  
-  // Convert base64url private key to raw bytes
-  const keyBytes = base64UrlDecode(privateKey);
-  
-  // Import the private key
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    keyBytes,
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    false,
-    ['sign']
-  );
-
-  // Sign the data
-  const signature = await crypto.subtle.sign(
-    { name: 'ECDSA', hash: 'SHA-256' },
-    cryptoKey,
-    dataBytes
-  );
-
-  return base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
-}
-
-function base64UrlDecode(str: string): Uint8Array {
-  const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-  const padding = '='.repeat((4 - (base64.length % 4)) % 4);
-  const binary = atob(base64 + padding);
-  return new Uint8Array([...binary].map(c => c.charCodeAt(0)));
-}
-
-async function encryptPayload(
-  payload: Uint8Array,
-  p256dh: string,
-  auth: string
-): Promise<Uint8Array> {
-  // Simplified encryption - in production, use a proper web-push library
-  // This is a placeholder that needs proper ECDH and AES-GCM implementation
-  return payload;
-}

@@ -525,6 +525,7 @@ export type Database = {
           auth: string
           created_at: string
           endpoint: string
+          fcm_token: string | null
           id: string
           p256dh: string
           user_id: string | null
@@ -533,6 +534,7 @@ export type Database = {
           auth: string
           created_at?: string
           endpoint: string
+          fcm_token?: string | null
           id?: string
           p256dh: string
           user_id?: string | null
@@ -541,6 +543,7 @@ export type Database = {
           auth?: string
           created_at?: string
           endpoint?: string
+          fcm_token?: string | null
           id?: string
           p256dh?: string
           user_id?: string | null
