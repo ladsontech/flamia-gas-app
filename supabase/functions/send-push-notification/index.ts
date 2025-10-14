@@ -1,5 +1,4 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import webpush from 'npm:web-push@3.5.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -91,9 +90,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    const vapidPublicKey = 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww';
-    webpush.setVapidDetails('mailto:support@flamia.com', vapidPublicKey, vapidPrivateKey);
-
     // Send notifications to all subscriptions
     let successCount = 0;
     const failedEndpoints: string[] = [];
@@ -110,22 +106,25 @@ Deno.serve(async (req) => {
           }
         });
 
-        await webpush.sendNotification(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload
-        );
-        successCount++;
-      } catch (err: any) {
-        console.error(`Failed to send to ${sub.endpoint}:`, err?.statusCode || err);
-        failedEndpoints.push(sub.endpoint);
-
-        // Remove invalid subscriptions
-        if (err?.statusCode === 410 || err?.statusCode === 404) {
-          await supabase
-            .from('push_subscriptions')
-            .delete()
-            .eq('endpoint', sub.endpoint);
+        const response = await sendWebPush(sub, payload, vapidPrivateKey);
+        
+        if (response.ok) {
+          successCount++;
+        } else {
+          console.error(`Failed to send to ${sub.endpoint}:`, response.status);
+          failedEndpoints.push(sub.endpoint);
+          
+          // Remove invalid subscriptions
+          if (response.status === 410 || response.status === 404) {
+            await supabase
+              .from('push_subscriptions')
+              .delete()
+              .eq('endpoint', sub.endpoint);
+          }
         }
+      } catch (error) {
+        console.error(`Error sending to ${sub.endpoint}:`, error);
+        failedEndpoints.push(sub.endpoint);
       }
     }
 
