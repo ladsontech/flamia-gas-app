@@ -84,8 +84,7 @@ export const getAllUsers = async (): Promise<UserWithPermissions[]> => {
   // Get referral counts in one optimized query
   const { data: referralCounts, error: referralError } = await supabase
     .from('referrals')
-    .select('referrer_id')
-    .eq('status', 'completed');
+    .select('referrer_id');
 
   if (referralError) {
     console.error('Error fetching referral counts:', referralError);
