@@ -114,7 +114,13 @@ const saveOfflineAction = async (action: any): Promise<boolean> => {
 if (isServiceWorkerSupported()) {
   window.addEventListener('load', async () => {
     try {
+      // Register both service workers
       const registration = await navigator.serviceWorker.register('/sw.js');
+      
+      // Register Firebase Messaging Service Worker
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+        scope: '/firebase-cloud-messaging-push-scope'
+      });
       
       // Function to check for updates
       const checkForUpdates = () => {
