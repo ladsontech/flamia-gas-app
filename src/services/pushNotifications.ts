@@ -30,11 +30,25 @@ export const pushNotificationService = {
         return null;
       }
 
-      // Get FCM token
-      const registration = await navigator.serviceWorker.ready;
+      // Ensure Firebase Messaging SW is registered and use its registration for FCM
+      let fcmRegistration: ServiceWorkerRegistration | null = null;
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        fcmRegistration = (regs.find(r => {
+          const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL;
+          return url?.includes('firebase-messaging-sw.js');
+        }) || null);
+        
+        if (!fcmRegistration) {
+          fcmRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        }
+      } catch (e) {
+        console.error('Failed to get/register Firebase Messaging SW:', e);
+      }
+
       const token = await getToken(messaging, {
         vapidKey: 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww',
-        serviceWorkerRegistration: registration
+        serviceWorkerRegistration: fcmRegistration ?? (await navigator.serviceWorker.ready)
       });
 
       if (token) {
@@ -66,14 +80,17 @@ export const pushNotificationService = {
 
     await supabase
       .from('push_subscriptions')
-      .upsert({
+      .delete()
+      .eq('user_id', user.id);
+
+    await supabase
+      .from('push_subscriptions')
+      .insert({
         user_id: user.id,
         fcm_token: fcmToken,
-        endpoint: `fcm:${fcmToken}`, // Use FCM token as endpoint identifier
+        endpoint: `fcm:${fcmToken}`,
         p256dh: '',
         auth: ''
-      }, {
-        onConflict: 'endpoint'
       });
   },
 

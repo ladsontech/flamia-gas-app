@@ -117,10 +117,7 @@ if (isServiceWorkerSupported()) {
       // Register both service workers
       const registration = await navigator.serviceWorker.register('/sw.js');
       
-      // Register Firebase Messaging Service Worker
-      await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-        scope: '/firebase-cloud-messaging-push-scope'
-      });
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       
       // Function to check for updates
       const checkForUpdates = () => {
