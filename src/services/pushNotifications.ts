@@ -47,7 +47,7 @@ export const pushNotificationService = {
       }
 
       const token = await getToken(messaging, {
-        vapidKey: 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww',
+        vapidKey: 'BC9kGPrvB_rjAwwI5aunPmbe1ZgfH-I7hKs_JLHF9sronv3FOdNlAqpVnjvToUQc_S1ztYDV4QIq8p7tgBneCMk',
         serviceWorkerRegistration: fcmRegistration ?? (await navigator.serviceWorker.ready)
       });
 
