@@ -81,30 +81,43 @@ export const BulkSmsMarketing = () => {
 
     setSending(true);
     try {
-      // TODO: Implement actual bulk SMS sending via edge function
-      // This is a placeholder for the bulk SMS implementation
+      const { supabase } = await import("@/integrations/supabase/client");
       
       toast({
         title: "Sending SMS",
         description: `Sending message to ${contacts.length} contacts...`,
       });
 
-      // Simulate sending
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      toast({
-        title: "SMS Sent",
-        description: `Successfully sent SMS to ${contacts.length} contacts`,
+      const { data, error } = await supabase.functions.invoke('send-bulk-sms', {
+        body: {
+          contacts,
+          message: message.trim(),
+        }
       });
 
-      // Clear form
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to send SMS');
+      }
+
+      toast({
+        title: "SMS Sent Successfully",
+        description: `Sent to ${data.successCount}/${data.totalSent} contacts. Total cost: ${data.totalCost}`,
+      });
+
+      console.log('Bulk SMS results:', data);
+
+      // Clear form on success
       setContacts([]);
       setMessage("");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending bulk SMS:', error);
       toast({
         title: "Error",
-        description: "Failed to send bulk SMS",
+        description: error.message || "Failed to send bulk SMS",
         variant: "destructive"
       });
     } finally {

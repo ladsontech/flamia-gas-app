@@ -2,3 +2,6 @@ project_id = "zxhwjoysctshyqukznvq"
 
 [functions.send-push-notification]
 verify_jwt = true
+
+[functions.send-bulk-sms]
+verify_jwt = true
