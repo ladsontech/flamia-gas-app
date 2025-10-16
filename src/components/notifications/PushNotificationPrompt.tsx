@@ -22,14 +22,10 @@ export const PushNotificationPrompt = () => {
       // If already subscribed, do nothing
       if (isSubscribed) return;
 
-      // If permission already granted, automatically subscribe
+      // If permission already granted, automatically subscribe silently
       if (permission === 'granted') {
         try {
           await pushNotificationService.subscribe();
-          toast({
-            title: "Notifications Enabled",
-            description: "You'll receive important updates about your orders",
-          });
         } catch (error) {
           console.error('Auto-subscribe error:', error);
         }
