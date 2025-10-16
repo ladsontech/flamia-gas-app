@@ -36,10 +36,15 @@ export const PushNotificationPrompt = () => {
         return;
       }
 
-      // If permission is default, show prompt
-      const hasShownPrompt = localStorage.getItem('push-notification-prompt-shown');
-      if (!hasShownPrompt && permission === 'default') {
-        setTimeout(() => setShow(true), 2000);
+      // Check if we should show the prompt (weekly reminder)
+      const lastDismissed = localStorage.getItem('push-notification-last-dismissed');
+      const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
+      
+      if (permission === 'default') {
+        // Show if never dismissed or if a week has passed since last dismissal
+        if (!lastDismissed || parseInt(lastDismissed) < oneWeekAgo) {
+          setTimeout(() => setShow(true), 2000);
+        }
       }
     };
 
@@ -88,13 +93,15 @@ export const PushNotificationPrompt = () => {
       });
     } finally {
       setLoading(false);
-      localStorage.setItem('push-notification-prompt-shown', 'true');
+      // Store timestamp of dismissal for weekly reminders
+      localStorage.setItem('push-notification-last-dismissed', Date.now().toString());
     }
   };
 
   const handleDismiss = () => {
     setShow(false);
-    localStorage.setItem('push-notification-prompt-shown', 'true');
+    // Store timestamp so we can remind them again in a week
+    localStorage.setItem('push-notification-last-dismissed', Date.now().toString());
   };
 
   if (!show) return null;
