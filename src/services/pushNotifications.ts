@@ -1,7 +1,43 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getFirebaseMessaging, getToken, onMessage } from "@/config/firebase";
 
+let messageListenerSetup = false;
+
+const setupMessageListener = () => {
+  if (messageListenerSetup) return;
+  
+  const messaging = getFirebaseMessaging();
+  if (!messaging) return;
+  
+  onMessage(messaging, (payload) => {
+    console.log('Message received in foreground:', payload);
+    if (payload.notification && Notification.permission === 'granted') {
+      const notification = new Notification(payload.notification.title || 'New notification', {
+        body: payload.notification.body,
+        icon: payload.notification.icon || '/icon.png',
+        badge: '/icon.png',
+        tag: 'notification-' + Date.now(),
+        requireInteraction: false,
+        data: payload.data
+      });
+      
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        if (payload.data?.url) {
+          window.location.href = payload.data.url;
+        }
+      };
+    }
+  });
+  
+  messageListenerSetup = true;
+};
+
 export const pushNotificationService = {
+  initialize(): void {
+    setupMessageListener();
+  },
   async requestPermission(): Promise<NotificationPermission> {
     if (!('Notification' in window)) {
       throw new Error('This browser does not support notifications');
@@ -52,19 +88,8 @@ export const pushNotificationService = {
       });
 
       if (token) {
-        // Save token to database
         await this.saveSubscription(token);
-        
-        // Listen for foreground messages
-        onMessage(messaging, (payload) => {
-          console.log('Message received in foreground:', payload);
-          if (payload.notification) {
-            new Notification(payload.notification.title || 'New notification', {
-              body: payload.notification.body,
-              icon: payload.notification.icon || '/icon.png'
-            });
-          }
-        });
+        setupMessageListener();
       }
       
       return token;

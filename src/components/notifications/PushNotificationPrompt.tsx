@@ -16,11 +16,17 @@ export const PushNotificationPrompt = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Initialize message listener
+      pushNotificationService.initialize();
+
       const isSubscribed = await pushNotificationService.getSubscriptionStatus();
       const permission = Notification.permission;
 
-      // If already subscribed, do nothing
-      if (isSubscribed) return;
+      // If already subscribed, ensure listener is active
+      if (isSubscribed && permission === 'granted') {
+        pushNotificationService.initialize();
+        return;
+      }
 
       // If permission already granted, automatically subscribe silently
       if (permission === 'granted') {
