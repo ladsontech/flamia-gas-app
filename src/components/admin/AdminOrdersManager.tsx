@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminOrdersDashboard } from "./AdminOrdersDashboard";
 import { BulkSmsMarketing } from "./BulkSmsMarketing";
+import { PushNotificationManager } from "./PushNotificationManager";
 import { Package, ShoppingBag, MessageSquare, Flame } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const AdminOrdersManager = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -25,7 +27,7 @@ export const AdminOrdersManager = () => {
           </TabsTrigger>
           <TabsTrigger value="marketing" className="text-xs sm:text-sm">
             <MessageSquare className="h-4 w-4 mr-1" />
-            SMS
+            Marketing
           </TabsTrigger>
         </TabsList>
 
@@ -53,8 +55,24 @@ export const AdminOrdersManager = () => {
           />
         </TabsContent>
 
-        <TabsContent value="marketing" className="mt-4">
-          <BulkSmsMarketing />
+        <TabsContent value="marketing" className="mt-4 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Bulk SMS Marketing</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BulkSmsMarketing />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Push Notifications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PushNotificationManager />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

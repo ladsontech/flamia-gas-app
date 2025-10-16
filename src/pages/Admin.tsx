@@ -11,10 +11,11 @@ import { ArrowLeft, Shield } from "lucide-react";
 import AdminAppBar from "@/components/admin/AdminAppBar";
 import ShopItemsManager from "@/components/admin/ShopItemsManager";
 import CarouselManager from "@/components/admin/CarouselManager";
-import { PushNotificationManager } from "@/components/admin/PushNotificationManager";
+import { SubAdminManager } from "@/components/admin/SubAdminManager";
 
 // Import services
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -24,6 +25,7 @@ const Admin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAdmin, loading: roleLoading } = useUserRole();
+  const { canManageUsers, loading: permissionsLoading } = useAdminPermissions();
 
   // Check authentication and admin role
   useEffect(() => {
@@ -113,7 +115,9 @@ const Admin = () => {
               <TabsList className="inline-flex h-8 items-center justify-start rounded-md bg-muted p-0.5 text-muted-foreground w-max mb-2">
                 <TabsTrigger value="shop" className="text-xs px-2 h-7">🛍️ Shop</TabsTrigger>
                 <TabsTrigger value="carousel" className="text-xs px-2 h-7">🎠 Carousel</TabsTrigger>
-                <TabsTrigger value="notifications" className="text-xs px-2 h-7">🔔 Push</TabsTrigger>
+                {(isAdmin || canManageUsers) && (
+                  <TabsTrigger value="users" className="text-xs px-2 h-7">👥 Users</TabsTrigger>
+                )}
               </TabsList>
               <ScrollBar orientation="horizontal" />
               
@@ -133,13 +137,15 @@ const Admin = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="notifications" className="mt-0 space-y-2">
-                <Card className="mx-1">
-                  <CardContent className="pt-4">
-                    <PushNotificationManager />
-                  </CardContent>
-                </Card>
-              </TabsContent>
+              {(isAdmin || canManageUsers) && (
+                <TabsContent value="users" className="mt-0 space-y-2">
+                  <Card className="mx-1">
+                    <CardContent className="pt-4">
+                      <SubAdminManager />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              )}
             </Tabs>
           </ScrollArea>
         </div>
@@ -174,19 +180,21 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  🔔
-                </div>
-                Push Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PushNotificationManager />
-            </CardContent>
-          </Card>
+          {(isAdmin || canManageUsers) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    👥
+                  </div>
+                  Sub Admin Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SubAdminManager />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
