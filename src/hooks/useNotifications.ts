@@ -32,7 +32,17 @@ export const useNotifications = () => {
     };
   }, []);
 
-  const addNotification = useCallback((notification: Omit<NotificationItem, 'id'>) => {
+  const getTargetPage = (notification: Omit<NotificationItem, 'id'>): string => {
+    if (notification.type === 'new_order' || notification.type === 'order_assigned' || notification.type === 'order_status') {
+      return '/orders';
+    }
+    if (notification.type === 'new_referral' || notification.type === 'commission') {
+      return '/account';
+    }
+    return '/';
+  };
+
+  const addNotification = useCallback(async (notification: Omit<NotificationItem, 'id'>, targetUserId?: string) => {
     if (!isInitialized) return;
     
     try {
@@ -74,6 +84,25 @@ export const useNotifications = () => {
               });
             }
           });
+        }
+      }
+
+      // Send FCM push notification to target user if specified
+      if (targetUserId) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            await supabase.functions.invoke('send-targeted-push', {
+              body: {
+                userId: targetUserId,
+                title: notification.title,
+                body: notification.description,
+                targetPage: getTargetPage(notification)
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Failed to send FCM push notification:', error);
         }
       }
     } catch (error) {
@@ -146,6 +175,7 @@ export const useNotifications = () => {
           async (payload) => {
             const order = payload.new;
             const customerName = await getCustomerName(order.user_id, order.description);
+            const { data: { user } } = await supabase.auth.getUser();
             addNotification({
               type: 'new_order',
               title: 'New Order Received',
@@ -153,7 +183,7 @@ export const useNotifications = () => {
               timestamp: new Date(),
               read: false,
               data: order
-            });
+            }, user?.id);
           }
         )
         .subscribe();
@@ -213,7 +243,7 @@ export const useNotifications = () => {
                     timestamp: new Date(),
                     read: false,
                     data: order
-                  });
+                  }, user.id);
                 }
               }
             )
@@ -273,7 +303,7 @@ export const useNotifications = () => {
                   timestamp: new Date(),
                   read: false,
                   data: referral
-                });
+                }, user.id);
               }
             )
             .subscribe();
@@ -313,7 +343,7 @@ export const useNotifications = () => {
                     timestamp: new Date(),
                     read: false,
                     data: order
-                  });
+                  }, user.id);
                 }
               }
             )
@@ -354,7 +384,7 @@ export const useNotifications = () => {
                       timestamp: new Date(),
                       read: false,
                       data: commission
-                    });
+                    }, user.id);
                   }
                 } catch (error) {
                   console.error('Error fetching commission data for notification:', error);
