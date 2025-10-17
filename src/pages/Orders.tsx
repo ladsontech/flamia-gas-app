@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Package } from "lucide-react";
 import AppBar from "@/components/AppBar";
-import { OrderCard } from "@/components/orders/OrderCard";
+import { ExpandableOrderCard } from "@/components/orders/ExpandableOrderCard";
 
 interface Order {
   id: string;
@@ -132,9 +132,13 @@ const Orders = () => {
               </Button>
             </Card>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {orders.map((order) => (
-                <OrderCard key={order.id} order={order} />
+                <ExpandableOrderCard 
+                  key={order.id} 
+                  order={order} 
+                  userRole="user"
+                />
               ))}
             </div>
           )}
