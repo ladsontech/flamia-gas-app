@@ -46,10 +46,7 @@ const Account = () => {
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
   
-  // Load activeSection from sessionStorage
-  const [activeSection, setActiveSection] = useState<string | null>(() => {
-    return sessionStorage.getItem('accountActiveSection');
-  });
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { toast } = useToast();
@@ -70,12 +67,6 @@ const Account = () => {
     loading: permissionsLoading
   } = useAdminPermissions();
 
-  // Persist activeSection to sessionStorage
-  useEffect(() => {
-    if (activeSection) {
-      sessionStorage.setItem('accountActiveSection', activeSection);
-    }
-  }, [activeSection]);
 
   // Cached profile query
   const { data: profile, isLoading: profileLoading } = useQuery({
