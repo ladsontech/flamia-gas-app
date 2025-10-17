@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Truck, Package, Calendar, TrendingUp } from "lucide-react";
+import { ShoppingBag, Truck, Package, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ExpandableOrderCard } from "@/components/orders/ExpandableOrderCard";
@@ -245,16 +245,16 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
                         <span className="text-sm font-bold text-primary">{dayGroup.stats.total} orders</span>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-xs">
-                        <div className="bg-orange-50 rounded p-2 text-center">
-                          <div className="font-semibold text-orange-600">{dayGroup.stats.in_progress}</div>
+                        <div className="bg-orange-50 dark:bg-orange-950/20 rounded p-2 text-center">
+                          <div className="font-semibold text-orange-600 dark:text-orange-400">{dayGroup.stats.in_progress}</div>
                           <div className="text-muted-foreground">In Progress</div>
                         </div>
-                        <div className="bg-yellow-50 rounded p-2 text-center">
-                          <div className="font-semibold text-yellow-600">{dayGroup.stats.pending}</div>
+                        <div className="bg-yellow-50 dark:bg-yellow-950/20 rounded p-2 text-center">
+                          <div className="font-semibold text-yellow-600 dark:text-yellow-400">{dayGroup.stats.pending}</div>
                           <div className="text-muted-foreground">Pending</div>
                         </div>
-                        <div className="bg-green-50 rounded p-2 text-center">
-                          <div className="font-semibold text-green-600">{dayGroup.stats.completed}</div>
+                        <div className="bg-green-50 dark:bg-green-950/20 rounded p-2 text-center">
+                          <div className="font-semibold text-green-600 dark:text-green-400">{dayGroup.stats.completed}</div>
                           <div className="text-muted-foreground">Completed</div>
                         </div>
                       </div>
