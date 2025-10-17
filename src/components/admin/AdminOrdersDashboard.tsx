@@ -133,6 +133,11 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
   };
 
   const isShopOrder = (description: string) => {
+    // Explicit check for shop orders first
+    if (description.includes('🛍️ SHOP ORDER') || description.includes('Business:')) {
+      return true;
+    }
+    // Otherwise, non-gas orders are shop orders
     return !isGasOrder(description);
   };
 

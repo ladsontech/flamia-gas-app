@@ -64,27 +64,46 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
     const lines = description.split('\n');
     const info: OrderInfo = {};
     
-    lines.forEach(line => {
-      if (line.includes('Brand:') && !line.includes('*Brand:*')) info.brand = line.split('Brand:')[1]?.trim();
-      if (line.includes('Size:') && !line.includes('*Size:*')) info.size = line.split('Size:')[1]?.trim();
-      if (line.includes('Price:') && !line.includes('*Price:*')) info.price = line.split('Price:')[1]?.trim();
-      if (line.includes('Quantity:') && !line.includes('*Quantity:*')) info.quantity = line.split('Quantity:')[1]?.trim();
-      if (line.includes('Contact:') && !line.includes('*Contact:*')) info.contact = line.split('Contact:')[1]?.trim();
-      if (line.includes('Address:') && !line.includes('*Address:*')) info.address = line.split('Address:')[1]?.trim();
-      if (line.includes('Order Type:') && !line.includes('*Order Type:*')) info.type = line.split('Order Type:')[1]?.trim();
-      if (line.includes('Item:') && !line.includes('*Item:*')) info.item = line.split('Item:')[1]?.trim();
-      if (line.includes('Total Amount:') && !line.includes('*Total Amount:*')) info.total = line.split('Total Amount:')[1]?.trim();
-      
-      if (line.includes('*Brand:*')) info.brand = line.split('*Brand:*')[1]?.trim();
-      if (line.includes('*Size:*')) info.size = line.split('*Size:*')[1]?.trim();
-      if (line.includes('*Price:*')) info.price = line.split('*Price:*')[1]?.trim();
-      if (line.includes('*Quantity:*')) info.quantity = line.split('*Quantity:*')[1]?.trim();
-      if (line.includes('*Contact:*')) info.contact = line.split('*Contact:*')[1]?.trim();
-      if (line.includes('*Address:*')) info.address = line.split('*Address:*')[1]?.trim();
-      if (line.includes('*Order Type:*')) info.type = line.split('*Order Type:*')[1]?.trim();
-      if (line.includes('*Item:*')) info.item = line.split('*Item:*')[1]?.trim();
-      if (line.includes('*Total Amount:*')) info.total = line.split('*Total Amount:*')[1]?.trim();
-    });
+    // Check if it's a shop order
+    if (description.includes('🛍️ SHOP ORDER')) {
+      // Parse shop order format
+      lines.forEach(line => {
+        if (line.includes('Business:')) info.brand = line.split('Business:')[1]?.trim();
+        if (line.includes('Product:')) info.item = line.split('Product:')[1]?.trim();
+        if (line.includes('Description:') && !line.includes('Customer Contact:')) {
+          const desc = line.split('Description:')[1]?.trim();
+          if (desc) info.type = desc;
+        }
+        if (line.includes('Quantity:')) info.quantity = line.split('Quantity:')[1]?.trim();
+        if (line.includes('Unit Price:')) info.price = line.split('Unit Price:')[1]?.trim();
+        if (line.includes('Total Amount:')) info.total = line.split('Total Amount:')[1]?.trim();
+        if (line.includes('Customer Contact:')) info.contact = line.split('Customer Contact:')[1]?.trim();
+        if (line.includes('Delivery Address:')) info.address = line.split('Delivery Address:')[1]?.trim();
+      });
+    } else {
+      // Parse gas order format
+      lines.forEach(line => {
+        if (line.includes('Brand:') && !line.includes('*Brand:*')) info.brand = line.split('Brand:')[1]?.trim();
+        if (line.includes('Size:') && !line.includes('*Size:*')) info.size = line.split('Size:')[1]?.trim();
+        if (line.includes('Price:') && !line.includes('*Price:*')) info.price = line.split('Price:')[1]?.trim();
+        if (line.includes('Quantity:') && !line.includes('*Quantity:*')) info.quantity = line.split('Quantity:')[1]?.trim();
+        if (line.includes('Contact:') && !line.includes('*Contact:*')) info.contact = line.split('Contact:')[1]?.trim();
+        if (line.includes('Address:') && !line.includes('*Address:*')) info.address = line.split('Address:')[1]?.trim();
+        if (line.includes('Order Type:') && !line.includes('*Order Type:*')) info.type = line.split('Order Type:')[1]?.trim();
+        if (line.includes('Item:') && !line.includes('*Item:*')) info.item = line.split('Item:')[1]?.trim();
+        if (line.includes('Total Amount:') && !line.includes('*Total Amount:*')) info.total = line.split('Total Amount:')[1]?.trim();
+        
+        if (line.includes('*Brand:*')) info.brand = line.split('*Brand:*')[1]?.trim();
+        if (line.includes('*Size:*')) info.size = line.split('*Size:*')[1]?.trim();
+        if (line.includes('*Price:*')) info.price = line.split('*Price:*')[1]?.trim();
+        if (line.includes('*Quantity:*')) info.quantity = line.split('*Quantity:*')[1]?.trim();
+        if (line.includes('*Contact:*')) info.contact = line.split('*Contact:*')[1]?.trim();
+        if (line.includes('*Address:*')) info.address = line.split('*Address:*')[1]?.trim();
+        if (line.includes('*Order Type:*')) info.type = line.split('*Order Type:*')[1]?.trim();
+        if (line.includes('*Item:*')) info.item = line.split('*Item:*')[1]?.trim();
+        if (line.includes('*Total Amount:*')) info.total = line.split('*Total Amount:*')[1]?.trim();
+      });
+    }
     
     return info;
   };

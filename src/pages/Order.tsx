@@ -158,7 +158,20 @@ const Order = () => {
           finalPrice = Math.max(0, item.price - Math.floor(promoDiscountPerItem / item.quantity));
         }
         
-        if (item.type === 'full_set') {
+        if (item.type === 'shop') {
+          // Shop item format - different from gas
+          orderDescription = `🛍️ SHOP ORDER\n\n`;
+          orderDescription += `Business: ${item.businessName}\n`;
+          orderDescription += `Product: ${item.name}\n`;
+          if (item.description) {
+            orderDescription += `Description: ${item.description}\n`;
+          }
+          orderDescription += `Quantity: ${item.quantity}\n`;
+          orderDescription += `Unit Price: UGX ${item.price.toLocaleString()}\n`;
+          orderDescription += `Total Amount: UGX ${(item.price * item.quantity).toLocaleString()}\n\n`;
+          orderDescription += `Customer Contact: ${deliveryData.contact}\n`;
+          orderDescription += `Delivery Address: ${deliveryData.location?.address || 'Not specified'}`;
+        } else if (item.type === 'full_set') {
           orderDescription = `Order Type: Full Set\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;

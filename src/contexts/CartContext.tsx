@@ -4,7 +4,7 @@ import { staticBrands, refillBrands } from '@/components/home/BrandsData';
 
 export interface CartItem {
   id: string;
-  type: 'full_set' | 'refill' | 'accessory' | 'gadget';
+  type: 'full_set' | 'refill' | 'accessory' | 'gadget' | 'shop';
   brand?: string;
   size?: string;
   name: string;
@@ -14,6 +14,8 @@ export interface CartItem {
   accessoryId?: string;
   gadgetId?: string;
   image?: string;
+  businessName?: string;
+  productId?: string;
 }
 
 interface CartContextType {
@@ -55,7 +57,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       item.brand === newItem.brand &&
       item.size === newItem.size &&
       item.accessoryId === newItem.accessoryId &&
-      item.gadgetId === newItem.gadgetId
+      item.gadgetId === newItem.gadgetId &&
+      item.productId === newItem.productId
     );
 
     if (existingItemIndex >= 0) {
