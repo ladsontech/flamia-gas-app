@@ -100,35 +100,6 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
     }
   };
 
-  // Calculate daily stats
-  const getDailyStats = () => {
-    const stats = new Map<string, { date: Date; total: number; in_progress: number; pending: number; completed: number }>();
-    
-    deliveryOrders.forEach(order => {
-      const dateKey = format(startOfDay(new Date(order.created_at)), 'yyyy-MM-dd');
-      
-      if (!stats.has(dateKey)) {
-        stats.set(dateKey, {
-          date: startOfDay(new Date(order.created_at)),
-          total: 0,
-          in_progress: 0,
-          pending: 0,
-          completed: 0
-        });
-      }
-      
-      const stat = stats.get(dateKey)!;
-      stat.total++;
-      
-      if (order.status === 'in_progress') stat.in_progress++;
-      else if (order.status === 'assigned' || order.status === 'pending') stat.pending++;
-      else if (order.status === 'completed') stat.completed++;
-    });
-    
-    // Sort by date (today first)
-    return Array.from(stats.values()).sort((a, b) => b.date.getTime() - a.date.getTime());
-  };
-
   // Sort orders by priority: in_progress > assigned/pending > completed
   const sortOrdersByPriority = (orders: Order[]) => {
     return [...orders].sort((a, b) => {
@@ -152,8 +123,42 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
     });
   };
 
-  const dailyStats = getDailyStats();
-  const sortedDeliveryOrders = sortOrdersByPriority(deliveryOrders);
+  // Group orders by date
+  const getOrdersByDate = () => {
+    const grouped = new Map<string, Order[]>();
+    
+    deliveryOrders.forEach(order => {
+      const dateKey = format(startOfDay(new Date(order.created_at)), 'yyyy-MM-dd');
+      
+      if (!grouped.has(dateKey)) {
+        grouped.set(dateKey, []);
+      }
+      
+      grouped.get(dateKey)!.push(order);
+    });
+    
+    // Sort each day's orders by priority
+    grouped.forEach((orders, date) => {
+      grouped.set(date, sortOrdersByPriority(orders));
+    });
+    
+    // Convert to array and sort by date (today first)
+    return Array.from(grouped.entries())
+      .map(([dateKey, orders]) => ({
+        date: startOfDay(new Date(dateKey)),
+        dateKey,
+        orders,
+        stats: {
+          total: orders.length,
+          in_progress: orders.filter(o => o.status === 'in_progress').length,
+          pending: orders.filter(o => o.status === 'assigned' || o.status === 'pending').length,
+          completed: orders.filter(o => o.status === 'completed').length,
+        }
+      }))
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+  };
+
+  const ordersByDate = getOrdersByDate();
 
   if (loading) {
     return <FlamiaLoader message="Loading your data..." />;
@@ -180,42 +185,6 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
           </Button>
         </div>
       </Card>
-
-      {/* Daily Statistics */}
-      {dailyStats.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-muted-foreground px-1">Daily Statistics</h3>
-          {dailyStats.map((stat) => (
-            <Card key={format(stat.date, 'yyyy-MM-dd')} className={isToday(stat.date) ? 'border-primary shadow-sm' : ''}>
-              <div className="p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium text-sm">
-                      {isToday(stat.date) ? 'Today' : format(stat.date, 'MMM d, yyyy')}
-                    </span>
-                  </div>
-                  <span className="text-sm font-bold text-primary">{stat.total} orders</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div className="bg-orange-50 rounded p-2 text-center">
-                    <div className="font-semibold text-orange-600">{stat.in_progress}</div>
-                    <div className="text-muted-foreground">In Progress</div>
-                  </div>
-                  <div className="bg-yellow-50 rounded p-2 text-center">
-                    <div className="font-semibold text-yellow-600">{stat.pending}</div>
-                    <div className="text-muted-foreground">Pending</div>
-                  </div>
-                  <div className="bg-green-50 rounded p-2 text-center">
-                    <div className="font-semibold text-green-600">{stat.completed}</div>
-                    <div className="text-muted-foreground">Completed</div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
 
       {/* Tabs for Orders and Deliveries */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'orders' | 'deliveries')}>
@@ -253,21 +222,57 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
           )}
         </TabsContent>
 
-        <TabsContent value="deliveries" className="space-y-3 mt-4">
+        <TabsContent value="deliveries" className="space-y-4 mt-4">
           {deliveryOrders.length === 0 ? (
             <Card className="p-6 text-center">
               <Truck className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
               <h3 className="text-base font-semibold mb-1">No active deliveries</h3>
             </Card>
           ) : (
-            <div className="space-y-3">
-              {sortedDeliveryOrders.map((order) => (
-                <ExpandableOrderCard 
-                  key={order.id} 
-                  order={order} 
-                  userRole="delivery_man"
-                  onUpdate={fetchAllOrders}
-                />
+            <div className="space-y-4">
+              {ordersByDate.map((dayGroup) => (
+                <div key={dayGroup.dateKey} className="space-y-2">
+                  {/* Daily Header with Stats */}
+                  <Card className={isToday(dayGroup.date) ? 'border-primary shadow-sm' : ''}>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-semibold text-sm">
+                            {isToday(dayGroup.date) ? 'Today' : format(dayGroup.date, 'MMM d, yyyy')}
+                          </span>
+                        </div>
+                        <span className="text-sm font-bold text-primary">{dayGroup.stats.total} orders</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="bg-orange-50 rounded p-2 text-center">
+                          <div className="font-semibold text-orange-600">{dayGroup.stats.in_progress}</div>
+                          <div className="text-muted-foreground">In Progress</div>
+                        </div>
+                        <div className="bg-yellow-50 rounded p-2 text-center">
+                          <div className="font-semibold text-yellow-600">{dayGroup.stats.pending}</div>
+                          <div className="text-muted-foreground">Pending</div>
+                        </div>
+                        <div className="bg-green-50 rounded p-2 text-center">
+                          <div className="font-semibold text-green-600">{dayGroup.stats.completed}</div>
+                          <div className="text-muted-foreground">Completed</div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Orders for this day */}
+                  <div className="space-y-2 pl-2">
+                    {dayGroup.orders.map((order) => (
+                      <ExpandableOrderCard 
+                        key={order.id} 
+                        order={order} 
+                        userRole="delivery_man"
+                        onUpdate={fetchAllOrders}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}
