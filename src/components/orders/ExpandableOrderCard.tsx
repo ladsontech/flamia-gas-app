@@ -147,6 +147,7 @@ export const ExpandableOrderCard = ({ order, userRole }: ExpandableOrderCardProp
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
+                <img src="/images/icon.png" alt="Flamia" className="w-10 h-10 rounded-full flex-shrink-0" />
                 {getStatusIcon(order.status)}
                 <div className="text-left">
                   <div className="font-semibold text-sm">
@@ -172,6 +173,11 @@ export const ExpandableOrderCard = ({ order, userRole }: ExpandableOrderCardProp
 
         <CollapsibleContent>
           <div className="border-t px-4 pb-4 pt-3 space-y-4">
+            {/* Flamia Logo Header */}
+            <div className="flex items-center justify-center pb-2 border-b">
+              <img src="/images/icon.png" alt="Flamia" className="w-16 h-16 rounded-full" />
+            </div>
+
             {/* Order Details */}
             {(orderInfo.brand || orderInfo.size || orderInfo.quantity || orderInfo.type) && (
               <div className="space-y-2">
