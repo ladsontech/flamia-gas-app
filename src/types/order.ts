@@ -13,6 +13,8 @@ export interface Order {
   total_amount?: number | null;
   manual_delivery_person?: string | null;
   cancellation_reason?: string | null;
+  cancelled_at?: string | null;
+  cancelled_by?: string | null;
 }
 
 export interface OrderFormData {

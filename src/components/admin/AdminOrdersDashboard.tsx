@@ -268,6 +268,16 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
 
   const handleCompleteOrder = async () => {
     if (!completingOrder) return;
+    
+    // Find the order to check if it has a delivery_man_id
+    const currentOrder = orders.find(o => o.id === completingOrder);
+    
+    // If no delivery_man_id, require manual_delivery_person
+    if (!currentOrder?.delivery_man_id && !manualDeliveryPerson.trim()) {
+      toast({ title: "Error", description: "Please provide the delivery person name", variant: "destructive" });
+      return;
+    }
+    
     try {
       const { error } = await supabase
         .from('orders')
@@ -484,13 +494,18 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="manual-delivery-person">Delivery Person Name (Optional)</Label>
+              <Label htmlFor="manual-delivery-person">Delivery Person Name</Label>
               <Input
                 id="manual-delivery-person"
                 placeholder="Enter delivery person name"
                 value={manualDeliveryPerson}
                 onChange={(e) => setManualDeliveryPerson(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                {orders.find(o => o.id === completingOrder)?.delivery_man_id 
+                  ? "Optional - Order already assigned to a delivery person"
+                  : "Required - No delivery person assigned"}
+              </p>
             </div>
           </div>
           <DialogFooter>
@@ -506,6 +521,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
             <Button 
               className="bg-green-600 hover:bg-green-700" 
               onClick={handleCompleteOrder}
+              disabled={!orders.find(o => o.id === completingOrder)?.delivery_man_id && !manualDeliveryPerson.trim()}
             >
               Complete Order
             </Button>
@@ -752,24 +768,46 @@ const CompactOrderCard = ({
               </div>
             </div>
 
-            {/* Delivery Info */}
-            {order.delivery_man && (
+            {/* Delivery Info - Only visible to admin */}
+            {userRole === 'super_admin' && (order.delivery_man || order.manual_delivery_person) && (
               <div className="bg-card rounded-lg p-3 border border-border/50">
                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                  Delivery Person
+                  {order.status === 'completed' ? 'Delivered By' : 'Delivery Person'}
                 </h4>
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <User className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold">{order.delivery_man.name}</p>
+                    <p className="font-semibold">
+                      {order.manual_delivery_person || order.delivery_man?.name}
+                    </p>
                     {order.assigned_at && (
                       <p className="text-xs text-muted-foreground">
                         Assigned {format(new Date(order.assigned_at), 'MMM d, h:mm a')}
                       </p>
                     )}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Cancellation Info */}
+            {order.status === 'cancelled' && order.cancellation_reason && (
+              <div className="bg-destructive/10 rounded-lg p-3 border border-destructive/20">
+                <h4 className="text-xs font-semibold text-destructive uppercase tracking-wider mb-3">
+                  Cancellation Details
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Reason</p>
+                    <p className="font-medium text-destructive">{order.cancellation_reason}</p>
+                  </div>
+                  {order.cancelled_at && (
+                    <p className="text-xs text-muted-foreground">
+                      Cancelled on {format(new Date(order.cancelled_at), 'MMM d, yyyy h:mm a')}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
