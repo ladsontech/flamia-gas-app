@@ -37,6 +37,14 @@ const Orders = () => {
   const [user, setUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'customer' | 'delivery'>('customer');
 
+  // For delivery men, redirect to delivery page (unified experience)
+  useEffect(() => {
+    if (!roleLoading && isDeliveryMan) {
+      navigate('/delivery');
+    }
+  }, [isDeliveryMan, roleLoading, navigate]);
+
+  // Fetch only customer orders for regular users
   useEffect(() => {
     const checkUserAndFetchOrders = async () => {
       try {
@@ -46,7 +54,7 @@ const Orders = () => {
           return;
         }
         setUser(user);
-        await fetchAllOrders(user.id);
+        await fetchCustomerOrders(user.id);
       } catch (error) {
         console.error('Error checking user:', error);
         toast({
@@ -58,20 +66,16 @@ const Orders = () => {
       }
     };
 
-    if (!roleLoading) {
+    if (!roleLoading && !isDeliveryMan) {
       checkUserAndFetchOrders();
     }
-  }, [navigate, roleLoading]);
+  }, [navigate, roleLoading, isDeliveryMan]);
 
-  const fetchAllOrders = async (userId: string) => {
+  const fetchCustomerOrders = async (userId: string) => {
     try {
       setLoading(true);
-      console.log('Fetching orders for user:', userId, 'isDeliveryMan:', isDeliveryMan);
+      console.log('Fetching customer orders for user:', userId);
       
-      let customerCount = 0;
-      let deliveryCount = 0;
-      
-      // Fetch customer orders (orders placed by this user)
       const { data: customerData, error: customerError } = await supabase
         .from('orders')
         .select(`
@@ -83,48 +87,17 @@ const Orders = () => {
 
       if (customerError) {
         console.error('Error fetching customer orders:', customerError);
-      } else {
-        const transformedCustomerOrders: Order[] = (customerData || []).map(order => ({
-          ...order,
-          status: (order.status || 'pending') as Order['status']
-        }));
-        setCustomerOrders(transformedCustomerOrders);
-        customerCount = transformedCustomerOrders.length;
-        console.log('Customer orders:', customerCount);
+        throw customerError;
       }
 
-      // If user is delivery man, fetch delivery assignments
-      if (isDeliveryMan) {
-        const { data: deliveryData, error: deliveryError } = await supabase
-          .from('orders')
-          .select(`
-            id, created_at, description, delivery_man_id, status, 
-            assigned_at, user_id, delivery_address, total_amount,
-            delivery_latitude, delivery_longitude
-          `)
-          .eq('delivery_man_id', userId)
-          .not('delivery_man_id', 'is', null)
-          .order('created_at', { ascending: false });
-
-        if (deliveryError) {
-          console.error('Error fetching delivery orders:', deliveryError);
-        } else {
-          const transformedDeliveryOrders: Order[] = (deliveryData || []).map(order => ({
-            ...order,
-            status: (order.status || 'pending') as Order['status']
-          }));
-          setDeliveryOrders(transformedDeliveryOrders);
-          deliveryCount = transformedDeliveryOrders.length;
-          console.log('Delivery orders:', deliveryCount);
-          
-          // Default to delivery tab if user has deliveries and no customer orders
-          if (deliveryCount > 0 && customerCount === 0) {
-            setActiveTab('delivery');
-          }
-        }
-      }
+      const transformedCustomerOrders: Order[] = (customerData || []).map(order => ({
+        ...order,
+        status: (order.status || 'pending') as Order['status']
+      }));
+      setCustomerOrders(transformedCustomerOrders);
+      console.log('Customer orders loaded:', transformedCustomerOrders.length);
     } catch (error: any) {
-      console.error('Error in fetchAllOrders:', error);
+      console.error('Error in fetchCustomerOrders:', error);
       toast({
         title: "Error",
         description: "Failed to load orders",
@@ -149,60 +122,7 @@ const Orders = () => {
     );
   }
 
-  // Render single section for regular users
-  if (!isDeliveryMan) {
-    return (
-      <>
-        <AppBar />
-        <div className="pt-20 px-4 pb-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/')}
-                className="flex items-center gap-1"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back</span>
-              </Button>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold">My Orders</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {customerOrders.length} {customerOrders.length === 1 ? 'order' : 'orders'}
-                </p>
-              </div>
-            </div>
-
-            {customerOrders.length === 0 ? (
-              <Card className="p-6 text-center">
-                <Package className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                <h3 className="text-base font-semibold mb-1">No orders yet</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Place your first order!
-                </p>
-                <Button onClick={() => navigate('/order')} size="sm">
-                  Order Now
-                </Button>
-              </Card>
-            ) : (
-              <div className="space-y-3">
-                {customerOrders.map((order) => (
-                  <ExpandableOrderCard 
-                    key={order.id} 
-                    order={order} 
-                    userRole="user"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // Render tabbed view for delivery men who also place orders
+  // Regular users (non-delivery men) see their customer orders
   return (
     <>
       <AppBar />
@@ -219,72 +139,35 @@ const Orders = () => {
               <span className="hidden sm:inline">Back</span>
             </Button>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold">Orders</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">My Orders</h1>
               <p className="text-xs sm:text-sm text-muted-foreground">
-                {customerOrders.length} orders • {deliveryOrders.length} deliveries
+                {customerOrders.length} {customerOrders.length === 1 ? 'order' : 'orders'}
               </p>
             </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'customer' | 'delivery')}>
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="customer" className="flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4" />
-                My Orders ({customerOrders.length})
-              </TabsTrigger>
-              <TabsTrigger value="delivery" className="flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                My Deliveries ({deliveryOrders.length})
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="customer">
-              {customerOrders.length === 0 ? (
-                <Card className="p-6 text-center">
-                  <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="text-base font-semibold mb-1">No orders yet</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Place your first order!
-                  </p>
-                  <Button onClick={() => navigate('/order')} size="sm">
-                    Order Now
-                  </Button>
-                </Card>
-              ) : (
-                <div className="space-y-3">
-                  {customerOrders.map((order) => (
-                    <ExpandableOrderCard 
-                      key={order.id} 
-                      order={order} 
-                      userRole="user"
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="delivery">
-              {deliveryOrders.length === 0 ? (
-                <Card className="p-6 text-center">
-                  <Truck className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="text-base font-semibold mb-1">No deliveries yet</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Assigned deliveries will appear here
-                  </p>
-                </Card>
-              ) : (
-                <div className="space-y-3">
-                  {deliveryOrders.map((order) => (
-                    <ExpandableOrderCard 
-                      key={order.id} 
-                      order={order} 
-                      userRole="delivery_man"
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+          {customerOrders.length === 0 ? (
+            <Card className="p-6 text-center">
+              <Package className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+              <h3 className="text-base font-semibold mb-1">No orders yet</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Place your first order!
+              </p>
+              <Button onClick={() => navigate('/order')} size="sm">
+                Order Now
+              </Button>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {customerOrders.map((order) => (
+                <ExpandableOrderCard 
+                  key={order.id} 
+                  order={order} 
+                  userRole="user"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>
