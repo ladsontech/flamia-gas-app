@@ -758,17 +758,29 @@ const CompactOrderCard = ({
                   </Button>
                 )}
                 {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
-                  <Button 
-                    variant="destructive" 
-                    className="flex-1 h-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onCancelOrder();
-                    }}
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    Cancel Order
-                  </Button>
+                  <>
+                    <Button 
+                      className="flex-1 h-10 bg-green-600 hover:bg-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateStatus(order.id, 'completed');
+                      }}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Complete Order
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      className="flex-1 h-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCancelOrder();
+                      }}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancel Order
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
