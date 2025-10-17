@@ -526,7 +526,7 @@ const CompactOrderCard = ({
       >
         {/* Icon */}
         <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
-          <LionFlameLogo className="w-12 h-12" />
+          <img src="/images/icon.png" alt="Flamia" className="w-12 h-12 rounded-full" />
         </div>
 
         {/* Order Info */}
