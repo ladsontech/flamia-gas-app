@@ -106,6 +106,7 @@ export const PlaceSearch: React.FC<PlaceSearchProps> = ({
   }, [mapsLoaded, autocomplete]);
 
   const handleLocationSelect = (lat: number, lng: number, address: string) => {
+    console.log('PlaceSearch handleLocationSelect called with:', { lat, lng, address });
     onLocationSelect({ lat, lng, address });
     setShowingNearby(false);
     setNearbyPlaces([]);
@@ -188,9 +189,11 @@ export const PlaceSearch: React.FC<PlaceSearchProps> = ({
   };
 
   const selectNearbyPlace = (place: NearbyPlace) => {
+    console.log('Selecting nearby place:', place.name);
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
     const address = `${place.name}, ${place.vicinity}`;
+    console.log('Selected location:', { lat, lng, address });
     handleLocationSelect(lat, lng, address);
   };
 
@@ -261,8 +264,12 @@ export const PlaceSearch: React.FC<PlaceSearchProps> = ({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     type="button"
-                    onClick={() => selectNearbyPlace(place)}
-                    className="w-full text-left p-3 rounded-lg border border-border hover:border-accent hover:bg-accent/5 transition-all"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      selectNearbyPlace(place);
+                    }}
+                    className="w-full text-left p-3 rounded-lg border border-border hover:border-accent hover:bg-accent/5 transition-all cursor-pointer"
                   >
                     <div className="flex items-start gap-2">
                       <Building2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />

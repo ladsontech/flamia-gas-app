@@ -78,6 +78,7 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
   };
 
   const handleLocationSelect = (location: { lat: number; lng: number; address: string }) => {
+    console.log('OrderFormFields received location:', location);
     setFormData(prev => ({
       ...prev,
       location: location,
