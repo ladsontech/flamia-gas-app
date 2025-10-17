@@ -11,6 +11,8 @@ export interface Order {
   delivery_latitude?: number | null;
   delivery_longitude?: number | null;
   total_amount?: number | null;
+  manual_delivery_person?: string | null;
+  cancellation_reason?: string | null;
 }
 
 export interface OrderFormData {

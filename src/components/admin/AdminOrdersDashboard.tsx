@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
@@ -47,6 +49,8 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
   const [assigningOrders, setAssigningOrders] = useState<Set<string>>(new Set());
   const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
   const [cancellationReason, setCancellationReason] = useState('');
+  const [completingOrder, setCompletingOrder] = useState<string | null>(null);
+  const [manualDeliveryPerson, setManualDeliveryPerson] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -254,24 +258,33 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
 
   const handleUpdateStatus = async (orderId: string, status: string) => {
     try {
-      // Validate that order has a delivery person before marking as complete
-      if (status === 'completed') {
-        const order = orders.find(o => o.id === orderId);
-        if (!order?.delivery_man_id) {
-          toast({ 
-            title: "Cannot Complete Order", 
-            description: "Please assign a delivery person before marking order as complete",
-            variant: "destructive" 
-          });
-          return;
-        }
-      }
-      
       await OrderService.updateOrderStatus(orderId, status);
       toast({ title: "Success", description: `Order marked as ${status.replace('_', ' ')}` });
       fetchData();
     } catch (error) {
       toast({ title: "Error", description: "Failed to update order status", variant: "destructive" });
+    }
+  };
+
+  const handleCompleteOrder = async () => {
+    if (!completingOrder) return;
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          status: 'completed',
+          ...(manualDeliveryPerson.trim() && { manual_delivery_person: manualDeliveryPerson.trim() })
+        })
+        .eq('id', completingOrder);
+
+      if (error) throw error;
+
+      toast({ title: "Success", description: "Order completed successfully" });
+      setCompletingOrder(null);
+      setManualDeliveryPerson('');
+      fetchData();
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to complete order", variant: "destructive" });
     }
   };
 
@@ -444,6 +457,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
                       deliveryPersons={deliveryPersons}
                       onAssignOrder={handleAssignOrder}
                       onUpdateStatus={handleUpdateStatus}
+                      onCompleteOrder={() => setCompletingOrder(order.id)}
                       onCancelOrder={() => setCancellingOrder(order.id)}
                       assigningOrders={assigningOrders}
                       getStatusBadge={getStatusBadge}
@@ -456,37 +470,85 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
         </div>
       )}
 
+      {/* Complete Order Dialog */}
+      <Dialog open={!!completingOrder} onOpenChange={() => setCompletingOrder(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Complete Order</DialogTitle>
+            <DialogDescription>
+              If the delivery was handled by someone not in the system, enter their name below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="manual-delivery-person">Delivery Person Name (Optional)</Label>
+              <Input
+                id="manual-delivery-person"
+                placeholder="Enter name if not assigned to system delivery person"
+                value={manualDeliveryPerson}
+                onChange={(e) => setManualDeliveryPerson(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCompletingOrder(null);
+                setManualDeliveryPerson('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-green-600 hover:bg-green-700" 
+              onClick={handleCompleteOrder}
+            >
+              Complete Order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Cancel Order Dialog */}
       <Dialog open={!!cancellingOrder} onOpenChange={() => setCancellingOrder(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Cancel Order</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for cancelling this order.
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="Reason for cancellation..."
-              value={cancellationReason}
-              onChange={(e) => setCancellationReason(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <Button
-                variant="destructive"
-                onClick={handleCancelOrder}
-                disabled={!cancellationReason.trim()}
-              >
-                Cancel Order
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setCancellingOrder(null);
-                  setCancellationReason('');
-                }}
-              >
-                Close
-              </Button>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="cancellation-reason">Cancellation Reason *</Label>
+              <Textarea
+                id="cancellation-reason"
+                placeholder="Enter the reason for cancellation"
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                rows={4}
+              />
             </div>
           </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCancellingOrder(null);
+                setCancellationReason('');
+              }}
+            >
+              Close
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleCancelOrder}
+              disabled={!cancellationReason.trim()}
+            >
+              Cancel Order
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -501,6 +563,7 @@ interface CompactOrderCardProps {
   deliveryPersons: DeliveryPersonProfile[];
   onAssignOrder: (orderId: string, deliveryPersonId: string) => void;
   onUpdateStatus: (orderId: string, status: string) => void;
+  onCompleteOrder: () => void;
   onCancelOrder: () => void;
   assigningOrders: Set<string>;
   getStatusBadge: (status?: string) => React.ReactNode;
@@ -512,7 +575,8 @@ const CompactOrderCard = ({
   userRole, 
   deliveryPersons, 
   onAssignOrder, 
-  onUpdateStatus, 
+  onUpdateStatus,
+  onCompleteOrder,
   onCancelOrder,
   assigningOrders,
   getStatusBadge 
@@ -766,13 +830,13 @@ const CompactOrderCard = ({
                     </Select>
                   )}
                   
-                  {/* Complete and Cancel Buttons */}
+                   {/* Complete and Cancel Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2 w-full">
                     <Button 
                       className="flex-1 h-10 bg-green-600 hover:bg-green-700"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onUpdateStatus(order.id, 'completed');
+                        onCompleteOrder();
                       }}
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />

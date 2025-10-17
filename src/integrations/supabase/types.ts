@@ -359,6 +359,7 @@ export type Database = {
           delivery_man_id: string | null
           description: string
           id: string
+          manual_delivery_person: string | null
           referral_id: string | null
           status: string | null
           total_amount: number | null
@@ -376,6 +377,7 @@ export type Database = {
           delivery_man_id?: string | null
           description: string
           id?: string
+          manual_delivery_person?: string | null
           referral_id?: string | null
           status?: string | null
           total_amount?: number | null
@@ -393,6 +395,7 @@ export type Database = {
           delivery_man_id?: string | null
           description?: string
           id?: string
+          manual_delivery_person?: string | null
           referral_id?: string | null
           status?: string | null
           total_amount?: number | null
