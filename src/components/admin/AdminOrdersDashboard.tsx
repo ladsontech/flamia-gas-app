@@ -717,47 +717,56 @@ const CompactOrderCard = ({
 
             {/* Actions */}
             <div className="space-y-2 pt-2">
-              {userRole === 'super_admin' && !order.delivery_man_id && deliveryPersons.length > 0 && (
-                <Select onValueChange={(value) => onAssignOrder(order.id, value)}>
-                  <SelectTrigger className="w-full h-10">
-                    <SelectValue placeholder="Assign to delivery person" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {deliveryPersons.map((person) => (
-                      <SelectItem key={person.id} value={person.id}>
-                        {person.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* Delivery Man Actions */}
+              {userRole === 'delivery_man' && (
+                <div className="flex gap-2">
+                  {order.status === 'assigned' && (
+                    <Button 
+                      className="flex-1 h-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateStatus(order.id, 'in_progress');
+                      }}
+                    >
+                      <Truck className="h-4 w-4 mr-2" />
+                      Start Delivery
+                    </Button>
+                  )}
+                  {order.status === 'in_progress' && (
+                    <Button 
+                      className="flex-1 h-10 bg-green-600 hover:bg-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateStatus(order.id, 'completed');
+                      }}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Mark as Completed
+                    </Button>
+                  )}
+                </div>
               )}
 
-              <div className="flex gap-2">
-                {userRole === 'delivery_man' && order.status === 'assigned' && (
-                  <Button 
-                    className="flex-1 h-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onUpdateStatus(order.id, 'in_progress');
-                    }}
-                  >
-                    <Truck className="h-4 w-4 mr-2" />
-                    Start Delivery
-                  </Button>
-                )}
-                {userRole === 'delivery_man' && order.status === 'in_progress' && (
-                  <Button 
-                    className="flex-1 h-10 bg-green-600 hover:bg-green-700"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onUpdateStatus(order.id, 'completed');
-                    }}
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Mark as Completed
-                  </Button>
-                )}
-                {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
+              {/* Super Admin Actions */}
+              {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
+                <div className="space-y-2">
+                  {/* Assignment Dropdown */}
+                  {deliveryPersons.length > 0 && (
+                    <Select onValueChange={(value) => onAssignOrder(order.id, value)} value={order.delivery_man_id || undefined}>
+                      <SelectTrigger className="w-full h-10">
+                        <SelectValue placeholder={order.delivery_man_id ? "Reassign delivery person" : "Assign to delivery person"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {deliveryPersons.map((person) => (
+                          <SelectItem key={person.id} value={person.id}>
+                            {person.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  
+                  {/* Complete and Cancel Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2 w-full">
                     <Button 
                       className="flex-1 h-10 bg-green-600 hover:bg-green-700"
@@ -781,8 +790,8 @@ const CompactOrderCard = ({
                       Cancel Order
                     </Button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
