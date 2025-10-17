@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,13 +15,16 @@ import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
-import { ReferralHub } from "@/components/account/ReferralHub";
-import OrdersManager from "@/components/account/OrdersManager";
-import { UnifiedDeliveryDashboard } from "@/components/account/UnifiedDeliveryDashboard";
-import { AdminOrdersDashboard } from "@/components/admin/AdminOrdersDashboard";
-import { BulkSmsMarketing } from "@/components/admin/BulkSmsMarketing";
-import { CommissionsWithdrawalsManager } from "@/components/admin/CommissionsWithdrawalsManager";
-import { UserManagement } from "@/components/admin/UserManagement";
+import { useQuery } from "@tanstack/react-query";
+
+// Lazy load heavy components
+const ReferralHub = lazy(() => import("@/components/account/ReferralHub").then(m => ({ default: m.ReferralHub })));
+const OrdersManager = lazy(() => import("@/components/account/OrdersManager"));
+const UnifiedDeliveryDashboard = lazy(() => import("@/components/account/UnifiedDeliveryDashboard").then(m => ({ default: m.UnifiedDeliveryDashboard })));
+const AdminOrdersDashboard = lazy(() => import("@/components/admin/AdminOrdersDashboard").then(m => ({ default: m.AdminOrdersDashboard })));
+const BulkSmsMarketing = lazy(() => import("@/components/admin/BulkSmsMarketing").then(m => ({ default: m.BulkSmsMarketing })));
+const CommissionsWithdrawalsManager = lazy(() => import("@/components/admin/CommissionsWithdrawalsManager").then(m => ({ default: m.CommissionsWithdrawalsManager })));
+const UserManagement = lazy(() => import("@/components/admin/UserManagement").then(m => ({ default: m.UserManagement })));
 
 // Define interfaces
 interface Profile {
@@ -41,15 +44,16 @@ interface Business {
 const Account = () => {
   const navigateRouter = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  
+  // Load activeSection from sessionStorage
+  const [activeSection, setActiveSection] = useState<string | null>(() => {
+    return sessionStorage.getItem('accountActiveSection');
+  });
+  
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const {
     userRole,
     isAdmin,
@@ -66,27 +70,50 @@ const Account = () => {
     canManageMarketing,
     loading: permissionsLoading
   } = useAdminPermissions();
+
+  // Persist activeSection to sessionStorage
+  useEffect(() => {
+    if (activeSection) {
+      sessionStorage.setItem('accountActiveSection', activeSection);
+    }
+  }, [activeSection]);
+
+  // Cached profile query
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id && !isPhoneUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  // Cached businesses query
+  const { data: businesses = [] } = useQuery({
+    queryKey: ['userBusinesses', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      return await getUserBusinesses(user.id);
+    },
+    enabled: !!user?.id && isBusinessOwner,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
   useEffect(() => {
     checkAuthStatus();
   }, []);
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (user && !roleLoading) {
-        await fetchProfile(user.id);
-
-        // Fetch businesses if user is business owner
-        if (isBusinessOwner) {
-          try {
-            const userBusinesses = await getUserBusinesses(user.id);
-            setBusinesses(userBusinesses);
-          } catch (error) {
-            console.error('Error fetching user businesses:', error);
-          }
-        }
-      }
-    };
-    loadUserData();
-  }, [user, isBusinessOwner, roleLoading]);
   const checkAuthStatus = async () => {
     try {
       // First check for Supabase authenticated user
@@ -106,7 +133,6 @@ const Account = () => {
         const userName = localStorage.getItem('userName');
         if (phoneVerified && userName) {
           setIsPhoneUser(true);
-          await fetchPhoneProfile(phoneVerified);
           setUser({
             id: phoneVerified,
             email: null,
@@ -139,36 +165,6 @@ const Account = () => {
       }
     } catch (error) {
       console.error('Error ensuring display name:', error);
-    }
-  };
-  const fetchProfile = async (userId: string) => {
-    try {
-      const {
-        data,
-        error
-      } = await supabase.from('profiles').select('*').eq('id', userId).single();
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error);
-        return;
-      }
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-  const fetchPhoneProfile = async (phoneNumber: string) => {
-    try {
-      const {
-        data,
-        error
-      } = await supabase.from('profiles').select('*').eq('phone_number', phoneNumber).single();
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching phone profile:', error);
-        return;
-      }
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching phone profile:', error);
     }
   };
   const handleSignOut = async () => {
@@ -206,7 +202,7 @@ const Account = () => {
   const getDisplayName = () => {
     return profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || 'User';
   };
-  if (loading) {
+  if (loading || roleLoading) {
     return <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
         <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6">
           <div className="animate-pulse space-y-4">
@@ -547,6 +543,7 @@ const Account = () => {
               
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4">
+                  <Suspense fallback={<div className="flex justify-center py-8"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div></div>}>
               {activeSection === 'orders' && !isAdmin && !canManageGasOrders && !canManageShopOrders && <OrdersManager userRole={userRole} userId={user?.id} />}
               
               {/* Admin Sections - Based on permissions */}
@@ -630,7 +627,7 @@ const Account = () => {
                   <AddressManager />
                   <PhoneManager />
                 </div>}
-              {activeSection === 'deliveries' && <UnifiedDeliveryDashboard userId={user.id} />}
+               {activeSection === 'deliveries' && <UnifiedDeliveryDashboard userId={user.id} />}
               {activeSection === 'business' && <div className="space-y-4">
                   <Card>
                     <CardHeader>
@@ -690,6 +687,7 @@ const Account = () => {
                    </Card>
                  </div>}
                {activeSection === 'referrals' && <ReferralHub />}
+                  </Suspense>
                 </div>
               </div>
             </div>
