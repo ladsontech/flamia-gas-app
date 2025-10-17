@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { getUserBusinesses } from "@/services/adminService";
-import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package } from "lucide-react";
+import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
@@ -20,6 +20,8 @@ import { useQuery } from "@tanstack/react-query";
 // Lazy load heavy components
 const ReferralHub = lazy(() => import("@/components/account/ReferralHub").then(m => ({ default: m.ReferralHub })));
 const DeliveryManSection = lazy(() => import("@/components/account/DeliveryManSection").then(m => ({ default: m.DeliveryManSection })));
+const DeliveryOrdersSection = lazy(() => import("@/components/account/DeliveryOrdersSection").then(m => ({ default: m.DeliveryOrdersSection })));
+const CustomerOrdersSection = lazy(() => import("@/components/account/CustomerOrdersSection").then(m => ({ default: m.CustomerOrdersSection })));
 const AdminOrdersDashboard = lazy(() => import("@/components/admin/AdminOrdersDashboard").then(m => ({ default: m.AdminOrdersDashboard })));
 const BulkSmsMarketing = lazy(() => import("@/components/admin/BulkSmsMarketing").then(m => ({ default: m.BulkSmsMarketing })));
 const CommissionsWithdrawalsManager = lazy(() => import("@/components/admin/CommissionsWithdrawalsManager").then(m => ({ default: m.CommissionsWithdrawalsManager })));
@@ -343,17 +345,35 @@ const Account = () => {
               </Card>
             )}
 
-            {/* Deliveries - Only for Delivery Men (Shown first) */}
+            {/* My Deliveries - Only for Delivery Men (Shown first) */}
             {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('delivery-account')}>
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('my-deliveries')}>
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
                         <Truck className="w-5 h-5 text-accent" />
                       </div>
                       <div>
-                        <span className="font-medium text-foreground">Orders & Deliveries</span>
-                        <p className="text-xs text-muted-foreground">My orders & assigned deliveries</p>
+                        <span className="font-medium text-foreground">My Deliveries</span>
+                        <p className="text-xs text-muted-foreground">Assigned delivery orders</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>}
+
+            {/* My Orders - For Delivery Men */}
+            {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('my-orders')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <ShoppingBag className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">My Orders</span>
+                        <p className="text-xs text-muted-foreground">Track my personal orders</p>
                       </div>
                     </div>
                     <div className="text-muted-foreground">›</div>
@@ -527,6 +547,8 @@ const Account = () => {
                   {activeSection === 'profile' && 'Profile Settings'}
                   {activeSection === 'business' && 'My Business'}
                   {activeSection === 'delivery-account' && 'Orders & Deliveries'}
+                  {activeSection === 'my-deliveries' && 'My Deliveries'}
+                  {activeSection === 'my-orders' && 'My Orders'}
                   {activeSection === 'referrals' && 'Referrals & Earnings'}
                 </h2>
               </div>
@@ -629,6 +651,8 @@ const Account = () => {
                   <PhoneManager />
                 </div>}
                {activeSection === 'delivery-account' && <DeliveryManSection userId={user.id} />}
+               {activeSection === 'my-deliveries' && <DeliveryOrdersSection userId={user.id} />}
+               {activeSection === 'my-orders' && <CustomerOrdersSection userId={user.id} />}
               {activeSection === 'business' && <div className="space-y-4">
                   <Card>
                     <CardHeader>
