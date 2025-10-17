@@ -41,9 +41,10 @@ interface OrderInfo {
 interface ExpandableOrderCardProps {
   order: Order;
   userRole: 'user' | 'delivery_man';
+  onUpdate?: () => void;
 }
 
-export const ExpandableOrderCard = ({ order, userRole }: ExpandableOrderCardProps) => {
+export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrderCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
@@ -127,6 +128,7 @@ export const ExpandableOrderCard = ({ order, userRole }: ExpandableOrderCardProp
         title: "Success",
         description: `Order marked as ${newStatus.replace('_', ' ')}`,
       });
+      onUpdate?.();
     } catch (error) {
       toast({
         title: "Error",

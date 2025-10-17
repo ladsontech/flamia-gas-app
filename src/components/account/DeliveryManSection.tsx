@@ -55,39 +55,37 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
     try {
       setLoading(true);
       
-      // Fetch customer orders (personal orders placed by this delivery man)
-      const { data: customerData, error: customerError } = await supabase
+      // Fetch all orders for this user
+      const { data: allData, error: allError } = await supabase
         .from('orders')
         .select('*')
-        .eq('user_id', userId)
+        .or(`user_id.eq.${userId},delivery_man_id.eq.${userId}`)
         .order('created_at', { ascending: false });
 
-      if (customerError) {
-        console.error('Error fetching customer orders:', customerError);
+      if (allError) {
+        console.error('Error fetching orders:', allError);
+        toast({
+          title: "Error",
+          description: "Failed to load orders",
+          variant: "destructive"
+        });
       } else {
-        const transformedCustomerOrders: Order[] = (customerData || []).map(order => ({
+        const allOrders = (allData || []).map(order => ({
           ...order,
           status: (order.status || 'pending') as Order['status']
         }));
-        setCustomerOrders(transformedCustomerOrders);
-      }
 
-      // Fetch delivery assignments
-      const { data: deliveryData, error: deliveryError } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('delivery_man_id', userId)
-        .not('delivery_man_id', 'is', null)
-        .order('created_at', { ascending: false });
+        // Separate personal orders (as customer) from delivery assignments
+        const personalOrders = allOrders.filter(order => 
+          order.user_id === userId && order.delivery_man_id !== userId
+        );
+        
+        const assignedDeliveries = allOrders.filter(order => 
+          order.delivery_man_id === userId
+        );
 
-      if (deliveryError) {
-        console.error('Error fetching delivery orders:', deliveryError);
-      } else {
-        const transformedDeliveryOrders: Order[] = (deliveryData || []).map(order => ({
-          ...order,
-          status: (order.status || 'pending') as Order['status']
-        }));
-        setDeliveryOrders(transformedDeliveryOrders);
+        setCustomerOrders(personalOrders);
+        setDeliveryOrders(assignedDeliveries);
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -144,12 +142,9 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
           {customerOrders.length === 0 ? (
             <Card className="p-6 text-center">
               <ShoppingBag className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-              <h3 className="text-base font-semibold mb-1">No personal orders</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Orders you place will appear here
-              </p>
-              <Button onClick={() => navigate('/order')} size="sm">
-                Place Order
+              <h3 className="text-base font-semibold mb-1">No personal orders yet</h3>
+              <Button onClick={() => navigate('/order')} size="sm" className="mt-2">
+                Place an Order
               </Button>
             </Card>
           ) : (
@@ -159,6 +154,7 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
                   key={order.id} 
                   order={order} 
                   userRole="user"
+                  onUpdate={fetchAllOrders}
                 />
               ))}
             </div>
@@ -169,10 +165,7 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
           {deliveryOrders.length === 0 ? (
             <Card className="p-6 text-center">
               <Truck className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-              <h3 className="text-base font-semibold mb-1">No deliveries assigned</h3>
-              <p className="text-sm text-muted-foreground">
-                Assigned deliveries will appear here
-              </p>
+              <h3 className="text-base font-semibold mb-1">No active deliveries</h3>
             </Card>
           ) : (
             <div className="space-y-3">
@@ -181,6 +174,7 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
                   key={order.id} 
                   order={order} 
                   userRole="delivery_man"
+                  onUpdate={fetchAllOrders}
                 />
               ))}
             </div>
