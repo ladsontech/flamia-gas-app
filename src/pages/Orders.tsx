@@ -4,18 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from "lucide-react";
-import { format } from "date-fns";
+import { ArrowLeft, Package } from "lucide-react";
 import AppBar from "@/components/AppBar";
+import { OrderCard } from "@/components/orders/OrderCard";
 
 interface Order {
   id: string;
   created_at: string;
   description: string;
   delivery_man_id?: string | null;
-  status: 'pending' | 'assigned' | 'in_progress' | 'completed';
+  status: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
   assigned_at?: string | null;
   user_id?: string | null;
+  delivery_address?: string | null;
+  total_amount?: number | null;
 }
 
 const Orders = () => {
@@ -47,8 +49,8 @@ const Orders = () => {
       
       const { data, error } = await supabase
         .from('orders')
-        .select('id, created_at, description, delivery_man_id, status, assigned_at, user_id')
-        .eq('user_id', userId) // Filter orders by user_id
+        .select('id, created_at, description, delivery_man_id, status, assigned_at, user_id, delivery_address, total_amount')
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -58,26 +60,10 @@ const Orders = () => {
       
       console.log('Fetched orders:', data);
       
-      // Transform database orders with simple mapping
-      const transformedOrders: Order[] = [];
-      
-      if (data) {
-        data.forEach((dbOrder) => {
-          const validStatuses = ['assigned', 'in_progress', 'completed'];
-          const order: Order = {
-            id: dbOrder.id,
-            created_at: dbOrder.created_at,
-            description: dbOrder.description,
-            delivery_man_id: dbOrder.delivery_man_id,
-            status: validStatuses.includes(dbOrder.status) 
-              ? dbOrder.status as 'assigned' | 'in_progress' | 'completed'
-              : 'pending',
-            assigned_at: dbOrder.assigned_at,
-            user_id: dbOrder.user_id
-          };
-          transformedOrders.push(order);
-        });
-      }
+      const transformedOrders: Order[] = (data || []).map(order => ({
+        ...order,
+        status: (order.status || 'pending') as Order['status']
+      }));
       
       setOrders(transformedOrders);
     } catch (error: any) {
@@ -92,31 +78,6 @@ const Orders = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'cancelled':
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Package className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'completed':
-        return 'text-green-600 bg-green-50';
-      case 'cancelled':
-        return 'text-red-600 bg-red-50';
-      default:
-        return 'text-gray-600 bg-gray-50';
-    }
-  };
 
   if (loading) {
     return (
@@ -171,27 +132,9 @@ const Orders = () => {
               </Button>
             </Card>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {orders.map((order) => (
-                <Card key={order.id} className="p-3">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1.5">
-                        {getStatusIcon(order.status)}
-                        <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(order.created_at), 'MMM d, h:mm a')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      #{order.id.slice(0, 8)}
-                    </p>
-                    <p className="text-sm font-medium line-clamp-2">{order.description}</p>
-                  </div>
-                </Card>
+                <OrderCard key={order.id} order={order} />
               ))}
             </div>
           )}
