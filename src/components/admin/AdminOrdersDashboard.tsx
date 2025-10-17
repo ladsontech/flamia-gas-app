@@ -12,6 +12,7 @@ import {
   Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle,
   DollarSign, TrendingUp, ShoppingCart, Filter, BarChart3, ChevronDown, Navigation
 } from "lucide-react";
+import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 import { format, isToday, isYesterday, startOfWeek, isThisWeek, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -524,8 +525,8 @@ const CompactOrderCard = ({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         {/* Icon */}
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
-          <Package className="h-6 w-6 text-primary" />
+        <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+          <LionFlameLogo className="w-12 h-12" />
         </div>
 
         {/* Order Info */}
