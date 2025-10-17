@@ -36,6 +36,7 @@ interface OrderInfo {
   type?: string;
   item?: string;
   total?: string;
+  productDescription?: string;
 }
 
 interface ExpandableOrderCardProps {
@@ -201,7 +202,7 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
             </div>
 
             {/* Order Details */}
-            {(orderInfo.brand || orderInfo.size || orderInfo.quantity || orderInfo.type) && (
+            {(orderInfo.brand || orderInfo.size || orderInfo.quantity || orderInfo.type || orderInfo.item) && (
               <div className="space-y-2">
                 <h4 className="font-medium text-sm text-muted-foreground">ORDER DETAILS</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
@@ -211,10 +212,28 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
                       <div className="font-medium">{orderInfo.type}</div>
                     </div>
                   )}
-                  {orderInfo.brand && (
+                  {orderInfo.brand && !orderInfo.item && (
                     <div>
                       <span className="text-muted-foreground">Brand:</span>
                       <div className="font-medium">{orderInfo.brand}</div>
+                    </div>
+                  )}
+                  {orderInfo.brand && orderInfo.item && (
+                    <div className="col-span-2">
+                      <span className="text-muted-foreground">Business:</span>
+                      <div className="font-medium">{orderInfo.brand}</div>
+                    </div>
+                  )}
+                  {orderInfo.item && (
+                    <div className="col-span-2">
+                      <span className="text-muted-foreground">Product:</span>
+                      <div className="font-medium">{orderInfo.item}</div>
+                    </div>
+                  )}
+                  {orderInfo.productDescription && (
+                    <div className="col-span-2">
+                      <span className="text-muted-foreground">Description:</span>
+                      <div className="font-medium text-xs text-gray-600">{orderInfo.productDescription}</div>
                     </div>
                   )}
                   {orderInfo.size && (
