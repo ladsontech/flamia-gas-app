@@ -12,7 +12,7 @@ import {
 import { motion } from "framer-motion";
 import { Truck, Info } from "lucide-react";
 import { staticBrands, refillBrands } from "../home/BrandsData";
-import { LocationPicker } from "./LocationPicker";
+import { PlaceSearch } from "./PlaceSearch";
 
 interface OrderFormFieldsProps {
   formData: {
@@ -248,7 +248,7 @@ export const OrderFormFields = ({ formData, setFormData, selectedBrand }: OrderF
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <LocationPicker
+        <PlaceSearch
           onLocationSelect={handleLocationSelect}
           selectedLocation={formData.location}
         />
