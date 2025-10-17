@@ -45,16 +45,17 @@ interface ExpandableOrderCardProps {
 }
 
 export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrderCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  // Delivery men's assigned orders are expanded by default
+  const [isOpen, setIsOpen] = useState(userRole === 'delivery_man');
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
 
-  // Auto-collapse completed orders for delivery men after 2 seconds
+  // Auto-collapse completed orders for delivery men after 3 seconds
   useEffect(() => {
     if (userRole === 'delivery_man' && order.status === 'completed' && isOpen) {
       const timer = setTimeout(() => {
         setIsOpen(false);
-      }, 2000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [order.status, isOpen, userRole]);
