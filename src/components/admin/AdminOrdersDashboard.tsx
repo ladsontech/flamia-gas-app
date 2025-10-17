@@ -289,15 +289,21 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
   };
 
   const handleCancelOrder = async () => {
-    if (!cancellingOrder || !cancellationReason.trim()) return;
+    if (!cancellingOrder || !cancellationReason.trim()) {
+      toast({ title: "Error", description: "Please provide a cancellation reason", variant: "destructive" });
+      return;
+    }
+    
     try {
+      console.log('Cancelling order:', cancellingOrder, 'Reason:', cancellationReason);
       await OrderService.cancelOrder(cancellingOrder, cancellationReason);
       toast({ title: "Success", description: "Order cancelled successfully" });
       setCancellingOrder(null);
       setCancellationReason('');
       fetchData();
     } catch (error) {
-      toast({ title: "Error", description: "Failed to cancel order", variant: "destructive" });
+      console.error('Cancel order error:', error);
+      toast({ title: "Error", description: error instanceof Error ? error.message : "Failed to cancel order", variant: "destructive" });
     }
   };
 
@@ -475,16 +481,13 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Complete Order</DialogTitle>
-            <DialogDescription>
-              If the delivery was handled by someone not in the system, enter their name below.
-            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="manual-delivery-person">Delivery Person Name (Optional)</Label>
               <Input
                 id="manual-delivery-person"
-                placeholder="Enter name if not assigned to system delivery person"
+                placeholder="Enter delivery person name"
                 value={manualDeliveryPerson}
                 onChange={(e) => setManualDeliveryPerson(e.target.value)}
               />
@@ -511,13 +514,13 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
       </Dialog>
 
       {/* Cancel Order Dialog */}
-      <Dialog open={!!cancellingOrder} onOpenChange={() => setCancellingOrder(null)}>
+      <Dialog open={!!cancellingOrder} onOpenChange={() => {
+        setCancellingOrder(null);
+        setCancellationReason('');
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Cancel Order</DialogTitle>
-            <DialogDescription>
-              Please provide a reason for cancelling this order.
-            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
