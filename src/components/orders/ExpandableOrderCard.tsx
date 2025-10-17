@@ -242,30 +242,6 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
                     <span className="break-words">{orderInfo.address}</span>
                   </div>
                 )}
-                {(order.delivery_latitude && order.delivery_longitude && userRole === 'delivery_man') && (
-                  <div className="mt-2 p-2 bg-muted/30 rounded border">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Navigation className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground font-mono">
-                          {order.delivery_latitude.toFixed(6)}, {order.delivery_longitude.toFixed(6)}
-                        </span>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-6 px-2 text-xs"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const url = `https://www.google.com/maps/dir/?api=1&destination=${order.delivery_latitude},${order.delivery_longitude}`;
-                          window.open(url, '_blank');
-                        }}
-                      >
-                        Navigate
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -286,29 +262,66 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
             )}
 
             {/* Delivery Man Actions */}
-            {userRole === 'delivery_man' && order.status !== 'completed' && order.status !== 'cancelled' && (
-              <div className="flex gap-2 pt-2">
-                {order.status === 'assigned' && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleUpdateStatus('in_progress')}
-                    disabled={isUpdating}
-                    className="flex-1"
-                  >
-                    <Truck className="h-4 w-4 mr-2" />
-                    Start Delivery
-                  </Button>
-                )}
-                {order.status === 'in_progress' && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleUpdateStatus('completed')}
-                    disabled={isUpdating}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Mark as Completed
-                  </Button>
+            {userRole === 'delivery_man' && (
+              <div className="space-y-2 pt-2">
+                {/* Navigation and Call Buttons - Always visible */}
+                <div className="grid grid-cols-2 gap-2">
+                  {(order.delivery_latitude && order.delivery_longitude) && (
+                    <Button
+                      size="lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${order.delivery_latitude},${order.delivery_longitude}`;
+                        window.open(url, '_blank');
+                      }}
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                    >
+                      <Navigation className="h-5 w-5 mr-2" />
+                      Navigate
+                    </Button>
+                  )}
+                  {orderInfo.contact && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(`tel:${orderInfo.contact}`, '_self');
+                      }}
+                      className="border-green-500 text-green-600 hover:bg-green-50"
+                    >
+                      <Phone className="h-5 w-5 mr-2" />
+                      Call
+                    </Button>
+                  )}
+                </div>
+
+                {/* Status Update Buttons */}
+                {order.status !== 'completed' && order.status !== 'cancelled' && (
+                  <div className="flex gap-2">
+                    {order.status === 'assigned' && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateStatus('in_progress')}
+                        disabled={isUpdating}
+                        className="flex-1"
+                      >
+                        <Truck className="h-4 w-4 mr-2" />
+                        Start Delivery
+                      </Button>
+                    )}
+                    {order.status === 'in_progress' && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateStatus('completed')}
+                        disabled={isUpdating}
+                        className="flex-1 bg-green-600 hover:bg-green-700"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Mark as Completed
+                      </Button>
+                    )}
+                  </div>
                 )}
               </div>
             )}

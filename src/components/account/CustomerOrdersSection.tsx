@@ -57,7 +57,6 @@ export const CustomerOrdersSection = ({ userId }: CustomerOrdersSectionProps) =>
         .from('orders')
         .select('*')
         .eq('user_id', userId)
-        .neq('delivery_man_id', userId) // Exclude orders where they're also the delivery person
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -68,12 +67,15 @@ export const CustomerOrdersSection = ({ userId }: CustomerOrdersSectionProps) =>
           variant: "destructive"
         });
       } else {
-        const orders = (data || []).map(order => ({
-          ...order,
-          status: (order.status || 'pending') as Order['status']
-        }));
+        // Filter out delivery assignments (where user is delivery person)
+        const customerOrders = (data || [])
+          .filter(order => order.delivery_man_id !== userId)
+          .map(order => ({
+            ...order,
+            status: (order.status || 'pending') as Order['status']
+          }));
         
-        setCustomerOrders(orders);
+        setCustomerOrders(customerOrders);
       }
     } catch (error) {
       console.error('Error fetching customer orders:', error);
