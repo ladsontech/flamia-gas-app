@@ -99,7 +99,10 @@ export class OrderService {
       switch (userRole) {
         case 'delivery_man':
           if (userId) {
-            ordersQuery = ordersQuery.eq('delivery_man_id', userId);
+            // Explicitly filter to only orders assigned to this delivery person
+            ordersQuery = ordersQuery
+              .eq('delivery_man_id', userId)
+              .not('delivery_man_id', 'is', null);
           }
           break;
         case 'user':

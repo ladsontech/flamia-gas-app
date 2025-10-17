@@ -249,6 +249,19 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
 
   const handleUpdateStatus = async (orderId: string, status: string) => {
     try {
+      // Validate that order has a delivery person before marking as complete
+      if (status === 'completed') {
+        const order = orders.find(o => o.id === orderId);
+        if (!order?.delivery_man_id) {
+          toast({ 
+            title: "Cannot Complete Order", 
+            description: "Please assign a delivery person before marking order as complete",
+            variant: "destructive" 
+          });
+          return;
+        }
+      }
+      
       await OrderService.updateOrderStatus(orderId, status);
       toast({ title: "Success", description: `Order marked as ${status.replace('_', ' ')}` });
       fetchData();
