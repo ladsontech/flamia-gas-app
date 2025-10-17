@@ -758,7 +758,7 @@ const CompactOrderCard = ({
                   </Button>
                 )}
                 {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
-                  <>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full">
                     <Button 
                       className="flex-1 h-10 bg-green-600 hover:bg-green-700"
                       onClick={(e) => {
@@ -780,7 +780,7 @@ const CompactOrderCard = ({
                       <XCircle className="h-4 w-4 mr-2" />
                       Cancel Order
                     </Button>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
