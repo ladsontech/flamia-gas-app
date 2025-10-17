@@ -375,15 +375,20 @@ const Delivery = () => {
             className="absolute bottom-4 left-4 right-4 z-40"
           >
             <Card className="bg-white shadow-2xl border-2 border-blue-500">
-              <div className="p-3 space-y-2">
+              <div className="p-3 space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm text-gray-900 truncate">{selectedOrder.customerName}</h3>
-                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{selectedOrder.description}</p>
-                  </div>
+                  <h3 className="font-bold text-sm text-gray-900">{selectedOrder.customerName}</h3>
                   <Badge className="text-xs shrink-0">
                     {selectedOrder.status?.replace('_', ' ') || 'assigned'}
                   </Badge>
+                </div>
+                
+                <div className="space-y-1.5 text-xs">
+                  {selectedOrder.description.split('\n').filter(line => line.trim()).map((line, idx) => (
+                    <div key={idx} className="text-gray-700">
+                      {line.trim()}
+                    </div>
+                  ))}
                 </div>
                 
                 <div className="flex items-start gap-1.5 text-xs text-gray-700">

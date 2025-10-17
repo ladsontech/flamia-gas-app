@@ -511,18 +511,28 @@ const CompactOrderCard = ({
           <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
             <Package className="h-4 w-4 text-primary" />
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-medium text-sm truncate">
-                {orderInfo.brand || 'Gas'} • {orderInfo.size || 'Standard'} • {orderInfo.type || 'Refill'}
-              </span>
-              {orderInfo.quantity && (
-                <Badge variant="secondary" className="text-xs shrink-0">
-                  {orderInfo.quantity}x
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex-1 min-w-0 space-y-1">
+            {orderInfo.brand && (
+              <div className="text-xs">
+                <span className="text-muted-foreground">Brand:</span> <span className="font-medium">{orderInfo.brand}</span>
+              </div>
+            )}
+            {orderInfo.size && (
+              <div className="text-xs">
+                <span className="text-muted-foreground">Size:</span> <span className="font-medium">{orderInfo.size}</span>
+              </div>
+            )}
+            {orderInfo.type && (
+              <div className="text-xs">
+                <span className="text-muted-foreground">Type:</span> <span className="font-medium">{orderInfo.type}</span>
+              </div>
+            )}
+            {orderInfo.quantity && (
+              <div className="text-xs">
+                <span className="text-muted-foreground">Quantity:</span> <span className="font-medium">{orderInfo.quantity}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
               <Clock className="h-3 w-3" />
               <span>{format(new Date(order.created_at), 'h:mm a')}</span>
               {orderInfo.total && (

@@ -79,16 +79,24 @@ export const OrderCard = ({ order }: OrderCardProps) => {
               </div>
             </div>
             
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-sm truncate">
-                  {orderInfo.brand} • {orderInfo.size}
-                </h3>
-                <div className="flex items-center gap-1.5">
-                  {getStatusIcon(order.status)}
-                </div>
+            <div className="flex-1 min-w-0 text-left space-y-1">
+              <div className="flex items-center gap-2">
+                {getStatusIcon(order.status)}
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                </span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {orderInfo.brand && (
+                <div className="text-xs">
+                  <span className="text-muted-foreground">Brand:</span> <span className="font-medium">{orderInfo.brand}</span>
+                </div>
+              )}
+              {orderInfo.size && (
+                <div className="text-xs">
+                  <span className="text-muted-foreground">Size:</span> <span className="font-medium">{orderInfo.size}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-0.5">
                 <span>{format(new Date(order.created_at), 'dd/MM/yyyy, h:mm a')}</span>
               </div>
             </div>
