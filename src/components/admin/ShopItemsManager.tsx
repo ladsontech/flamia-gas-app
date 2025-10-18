@@ -372,65 +372,67 @@ const ShopItemsManager: React.FC = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
           {items.map((item) => (
-            <Card key={item.id}>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
+            <Card key={item.id} className="overflow-hidden">
+              <CardHeader className="pb-2 p-2 md:p-4 md:pb-3">
+                <div className="flex justify-between items-start gap-1">
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-base truncate">{item.name}</CardTitle>
-                    <div className="flex gap-2 mt-2 flex-wrap">
-                      <Badge variant="outline">{item.category}</Badge>
-                      {item.brand && <Badge variant="secondary">{item.brand}</Badge>}
-                      <Badge variant={item.condition === 'brand_new' ? 'default' : 'secondary'}>
+                    <CardTitle className="text-xs md:text-base truncate line-clamp-1">{item.name}</CardTitle>
+                    <div className="hidden md:flex gap-2 mt-2 flex-wrap">
+                      <Badge variant="outline" className="text-xs">{item.category}</Badge>
+                      {item.brand && <Badge variant="secondary" className="text-xs">{item.brand}</Badge>}
+                      <Badge variant={item.condition === 'brand_new' ? 'default' : 'secondary'} className="text-xs">
                         {item.condition === 'brand_new' ? 'New' : 'Used'}
                       </Badge>
-                      {!item.in_stock && <Badge variant="destructive">Out of Stock</Badge>}
+                      {!item.in_stock && <Badge variant="destructive" className="text-xs">Out of Stock</Badge>}
                     </div>
                   </div>
-                  {item.featured && <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
+                  {item.featured && <Star className="h-3 w-3 md:h-4 md:w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-2 p-2 md:p-4 md:space-y-3">
                 {item.image_url && (
                   <img
                     src={item.image_url}
                     alt={item.name}
-                    className="w-full h-40 object-cover rounded-md"
+                    className="w-full h-20 md:h-40 object-cover rounded-md"
                   />
                 )}
-                <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-lg font-bold">{formatPrice(item.price)}</span>
+                <p className="text-xs md:text-sm text-muted-foreground line-clamp-1 md:line-clamp-2 hidden md:block">{item.description}</p>
+                <div className="flex items-baseline gap-1 md:gap-2">
+                  <span className="text-xs md:text-lg font-bold truncate">{formatPrice(item.price)}</span>
                   {item.original_price && item.original_price > item.price && (
-                    <span className="text-sm text-muted-foreground line-through">
+                    <span className="text-xs md:text-sm text-muted-foreground line-through hidden md:inline">
                       {formatPrice(item.original_price)}
                     </span>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1 md:gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(item)}
-                    className="flex-1"
+                    className="flex-1 h-7 md:h-9 text-xs md:text-sm px-1 md:px-3"
                   >
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
+                    <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
+                    <span className="hidden md:inline">Edit</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleToggleFeatured(item)}
+                    className="h-7 md:h-9 px-1 md:px-3"
                   >
-                    <Star className={`h-4 w-4 ${item.featured ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                    <Star className={`h-3 w-3 md:h-4 md:w-4 ${item.featured ? 'fill-yellow-400 text-yellow-400' : ''}`} />
                   </Button>
                   <Button
                     variant="destructive"
                     size="sm"
                     onClick={() => handleDelete(item.id)}
+                    className="h-7 md:h-9 px-1 md:px-3"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                   </Button>
                 </div>
               </CardContent>

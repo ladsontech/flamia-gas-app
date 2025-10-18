@@ -12,6 +12,7 @@ import AdminAppBar from "@/components/admin/AdminAppBar";
 import ShopItemsManager from "@/components/admin/ShopItemsManager";
 import CarouselManager from "@/components/admin/CarouselManager";
 import { SubAdminManager } from "@/components/admin/SubAdminManager";
+import PromotionsManager from "@/components/admin/PromotionsManager";
 
 // Import services
 import { useUserRole } from "@/hooks/useUserRole";
@@ -114,6 +115,7 @@ const Admin = () => {
             <Tabs defaultValue="shop" className="w-full">
               <TabsList className="inline-flex h-8 items-center justify-start rounded-md bg-muted p-0.5 text-muted-foreground w-max mb-2">
                 <TabsTrigger value="shop" className="text-xs px-2 h-7">🛍️ Shop</TabsTrigger>
+                <TabsTrigger value="promotions" className="text-xs px-2 h-7">📢 Ads</TabsTrigger>
                 <TabsTrigger value="carousel" className="text-xs px-2 h-7">🎠 Carousel</TabsTrigger>
                 {(isAdmin || canManageUsers) && (
                   <TabsTrigger value="users" className="text-xs px-2 h-7">👥 Users</TabsTrigger>
@@ -125,6 +127,14 @@ const Admin = () => {
                 <Card className="mx-1">
                   <CardContent className="pt-4">
                     <ShopItemsManager />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="promotions" className="mt-0 space-y-2">
+                <Card className="mx-1">
+                  <CardContent className="pt-4">
+                    <PromotionsManager />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -163,6 +173,20 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <ShopItemsManager />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  📢
+                </div>
+                Promotional Products
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PromotionsManager />
             </CardContent>
           </Card>
 
