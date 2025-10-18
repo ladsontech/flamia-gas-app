@@ -55,21 +55,21 @@ export const AdminOrdersManager = () => {
           />
         </TabsContent>
 
-        <TabsContent value="marketing" className="mt-4 space-y-4">
+        <TabsContent value="marketing" className="mt-4 space-y-3 sm:space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Bulk SMS Marketing</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Bulk SMS Marketing</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <BulkSmsMarketing />
             </CardContent>
           </Card>
           
           <Card>
-            <CardHeader>
-              <CardTitle>Push Notifications</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Push Notifications</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <PushNotificationManager />
             </CardContent>
           </Card>

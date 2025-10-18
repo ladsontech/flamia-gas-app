@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, MessageSquare, Send } from "lucide-react";
+import { Upload, Send } from "lucide-react";
 
 export const BulkSmsMarketing = () => {
   const [contacts, setContacts] = useState<string[]>([]);
@@ -126,83 +125,71 @@ export const BulkSmsMarketing = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            Bulk SMS Marketing
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Upload CSV */}
-          <div>
-            <label htmlFor="csv-upload" className="block text-sm font-medium mb-2">
-              Upload Contacts (CSV)
-            </label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="csv-upload"
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                disabled={uploading}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                disabled={uploading}
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              CSV should have phone numbers in the first column
-            </p>
-          </div>
-
-          {/* Show loaded contacts count */}
-          {contacts.length > 0 && (
-            <div className="bg-accent/20 rounded-lg p-3">
-              <p className="text-sm font-medium">
-                {contacts.length} contacts loaded
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Ready to send messages
-              </p>
-            </div>
-          )}
-
-          {/* Message input */}
-          <div>
-            <label htmlFor="sms-message" className="block text-sm font-medium mb-2">
-              Message
-            </label>
-            <Textarea
-              id="sms-message"
-              placeholder="Enter your marketing message here..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={5}
-              className="resize-none"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              {message.length} characters
-            </p>
-          </div>
-
-          {/* Send button */}
+    <div className="space-y-3">
+      {/* Upload CSV */}
+      <div>
+        <label htmlFor="csv-upload" className="block text-sm font-medium mb-1.5">
+          Upload Contacts (CSV)
+        </label>
+        <div className="flex items-center gap-2">
+          <Input
+            id="csv-upload"
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            disabled={uploading}
+            className="flex-1 text-sm"
+          />
           <Button
-            onClick={handleSendBulkSms}
-            disabled={sending || contacts.length === 0 || !message.trim()}
-            className="w-full"
+            variant="outline"
+            size="icon"
+            disabled={uploading}
           >
-            <Send className="h-4 w-4 mr-2" />
-            {sending ? "Sending..." : `Send SMS to ${contacts.length} Contacts`}
+            <Upload className="h-4 w-4" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          CSV with phone numbers in first column
+        </p>
+      </div>
+
+      {/* Show loaded contacts count */}
+      {contacts.length > 0 && (
+        <div className="bg-accent/20 rounded-lg p-2.5">
+          <p className="text-sm font-medium">
+            {contacts.length} contacts loaded
+          </p>
+        </div>
+      )}
+
+      {/* Message input */}
+      <div>
+        <label htmlFor="sms-message" className="block text-sm font-medium mb-1.5">
+          Message
+        </label>
+        <Textarea
+          id="sms-message"
+          placeholder="Enter your marketing message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={3}
+          className="resize-none text-sm"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          {message.length} characters
+        </p>
+      </div>
+
+      {/* Send button */}
+      <Button
+        onClick={handleSendBulkSms}
+        disabled={sending || contacts.length === 0 || !message.trim()}
+        className="w-full"
+        size="sm"
+      >
+        <Send className="h-4 w-4 mr-2" />
+        {sending ? "Sending..." : `Send to ${contacts.length} Contacts`}
+      </Button>
     </div>
   );
 };
