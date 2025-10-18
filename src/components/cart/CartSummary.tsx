@@ -156,8 +156,9 @@ export const CartSummary: React.FC = () => {
                 className="flex-1"
               />
               <Button
-                onClick={() => {
-                  if (applyPromoCode(promoInput)) {
+                onClick={async () => {
+                  const success = await applyPromoCode(promoInput);
+                  if (success) {
                     toast({
                       title: "Promo code applied!",
                       description: `UGX ${promoDiscount.toLocaleString()} discount added to your order.`,

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { accessories } from '@/components/accessories/AccessoriesData';
 import { staticBrands, refillBrands } from '@/components/home/BrandsData';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CartItem {
   id: string;
@@ -26,7 +27,7 @@ interface CartContextType {
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  applyPromoCode: (code: string) => boolean;
+  applyPromoCode: (code: string) => Promise<boolean>;
   removePromoCode: () => void;
   getTotalPrice: () => number;
   getSubtotal: () => number;
@@ -95,21 +96,39 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setPromoDiscount(0);
   };
 
-  const applyPromoCode = (code: string): boolean => {
+  const applyPromoCode = async (code: string): Promise<boolean> => {
     const normalizedCode = code.toLowerCase().trim();
     
-    // Check if code is valid
-    const validCodes: { [key: string]: number } = {
-      'banda': 5000,
-    };
-    
-    if (validCodes[normalizedCode]) {
+    try {
+      // Fetch promo code from database
+      const { data, error } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .eq('code', normalizedCode)
+        .eq('is_active', true)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching promo code:', error);
+        return false;
+      }
+      
+      if (!data) {
+        return false;
+      }
+      
+      // Check if expired
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        return false;
+      }
+      
       setPromoCode(code);
-      setPromoDiscount(validCodes[normalizedCode]);
+      setPromoDiscount(data.discount_amount);
       return true;
+    } catch (error) {
+      console.error('Error applying promo code:', error);
+      return false;
     }
-    
-    return false;
   };
 
   const removePromoCode = () => {
