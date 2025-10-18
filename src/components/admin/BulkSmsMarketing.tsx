@@ -16,10 +16,13 @@ export const BulkSmsMarketing = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith('.csv')) {
+    const isCSV = file.name.endsWith('.csv');
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+    if (!isCSV && !isExcel) {
       toast({
         title: "Invalid file",
-        description: "Please upload a CSV file",
+        description: "Please upload a CSV or Excel file",
         variant: "destructive"
       });
       return;
@@ -27,31 +30,47 @@ export const BulkSmsMarketing = () => {
 
     setUploading(true);
     try {
-      const text = await file.text();
-      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-      
-      // Extract phone numbers (assumes first column or single column with phone numbers)
-      const phoneNumbers = lines
-        .map(line => {
-          const parts = line.split(',');
-          return parts[0].trim();
-        })
-        .filter(phone => {
-          // Basic validation for phone numbers
-          const cleaned = phone.replace(/[^\d+]/g, '');
-          return cleaned.length >= 10;
-        });
+      let phoneNumbers: string[] = [];
+
+      if (isCSV) {
+        const text = await file.text();
+        const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+        
+        phoneNumbers = lines
+          .map(line => {
+            const parts = line.split(',');
+            return parts[0].trim();
+          })
+          .filter(phone => {
+            const cleaned = phone.replace(/[^\d+]/g, '');
+            return cleaned.length >= 10;
+          });
+      } else {
+        // Handle Excel files
+        const XLSX = await import('xlsx');
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
+        
+        phoneNumbers = rows
+          .map(row => String(row[0] || '').trim())
+          .filter(phone => {
+            const cleaned = phone.replace(/[^\d+]/g, '');
+            return cleaned.length >= 10;
+          });
+      }
 
       setContacts(phoneNumbers);
       toast({
         title: "Success",
-        description: `Loaded ${phoneNumbers.length} contacts from CSV`
+        description: `Loaded ${phoneNumbers.length} contacts from ${isCSV ? 'CSV' : 'Excel'} file`
       });
     } catch (error) {
-      console.error('Error reading CSV:', error);
+      console.error('Error reading file:', error);
       toast({
         title: "Error",
-        description: "Failed to read CSV file",
+        description: "Failed to read file",
         variant: "destructive"
       });
     } finally {
@@ -129,13 +148,13 @@ export const BulkSmsMarketing = () => {
       {/* Upload CSV */}
       <div>
         <label htmlFor="csv-upload" className="block text-sm font-medium mb-1.5">
-          Upload Contacts (CSV)
+          Upload Contacts (CSV/Excel)
         </label>
         <div className="flex items-center gap-2">
           <Input
             id="csv-upload"
             type="file"
-            accept=".csv"
+            accept=".csv,.xlsx,.xls"
             onChange={handleFileUpload}
             disabled={uploading}
             className="flex-1 text-sm"
@@ -149,7 +168,7 @@ export const BulkSmsMarketing = () => {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          CSV with phone numbers in first column
+          CSV or Excel file with phone numbers in first column
         </p>
       </div>
 
