@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { getUserBusinesses } from "@/services/adminService";
-import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag } from "lucide-react";
+import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
@@ -49,6 +52,12 @@ const Account = () => {
   const [isPhoneUser, setIsPhoneUser] = useState(false);
   
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  
+  // Push notification state
+  const [notifTitle, setNotifTitle] = useState("");
+  const [notifMessage, setNotifMessage] = useState("");
+  const [targetPage, setTargetPage] = useState("/");
+  const [notifLoading, setNotifLoading] = useState(false);
   
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { toast } = useToast();
@@ -188,6 +197,46 @@ const Account = () => {
       });
     }
   };
+  
+  // Handle push notification sending
+  const handleSendNotification = async () => {
+    if (!notifTitle.trim() || !notifMessage.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter both title and message",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setNotifLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-push-notification', {
+        body: { title: notifTitle, message: notifMessage, targetPage }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Notifications Sent",
+        description: `Successfully sent to ${data.sent} subscribers`,
+      });
+
+      setNotifTitle("");
+      setNotifMessage("");
+      setTargetPage("/");
+    } catch (error: any) {
+      console.error('Error sending notifications:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send notifications",
+        variant: "destructive"
+      });
+    } finally {
+      setNotifLoading(false);
+    }
+  };
+  
   const navigate = (path: string) => {
     window.location.href = path;
   };
@@ -602,21 +651,62 @@ const Account = () => {
                   </Card>
                   
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Push Notifications</CardTitle>
+                    <CardHeader className="p-4 sm:p-6">
+                      <CardTitle className="text-base sm:text-lg">Push Notifications</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <p className="text-sm text-muted-foreground">
-                          Access the Admin Panel to send push notifications to all users.
-                        </p>
-                        {isAdmin && (
-                          <Link to="/admin">
-                            <Button variant="outline" className="w-full">
-                              Go to Admin Panel
-                            </Button>
-                          </Link>
-                        )}
+                    <CardContent className="p-4 sm:p-6 pt-0">
+                      <div className="space-y-3">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="notif-title" className="text-sm">Title</Label>
+                          <Input
+                            id="notif-title"
+                            placeholder="e.g., New Promotion Available"
+                            value={notifTitle}
+                            onChange={(e) => setNotifTitle(e.target.value)}
+                            maxLength={50}
+                            className="text-sm"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="notif-message" className="text-sm">Message</Label>
+                          <Textarea
+                            id="notif-message"
+                            placeholder="Enter your notification message..."
+                            value={notifMessage}
+                            onChange={(e) => setNotifMessage(e.target.value)}
+                            maxLength={200}
+                            rows={3}
+                            className="text-sm resize-none"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {notifMessage.length}/200
+                          </p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="notif-target" className="text-sm">Target Page</Label>
+                          <Input
+                            id="notif-target"
+                            placeholder="/"
+                            value={targetPage}
+                            onChange={(e) => setTargetPage(e.target.value)}
+                            className="text-sm"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Redirect users on click
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={handleSendNotification}
+                          disabled={notifLoading || !notifTitle.trim() || !notifMessage.trim()}
+                          className="w-full"
+                          size="sm"
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          {notifLoading ? "Sending..." : "Send Notification"}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>

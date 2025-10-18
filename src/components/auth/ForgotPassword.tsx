@@ -183,17 +183,27 @@ function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
     try {
       if (isPhoneReset) {
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
-        const { error } = await supabase
+        // Use Supabase Auth to update password instead of storing hash in profiles
+        // First, we need to get the user by phone number
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .update({ 
-            password_hash: hashedPassword
-          })
-          .eq('phone_number', verifiedPhoneNumber);
+          .select('id')
+          .eq('phone_number', verifiedPhoneNumber)
+          .single();
 
-        if (error) {
-          console.error('Database update error:', error);
+        if (profileError || !profileData) {
+          console.error('Profile lookup error:', profileError);
+          toast.error("Failed to find user account. Please try again.");
+          return;
+        }
+
+        // Update password through Supabase Auth
+        const { error: updateError } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (updateError) {
+          console.error('Password update error:', updateError);
           toast.error("Failed to update password. Please try again.");
           return;
         }
