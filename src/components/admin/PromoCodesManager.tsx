@@ -194,17 +194,17 @@ export const PromoCodesManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Tag className="w-6 h-6" />
+          <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <Tag className="w-5 h-5 sm:w-6 sm:h-6" />
             Promo Codes Manager
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs sm:text-sm mt-1">
             Create and manage discount codes for gas orders
           </p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)} className="bg-accent hover:bg-accent/90">
+        <Button onClick={() => setShowForm(!showForm)} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
           {showForm ? 'Cancel' : 'Add Promo Code'}
         </Button>
@@ -291,16 +291,16 @@ export const PromoCodesManager: React.FC = () => {
       <div className="grid gap-4">
         {promoCodes.length === 0 ? (
           <Card className="p-8 text-center">
-            <p className="text-muted-foreground">No promo codes yet. Create your first one!</p>
+            <p className="text-muted-foreground text-sm">No promo codes yet. Create your first one!</p>
           </Card>
         ) : (
           promoCodes.map((promo) => (
             <Card key={promo.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold uppercase">{promo.code}</h3>
-                    <span className="text-xl font-bold text-green-600">
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-start sm:justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold uppercase break-all">{promo.code}</h3>
+                    <span className="text-lg sm:text-xl font-bold text-green-600 whitespace-nowrap">
                       -{promo.discount_amount.toLocaleString()} UGX
                     </span>
                     <span className={`px-2 py-1 rounded text-xs ${promo.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
@@ -308,22 +308,23 @@ export const PromoCodesManager: React.FC = () => {
                     </span>
                   </div>
                   {promo.description && (
-                    <p className="text-sm text-muted-foreground mb-2">{promo.description}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2 break-words">{promo.description}</p>
                   )}
                   <div className="text-xs text-muted-foreground">
-                    Created: {new Date(promo.created_at).toLocaleDateString()}
+                    <div>Created: {new Date(promo.created_at).toLocaleDateString()}</div>
                     {promo.expires_at && (
-                      <span className="ml-3">
+                      <div className="mt-1">
                         Expires: {new Date(promo.expires_at).toLocaleDateString()}
-                      </span>
+                      </div>
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex sm:flex-col gap-2 flex-wrap">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(promo)}
+                    className="flex-1 sm:flex-none"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -331,6 +332,7 @@ export const PromoCodesManager: React.FC = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => toggleActive(promo.id, promo.is_active)}
+                    className="flex-1 sm:flex-none text-xs sm:text-sm whitespace-nowrap"
                   >
                     {promo.is_active ? 'Deactivate' : 'Activate'}
                   </Button>
@@ -338,6 +340,7 @@ export const PromoCodesManager: React.FC = () => {
                     variant="destructive"
                     size="sm"
                     onClick={() => handleDelete(promo.id)}
+                    className="flex-1 sm:flex-none"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

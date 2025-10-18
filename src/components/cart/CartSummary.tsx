@@ -157,16 +157,17 @@ export const CartSummary: React.FC = () => {
               />
               <Button
                 onClick={async () => {
-                  const success = await applyPromoCode(promoInput);
-                  if (success) {
+                  const result = await applyPromoCode(promoInput);
+                  if (result.success) {
                     toast({
                       title: "Promo code applied!",
-                      description: `UGX ${promoDiscount.toLocaleString()} discount added to your order.`,
+                      description: `UGX ${result.discount?.toLocaleString() || 0} discount added to your order.`,
                     });
+                    setPromoInput('');
                   } else {
                     toast({
-                      title: "Invalid promo code",
-                      description: "Please check your code and try again.",
+                      title: "Error",
+                      description: result.error || "Please check your code and try again.",
                       variant: "destructive",
                     });
                   }

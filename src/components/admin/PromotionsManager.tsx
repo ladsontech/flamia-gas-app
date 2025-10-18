@@ -198,9 +198,9 @@ const PromotionsManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Promotional Offers</h2>
-        <Button onClick={() => setShowForm(true)} className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+        <h2 className="text-xl sm:text-2xl font-bold">Promotional Offers</h2>
+        <Button onClick={() => setShowForm(true)} className="flex items-center gap-2 w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           Add Promotion
         </Button>
@@ -280,31 +280,32 @@ const PromotionsManager: React.FC = () => {
         {promotions.map((promotion) => (
           <Card key={promotion.id}>
             <CardContent className="p-4">
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 {promotion.image_url && (
                   <img
                     src={promotion.image_url}
                     alt={promotion.title}
-                    className="w-20 h-20 object-cover rounded-lg"
+                    className="w-full sm:w-20 h-40 sm:h-20 object-cover rounded-lg"
                   />
                 )}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{promotion.title}</h3>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-base sm:text-lg break-words">{promotion.title}</h3>
                   {promotion.description && (
-                    <p className="text-gray-600 mt-1">{promotion.description}</p>
+                    <p className="text-muted-foreground text-sm mt-1 break-words">{promotion.description}</p>
                   )}
                   {promotion.price && (
-                    <p className="text-green-600 font-semibold mt-2">{promotion.price}</p>
+                    <p className="text-green-600 font-semibold mt-2 text-sm sm:text-base">{promotion.price}</p>
                   )}
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-2">
                     Status: {promotion.is_active ? 'Active' : 'Inactive'}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex sm:flex-col gap-2 flex-wrap">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => toggleActive(promotion.id, promotion.is_active)}
+                    className="flex-1 sm:flex-none text-xs sm:text-sm"
                   >
                     {promotion.is_active ? 'Deactivate' : 'Activate'}
                   </Button>
@@ -312,6 +313,7 @@ const PromotionsManager: React.FC = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(promotion)}
+                    className="flex-1 sm:flex-none"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -319,6 +321,7 @@ const PromotionsManager: React.FC = () => {
                     variant="destructive"
                     size="sm"
                     onClick={() => handleDelete(promotion.id)}
+                    className="flex-1 sm:flex-none"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

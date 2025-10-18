@@ -27,7 +27,7 @@ interface CartContextType {
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  applyPromoCode: (code: string) => Promise<boolean>;
+  applyPromoCode: (code: string) => Promise<{ success: boolean; discount?: number; error?: string }>;
   removePromoCode: () => void;
   getTotalPrice: () => number;
   getSubtotal: () => number;
@@ -96,8 +96,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setPromoDiscount(0);
   };
 
-  const applyPromoCode = async (code: string): Promise<boolean> => {
+  const applyPromoCode = async (code: string): Promise<{ success: boolean; discount?: number; error?: string }> => {
     const normalizedCode = code.toLowerCase().trim();
+    
+    if (!normalizedCode) {
+      return { success: false, error: 'Please enter a promo code' };
+    }
     
     try {
       // Fetch promo code from database
@@ -110,24 +114,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       
       if (error) {
         console.error('Error fetching promo code:', error);
-        return false;
+        return { success: false, error: 'Failed to validate promo code. Please try again.' };
       }
       
       if (!data) {
-        return false;
+        return { success: false, error: 'Invalid promo code. Please check and try again.' };
       }
       
       // Check if expired
       if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        return false;
+        return { success: false, error: 'This promo code has expired.' };
       }
       
       setPromoCode(code);
       setPromoDiscount(data.discount_amount);
-      return true;
+      
+      // Calculate total discount for display
+      const gasItemCount = items.reduce((count, item) => {
+        if (item.type === 'full_set' || item.type === 'refill' || item.type === 'accessory') {
+          return count + item.quantity;
+        }
+        return count;
+      }, 0);
+      const totalDiscount = gasItemCount * data.discount_amount;
+      
+      return { success: true, discount: totalDiscount };
     } catch (error) {
       console.error('Error applying promo code:', error);
-      return false;
+      return { success: false, error: 'An unexpected error occurred. Please try again.' };
     }
   };
 
