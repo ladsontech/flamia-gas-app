@@ -124,16 +124,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const getTotalPrice = () => {
     const subtotal = getSubtotal();
     
-    // Apply 5000 UGX discount per gas and accessory product when promo code is active
+    // Apply promo code discount only to gas items (full_set, refill, accessory)
     if (promoCode && promoDiscount > 0) {
-      const gasAndAccessoryCount = items.reduce((count, item) => {
+      const gasItemCount = items.reduce((count, item) => {
         if (item.type === 'full_set' || item.type === 'refill' || item.type === 'accessory') {
           return count + item.quantity;
         }
         return count;
       }, 0);
       
-      const totalDiscount = gasAndAccessoryCount * 5000;
+      const totalDiscount = gasItemCount * promoDiscount;
       return Math.max(0, subtotal - totalDiscount);
     }
     
