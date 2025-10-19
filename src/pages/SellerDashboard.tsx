@@ -125,7 +125,11 @@ const SellerDashboard = () => {
               {shop.shop_slug}.flamia.store
             </p>
           </div>
-          <Button onClick={() => window.open(`https://${shop.shop_slug}.flamia.store`, '_blank')}>
+          <Button 
+            variant="outline" 
+            onClick={() => window.open(`/shop/${shop.shop_slug}`, '_blank')}
+          >
+            <Store className="w-4 h-4 mr-2" />
             View Shop
           </Button>
         </div>

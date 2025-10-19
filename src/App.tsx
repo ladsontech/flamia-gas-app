@@ -26,6 +26,7 @@ import ResetPassword from './pages/ResetPassword';
 import Delivery from './pages/Delivery';
 import Sell from './pages/Sell';
 import SellerDashboard from './pages/SellerDashboard';
+import SellerStorefront from './pages/SellerStorefront';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
@@ -125,6 +126,7 @@ function App() {
                 <Route path="/admin" element={<Admin />} />
               <Route path="/sell" element={<Sell />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
+              <Route path="/shop/:slug" element={<SellerStorefront />} />
                 <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 
