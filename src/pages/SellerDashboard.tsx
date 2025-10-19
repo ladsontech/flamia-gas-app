@@ -6,8 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { fetchSellerShopByUser } from '@/services/sellerService';
+import { ProductForm } from '@/components/seller/ProductForm';
+import { ProductsList } from '@/components/seller/ProductsList';
 import type { SellerShop } from '@/types/seller';
-import { Package, Store, DollarSign, BarChart3 } from 'lucide-react';
+import type { BusinessProduct } from '@/types/business';
+import { Package, Store, DollarSign, BarChart3, Plus } from 'lucide-react';
 
 const SellerDashboard = () => {
   const navigate = useNavigate();
@@ -15,6 +18,10 @@ const SellerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [shop, setShop] = useState<SellerShop | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<BusinessProduct | null>(null);
+  const [productRefresh, setProductRefresh] = useState(0);
+  const [productsCount, setProductsCount] = useState(0);
 
   useEffect(() => {
     const loadShop = async () => {
@@ -53,6 +60,15 @@ const SellerDashboard = () => {
         }
 
         setShop(sellerShop);
+
+        // Load products count
+        if (sellerShop.business_id) {
+          const { count } = await supabase
+            .from('business_products')
+            .select('*', { count: 'exact', head: true })
+            .eq('business_id', sellerShop.business_id);
+          setProductsCount(count || 0);
+        }
       } catch (error: any) {
         console.error('Error loading seller shop:', error);
         toast({
@@ -66,7 +82,7 @@ const SellerDashboard = () => {
     };
 
     loadShop();
-  }, [navigate, toast]);
+  }, [navigate, toast, productRefresh]);
 
   if (loading) {
     return (
@@ -87,6 +103,17 @@ const SellerDashboard = () => {
   const daysUntilPayment = nextPaymentDue 
     ? Math.ceil((nextPaymentDue.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : null;
+
+  const handleProductSuccess = () => {
+    setShowProductForm(false);
+    setEditingProduct(null);
+    setProductRefresh(prev => prev + 1);
+  };
+
+  const handleEditProduct = (product: BusinessProduct) => {
+    setEditingProduct(product);
+    setShowProductForm(true);
+  };
 
   return (
     <div className="min-h-screen bg-background pt-16 pb-20">
@@ -111,8 +138,10 @@ const SellerDashboard = () => {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Add your first product</p>
+              <div className="text-2xl font-bold">{productsCount}</div>
+              <p className="text-xs text-muted-foreground">
+                {productsCount === 0 ? 'Add your first product' : 'Active products'}
+              </p>
             </CardContent>
           </Card>
 
@@ -163,15 +192,38 @@ const SellerDashboard = () => {
           <TabsContent value="products" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Products</CardTitle>
-                <CardDescription>Manage your shop products</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Products</CardTitle>
+                    <CardDescription>Manage your shop products</CardDescription>
+                  </div>
+                  {!showProductForm && (
+                    <Button onClick={() => setShowProductForm(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Product
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-4">No products yet</p>
-                  <Button>Add Your First Product</Button>
-                </div>
+                {showProductForm ? (
+                  <ProductForm
+                    businessId={shop.business_id!}
+                    categoryId={shop.category_id}
+                    onSuccess={handleProductSuccess}
+                    onCancel={() => {
+                      setShowProductForm(false);
+                      setEditingProduct(null);
+                    }}
+                    editProduct={editingProduct || undefined}
+                  />
+                ) : (
+                  <ProductsList
+                    businessId={shop.business_id!}
+                    onEdit={handleEditProduct}
+                    refresh={productRefresh}
+                  />
+                )}
               </CardContent>
             </Card>
           </TabsContent>

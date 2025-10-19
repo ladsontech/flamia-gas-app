@@ -21,8 +21,14 @@ export interface BusinessProduct {
   original_price?: number;
   image_url?: string;
   category?: string;
+  category_id?: string;
   is_available: boolean;
   is_featured: boolean;
+  commission_rate?: number;
+  commission_type?: 'percentage' | 'fixed';
+  fixed_commission?: number;
+  min_commission?: number;
+  affiliate_enabled?: boolean;
   created_at: string;
   updated_at: string;
 }
