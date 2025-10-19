@@ -13,7 +13,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { useSellerShop } from "@/hooks/useSellerShop";
 import { getUserBusinesses } from "@/services/adminService";
-import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send } from "lucide-react";
+import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
@@ -79,7 +79,13 @@ const Account = () => {
     loading: permissionsLoading
   } = useAdminPermissions();
 
-  const { shop: sellerShop, isSeller, isApproved: sellerApproved } = useSellerShop();
+  const { 
+    shop: sellerShop, 
+    application: sellerApplication,
+    isSeller, 
+    isApproved: sellerApproved,
+    hasPendingApplication 
+  } = useSellerShop();
 
 
   // Cached profile query
@@ -509,8 +515,30 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
+            {/* Pending Application Status */}
+            {!isSeller && hasPendingApplication && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-yellow-500/20">
+                <CardContent className="p-0">
+                  <Link to="/sell">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                          <Clock className="w-5 h-5 text-yellow-600" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Seller Application</span>
+                          <p className="text-xs text-yellow-600">Under Review</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Become a Seller */}
-            {!isSeller && !isAdmin && (
+            {!isSeller && !hasPendingApplication && !isAdmin && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-primary/20">
                 <CardContent className="p-0">
                   <Link to="/sell">

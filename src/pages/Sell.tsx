@@ -1,23 +1,28 @@
-import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { Store, Upload, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { createSellerApplication, fetchParentCategories, fetchSellerApplicationByUser } from '@/services/sellerService';
+import type { ProductCategory, SellerApplication } from '@/types/seller';
 import { getImagesLimit } from '@/services/adminService';
-import { createSellerApplication, fetchParentCategories } from '@/services/sellerService';
-import type { ProductCategory } from '@/types/seller';
 
 const Sell = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [userId, setUserId] = useState<string | null>(null);
-  const [imagesLimit, setImagesLimit] = useState<number>(4);
-  const [loading, setLoading] = useState(false);
+  const [imagesLimit, setImagesLimit] = useState<number>(5);
+  const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [existingApplication, setExistingApplication] = useState<SellerApplication | null>(null);
   const [form, setForm] = useState({
     shop_name: '',
     category_id: '',
@@ -27,49 +32,69 @@ const Sell = () => {
   });
 
   useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) setUserId(user.id);
-      
-      const limit = await getImagesLimit();
-      setImagesLimit(limit);
-      
+    const loadData = async () => {
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserId(user.id);
+          
+          // Check for existing application
+          const application = await fetchSellerApplicationByUser(user.id);
+          setExistingApplication(application);
+        }
+        
+        const limit = await getImagesLimit();
+        setImagesLimit(limit);
+
         const cats = await fetchParentCategories();
         setCategories(cats);
       } catch (error) {
-        console.error('Error loading categories:', error);
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
       }
-    })();
+    };
+
+    loadData();
   }, []);
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const filesList = e.target.files;
     if (!filesList) return;
+    
     const remainingSlots = Math.max(0, imagesLimit - form.sample_images.length);
     const uploadedUrls: string[] = [];
+    
     for (let i = 0; i < filesList.length && i < remainingSlots; i++) {
       const file = filesList.item(i);
       if (!file) continue;
+      
       const filePath = `seller-samples/${Date.now()}_${file.name}`;
       const { error } = await supabase.storage.from('promotions').upload(filePath, file, { upsert: false });
+      
       if (error) {
         toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
         continue;
       }
+      
       const { data } = supabase.storage.from('promotions').getPublicUrl(filePath);
       if (data?.publicUrl) uploadedUrls.push(data.publicUrl);
     }
-    setForm((prev) => ({ ...prev, sample_images: [...prev.sample_images, ...uploadedUrls].slice(0, imagesLimit) }));
+    
+    setForm((prev) => ({ 
+      ...prev, 
+      sample_images: [...prev.sample_images, ...uploadedUrls].slice(0, imagesLimit) 
+    }));
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!userId) {
       toast({ 
         title: 'Sign in required', 
-        description: 'Please sign in with Google or Email first.' 
+        description: 'Please sign in first.',
+        variant: 'destructive'
       });
       return;
     }
@@ -93,6 +118,7 @@ const Sell = () => {
         sample_product_name: form.sample_product_name || undefined,
         sample_images: form.sample_images,
       });
+      
       setSubmitted(true);
       toast({ 
         title: 'Application submitted', 
@@ -114,16 +140,90 @@ const Sell = () => {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'your-shop';
 
-  if (submitted) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-16 pb-20">
-        <div className="px-4 max-w-2xl mx-auto py-6">
+      <div className="min-h-screen bg-background pt-16 pb-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (submitted || existingApplication) {
+    const application = existingApplication;
+    const statusConfig = {
+      pending: {
+        icon: Clock,
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-50',
+        title: 'Application Under Review',
+        description: 'Your seller application is currently being reviewed by our team. We\'ll notify you once a decision is made.',
+      },
+      approved: {
+        icon: CheckCircle,
+        color: 'text-green-600',
+        bgColor: 'bg-green-50',
+        title: 'Application Approved!',
+        description: 'Congratulations! Your seller application has been approved. You can now access your seller dashboard.',
+      },
+      rejected: {
+        icon: XCircle,
+        color: 'text-red-600',
+        bgColor: 'bg-red-50',
+        title: 'Application Rejected',
+        description: application?.review_notes || 'Unfortunately, your application was not approved at this time.',
+      },
+    };
+
+    const status = application?.status || 'pending';
+    const config = statusConfig[status as keyof typeof statusConfig];
+    const StatusIcon = config.icon;
+
+    return (
+      <div className="min-h-screen bg-background pt-16 pb-20">
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
           <Card>
             <CardHeader>
-              <CardTitle>Thanks for applying</CardTitle>
+              <div className={`flex items-center gap-2 ${config.color} mb-2`}>
+                <StatusIcon className="h-6 w-6" />
+                <CardTitle>{config.title}</CardTitle>
+              </div>
+              <CardDescription>{config.description}</CardDescription>
             </CardHeader>
-            <CardContent>
-              <p>Your seller application is under review. We will email you once approved.</p>
+            <CardContent className="space-y-4">
+              {application && (
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Shop Name:</span>
+                    <span className="text-sm text-muted-foreground">{application.shop_name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Status:</span>
+                    <Badge variant={status === 'approved' ? 'default' : status === 'rejected' ? 'destructive' : 'secondary'}>
+                      {status}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Submitted:</span>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(application.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex gap-2">
+                <Button onClick={() => navigate('/account')} className="flex-1">
+                  Go to My Account
+                </Button>
+                {status === 'approved' && (
+                  <Button onClick={() => navigate('/seller/dashboard')} className="flex-1">
+                    Go to Dashboard
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -132,13 +232,16 @@ const Sell = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16 pb-20">
-      <div className="px-4 max-w-2xl mx-auto py-6">
+    <div className="min-h-screen bg-background pt-16 pb-20">
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle>Request to Sell on Flamia</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Store className="h-6 w-6" />
+              Become a Seller on Flamia
+            </CardTitle>
             <CardDescription>
-              Apply to sell on Flamia - Monthly fee: 50,000 UGX
+              Apply to sell on Flamia marketplace - Monthly fee: 50,000 UGX
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -176,7 +279,7 @@ const Sell = () => {
                   </SelectContent>
                 </Select>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Choose one main category for your shop (you can add products in subcategories later)
+                  Choose one main category for your shop
                 </p>
               </div>
 

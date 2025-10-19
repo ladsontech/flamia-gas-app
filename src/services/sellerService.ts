@@ -258,3 +258,21 @@ export const updateSellerShop = async (
 
   if (error) throw error;
 };
+
+/**
+ * Fetch seller application by user ID
+ */
+export const fetchSellerApplicationByUser = async (
+  userId: string
+): Promise<SellerApplication | null> => {
+  const { data, error } = await supabase
+    .from('seller_applications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data as SellerApplication | null;
+};
