@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import { useSellerShop } from "@/hooks/useSellerShop";
 import { getUserBusinesses } from "@/services/adminService";
 import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -77,6 +78,8 @@ const Account = () => {
     canManageMarketing,
     loading: permissionsLoading
   } = useAdminPermissions();
+
+  const { shop: sellerShop, isSeller, isApproved: sellerApproved } = useSellerShop();
 
 
   // Cached profile query
@@ -485,6 +488,48 @@ const Account = () => {
                   </div>
                 </CardContent>
               </Card>}
+
+            {/* Seller Shop Dashboard */}
+            {isSeller && sellerApproved && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <Link to="/seller/dashboard">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <ShoppingBag className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">My Seller Shop</span>
+                          <p className="text-xs text-muted-foreground">{sellerShop?.shop_name}</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>}
+
+            {/* Become a Seller */}
+            {!isSeller && !isAdmin && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-primary/20">
+                <CardContent className="p-0">
+                  <Link to="/sell">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <ShoppingBag className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Become a Seller</span>
+                          <p className="text-xs text-muted-foreground">Start selling on Flamia</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
 
 
             {/* Referrals - Only for non-admin users */}

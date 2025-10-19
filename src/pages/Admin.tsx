@@ -14,6 +14,7 @@ import CarouselManager from "@/components/admin/CarouselManager";
 import { SubAdminManager } from "@/components/admin/SubAdminManager";
 import PromotionsManager from "@/components/admin/PromotionsManager";
 import { PromoCodesManager } from "@/components/admin/PromoCodesManager";
+import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
 
 // Import services
 import { useUserRole } from "@/hooks/useUserRole";
@@ -119,6 +120,7 @@ const Admin = () => {
                 <TabsTrigger value="promotions" className="text-xs px-2 h-7">📢 Ads</TabsTrigger>
                 <TabsTrigger value="promo-codes" className="text-xs px-2 h-7">🏷️ Promo</TabsTrigger>
                 <TabsTrigger value="carousel" className="text-xs px-2 h-7">🎠 Carousel</TabsTrigger>
+                <TabsTrigger value="sellers" className="text-xs px-2 h-7">🏪 Sellers</TabsTrigger>
                 {(isAdmin || canManageUsers) && (
                   <TabsTrigger value="users" className="text-xs px-2 h-7">👥 Users</TabsTrigger>
                 )}
@@ -153,6 +155,14 @@ const Admin = () => {
                 <Card className="mx-1">
                   <CardContent className="pt-4">
                     <CarouselManager />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="sellers" className="mt-0 space-y-2">
+                <Card className="mx-1">
+                  <CardContent className="pt-4">
+                    <SellerApplicationsManager />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -225,6 +235,20 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <CarouselManager />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  🏪
+                </div>
+                Seller Applications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SellerApplicationsManager />
             </CardContent>
           </Card>
 
