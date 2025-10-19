@@ -502,10 +502,10 @@ const Account = () => {
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <ShoppingBag className="w-5 h-5 text-primary" />
+                          <Store className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <span className="font-medium text-foreground">My Seller Shop</span>
+                          <span className="font-medium text-foreground">My Shop</span>
                           <p className="text-xs text-muted-foreground">{sellerShop?.shop_name}</p>
                         </div>
                       </div>
@@ -545,7 +545,7 @@ const Account = () => {
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <ShoppingBag className="w-5 h-5 text-primary" />
+                          <Store className="w-5 h-5 text-primary" />
                         </div>
                         <div>
                           <span className="font-medium text-foreground">Become a Seller</span>
