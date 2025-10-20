@@ -14,8 +14,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Loader2, Store, Upload, Plus, Trash2, ExternalLink, Copy, Crown } from 'lucide-react';
+import { Package, Store, DollarSign, BarChart3, Plus, TrendingUp, Loader2, Trash2, ExternalLink, Copy, Crown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -36,6 +37,12 @@ export default function AffiliateDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [commissionRate, setCommissionRate] = useState('10');
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [analytics, setAnalytics] = useState({
+    totalClicks: 0,
+    totalOrders: 0,
+    totalCommissions: 0,
+    conversionRate: 0
+  });
 
   useEffect(() => {
     if (!shopLoading && !shop) {
@@ -66,6 +73,24 @@ export default function AffiliateDashboard() {
       // Get product count
       const count = await countAffiliateShopProducts(shop.id);
       setProductsCount(count);
+
+      // Load analytics
+      const { data: affiliateOrders } = await supabase
+        .from('affiliate_orders')
+        .select('commission_amount, status')
+        .eq('affiliate_shop_id', shop.id);
+
+      const totalOrders = affiliateOrders?.length || 0;
+      const totalCommissions = affiliateOrders
+        ?.filter(o => o.status === 'approved')
+        .reduce((sum, order) => sum + order.commission_amount, 0) || 0;
+
+      setAnalytics({
+        totalClicks: 0, // Would need tracking implementation
+        totalOrders,
+        totalCommissions,
+        conversionRate: 0 // Would need clicks data
+      });
     } catch (error: any) {
       console.error('Error loading shop data:', error);
       toast.error('Failed to load shop data');
@@ -283,6 +308,59 @@ export default function AffiliateDashboard() {
             </div>
           </Card>
         )}
+
+        {/* Analytics Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Products</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{productsCount}</div>
+              <p className="text-xs text-muted-foreground">
+                {shop.tier === 'free' ? `${15 - productsCount} slots left` : 'Unlimited'}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{analytics.totalOrders}</div>
+              <p className="text-xs text-muted-foreground">From promotions</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Commissions</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">UGX {analytics.totalCommissions.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">Approved earnings</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Avg Commission</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                UGX {analytics.totalOrders > 0 
+                  ? (analytics.totalCommissions / analytics.totalOrders).toLocaleString(undefined, {maximumFractionDigits: 0}) 
+                  : 0}
+              </div>
+              <p className="text-xs text-muted-foreground">Per order</p>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Add Product Section */}
         <Card className="p-6 mb-6">

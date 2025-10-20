@@ -22,6 +22,12 @@ const SellerDashboard = () => {
   const [editingProduct, setEditingProduct] = useState<BusinessProduct | null>(null);
   const [productRefresh, setProductRefresh] = useState(0);
   const [productsCount, setProductsCount] = useState(0);
+  const [analytics, setAnalytics] = useState({
+    totalOrders: 0,
+    totalRevenue: 0,
+    affiliatesCount: 0,
+    avgOrderValue: 0
+  });
 
   useEffect(() => {
     const loadShop = async () => {
@@ -68,6 +74,36 @@ const SellerDashboard = () => {
             .select('*', { count: 'exact', head: true })
             .eq('business_id', sellerShop.business_id);
           setProductsCount(count || 0);
+
+          // Load analytics data
+          const { data: ordersData } = await supabase
+            .from('orders')
+            .select('total_amount, status')
+            .ilike('description', `%${sellerShop.shop_name}%`)
+            .in('status', ['completed', 'pending', 'in_transit']);
+
+          const totalOrders = ordersData?.length || 0;
+          const totalRevenue = ordersData?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
+          const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+          // Count affiliates promoting products
+          const { count: affiliatesCount } = await supabase
+            .from('affiliate_shop_products')
+            .select('business_product_id', { count: 'exact', head: true })
+            .in('business_product_id', 
+              (await supabase
+                .from('business_products')
+                .select('id')
+                .eq('business_id', sellerShop.business_id)
+              ).data?.map(p => p.id) || []
+            );
+
+          setAnalytics({
+            totalOrders,
+            totalRevenue,
+            affiliatesCount: affiliatesCount || 0,
+            avgOrderValue
+          });
         }
       } catch (error: any) {
         console.error('Error loading seller shop:', error);
@@ -151,36 +187,34 @@ const SellerDashboard = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">This month</p>
+              <div className="text-2xl font-bold">{analytics.totalOrders}</div>
+              <p className="text-xs text-muted-foreground">All time</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">UGX 0</div>
-              <p className="text-xs text-muted-foreground">This month</p>
+              <div className="text-2xl font-bold">UGX {analytics.totalRevenue.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">From all orders</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Payment Due</CardTitle>
+              <CardTitle className="text-sm font-medium">Affiliates</CardTitle>
               <Store className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{daysUntilPayment ? `${daysUntilPayment}d` : '-'}</div>
-              <p className="text-xs text-muted-foreground">
-                {shop.monthly_fee?.toLocaleString()} UGX/month
-              </p>
+              <div className="text-2xl font-bold">{analytics.affiliatesCount}</div>
+              <p className="text-xs text-muted-foreground">Promoting products</p>
             </CardContent>
           </Card>
         </div>

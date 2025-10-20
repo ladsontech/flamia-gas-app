@@ -544,19 +544,19 @@ const Account = () => {
               </Card>
             )}
 
-            {/* Become a Seller */}
-            {!isSeller && !hasPendingApplication && !isAdmin && (
+            {/* Start Selling - Unified Entry Point */}
+            {!isSeller && !isAffiliate && !hasPendingApplication && !isAdmin && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-primary/20">
                 <CardContent className="p-0">
-                  <Link to="/sell">
+                  <Link to="/seller-options">
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <Store className="w-5 h-5 text-primary" />
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-500 rounded-lg flex items-center justify-center">
+                          <Store className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <span className="font-medium text-foreground">Become a Seller</span>
-                          <p className="text-xs text-muted-foreground">Start selling on Flamia</p>
+                          <span className="font-medium text-foreground">Start Selling</span>
+                          <p className="text-xs text-muted-foreground">Merchant or Affiliate shop</p>
                         </div>
                       </div>
                       <div className="text-muted-foreground">›</div>
@@ -577,32 +577,10 @@ const Account = () => {
                           <Users className="w-5 h-5 text-purple-500" />
                         </div>
                         <div>
-                          <span className="font-medium text-foreground">My Affiliate Shop</span>
+                          <span className="font-medium text-foreground">Affiliate Shop</span>
                           <p className="text-xs text-muted-foreground">
                             {affiliateShop?.shop_name} • {affiliateTier === 'free' ? 'Free Tier' : 'Premium'}
                           </p>
-                        </div>
-                      </div>
-                      <div className="text-muted-foreground">›</div>
-                    </div>
-                  </Link>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Become an Affiliate */}
-            {!isAffiliate && !isAdmin && (
-              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-purple-500/20">
-                <CardContent className="p-0">
-                  <Link to="/affiliate/dashboard">
-                    <div className="p-4 flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                          <Users className="w-5 h-5 text-purple-500" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-foreground">Become an Affiliate</span>
-                          <p className="text-xs text-muted-foreground">Promote products & earn commissions</p>
                         </div>
                       </div>
                       <div className="text-muted-foreground">›</div>
