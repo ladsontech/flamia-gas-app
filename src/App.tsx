@@ -27,6 +27,8 @@ import Delivery from './pages/Delivery';
 import Sell from './pages/Sell';
 import SellerDashboard from './pages/SellerDashboard';
 import SellerStorefront from './pages/SellerStorefront';
+import AffiliateDashboard from './pages/AffiliateDashboard';
+import AffiliateStorefront from './pages/AffiliateStorefront';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
@@ -127,6 +129,8 @@ function App() {
               <Route path="/sell" element={<Sell />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/shop/:slug" element={<SellerStorefront />} />
+              <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
+              <Route path="/affiliate/:slug" element={<AffiliateStorefront />} />
                 <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 

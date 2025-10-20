@@ -89,6 +89,160 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_orders: {
+        Row: {
+          affiliate_shop_id: string
+          approved_at: string | null
+          business_product_id: string
+          commission_amount: number
+          created_at: string
+          id: string
+          order_id: string
+          status: string
+        }
+        Insert: {
+          affiliate_shop_id: string
+          approved_at?: string | null
+          business_product_id: string
+          commission_amount: number
+          created_at?: string
+          id?: string
+          order_id: string
+          status?: string
+        }
+        Update: {
+          affiliate_shop_id?: string
+          approved_at?: string | null
+          business_product_id?: string
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_orders_affiliate_shop_id_fkey"
+            columns: ["affiliate_shop_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_orders_business_product_id_fkey"
+            columns: ["business_product_id"]
+            isOneToOne: false
+            referencedRelation: "business_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_orders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_shop_products: {
+        Row: {
+          added_at: string
+          affiliate_shop_id: string
+          business_product_id: string
+          commission_rate: number | null
+          commission_type: string | null
+          fixed_commission: number | null
+          id: string
+          is_active: boolean
+        }
+        Insert: {
+          added_at?: string
+          affiliate_shop_id: string
+          business_product_id: string
+          commission_rate?: number | null
+          commission_type?: string | null
+          fixed_commission?: number | null
+          id?: string
+          is_active?: boolean
+        }
+        Update: {
+          added_at?: string
+          affiliate_shop_id?: string
+          business_product_id?: string
+          commission_rate?: number | null
+          commission_type?: string | null
+          fixed_commission?: number | null
+          id?: string
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_shop_products_affiliate_shop_id_fkey"
+            columns: ["affiliate_shop_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_shop_products_business_product_id_fkey"
+            columns: ["business_product_id"]
+            isOneToOne: false
+            referencedRelation: "business_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_shops: {
+        Row: {
+          created_at: string
+          custom_domain: string | null
+          id: string
+          is_active: boolean
+          last_payment_date: string | null
+          monthly_fee: number
+          next_payment_due: string | null
+          shop_description: string | null
+          shop_logo_url: string | null
+          shop_name: string
+          shop_slug: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number
+          next_payment_due?: string | null
+          shop_description?: string | null
+          shop_logo_url?: string | null
+          shop_name: string
+          shop_slug: string
+          tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number
+          next_payment_due?: string | null
+          shop_description?: string | null
+          shop_logo_url?: string | null
+          shop_name?: string
+          shop_slug?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_products: {
         Row: {
           affiliate_enabled: boolean | null
