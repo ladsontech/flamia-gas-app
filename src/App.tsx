@@ -69,6 +69,7 @@ function App() {
   const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
   const path = typeof window !== 'undefined' ? window.location.pathname : '';
   const isPolicyRoute = path.startsWith('/terms-and-conditions') || path.startsWith('/privacy-policy');
+  const isStorefrontRoute = path.startsWith('/shop/') || path.startsWith('/affiliate/');
 
   useEffect(() => {
     const checkForUpdates = () => {
@@ -98,17 +99,17 @@ function App() {
       <CartProvider>
         <Router>
           <div className="flex flex-col min-h-screen">
-            {showOnboarding && !onboardingLoading && !isPolicyRoute && (
+            {showOnboarding && !onboardingLoading && !isPolicyRoute && !isStorefrontRoute && (
               <OnboardingScreen onComplete={completeOnboarding} />
             )}
-            <AppBar />
-            <GoogleSignUpHandler />
-            <InstallPWA />
-            <OccasionalSignInPopup />
-            <PushNotificationPrompt />
+            {!isStorefrontRoute && <AppBar />}
+            {!isStorefrontRoute && <GoogleSignUpHandler />}
+            {!isStorefrontRoute && <InstallPWA />}
+            {!isStorefrontRoute && <OccasionalSignInPopup />}
+            {!isStorefrontRoute && <PushNotificationPrompt />}
             <Toaster />
             
-            <main className="flex-1 pb-24 md:pb-0">
+            <main className={isStorefrontRoute ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
@@ -156,8 +157,8 @@ function App() {
               </Routes>
             </main>
 
-            <BottomNav isAdmin={isAdmin} />
-            <CartButton />
+            {!isStorefrontRoute && <BottomNav isAdmin={isAdmin} />}
+            {!isStorefrontRoute && <CartButton />}
             
             {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
           </div>
