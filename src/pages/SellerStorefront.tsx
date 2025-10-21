@@ -10,6 +10,7 @@ import { fetchSellerShopBySlug } from '@/services/sellerService';
 import type { SellerShop } from '@/types/seller';
 import type { BusinessProduct } from '@/types/business';
 import { useCart } from '@/contexts/CartContext';
+import { Helmet } from 'react-helmet';
 
 const SellerStorefront = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -19,18 +20,25 @@ const SellerStorefront = () => {
   const [products, setProducts] = useState<BusinessProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const getSubdomainSlug = () => {
+    if (typeof window === 'undefined') return null;
+    const match = window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i);
+    return match ? match[1] : null;
+  };
+
   useEffect(() => {
     loadShopData();
   }, [slug]);
 
   const loadShopData = async () => {
-    if (!slug) return;
+    const effectiveSlug = slug || getSubdomainSlug();
+    if (!effectiveSlug) return;
     
     try {
       setLoading(true);
       
       // Fetch shop
-      const shopData = await fetchSellerShopBySlug(slug);
+      const shopData = await fetchSellerShopBySlug(effectiveSlug);
       if (!shopData) {
         toast({
           title: 'Shop not found',
@@ -110,6 +118,11 @@ const SellerStorefront = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{shop.shop_name} – Storefront | Flamia</title>
+        <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
+        <link rel="canonical" href={`https://${shop.shop_slug}.flamia.store/`} />
+      </Helmet>
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-primary-foreground overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />

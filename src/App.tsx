@@ -68,17 +68,31 @@ const AppContent = () => {
   const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
   const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
   const isStorefrontRoute = location.pathname.startsWith('/shop/') || location.pathname.startsWith('/affiliate/');
+  const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
+  const isStorefrontHost = !!subdomainMatch;
+  const isStorefront = isStorefrontRoute || isStorefrontHost;
+
+  if (isStorefrontHost) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Toaster />
+        <main className="flex-1">
+          <SellerStorefront />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
-      {showOnboarding && !onboardingLoading && !isPolicyRoute && !isStorefrontRoute && (
+      {showOnboarding && !onboardingLoading && !isPolicyRoute && !isStorefront && (
         <OnboardingScreen onComplete={completeOnboarding} />
       )}
-      {!isStorefrontRoute && <AppBar />}
-      {!isStorefrontRoute && <GoogleSignUpHandler />}
-      {!isStorefrontRoute && <InstallPWA />}
-      {!isStorefrontRoute && <OccasionalSignInPopup />}
-      {!isStorefrontRoute && <PushNotificationPrompt />}
+      {!isStorefront && <AppBar />}
+      {!isStorefront && <GoogleSignUpHandler />}
+      {!isStorefront && <InstallPWA />}
+      {!isStorefront && <OccasionalSignInPopup />}
+      {!isStorefront && <PushNotificationPrompt />}
       <Toaster />
       
       <main className={isStorefrontRoute ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
@@ -129,8 +143,8 @@ const AppContent = () => {
         </Routes>
       </main>
 
-      {!isStorefrontRoute && <BottomNav isAdmin={isAdmin} />}
-      {!isStorefrontRoute && <CartButton />}
+      {!isStorefront && <BottomNav isAdmin={isAdmin} />}
+      {!isStorefront && <CartButton />}
     </div>
   );
 };
