@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Store, Upload, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { createSellerApplication, fetchParentCategories, fetchSellerApplicationByUser } from '@/services/sellerService';
+import { createSellerApplication, fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser } from '@/services/sellerService';
 import type { ProductCategory, SellerApplication } from '@/types/seller';
 import { getImagesLimit } from '@/services/adminService';
 
@@ -23,6 +23,7 @@ const Sell = () => {
   const [submitted, setSubmitted] = useState(false);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [existingApplication, setExistingApplication] = useState<SellerApplication | null>(null);
+  const [sellerSlug, setSellerSlug] = useState<string | null>(null);
   const [form, setForm] = useState({
     shop_name: '',
     category_id: '',
@@ -37,10 +38,12 @@ const Sell = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUserId(user.id);
-          
           // Check for existing application
           const application = await fetchSellerApplicationByUser(user.id);
           setExistingApplication(application);
+          // If approved, fetch the created shop to get the slug
+          const shop = await fetchSellerShopByUser(user.id);
+          if (shop) setSellerSlug(shop.shop_slug);
         }
         
         const limit = await getImagesLimit();
@@ -214,14 +217,23 @@ const Sell = () => {
                 </div>
               )}
               
-              <div className="flex gap-2">
-                <Button onClick={() => navigate('/account')} className="flex-1">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button onClick={() => navigate('/account')} variant="outline" className="sm:flex-1">
                   Go to My Account
                 </Button>
                 {status === 'approved' && (
-                  <Button onClick={() => navigate('/seller/dashboard')} className="flex-1">
-                    Go to Dashboard
-                  </Button>
+                  <>
+                    <Button onClick={() => navigate('/seller/dashboard')} className="sm:flex-1">
+                      Manage Store
+                    </Button>
+                    <Button 
+                      onClick={() => sellerSlug && navigate(`/shop/${sellerSlug}`)} 
+                      disabled={!sellerSlug}
+                      className="sm:flex-1"
+                    >
+                      Visit Storefront
+                    </Button>
+                  </>
                 )}
               </div>
             </CardContent>

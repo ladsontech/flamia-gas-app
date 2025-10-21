@@ -2,6 +2,16 @@
 {
   "rewrites": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "([a-z0-9-]+)\\.flamia\\.store" }],
+      "destination": "/shop/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "([a-z0-9-]+)\\.flamia\\.store" }],
+      "destination": "/shop/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
