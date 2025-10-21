@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
 
@@ -62,14 +62,81 @@ import { useOnboarding } from './hooks/useOnboarding';
 
 const queryClient = new QueryClient();
 
-function App() {
-  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
-  
+const AppContent = () => {
+  const location = useLocation();
   const { isAdmin } = useUserRole();
   const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
-  const path = typeof window !== 'undefined' ? window.location.pathname : '';
-  const isPolicyRoute = path.startsWith('/terms-and-conditions') || path.startsWith('/privacy-policy');
-  const isStorefrontRoute = path.startsWith('/shop/') || path.startsWith('/affiliate/');
+  const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
+  const isStorefrontRoute = location.pathname.startsWith('/shop/') || location.pathname.startsWith('/affiliate/');
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {showOnboarding && !onboardingLoading && !isPolicyRoute && !isStorefrontRoute && (
+        <OnboardingScreen onComplete={completeOnboarding} />
+      )}
+      {!isStorefrontRoute && <AppBar />}
+      {!isStorefrontRoute && <GoogleSignUpHandler />}
+      {!isStorefrontRoute && <InstallPWA />}
+      {!isStorefrontRoute && <OccasionalSignInPopup />}
+      {!isStorefrontRoute && <PushNotificationPrompt />}
+      <Toaster />
+      
+      <main className={isStorefrontRoute ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/gadgets" element={<Gadgets />} />
+          {/* <Route path="/foods" element={<Foods />} /> */}
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/account" element={<Account />} />
+          
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/refill" element={<Refill />} />
+          <Route path="/gas-safety" element={<GasSafety />} />
+          <Route path="/accessories" element={<Accessories />} />
+          <Route path="/gadget/:id" element={<GadgetDetail />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/delivery" element={<Delivery />} />
+          <Route path="/admin" element={<Admin />} />
+        <Route path="/seller-options" element={<SellerOptions />} />
+        <Route path="/sell" element={<Sell />} />
+        <Route path="/seller/dashboard" element={<SellerDashboard />} />
+        <Route path="/shop/:slug" element={<SellerStorefront />} />
+        <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
+        <Route path="/affiliate/:slug" element={<AffiliateStorefront />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          
+          {/* SEO Pages */}
+          <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />
+          <Route path="/brand-new-gas-cylinders-uganda" element={<BrandNewGasCylindersUganda />} />
+          <Route path="/c-gas-uganda" element={<CGasUganda />} />
+          <Route path="/fastest-gas-delivery-kampala" element={<FastestGasDeliveryKampala />} />
+          <Route path="/gas-delivery-kampala" element={<GasDeliveryKampala />} />
+          <Route path="/gas-delivery-mukono" element={<GasDeliveryMukono />} />
+          <Route path="/gas-delivery-uganda" element={<GasDeliveryUganda />} />
+          <Route path="/gas-refill-wakiso" element={<GasRefillWakiso />} />
+          <Route path="/gas-vs-fumbaa-gas" element={<GasVsFumbaaGas />} />
+          <Route path="/hass-gas-uganda" element={<HassGasUganda />} />
+          <Route path="/oryx-gas-uganda" element={<OryxGasUganda />} />
+          <Route path="/same-day-gas-delivery-uganda" element={<SameDayGasDeliveryUganda />} />
+          <Route path="/shell-gas-uganda" element={<ShellGasUganda />} />
+          <Route path="/stabex-gas-uganda" element={<StabexGasUganda />} />
+          <Route path="/total-gas-uganda" element={<TotalGasUganda />} />
+          <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
+        </Routes>
+      </main>
+
+      {!isStorefrontRoute && <BottomNav isAdmin={isAdmin} />}
+      {!isStorefrontRoute && <CartButton />}
+    </div>
+  );
+};
+
+function App() {
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
 
   useEffect(() => {
     const checkForUpdates = () => {
@@ -98,70 +165,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <Router>
-          <div className="flex flex-col min-h-screen">
-            {showOnboarding && !onboardingLoading && !isPolicyRoute && !isStorefrontRoute && (
-              <OnboardingScreen onComplete={completeOnboarding} />
-            )}
-            {!isStorefrontRoute && <AppBar />}
-            {!isStorefrontRoute && <GoogleSignUpHandler />}
-            {!isStorefrontRoute && <InstallPWA />}
-            {!isStorefrontRoute && <OccasionalSignInPopup />}
-            {!isStorefrontRoute && <PushNotificationPrompt />}
-            <Toaster />
-            
-            <main className={isStorefrontRoute ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/gadgets" element={<Gadgets />} />
-                {/* <Route path="/foods" element={<Foods />} /> */}
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/account" element={<Account />} />
-                
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/order" element={<Order />} />
-                <Route path="/refill" element={<Refill />} />
-                <Route path="/gas-safety" element={<GasSafety />} />
-                <Route path="/accessories" element={<Accessories />} />
-                <Route path="/gadget/:id" element={<GadgetDetail />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/delivery" element={<Delivery />} />
-                <Route path="/admin" element={<Admin />} />
-              <Route path="/seller-options" element={<SellerOptions />} />
-              <Route path="/sell" element={<Sell />} />
-              <Route path="/seller/dashboard" element={<SellerDashboard />} />
-              <Route path="/shop/:slug" element={<SellerStorefront />} />
-              <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
-              <Route path="/affiliate/:slug" element={<AffiliateStorefront />} />
-                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                
-                {/* SEO Pages */}
-                <Route path="/alternative-to-fumbaa-gas" element={<AlternativeToFumbaaGas />} />
-                <Route path="/brand-new-gas-cylinders-uganda" element={<BrandNewGasCylindersUganda />} />
-                <Route path="/c-gas-uganda" element={<CGasUganda />} />
-                <Route path="/fastest-gas-delivery-kampala" element={<FastestGasDeliveryKampala />} />
-                <Route path="/gas-delivery-kampala" element={<GasDeliveryKampala />} />
-                <Route path="/gas-delivery-mukono" element={<GasDeliveryMukono />} />
-                <Route path="/gas-delivery-uganda" element={<GasDeliveryUganda />} />
-                <Route path="/gas-refill-wakiso" element={<GasRefillWakiso />} />
-                <Route path="/gas-vs-fumbaa-gas" element={<GasVsFumbaaGas />} />
-                <Route path="/hass-gas-uganda" element={<HassGasUganda />} />
-                <Route path="/oryx-gas-uganda" element={<OryxGasUganda />} />
-                <Route path="/same-day-gas-delivery-uganda" element={<SameDayGasDeliveryUganda />} />
-                <Route path="/shell-gas-uganda" element={<ShellGasUganda />} />
-                <Route path="/stabex-gas-uganda" element={<StabexGasUganda />} />
-                <Route path="/total-gas-uganda" element={<TotalGasUganda />} />
-                <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
-              </Routes>
-            </main>
-
-            {!isStorefrontRoute && <BottomNav isAdmin={isAdmin} />}
-            {!isStorefrontRoute && <CartButton />}
-            
-            {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
-          </div>
+          <AppContent />
+          {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
         </Router>
       </CartProvider>
     </QueryClientProvider>
