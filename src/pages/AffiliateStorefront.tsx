@@ -98,29 +98,39 @@ export default function AffiliateStorefront() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-b">
-        <div className="container max-w-6xl mx-auto px-4 py-16">
-          <div className="flex items-center gap-6">
+      <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-primary-foreground overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
+        <div className="relative container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
             {shop.shop_logo_url ? (
               <img 
                 src={shop.shop_logo_url} 
                 alt={shop.shop_name}
-                className="w-24 h-24 rounded-2xl object-cover shadow-lg"
+                className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border-4 border-primary-foreground/20 shadow-2xl"
               />
             ) : (
-              <div className="w-24 h-24 bg-primary/20 rounded-2xl flex items-center justify-center">
-                <Store className="w-12 h-12 text-primary" />
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-primary-foreground/10 backdrop-blur-sm flex items-center justify-center border-4 border-primary-foreground/20 shadow-2xl">
+                <Store className="w-12 h-12 md:w-16 md:h-16 text-primary-foreground" />
               </div>
             )}
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2">{shop.shop_name}</h1>
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-4xl md:text-6xl font-bold mb-3 text-primary-foreground">
+                {shop.shop_name}
+              </h1>
               {shop.shop_description && (
-                <p className="text-lg text-muted-foreground">{shop.shop_description}</p>
+                <p className="text-lg md:text-xl text-primary-foreground/90 mb-4 max-w-2xl">
+                  {shop.shop_description}
+                </p>
               )}
-              <div className="flex items-center gap-4 mt-4">
-                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                  {products.length} Products
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                <span className="px-4 py-2 bg-primary-foreground/10 backdrop-blur-sm text-primary-foreground rounded-full text-sm font-medium border border-primary-foreground/20">
+                  {products.length} Products Available
                 </span>
+                {shop.tier === 'premium' && (
+                  <span className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full text-sm font-semibold shadow-lg">
+                    ⭐ Premium Shop
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -128,43 +138,47 @@ export default function AffiliateStorefront() {
       </div>
 
       {/* Products Grid */}
-      <div className="container max-w-6xl mx-auto px-4 py-12">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
         {products.length === 0 ? (
-          <Card className="p-12 text-center">
-            <ShoppingCart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">No Products Available</h2>
-            <p className="text-muted-foreground">This shop doesn't have any products listed yet.</p>
+          <Card className="p-12 md:p-16 text-center border-2">
+            <ShoppingCart className="w-16 h-16 md:w-20 md:h-20 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">No Products Available</h2>
+            <p className="text-muted-foreground text-lg">This shop doesn't have any products listed yet. Check back soon!</p>
           </Card>
         ) : (
           <>
-            <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">Shop Our Collection</h2>
+              <p className="text-muted-foreground text-lg">Discover {products.length} amazing products</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {products.map((product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  {product.image_url && (
-                    <div className="relative">
-                      <img 
-                        src={product.image_url} 
-                        alt={product.name}
-                        className="w-full h-56 object-cover"
-                      />
-                      {product.commission_rate && (
-                        <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-semibold">
-                          {product.commission_rate}% Commission
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg mb-2">{product.name}</h3>
+                <Card key={product.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/30 flex flex-col">
+                  <div className="relative aspect-square overflow-hidden bg-muted">
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    {product.original_price && product.original_price > product.price && (
+                      <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        SALE
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 md:p-6 flex-1 flex flex-col">
+                    <h3 className="font-bold text-lg md:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {product.name}
+                    </h3>
                     {product.description && (
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
                         {product.description}
                       </p>
                     )}
-                    <div className="flex items-center justify-between">
+                    <div className="space-y-3 mt-auto">
                       <div>
-                        <span className="text-2xl font-bold text-primary">
+                        <span className="text-2xl md:text-3xl font-bold text-primary">
                           UGX {product.price.toLocaleString()}
                         </span>
                         {product.original_price && product.original_price > product.price && (
@@ -173,14 +187,14 @@ export default function AffiliateStorefront() {
                           </span>
                         )}
                       </div>
+                      <Button 
+                        className="w-full group-hover:shadow-lg transition-shadow"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Add to Cart
+                      </Button>
                     </div>
-                    <Button 
-                      className="w-full mt-4"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Add to Cart
-                    </Button>
                   </div>
                 </Card>
               ))}
@@ -190,9 +204,14 @@ export default function AffiliateStorefront() {
       </div>
 
       {/* Footer */}
-      <div className="border-t mt-16">
-        <div className="container max-w-6xl mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} {shop.shop_name}. Powered by Flamia.</p>
+      <div className="border-t bg-muted/30 mt-16">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} {shop.shop_name}. All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Powered by <span className="font-semibold text-foreground">Flamia</span>
+          </p>
         </div>
       </div>
     </div>

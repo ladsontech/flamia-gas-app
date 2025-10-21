@@ -109,106 +109,100 @@ const SellerStorefront = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16 pb-20">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-b">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="flex items-center gap-4 mb-6">
+      <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-primary-foreground overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
+        <div className="relative container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
             {shop.shop_logo_url ? (
               <img 
                 src={shop.shop_logo_url} 
                 alt={shop.shop_name}
-                className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-background shadow-lg"
+                className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border-4 border-primary-foreground/20 shadow-2xl"
               />
             ) : (
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/20 flex items-center justify-center border-4 border-background shadow-lg">
-                <Store className="w-10 h-10 md:w-12 md:h-12 text-primary" />
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-primary-foreground/10 backdrop-blur-sm flex items-center justify-center border-4 border-primary-foreground/20 shadow-2xl">
+                <Store className="w-12 h-12 md:w-16 md:h-16 text-primary-foreground" />
               </div>
             )}
-            <div>
-              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-2">
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-4xl md:text-6xl font-bold mb-3 text-primary-foreground">
                 {shop.shop_name}
               </h1>
-              <p className="text-lg text-muted-foreground">
-                {shop.shop_description || 'Welcome to our shop'}
-              </p>
+              {shop.shop_description && (
+                <p className="text-lg md:text-xl text-primary-foreground/90 mb-4 max-w-2xl">
+                  {shop.shop_description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                <span className="px-4 py-2 bg-primary-foreground/10 backdrop-blur-sm text-primary-foreground rounded-full text-sm font-medium border border-primary-foreground/20">
+                  {products.length} Products Available
+                </span>
+                {shop.tier === 'premium' && (
+                  <span className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full text-sm font-semibold shadow-lg">
+                    ⭐ Premium Shop
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="text-sm">
-              <Store className="w-3 h-3 mr-1" />
-              {slug}.flamia.store
-            </Badge>
-            {shop.tier === 'premium' && (
-              <Badge className="text-sm bg-gradient-to-r from-yellow-400 to-orange-500">
-                ⭐ Premium Shop
-              </Badge>
-            )}
           </div>
         </div>
       </div>
 
       {/* Products Section */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
         {products.length === 0 ? (
-          <div className="text-center py-16">
-            <ShoppingCart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">No Products Yet</h3>
-            <p className="text-muted-foreground">This shop is still setting up. Check back soon!</p>
-          </div>
+          <Card className="p-12 md:p-16 text-center border-2">
+            <ShoppingCart className="w-16 h-16 md:w-20 md:h-20 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">No Products Yet</h3>
+            <p className="text-muted-foreground text-lg">This shop is still setting up. Check back soon for amazing products!</p>
+          </Card>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Our Products</h2>
-              <p className="text-muted-foreground">{products.length} items</p>
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">Our Products</h2>
+              <p className="text-muted-foreground text-lg">Browse {products.length} quality products</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {products.map((product) => (
                 <Card 
                   key={product.id}
-                  className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20"
+                  className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/30 flex flex-col"
                 >
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
-                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                     />
                     {product.is_featured && (
-                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
+                      <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground shadow-lg">
                         Featured
                       </Badge>
                     )}
                     {product.original_price && product.original_price > product.price && (
-                      <Badge className="absolute top-2 right-2 bg-destructive text-destructive-foreground">
-                        Sale
+                      <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground shadow-lg">
+                        SALE
                       </Badge>
                     )}
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Heart className="w-4 h-4" />
-                    </Button>
                   </div>
                   
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                  <CardContent className="p-4 md:p-6 flex-1 flex flex-col">
+                    <h3 className="font-bold text-lg md:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                       {product.name}
                     </h3>
                     
                     {product.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
                         {product.description}
                       </p>
                     )}
                     
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="space-y-3 mt-auto">
                       <div>
-                        <p className="text-2xl font-bold text-primary">
+                        <p className="text-2xl md:text-3xl font-bold text-primary">
                           UGX {product.price.toLocaleString()}
                         </p>
                         {product.original_price && product.original_price > product.price && (
@@ -217,15 +211,15 @@ const SellerStorefront = () => {
                           </p>
                         )}
                       </div>
+                      
+                      <Button 
+                        onClick={() => handleAddToCart(product)}
+                        className="w-full group-hover:shadow-lg transition-shadow"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Add to Cart
+                      </Button>
                     </div>
-                    
-                    <Button 
-                      onClick={() => handleAddToCart(product)}
-                      className="w-full"
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Add to Cart
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -235,12 +229,14 @@ const SellerStorefront = () => {
       </div>
 
       {/* Footer */}
-      <div className="container mx-auto px-4 py-8 mt-12 border-t">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-2">Powered by</p>
-          <Link to="/" className="text-primary font-semibold text-xl hover:underline">
-            Flamia Marketplace
-          </Link>
+      <div className="border-t bg-muted/30 mt-16">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} {shop.shop_name}. All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Powered by <span className="font-semibold text-foreground">Flamia</span>
+          </p>
         </div>
       </div>
     </div>

@@ -79,7 +79,7 @@ export const ProductForm = ({ businessId, categoryId, onSuccess, onCancel, editP
       const filePath = `products/${Date.now()}_${file.name}`;
       
       const { error: uploadError } = await supabase.storage
-        .from('gadgets')
+        .from('shop-products')
         .upload(filePath, file);
 
       if (uploadError) {
@@ -91,7 +91,7 @@ export const ProductForm = ({ businessId, categoryId, onSuccess, onCancel, editP
         continue;
       }
 
-      const { data } = supabase.storage.from('gadgets').getPublicUrl(filePath);
+      const { data } = supabase.storage.from('shop-products').getPublicUrl(filePath);
       if (data?.publicUrl) {
         uploadedUrls.push(data.publicUrl);
       }

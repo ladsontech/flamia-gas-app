@@ -16,13 +16,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Package, Store, DollarSign, BarChart3, Plus, TrendingUp, Loader2, Trash2, ExternalLink, Copy, Crown } from 'lucide-react';
+import { Package, Store, DollarSign, BarChart3, Plus, TrendingUp, Loader2, Trash2, ExternalLink, Copy, Crown, Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { BusinessProduct } from '@/types/business';
 import type { AffiliateShopProduct } from '@/types/affiliate';
 import { BackButton } from '@/components/BackButton';
+import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
+import { ProductPreviewModal } from '@/components/shop/ProductPreviewModal';
 
 export default function AffiliateDashboard() {
   const navigate = useNavigate();
@@ -37,6 +39,8 @@ export default function AffiliateDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [commissionRate, setCommissionRate] = useState('10');
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<BusinessProduct | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [analytics, setAnalytics] = useState({
     totalClicks: 0,
     totalOrders: 0,
@@ -129,11 +133,13 @@ export default function AffiliateDashboard() {
     }
   };
 
+  const handleProductPreview = (product: BusinessProduct) => {
+    setPreviewProduct(product);
+    setPreviewOpen(true);
+  };
+
   const handleAddProduct = async () => {
-    if (!shop || !selectedProduct) {
-      toast.error('Please select a product');
-      return;
-    }
+    if (!shop || !previewProduct) return;
 
     // Check product limit for free tier
     if (shop.tier === 'free' && productsCount >= 15) {
@@ -143,17 +149,18 @@ export default function AffiliateDashboard() {
 
     setIsAddingProduct(true);
     try {
+      const commissionRate = previewProduct.commission_rate || 10;
       await addProductToAffiliateShop(
         shop.id,
-        selectedProduct,
-        parseFloat(commissionRate),
+        previewProduct.id,
+        commissionRate,
         'percentage'
       );
 
       toast.success('Product added to your shop!');
+      setPreviewOpen(false);
+      setPreviewProduct(null);
       loadShopData();
-      setSelectedProduct('');
-      setCommissionRate('10');
     } catch (error: any) {
       console.error('Error adding product:', error);
       toast.error('Failed to add product');
@@ -175,7 +182,7 @@ export default function AffiliateDashboard() {
 
   const copyShopLink = () => {
     if (!shop) return;
-    const link = `${window.location.origin}/affiliate/${shop.shop_slug}`;
+    const link = `https://${shop.shop_slug}.flamia.store`;
     navigator.clipboard.writeText(link);
     toast.success('Shop link copied to clipboard!');
   };
@@ -228,15 +235,12 @@ export default function AffiliateDashboard() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="shopLogo">Logo URL</Label>
-                <Input
-                  id="shopLogo"
-                  value={shopLogoUrl}
-                  onChange={(e) => setShopLogoUrl(e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                />
-              </div>
+              <ShopImageUpload
+                bucket="shop-logos"
+                onUploadComplete={setShopLogoUrl}
+                currentImage={shopLogoUrl}
+                title="Shop Logo"
+              />
 
               <div className="bg-muted/50 p-4 rounded-lg">
                 <h3 className="font-semibold mb-2">Free Tier Includes:</h3>
@@ -362,35 +366,36 @@ export default function AffiliateDashboard() {
           </Card>
         </div>
 
-        {/* Add Product Section */}
+        {/* Browse Products Section */}
         <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Add Products</h2>
-          <div className="flex gap-4">
-            <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-              <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Select a product to add" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableProducts
-                  .filter(p => !affiliateProducts.some(ap => ap.business_product_id === p.id))
-                  .map(product => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name} - UGX {product.price.toLocaleString()}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            <Input
-              type="number"
-              placeholder="Commission %"
-              value={commissionRate}
-              onChange={(e) => setCommissionRate(e.target.value)}
-              className="w-32"
-            />
-            <Button onClick={handleAddProduct} disabled={isAddingProduct || !selectedProduct}>
-              {isAddingProduct ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
-              Add
-            </Button>
+          <h2 className="text-xl font-semibold mb-4">Browse Available Products</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {availableProducts
+              .filter(p => !affiliateProducts.some(ap => ap.business_product_id === p.id))
+              .map(product => (
+                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  {product.image_url && (
+                    <img src={product.image_url} alt={product.name} className="w-full h-32 object-cover" />
+                  )}
+                  <div className="p-3">
+                    <h3 className="font-semibold text-sm mb-1 line-clamp-1">{product.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{product.description}</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold text-sm">UGX {product.price.toLocaleString()}</span>
+                      <span className="text-xs text-primary">{product.commission_rate || 10}% commission</span>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleProductPreview(product)}
+                      disabled={shop.tier === 'free' && productsCount >= 15}
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      Preview & Add
+                    </Button>
+                  </div>
+                </Card>
+              ))}
           </div>
         </Card>
 
@@ -437,6 +442,16 @@ export default function AffiliateDashboard() {
           </Card>
         )}
       </div>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        open={previewOpen}
+        onClose={() => {
+          setPreviewOpen(false);
+          setPreviewProduct(null);
+        }}
+        onAdd={handleAddProduct}
+      />
     </div>
   );
 }
