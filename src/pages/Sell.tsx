@@ -38,12 +38,23 @@ const Sell = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUserId(user.id);
-          // Check for existing application
+          
+          // Always fetch fresh data from database to avoid stale cache
           const application = await fetchSellerApplicationByUser(user.id);
           setExistingApplication(application);
-          // If approved, fetch the created shop to get the slug
-          const shop = await fetchSellerShopByUser(user.id);
-          if (shop) setSellerSlug(shop.shop_slug);
+          
+          // Fetch shop if application is approved
+          if (application?.status === 'approved') {
+            const shop = await fetchSellerShopByUser(user.id);
+            if (shop) {
+              setSellerSlug(shop.shop_slug);
+            } else {
+              // Application is approved but shop doesn't exist - reset state
+              console.warn('Shop not found despite approved application');
+              setExistingApplication(null);
+              setSellerSlug(null);
+            }
+          }
         }
         
         const limit = await getImagesLimit();
@@ -53,6 +64,9 @@ const Sell = () => {
         setCategories(cats);
       } catch (error) {
         console.error('Error loading data:', error);
+        // Reset state on error to allow retry
+        setExistingApplication(null);
+        setSellerSlug(null);
       } finally {
         setLoading(false);
       }

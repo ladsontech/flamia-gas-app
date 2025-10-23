@@ -44,12 +44,15 @@ const SellerDashboard = () => {
         }
 
         setUserId(user.id);
+        
+        // Always fetch fresh data from database
         const sellerShop = await fetchSellerShopByUser(user.id);
         
         if (!sellerShop) {
+          // Shop was deleted or doesn't exist
           toast({
             title: 'No seller shop found',
-            description: 'Please apply to become a seller first.',
+            description: 'Your shop may have been removed. Please apply to become a seller.',
             variant: 'destructive',
           });
           navigate('/sell');
@@ -61,7 +64,7 @@ const SellerDashboard = () => {
             title: 'Shop pending approval',
             description: 'Your shop application is still under review.',
           });
-          navigate('/account');
+          navigate('/sell');
           return;
         }
 

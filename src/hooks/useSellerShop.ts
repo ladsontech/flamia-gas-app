@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchSellerShopByUser, fetchSellerApplicationByUser } from '@/services/sellerService';
 import type { SellerShop, SellerApplication } from '@/types/seller';
@@ -9,34 +9,40 @@ export const useSellerShop = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadShop = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          setShop(null);
-          setApplication(null);
-          return;
-        }
-
-        const sellerShop = await fetchSellerShopByUser(user.id);
-        setShop(sellerShop);
-
-        // If no shop, check for pending application
-        if (!sellerShop) {
-          const sellerApplication = await fetchSellerApplicationByUser(user.id);
-          setApplication(sellerApplication);
-        }
-      } catch (err: any) {
-        console.error('Error loading seller shop:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const loadShop = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setShop(null);
+        setApplication(null);
+        return;
       }
-    };
 
-    loadShop();
+      const sellerShop = await fetchSellerShopByUser(user.id);
+      setShop(sellerShop);
+
+      // If no shop, check for pending application
+      if (!sellerShop) {
+        const sellerApplication = await fetchSellerApplicationByUser(user.id);
+        setApplication(sellerApplication);
+      } else {
+        setApplication(null);
+      }
+    } catch (err: any) {
+      console.error('Error loading seller shop:', err);
+      setError(err.message);
+      setShop(null);
+      setApplication(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadShop();
+  }, [loadShop]);
 
   return {
     shop,
@@ -47,5 +53,6 @@ export const useSellerShop = () => {
     hasPendingApplication: application?.status === 'pending',
     loading,
     error,
+    refetch: loadShop,
   };
 };
