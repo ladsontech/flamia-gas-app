@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { fetchSellerShopByUser } from '@/services/sellerService';
 import { ProductForm } from '@/components/seller/ProductForm';
 import { ProductsList } from '@/components/seller/ProductsList';
+import { ShopSettingsForm } from '@/components/seller/ShopSettingsForm';
 import type { SellerShop } from '@/types/seller';
 import type { BusinessProduct } from '@/types/business';
 import { Package, Store, DollarSign, BarChart3, Plus } from 'lucide-react';
@@ -156,17 +157,19 @@ const SellerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background pt-16 pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="container mx-auto px-4 py-4 sm:py-6 max-w-7xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div>
-            <h1 className="text-3xl font-bold">{shop.shop_name}</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold">{shop.shop_name}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               {shop.shop_slug}.flamia.store
             </p>
           </div>
           <Button 
             variant="outline" 
-            onClick={() => window.open(`/shop/${shop.shop_slug}`, '_blank')}
+            onClick={() => window.open(`https://${shop.shop_slug}.flamia.store`, '_blank')}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             <Store className="w-4 h-4 mr-2" />
             View Shop
@@ -174,60 +177,60 @@ const SellerDashboard = () => {
         </div>
 
         {/* Metrics Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Products</CardTitle>
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{productsCount}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{productsCount}</div>
               <p className="text-xs text-muted-foreground">
-                {productsCount === 0 ? 'Add your first product' : 'Active products'}
+                {productsCount === 0 ? 'Add first' : 'Active'}
               </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Orders</CardTitle>
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{analytics.totalOrders}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{analytics.totalOrders}</div>
               <p className="text-xs text-muted-foreground">All time</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Revenue</CardTitle>
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">UGX {analytics.totalRevenue.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">From all orders</p>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">UGX {(analytics.totalRevenue / 1000).toFixed(0)}K</div>
+              <p className="text-xs text-muted-foreground">Total</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Affiliates</CardTitle>
-              <Store className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Affiliates</CardTitle>
+              <Store className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{analytics.affiliatesCount}</div>
-              <p className="text-xs text-muted-foreground">Promoting products</p>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{analytics.affiliatesCount}</div>
+              <p className="text-xs text-muted-foreground">Promoting</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="settings">Shop Settings</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
+          <TabsList className="w-full sm:w-auto grid grid-cols-3 sm:inline-flex">
+            <TabsTrigger value="products" className="text-xs sm:text-sm">Products</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
+            <TabsTrigger value="payments" className="text-xs sm:text-sm">Payments</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-4">
@@ -270,51 +273,24 @@ const SellerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Shop Settings</CardTitle>
-                <CardDescription>Customize your shop</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium">Shop Name</p>
-                    <p className="text-sm text-muted-foreground">{shop.shop_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Shop URL</p>
-                    <p className="text-sm text-muted-foreground">{shop.shop_slug}.flamia.store</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Tier</p>
-                    <p className="text-sm text-muted-foreground capitalize">{shop.tier}</p>
-                  </div>
-                  {shop.shop_description && (
-                    <div>
-                      <p className="text-sm font-medium">Description</p>
-                      <p className="text-sm text-muted-foreground">{shop.shop_description}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <ShopSettingsForm shop={shop} onUpdate={() => setProductRefresh(prev => prev + 1)} />
           </TabsContent>
 
           <TabsContent value="payments" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Payment Information</CardTitle>
-                <CardDescription>Manage your subscription payments</CardDescription>
+                <CardTitle className="text-lg sm:text-xl">Payment Information</CardTitle>
+                <CardDescription className="text-sm">Manage your subscription payments</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="font-medium">Monthly Fee</p>
-                      <p className="text-2xl font-bold">{shop.monthly_fee?.toLocaleString()} UGX</p>
+                  <div className="p-3 sm:p-4 border rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                      <p className="text-sm sm:text-base font-medium">Monthly Fee</p>
+                      <p className="text-xl sm:text-2xl font-bold">{shop.monthly_fee?.toLocaleString()} UGX</p>
                     </div>
                     {nextPaymentDue && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         Next payment due: {nextPaymentDue.toLocaleDateString()}
                         {daysUntilPayment && daysUntilPayment <= 7 && (
                           <span className="text-destructive"> (Due in {daysUntilPayment} days)</span>
@@ -323,12 +299,12 @@ const SellerDashboard = () => {
                     )}
                   </div>
 
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="font-medium mb-2">Payment Instructions</p>
-                    <p className="text-sm text-muted-foreground mb-2">
+                  <div className="p-3 sm:p-4 bg-muted rounded-lg">
+                    <p className="text-sm sm:text-base font-medium mb-2">Payment Instructions</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2">
                       Please make your monthly payment via Mobile Money or Bank Transfer
                     </p>
-                    <p className="text-sm">Contact admin for payment details</p>
+                    <p className="text-xs sm:text-sm">Contact admin for payment details</p>
                   </div>
                 </div>
               </CardContent>

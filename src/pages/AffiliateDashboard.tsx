@@ -10,6 +10,7 @@ import {
   fetchAffiliateShopProducts,
   countAffiliateShopProducts
 } from '@/services/affiliateService';
+import { AffiliateShopSettings } from '@/components/affiliate/AffiliateShopSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -198,17 +199,17 @@ export default function AffiliateDashboard() {
   // Create shop form
   if (!shop) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-16 pb-20">
         <BackButton />
-        <div className="container max-w-2xl mx-auto px-4 py-8">
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Store className="w-6 h-6 text-primary" />
+        <div className="container max-w-2xl mx-auto px-4 py-6 sm:py-8">
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Store className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Create Affiliate Shop</h1>
-                <p className="text-sm text-muted-foreground">Start earning by promoting products</p>
+                <h1 className="text-xl sm:text-2xl font-bold">Create Affiliate Shop</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">Start earning commissions</p>
               </div>
             </div>
 
@@ -265,34 +266,34 @@ export default function AffiliateDashboard() {
 
   // Dashboard view
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16 pb-20">
       <BackButton />
-      <div className="container max-w-6xl mx-auto px-4 py-8">
+      <div className="container max-w-6xl mx-auto px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="flex items-center gap-3">
             {shop.shop_logo_url ? (
-              <img src={shop.shop_logo_url} alt={shop.shop_name} className="w-12 h-12 rounded-lg object-cover" />
+              <img src={shop.shop_logo_url} alt={shop.shop_name} className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover" />
             ) : (
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Store className="w-6 h-6 text-primary" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Store className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
             )}
             <div>
-              <h1 className="text-2xl font-bold">{shop.shop_name}</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-xl sm:text-2xl font-bold">{shop.shop_name}</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {shop.tier === 'free' ? `${productsCount}/15 products` : `${productsCount} products`}
               </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={copyShopLink}>
+            <Button variant="outline" onClick={copyShopLink} size="sm" className="flex-1 sm:flex-none">
               <Copy className="w-4 h-4 mr-2" />
-              Copy Link
+              Copy
             </Button>
-            <Button onClick={() => window.open(`/affiliate/${shop.shop_slug}`, '_blank')}>
+            <Button onClick={() => window.open(`https://${shop.shop_slug}.flamia.store`, '_blank')} size="sm" className="flex-1 sm:flex-none">
               <ExternalLink className="w-4 h-4 mr-2" />
-              View Shop
+              View
             </Button>
           </div>
         </div>
@@ -314,52 +315,52 @@ export default function AffiliateDashboard() {
         )}
 
         {/* Analytics Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Products</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Products</CardTitle>
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{productsCount}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{productsCount}</div>
               <p className="text-xs text-muted-foreground">
-                {shop.tier === 'free' ? `${15 - productsCount} slots left` : 'Unlimited'}
+                {shop.tier === 'free' ? `${15 - productsCount} left` : 'Unlimited'}
               </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Orders</CardTitle>
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{analytics.totalOrders}</div>
-              <p className="text-xs text-muted-foreground">From promotions</p>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{analytics.totalOrders}</div>
+              <p className="text-xs text-muted-foreground">Promoted</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Commissions</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Commissions</CardTitle>
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">UGX {analytics.totalCommissions.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Approved earnings</p>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">UGX {(analytics.totalCommissions / 1000).toFixed(0)}K</div>
+              <p className="text-xs text-muted-foreground">Approved</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Commission</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Avg</CardTitle>
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">
                 UGX {analytics.totalOrders > 0 
-                  ? (analytics.totalCommissions / analytics.totalOrders).toLocaleString(undefined, {maximumFractionDigits: 0}) 
-                  : 0}
+                  ? ((analytics.totalCommissions / analytics.totalOrders) / 1000).toFixed(0) 
+                  : 0}K
               </div>
               <p className="text-xs text-muted-foreground">Per order</p>
             </CardContent>
@@ -367,9 +368,9 @@ export default function AffiliateDashboard() {
         </div>
 
         {/* Browse Products Section */}
-        <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Browse Available Products</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="p-4 sm:p-6 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Browse Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {availableProducts
               .filter(p => !affiliateProducts.some(ap => ap.business_product_id === p.id))
               .map(product => (
@@ -399,48 +400,62 @@ export default function AffiliateDashboard() {
           </div>
         </Card>
 
-        {/* Products Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {affiliateProducts.map((affiliateProduct) => {
-            const product = availableProducts.find(p => p.id === affiliateProduct.business_product_id);
-            if (!product) return null;
+        {/* My Products Section */}
+        <div>
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold">My Products</h2>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => document.getElementById('browse-products')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-xs sm:text-sm"
+            >
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              Add More
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+            {affiliateProducts.map((affiliateProduct) => {
+              const product = availableProducts.find(p => p.id === affiliateProduct.business_product_id);
+              if (!product) return null;
 
-            return (
-              <Card key={affiliateProduct.id} className="overflow-hidden">
-                {product.image_url && (
-                  <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover" />
-                )}
-                <div className="p-4">
-                  <h3 className="font-semibold mb-2">{product.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="font-bold text-lg">UGX {product.price.toLocaleString()}</span>
-                    <span className="text-sm text-primary">
-                      {affiliateProduct.commission_rate}% commission
-                    </span>
+              return (
+                <Card key={affiliateProduct.id} className="overflow-hidden">
+                  {product.image_url && (
+                    <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover" />
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-semibold mb-2">{product.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-bold text-lg">UGX {product.price.toLocaleString()}</span>
+                      <span className="text-sm text-primary">
+                        {affiliateProduct.commission_rate}% commission
+                      </span>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleRemoveProduct(affiliateProduct.id)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Remove
+                    </Button>
                   </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => handleRemoveProduct(affiliateProduct.id)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Remove
-                  </Button>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+                </Card>
+              );
+            })}
+          </div>
 
-        {affiliateProducts.length === 0 && (
-          <Card className="p-12 text-center">
-            <Store className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Products Yet</h3>
-            <p className="text-muted-foreground">Add products from sellers to start earning commissions</p>
-          </Card>
-        )}
+          {affiliateProducts.length === 0 && (
+            <Card className="p-12 text-center">
+              <Store className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Products Yet</h3>
+              <p className="text-muted-foreground">Add products from sellers to start earning commissions</p>
+            </Card>
+          )}
+        </div>
       </div>
 
       <ProductPreviewModal

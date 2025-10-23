@@ -1,0 +1,170 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Loader2, Trash2, Save } from 'lucide-react';
+import type { SellerShop } from '@/types/seller';
+
+interface ShopSettingsFormProps {
+  shop: SellerShop;
+  onUpdate: () => void;
+}
+
+export const ShopSettingsForm = ({ shop, onUpdate }: ShopSettingsFormProps) => {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [shopName, setShopName] = useState(shop.shop_name);
+  const [shopDescription, setShopDescription] = useState(shop.shop_description || '');
+  const [shopLogoUrl, setShopLogoUrl] = useState(shop.shop_logo_url || '');
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+
+    try {
+      const { error } = await supabase
+        .from('seller_shops')
+        .update({
+          shop_name: shopName,
+          shop_description: shopDescription || null,
+          shop_logo_url: shopLogoUrl || null,
+        })
+        .eq('id', shop.id);
+
+      if (error) throw error;
+
+      toast.success('Shop settings updated successfully!');
+      onUpdate();
+    } catch (error: any) {
+      console.error('Error updating shop:', error);
+      toast.error('Failed to update shop settings');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+
+    try {
+      // Delete shop products first
+      if (shop.business_id) {
+        const { error: productsError } = await supabase
+          .from('business_products')
+          .delete()
+          .eq('business_id', shop.business_id);
+
+        if (productsError) throw productsError;
+      }
+
+      // Delete the shop
+      const { error } = await supabase
+        .from('seller_shops')
+        .delete()
+        .eq('id', shop.id);
+
+      if (error) throw error;
+
+      toast.success('Shop deleted successfully');
+      window.location.href = '/sell';
+    } catch (error: any) {
+      console.error('Error deleting shop:', error);
+      toast.error('Failed to delete shop');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl">Shop Information</CardTitle>
+          <CardDescription className="text-sm">Update your shop details and appearance</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <div>
+              <Label htmlFor="shop_name">Shop Name</Label>
+              <Input
+                id="shop_name"
+                value={shopName}
+                onChange={(e) => setShopName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="shop_description">Shop Description</Label>
+              <Textarea
+                id="shop_description"
+                value={shopDescription}
+                onChange={(e) => setShopDescription(e.target.value)}
+                rows={4}
+                placeholder="Tell customers about your shop..."
+              />
+            </div>
+
+            <ShopImageUpload
+              bucket="shop-logos"
+              onUploadComplete={setShopLogoUrl}
+              currentImage={shopLogoUrl}
+              title="Shop Logo"
+            />
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button type="submit" disabled={isUpdating} className="flex-1">
+                {isUpdating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl text-destructive">Danger Zone</CardTitle>
+          <CardDescription className="text-sm">Permanently delete your shop and all its data</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full sm:w-auto">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Shop
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm">
+                  This action cannot be undone. This will permanently delete your shop,
+                  all products, and remove all data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="w-full sm:w-auto bg-destructive hover:bg-destructive/90"
+                >
+                  {isDeleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Delete Permanently
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
