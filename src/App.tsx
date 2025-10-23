@@ -72,20 +72,9 @@ const AppContent = () => {
   const isStorefrontHost = !!subdomainMatch;
   const isStorefront = isStorefrontRoute || isStorefrontHost;
 
-  if (isStorefrontHost) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Toaster />
-        <main className="flex-1">
-          <SellerStorefront />
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
-      {showOnboarding && !onboardingLoading && !isPolicyRoute && !isStorefront && (
+      {!isStorefront && showOnboarding && !onboardingLoading && !isPolicyRoute && (
         <OnboardingScreen onComplete={completeOnboarding} />
       )}
       {!isStorefront && <AppBar />}
@@ -95,9 +84,13 @@ const AppContent = () => {
       {!isStorefront && <PushNotificationPrompt />}
       <Toaster />
       
-      <main className={isStorefrontRoute ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
+      <main className={isStorefront ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          {isStorefrontHost ? (
+            <Route path="*" element={<SellerStorefront />} />
+          ) : (
+            <>
+              <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/gadgets" element={<Gadgets />} />
           {/* <Route path="/foods" element={<Foods />} /> */}
@@ -140,6 +133,8 @@ const AppContent = () => {
           <Route path="/stabex-gas-uganda" element={<StabexGasUganda />} />
           <Route path="/total-gas-uganda" element={<TotalGasUganda />} />
           <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
+            </>
+          )}
         </Routes>
       </main>
 
