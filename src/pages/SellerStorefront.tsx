@@ -19,6 +19,7 @@ const SellerStorefront = () => {
   const [shop, setShop] = useState<SellerShop | null>(null);
   const [products, setProducts] = useState<BusinessProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [gridLayout, setGridLayout] = useState<'single' | 'double'>('double');
 
   const getSubdomainSlug = () => {
     if (typeof window === 'undefined') return null;
@@ -178,59 +179,63 @@ const SellerStorefront = () => {
               <p className="text-sm sm:text-base md:text-lg text-muted-foreground">Browse {products.length} quality products</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className={`grid gap-4 sm:gap-5 md:gap-6 ${
+              gridLayout === 'single' 
+                ? 'grid-cols-1 max-w-2xl mx-auto' 
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            }`}>
               {products.map((product) => (
                 <Card 
                   key={product.id}
-                  className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/30 flex flex-col"
+                  className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border hover:border-primary/50 flex flex-col bg-card"
                 >
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
-                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                     />
                     {product.is_featured && (
-                      <Badge className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-primary text-primary-foreground shadow-lg text-xs">
-                        Featured
+                      <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground shadow-lg text-xs font-semibold">
+                        ⭐ Featured
                       </Badge>
                     )}
                     {product.original_price && product.original_price > product.price && (
-                      <Badge className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-destructive text-destructive-foreground shadow-lg text-xs">
-                        SALE
+                      <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground shadow-lg text-xs font-bold">
+                        -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
                       </Badge>
                     )}
                   </div>
                   
-                  <CardContent className="p-3 sm:p-4 md:p-6 flex-1 flex flex-col">
-                    <h3 className="font-bold text-base sm:text-lg md:text-xl mb-1 sm:mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
                       {product.name}
                     </h3>
                     
                     {product.description && (
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2 flex-1">
+                      <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2 flex-1 leading-relaxed">
                         {product.description}
                       </p>
                     )}
                     
-                    <div className="space-y-2 sm:space-y-3 mt-auto">
-                      <div>
-                        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">
+                    <div className="space-y-3 mt-auto">
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="text-2xl sm:text-3xl font-extrabold text-primary">
                           UGX {product.price.toLocaleString()}
-                        </p>
+                        </span>
                         {product.original_price && product.original_price > product.price && (
-                          <p className="text-xs sm:text-sm text-muted-foreground line-through">
+                          <span className="text-sm sm:text-base text-muted-foreground line-through">
                             UGX {product.original_price.toLocaleString()}
-                          </p>
+                          </span>
                         )}
                       </div>
                       
                       <Button 
                         onClick={() => handleAddToCart(product)}
-                        className="w-full group-hover:shadow-lg transition-shadow text-xs sm:text-sm"
-                        size="sm"
+                        className="w-full h-11 sm:h-12 text-base sm:text-lg font-semibold group-hover:shadow-xl transition-all"
+                        size="lg"
                       >
-                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <ShoppingCart className="w-5 h-5 mr-2" />
                         Add to Cart
                       </Button>
                     </div>

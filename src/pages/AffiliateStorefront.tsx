@@ -4,7 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { fetchAffiliateShopBySlug, fetchAffiliateShopProducts } from '@/services/affiliateService';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Loader2, ShoppingCart, Store } from 'lucide-react';
 import type { AffiliateShop, AffiliateShopProduct } from '@/types/affiliate';
@@ -16,6 +17,7 @@ export default function AffiliateStorefront() {
   const [shop, setShop] = useState<AffiliateShop | null>(null);
   const [products, setProducts] = useState<(BusinessProduct & { commission_rate?: number })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [gridLayout, setGridLayout] = useState<'single' | 'double'>('double');
 
   useEffect(() => {
     if (slug) {
@@ -152,50 +154,55 @@ export default function AffiliateStorefront() {
               <p className="text-muted-foreground text-sm sm:text-base md:text-lg">Discover {products.length} amazing products</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className={`grid gap-4 sm:gap-5 md:gap-6 ${
+              gridLayout === 'single' 
+                ? 'grid-cols-1 max-w-2xl mx-auto' 
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            }`}>
               {products.map((product) => (
-                <Card key={product.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/30 flex flex-col">
+                <Card key={product.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border hover:border-primary/50 flex flex-col bg-card">
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img 
                       src={product.image_url} 
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {product.original_price && product.original_price > product.price && (
-                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-destructive text-destructive-foreground px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold shadow-lg">
-                        SALE
-                      </div>
+                      <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground shadow-lg text-xs font-bold">
+                        -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+                      </Badge>
                     )}
                   </div>
-                  <div className="p-3 sm:p-4 md:p-6 flex-1 flex flex-col">
-                    <h3 className="font-bold text-base sm:text-lg md:text-xl mb-1 sm:mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
                       {product.name}
                     </h3>
                     {product.description && (
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2 flex-1">
+                      <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2 flex-1 leading-relaxed">
                         {product.description}
                       </p>
                     )}
-                    <div className="space-y-2 sm:space-y-3 mt-auto">
-                      <div>
-                        <span className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">
+                    <div className="space-y-3 mt-auto">
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="text-2xl sm:text-3xl font-extrabold text-primary">
                           UGX {product.price.toLocaleString()}
                         </span>
                         {product.original_price && product.original_price > product.price && (
-                          <span className="text-xs sm:text-sm text-muted-foreground line-through ml-2">
+                          <span className="text-sm sm:text-base text-muted-foreground line-through">
                             UGX {product.original_price.toLocaleString()}
                           </span>
                         )}
                       </div>
                       <Button 
-                        className="w-full text-sm sm:text-base group-hover:shadow-lg transition-shadow"
+                        className="w-full h-11 sm:h-12 text-base sm:text-lg font-semibold group-hover:shadow-xl transition-all"
                         onClick={() => handleAddToCart(product)}
+                        size="lg"
                       >
-                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                        <ShoppingCart className="w-5 h-5 mr-2" />
                         Add to Cart
                       </Button>
                     </div>
-                  </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>

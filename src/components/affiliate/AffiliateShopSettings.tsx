@@ -5,10 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Trash2, Save } from 'lucide-react';
+import { Loader2, Trash2, Save, LayoutGrid, LayoutList } from 'lucide-react';
 import type { AffiliateShop } from '@/types/affiliate';
 
 interface AffiliateShopSettingsProps {
@@ -22,6 +23,7 @@ export const AffiliateShopSettings = ({ shop, onUpdate }: AffiliateShopSettingsP
   const [shopName, setShopName] = useState(shop.shop_name);
   const [shopDescription, setShopDescription] = useState(shop.shop_description || '');
   const [shopLogoUrl, setShopLogoUrl] = useState(shop.shop_logo_url || '');
+  const [mobileGridLayout, setMobileGridLayout] = useState<'single' | 'double'>('double');
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +117,32 @@ export const AffiliateShopSettings = ({ shop, onUpdate }: AffiliateShopSettingsP
               currentImage={shopLogoUrl}
               title="Shop Logo"
             />
+
+            <div>
+              <Label>Mobile Product Grid Layout</Label>
+              <RadioGroup value={mobileGridLayout} onValueChange={(value) => setMobileGridLayout(value as 'single' | 'double')} className="mt-2">
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="single" id="single" />
+                  <Label htmlFor="single" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <LayoutList className="w-4 h-4" />
+                    <div>
+                      <p className="font-medium">Single Column</p>
+                      <p className="text-xs text-muted-foreground">One product per row on mobile</p>
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="double" id="double" />
+                  <Label htmlFor="double" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <LayoutGrid className="w-4 h-4" />
+                    <div>
+                      <p className="font-medium">Double Column</p>
+                      <p className="text-xs text-muted-foreground">Two products per row on mobile</p>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button type="submit" disabled={isUpdating} className="flex-1">
