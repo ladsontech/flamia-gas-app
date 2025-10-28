@@ -8,6 +8,7 @@ import AppBar from './components/AppBar';
 import UpdateNotification from './components/UpdateNotification';
 import { supabase } from './integrations/supabase/client';
 import { CartProvider } from '@/contexts/CartContext';
+import { SellerCartProvider } from '@/contexts/SellerCartContext';
 import Admin from './pages/Admin';
 
 import SignIn from './pages/SignIn';
@@ -172,12 +173,14 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <Router>
-          <AppContent />
-          {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
-        </Router>
-      </CartProvider>
+      <SellerCartProvider>
+        <CartProvider>
+          <Router>
+            <AppContent />
+            {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
+          </Router>
+        </CartProvider>
+      </SellerCartProvider>
     </QueryClientProvider>
   );
 }

@@ -6,8 +6,10 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, ShoppingCart, Store } from 'lucide-react';
+import { Loader2, ShoppingCart, Store, LayoutGrid, LayoutList } from 'lucide-react';
 import type { AffiliateShop, AffiliateShopProduct } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
 
@@ -141,6 +143,41 @@ export default function AffiliateStorefront() {
 
       {/* Products Grid */}
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12 lg:py-16">
+        {/* Grid Layout Controls */}
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Shop Our Collection</h2>
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg">Discover {products.length} amazing products</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-medium">View:</Label>
+            <RadioGroup
+              value={gridLayout}
+              onValueChange={(value: 'single' | 'double') => setGridLayout(value)}
+              className="flex gap-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="double" id="double" className="peer sr-only" />
+                <Label
+                  htmlFor="double"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="single" id="single" className="peer sr-only" />
+                <Label
+                  htmlFor="single"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                >
+                  <LayoutList className="h-4 w-4" />
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </div>
+
         {products.length === 0 ? (
           <Card className="p-8 sm:p-12 md:p-16 text-center border-2">
             <ShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-muted-foreground mx-auto mb-4" />
@@ -148,13 +185,7 @@ export default function AffiliateStorefront() {
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg">This shop doesn't have any products listed yet. Check back soon!</p>
           </Card>
         ) : (
-          <>
-            <div className="mb-6 sm:mb-8 md:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Shop Our Collection</h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg">Discover {products.length} amazing products</p>
-            </div>
-
-            <div className={`grid gap-4 sm:gap-5 md:gap-6 ${
+          <div className={`grid gap-4 sm:gap-5 md:gap-6 ${
               gridLayout === 'single' 
                 ? 'grid-cols-1 max-w-2xl mx-auto' 
                 : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
@@ -206,7 +237,6 @@ export default function AffiliateStorefront() {
                 </Card>
               ))}
             </div>
-          </>
         )}
       </div>
 
