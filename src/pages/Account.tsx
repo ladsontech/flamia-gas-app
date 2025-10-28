@@ -450,10 +450,10 @@ const Account = () => {
             {!isAdmin && !isDeliveryMan && !canManageGasOrders && !canManageShopOrders && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
+                  <div className="p-4 flex items-center justify-between" onClick={() => navigateRouter('/orders')}>
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                        <BarChart3 className="w-5 h-5 text-accent" />
+                        <Package className="w-5 h-5 text-accent" />
                       </div>
                       <div>
                         <span className="font-medium text-foreground">My Orders</span>
