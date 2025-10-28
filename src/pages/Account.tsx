@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
+import { FlamiaLoader } from "@/components/ui/FlamiaLoader";
 import { useQuery } from "@tanstack/react-query";
 
 // Lazy load heavy components
@@ -260,18 +261,13 @@ const Account = () => {
     return profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || 'User';
   };
   if (loading || roleLoading) {
-    return <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
-        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6">
-          <div className="animate-pulse space-y-4">
-            {[1, 2, 3].map(i => <Card key={i}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </CardContent>
-              </Card>)}
-          </div>
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <FlamiaLoader message="Loading your account..." />
         </div>
-      </div>;
+      </div>
+    );
   }
 
   // If not authenticated, redirect to sign in

@@ -111,14 +111,11 @@ const Orders = () => {
 
   if (loading || roleLoading) {
     return (
-      <>
-        <AppBar />
-        <div className="pt-20 px-4 pb-20">
-          <div className="max-w-4xl mx-auto">
-            <FlamiaLoader message="Loading your orders..." />
-          </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <FlamiaLoader message="Loading your orders..." />
         </div>
-      </>
+      </div>
     );
   }
 
