@@ -185,8 +185,8 @@ const Refill = () => {
                 scale: 0.97
               }} className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all duration-300 ${selectedBrand === brand ? 'border-accent bg-accent/10 shadow-lg' : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'}`} onClick={() => handleBrandSelect(brand)}>
                     <div className="text-center">
-                      <div className={`w-10 md:w-12 h-10 md:h-12 mx-auto mb-2 md:mb-3 rounded-xl flex items-center justify-center p-1.5 transition-all duration-300 ${selectedBrand === brand ? 'bg-white' : 'bg-white hover:bg-accent/5'}`}>
-                        {brandData?.logo_url ? <img src={brandData.logo_url} alt={`${brand} logo`} className="w-full h-full object-contain" /> : <Flame className={`w-5 md:w-6 h-5 md:h-6 transition-colors duration-300 ${selectedBrand === brand ? 'text-accent' : 'text-gray-600'}`} />}
+                      <div className={`w-16 md:w-20 h-16 md:h-20 mx-auto mb-2 md:mb-3 rounded-xl flex items-center justify-center p-2 transition-all duration-300 ${selectedBrand === brand ? 'bg-white' : 'bg-white hover:bg-accent/5'}`}>
+                        {brandData?.logo_url ? <img src={brandData.logo_url} alt={`${brand} logo`} className="w-full h-full object-contain" /> : <Flame className={`w-8 md:w-10 h-8 md:h-10 transition-colors duration-300 ${selectedBrand === brand ? 'text-accent' : 'text-gray-600'}`} />}
                       </div>
                       <h4 className="font-semibold text-xs md:text-sm text-gray-900">{brand}</h4>
                       <p className="text-xs text-gray-500">Gas</p>
