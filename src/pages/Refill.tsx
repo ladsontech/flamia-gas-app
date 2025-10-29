@@ -82,7 +82,8 @@ const Refill = () => {
         originalPrice: 32000, // Original price for 3kg - updated to 32,000
         description: "Perfect for small households",
         popular: false,
-        savings: "Best for singles"
+        savings: "Best for singles",
+        logo_url: brand.logo_url
       });
     }
     if (brand.refill_price_6kg) {
@@ -93,7 +94,8 @@ const Refill = () => {
         originalPrice: 55000, // Original price for 6kg
         description: "Most popular choice for families",
         popular: true,
-        savings: "Save 15% vs 3KG"
+        savings: "Save 15% vs 3KG",
+        logo_url: brand.logo_url
       });
     }
     if (brand.refill_price_12kg) {
@@ -104,7 +106,8 @@ const Refill = () => {
         originalPrice: 115000, // Original price for 12kg
         description: "Ideal for large families",
         popular: false,
-        savings: "Save 25% vs 6KG"
+        savings: "Save 25% vs 6KG",
+        logo_url: brand.logo_url
       });
     }
     return prices;
@@ -165,43 +168,54 @@ const Refill = () => {
             </div>
             
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4">
-              {staticBrands.map((brand, index) => (
-                <motion.div
-                  key={brand}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05, duration: 0.3 }}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
-                    selectedBrand === brand
-                      ? 'border-accent bg-accent/10 shadow-lg'
-                      : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
-                  }`}
-                  onClick={() => handleBrandSelect(brand)}
-                >
-                  <div className="text-center">
-                    <div className={`w-10 md:w-12 h-10 md:h-12 mx-auto mb-2 md:mb-3 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                      selectedBrand === brand 
-                        ? 'bg-accent/20' 
-                        : 'bg-gray-100 hover:bg-accent/10'
-                    }`}>
-                      <Flame className={`w-5 md:w-6 h-5 md:h-6 transition-colors duration-300 ${
-                        selectedBrand === brand ? 'text-accent' : 'text-gray-600'
-                      }`} />
+              {staticBrands.map((brand, index) => {
+                const brandData = refillBrands.find(b => b.brand === brand);
+                return (
+                  <motion.div
+                    key={brand}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.3 }}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
+                      selectedBrand === brand
+                        ? 'border-accent bg-accent/10 shadow-lg'
+                        : 'border-gray-200 bg-white hover:border-accent/50 hover:shadow-md'
+                    }`}
+                    onClick={() => handleBrandSelect(brand)}
+                  >
+                    <div className="text-center">
+                      <div className={`w-10 md:w-12 h-10 md:h-12 mx-auto mb-2 md:mb-3 rounded-xl flex items-center justify-center p-1.5 transition-all duration-300 ${
+                        selectedBrand === brand 
+                          ? 'bg-white' 
+                          : 'bg-white hover:bg-accent/5'
+                      }`}>
+                        {brandData?.logo_url ? (
+                          <img 
+                            src={brandData.logo_url} 
+                            alt={`${brand} logo`}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <Flame className={`w-5 md:w-6 h-5 md:h-6 transition-colors duration-300 ${
+                            selectedBrand === brand ? 'text-accent' : 'text-gray-600'
+                          }`} />
+                        )}
+                      </div>
+                      <h4 className="font-semibold text-xs md:text-sm text-gray-900">{brand}</h4>
+                      <p className="text-xs text-gray-500">Gas</p>
+                      {selectedBrand === brand && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="mt-1 md:mt-2 w-1.5 md:w-2 h-1.5 md:h-2 bg-accent rounded-full mx-auto"
+                        />
+                      )}
                     </div>
-                    <h4 className="font-semibold text-xs md:text-sm text-gray-900">{brand}</h4>
-                    <p className="text-xs text-gray-500">Gas</p>
-                    {selectedBrand === brand && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="mt-1 md:mt-2 w-1.5 md:w-2 h-1.5 md:h-2 bg-accent rounded-full mx-auto"
-                      />
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           </Card>
         </div>
@@ -257,10 +271,18 @@ const Refill = () => {
                               {/* Header */}
                               <div className="flex items-start justify-between mb-3 md:mb-4">
                                 <div className="flex items-center gap-2 md:gap-3">
-                                  <div className={`w-8 md:w-12 h-8 md:h-12 rounded-xl flex items-center justify-center ${
-                                    item.popular ? 'bg-accent/20' : 'bg-gray-100'
+                                  <div className={`w-8 md:w-12 h-8 md:h-12 rounded-xl flex items-center justify-center p-1.5 ${
+                                    item.popular ? 'bg-white' : 'bg-white'
                                   }`}>
-                                    <Flame className={`w-4 md:w-6 h-4 md:h-6 ${item.popular ? 'text-accent' : 'text-gray-600'}`} />
+                                    {item.logo_url ? (
+                                      <img 
+                                        src={item.logo_url} 
+                                        alt={`${selectedBrand} logo`}
+                                        className="w-full h-full object-contain"
+                                      />
+                                    ) : (
+                                      <Flame className={`w-4 md:w-6 h-4 md:h-6 ${item.popular ? 'text-accent' : 'text-gray-600'}`} />
+                                    )}
                                   </div>
                                   <div>
                                     <h3 className="text-lg md:text-xl font-bold text-gray-900">
