@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, MessageSquare, Send } from "lucide-react";
+import { Upload, Send } from "lucide-react";
 
 export const BulkSmsMarketing = () => {
   const [contacts, setContacts] = useState<string[]>([]);
@@ -17,10 +16,13 @@ export const BulkSmsMarketing = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith('.csv')) {
+    const isCSV = file.name.endsWith('.csv');
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+    if (!isCSV && !isExcel) {
       toast({
         title: "Invalid file",
-        description: "Please upload a CSV file",
+        description: "Please upload a CSV or Excel file",
         variant: "destructive"
       });
       return;
@@ -28,31 +30,47 @@ export const BulkSmsMarketing = () => {
 
     setUploading(true);
     try {
-      const text = await file.text();
-      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-      
-      // Extract phone numbers (assumes first column or single column with phone numbers)
-      const phoneNumbers = lines
-        .map(line => {
-          const parts = line.split(',');
-          return parts[0].trim();
-        })
-        .filter(phone => {
-          // Basic validation for phone numbers
-          const cleaned = phone.replace(/[^\d+]/g, '');
-          return cleaned.length >= 10;
-        });
+      let phoneNumbers: string[] = [];
+
+      if (isCSV) {
+        const text = await file.text();
+        const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+        
+        phoneNumbers = lines
+          .map(line => {
+            const parts = line.split(',');
+            return parts[0].trim();
+          })
+          .filter(phone => {
+            const cleaned = phone.replace(/[^\d+]/g, '');
+            return cleaned.length >= 10;
+          });
+      } else {
+        // Handle Excel files
+        const XLSX = await import('xlsx');
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
+        
+        phoneNumbers = rows
+          .map(row => String(row[0] || '').trim())
+          .filter(phone => {
+            const cleaned = phone.replace(/[^\d+]/g, '');
+            return cleaned.length >= 10;
+          });
+      }
 
       setContacts(phoneNumbers);
       toast({
         title: "Success",
-        description: `Loaded ${phoneNumbers.length} contacts from CSV`
+        description: `Loaded ${phoneNumbers.length} contacts from ${isCSV ? 'CSV' : 'Excel'} file`
       });
     } catch (error) {
-      console.error('Error reading CSV:', error);
+      console.error('Error reading file:', error);
       toast({
         title: "Error",
-        description: "Failed to read CSV file",
+        description: "Failed to read file",
         variant: "destructive"
       });
     } finally {
@@ -81,30 +99,43 @@ export const BulkSmsMarketing = () => {
 
     setSending(true);
     try {
-      // TODO: Implement actual bulk SMS sending via edge function
-      // This is a placeholder for the bulk SMS implementation
+      const { supabase } = await import("@/integrations/supabase/client");
       
       toast({
         title: "Sending SMS",
         description: `Sending message to ${contacts.length} contacts...`,
       });
 
-      // Simulate sending
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      toast({
-        title: "SMS Sent",
-        description: `Successfully sent SMS to ${contacts.length} contacts`,
+      const { data, error } = await supabase.functions.invoke('send-bulk-sms', {
+        body: {
+          contacts,
+          message: message.trim(),
+        }
       });
 
-      // Clear form
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to send SMS');
+      }
+
+      toast({
+        title: "SMS Sent Successfully",
+        description: `Sent to ${data.successCount}/${data.totalSent} contacts. Total cost: ${data.totalCost}`,
+      });
+
+      console.log('Bulk SMS results:', data);
+
+      // Clear form on success
       setContacts([]);
       setMessage("");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending bulk SMS:', error);
       toast({
         title: "Error",
-        description: "Failed to send bulk SMS",
+        description: error.message || "Failed to send bulk SMS",
         variant: "destructive"
       });
     } finally {
@@ -113,83 +144,71 @@ export const BulkSmsMarketing = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            Bulk SMS Marketing
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Upload CSV */}
-          <div>
-            <label htmlFor="csv-upload" className="block text-sm font-medium mb-2">
-              Upload Contacts (CSV)
-            </label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="csv-upload"
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                disabled={uploading}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                disabled={uploading}
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              CSV should have phone numbers in the first column
-            </p>
-          </div>
-
-          {/* Show loaded contacts count */}
-          {contacts.length > 0 && (
-            <div className="bg-accent/20 rounded-lg p-3">
-              <p className="text-sm font-medium">
-                {contacts.length} contacts loaded
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Ready to send messages
-              </p>
-            </div>
-          )}
-
-          {/* Message input */}
-          <div>
-            <label htmlFor="sms-message" className="block text-sm font-medium mb-2">
-              Message
-            </label>
-            <Textarea
-              id="sms-message"
-              placeholder="Enter your marketing message here..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={5}
-              className="resize-none"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              {message.length} characters
-            </p>
-          </div>
-
-          {/* Send button */}
+    <div className="space-y-3">
+      {/* Upload CSV */}
+      <div>
+        <label htmlFor="csv-upload" className="block text-sm font-medium mb-1.5">
+          Upload Contacts (CSV/Excel)
+        </label>
+        <div className="flex items-center gap-2">
+          <Input
+            id="csv-upload"
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            onChange={handleFileUpload}
+            disabled={uploading}
+            className="flex-1 text-sm"
+          />
           <Button
-            onClick={handleSendBulkSms}
-            disabled={sending || contacts.length === 0 || !message.trim()}
-            className="w-full"
+            variant="outline"
+            size="icon"
+            disabled={uploading}
           >
-            <Send className="h-4 w-4 mr-2" />
-            {sending ? "Sending..." : `Send SMS to ${contacts.length} Contacts`}
+            <Upload className="h-4 w-4" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          CSV or Excel file with phone numbers in first column
+        </p>
+      </div>
+
+      {/* Show loaded contacts count */}
+      {contacts.length > 0 && (
+        <div className="bg-accent/20 rounded-lg p-2.5">
+          <p className="text-sm font-medium">
+            {contacts.length} contacts loaded
+          </p>
+        </div>
+      )}
+
+      {/* Message input */}
+      <div>
+        <label htmlFor="sms-message" className="block text-sm font-medium mb-1.5">
+          Message
+        </label>
+        <Textarea
+          id="sms-message"
+          placeholder="Enter your marketing message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={3}
+          className="resize-none text-sm"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          {message.length} characters
+        </p>
+      </div>
+
+      {/* Send button */}
+      <Button
+        onClick={handleSendBulkSms}
+        disabled={sending || contacts.length === 0 || !message.trim()}
+        className="w-full"
+        size="sm"
+      >
+        <Send className="h-4 w-4 mr-2" />
+        {sending ? "Sending..." : `Send to ${contacts.length} Contacts`}
+      </Button>
     </div>
   );
 };

@@ -5,6 +5,9 @@ import { Separator } from "@/components/ui/separator";
 import { Bell, Package, Users, Truck, CheckCircle, Clock, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { pushNotificationService } from "@/services/pushNotifications";
+import { useEffect, useState } from "react";
 
 export interface NotificationItem {
   id: string;
@@ -30,6 +33,47 @@ export const NotificationDropdown = ({
   onClose 
 }: NotificationDropdownProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('default');
+  const [enabling, setEnabling] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setPermission(Notification.permission);
+    } else {
+      setPermission('unsupported');
+    }
+  }, []);
+
+  const handleEnable = async () => {
+    setEnabling(true);
+    try {
+      const perm = await pushNotificationService.requestPermission();
+      setPermission(perm);
+      if (perm === 'granted') {
+        await pushNotificationService.subscribe();
+        toast({
+          title: "Notifications Enabled",
+          description: "You'll receive important updates about your orders",
+        });
+      } else {
+        toast({
+          title: "Permission Denied",
+          description: "Enable notifications in your browser settings",
+          variant: "destructive",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "Failed to enable notifications",
+        variant: "destructive",
+      });
+    } finally {
+      setEnabling(false);
+    }
+  };
+
   const getIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'new_order':
@@ -83,6 +127,24 @@ export const NotificationDropdown = ({
           </Button>
         )}
       </div>
+
+      {permission !== 'granted' && (
+        <div className="p-4 border-b bg-muted/30">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm">
+              <p className="font-medium">Enable push notifications</p>
+              <p className="text-muted-foreground">Get instant updates on your orders.</p>
+            </div>
+            {permission === 'default' ? (
+              <Button size="sm" onClick={handleEnable} disabled={enabling}>
+                {enabling ? 'Enabling...' : 'Enable'}
+              </Button>
+            ) : (
+              <Badge variant="secondary">Blocked in browser</Badge>
+            )}
+          </div>
+        </div>
+      )}
 
       <ScrollArea className="h-96">
         {!hasNotifications ? (

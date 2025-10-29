@@ -1,7 +1,43 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getFirebaseMessaging, getToken, onMessage } from "@/config/firebase";
 
+let messageListenerSetup = false;
+
+const setupMessageListener = () => {
+  if (messageListenerSetup) return;
+  
+  const messaging = getFirebaseMessaging();
+  if (!messaging) return;
+  
+  onMessage(messaging, (payload) => {
+    console.log('Message received in foreground:', payload);
+    if (payload.notification && Notification.permission === 'granted') {
+      const notification = new Notification(payload.notification.title || 'New notification', {
+        body: payload.notification.body,
+        icon: payload.notification.icon || '/icon.png',
+        badge: '/icon.png',
+        tag: 'notification-' + Date.now(),
+        requireInteraction: false,
+        data: payload.data
+      });
+      
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        if (payload.data?.url) {
+          window.location.href = payload.data.url;
+        }
+      };
+    }
+  });
+  
+  messageListenerSetup = true;
+};
+
 export const pushNotificationService = {
+  initialize(): void {
+    setupMessageListener();
+  },
   async requestPermission(): Promise<NotificationPermission> {
     if (!('Notification' in window)) {
       throw new Error('This browser does not support notifications');
@@ -30,27 +66,30 @@ export const pushNotificationService = {
         return null;
       }
 
-      // Get FCM token
-      const registration = await navigator.serviceWorker.ready;
+      // Ensure Firebase Messaging SW is registered and use its registration for FCM
+      let fcmRegistration: ServiceWorkerRegistration | null = null;
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        fcmRegistration = (regs.find(r => {
+          const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL;
+          return url?.includes('firebase-messaging-sw.js');
+        }) || null);
+        
+        if (!fcmRegistration) {
+          fcmRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        }
+      } catch (e) {
+        console.error('Failed to get/register Firebase Messaging SW:', e);
+      }
+
       const token = await getToken(messaging, {
-        vapidKey: 'BHZicL5xWcu2_631X8golREEl22KTPsFgrmgxIbduXL_7lxhEVB8Zn_FV9CofzyVT0x8GVZVZe-op4y44D_fxww',
-        serviceWorkerRegistration: registration
+        vapidKey: 'BC9kGPrvB_rjAwwI5aunPmbe1ZgfH-I7hKs_JLHF9sronv3FOdNlAqpVnjvToUQc_S1ztYDV4QIq8p7tgBneCMk',
+        serviceWorkerRegistration: fcmRegistration ?? (await navigator.serviceWorker.ready)
       });
 
       if (token) {
-        // Save token to database
         await this.saveSubscription(token);
-        
-        // Listen for foreground messages
-        onMessage(messaging, (payload) => {
-          console.log('Message received in foreground:', payload);
-          if (payload.notification) {
-            new Notification(payload.notification.title || 'New notification', {
-              body: payload.notification.body,
-              icon: payload.notification.icon || '/icon.png'
-            });
-          }
-        });
+        setupMessageListener();
       }
       
       return token;
@@ -66,14 +105,17 @@ export const pushNotificationService = {
 
     await supabase
       .from('push_subscriptions')
-      .upsert({
+      .delete()
+      .eq('user_id', user.id);
+
+    await supabase
+      .from('push_subscriptions')
+      .insert({
         user_id: user.id,
         fcm_token: fcmToken,
-        endpoint: `fcm:${fcmToken}`, // Use FCM token as endpoint identifier
+        endpoint: `fcm:${fcmToken}`,
         p256dh: '',
         auth: ''
-      }, {
-        onConflict: 'endpoint'
       });
   },
 

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import BusinessHeader from '@/components/foods/BusinessHeader';
 import ProductGrid from '@/components/foods/ProductGrid';
 import BusinessList from '@/components/foods/BusinessList';
+import { useCart } from '@/contexts/CartContext';
 
 const Foods: React.FC = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -20,6 +21,7 @@ const Foods: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     loadBusinesses();
@@ -98,7 +100,23 @@ const Foods: React.FC = () => {
   };
 
   const handleOrderProduct = (product: BusinessProduct, business: Business) => {
-    navigate(`/order?type=food&business=${encodeURIComponent(business.name)}&product=${encodeURIComponent(product.name)}&price=${product.price}`);
+    addToCart({
+      type: 'shop',
+      name: product.name,
+      quantity: 1,
+      price: product.price,
+      description: product.description || '',
+      businessName: business.name,
+      productId: product.id,
+      image: product.image_url || undefined
+    });
+    
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} from ${business.name} has been added to your cart.`,
+    });
+    
+    navigate('/order');
   };
 
   const handleShareBusiness = async (business: Business) => {

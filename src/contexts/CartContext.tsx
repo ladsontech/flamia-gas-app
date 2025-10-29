@@ -1,10 +1,11 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { accessories } from '@/components/accessories/AccessoriesData';
 import { staticBrands, refillBrands } from '@/components/home/BrandsData';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CartItem {
   id: string;
-  type: 'full_set' | 'refill' | 'accessory' | 'gadget';
+  type: 'full_set' | 'refill' | 'accessory' | 'gadget' | 'shop';
   brand?: string;
   size?: string;
   name: string;
@@ -14,6 +15,8 @@ export interface CartItem {
   accessoryId?: string;
   gadgetId?: string;
   image?: string;
+  businessName?: string;
+  productId?: string;
 }
 
 interface CartContextType {
@@ -24,7 +27,7 @@ interface CartContextType {
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  applyPromoCode: (code: string) => boolean;
+  applyPromoCode: (code: string) => Promise<{ success: boolean; discount?: number; error?: string }>;
   removePromoCode: () => void;
   getTotalPrice: () => number;
   getSubtotal: () => number;
@@ -55,7 +58,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       item.brand === newItem.brand &&
       item.size === newItem.size &&
       item.accessoryId === newItem.accessoryId &&
-      item.gadgetId === newItem.gadgetId
+      item.gadgetId === newItem.gadgetId &&
+      item.productId === newItem.productId
     );
 
     if (existingItemIndex >= 0) {
@@ -92,21 +96,53 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setPromoDiscount(0);
   };
 
-  const applyPromoCode = (code: string): boolean => {
+  const applyPromoCode = async (code: string): Promise<{ success: boolean; discount?: number; error?: string }> => {
     const normalizedCode = code.toLowerCase().trim();
     
-    // Check if code is valid
-    const validCodes: { [key: string]: number } = {
-      'banda': 5000,
-    };
-    
-    if (validCodes[normalizedCode]) {
-      setPromoCode(code);
-      setPromoDiscount(validCodes[normalizedCode]);
-      return true;
+    if (!normalizedCode) {
+      return { success: false, error: 'Please enter a promo code' };
     }
     
-    return false;
+    try {
+      // Fetch promo code from database
+      const { data, error } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .eq('code', normalizedCode)
+        .eq('is_active', true)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching promo code:', error);
+        return { success: false, error: 'Failed to validate promo code. Please try again.' };
+      }
+      
+      if (!data) {
+        return { success: false, error: 'Invalid promo code. Please check and try again.' };
+      }
+      
+      // Check if expired
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        return { success: false, error: 'This promo code has expired.' };
+      }
+      
+      setPromoCode(code);
+      setPromoDiscount(data.discount_amount);
+      
+      // Calculate total discount for display
+      const gasItemCount = items.reduce((count, item) => {
+        if (item.type === 'full_set' || item.type === 'refill' || item.type === 'accessory') {
+          return count + item.quantity;
+        }
+        return count;
+      }, 0);
+      const totalDiscount = gasItemCount * data.discount_amount;
+      
+      return { success: true, discount: totalDiscount };
+    } catch (error) {
+      console.error('Error applying promo code:', error);
+      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+    }
   };
 
   const removePromoCode = () => {
@@ -121,16 +157,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const getTotalPrice = () => {
     const subtotal = getSubtotal();
     
-    // Apply 5000 UGX discount per gas and accessory product when promo code is active
+    // Apply promo code discount only to gas items (full_set, refill, accessory)
     if (promoCode && promoDiscount > 0) {
-      const gasAndAccessoryCount = items.reduce((count, item) => {
+      const gasItemCount = items.reduce((count, item) => {
         if (item.type === 'full_set' || item.type === 'refill' || item.type === 'accessory') {
           return count + item.quantity;
         }
         return count;
       }, 0);
       
-      const totalDiscount = gasAndAccessoryCount * 5000;
+      const totalDiscount = gasItemCount * promoDiscount;
       return Math.max(0, subtotal - totalDiscount);
     }
     

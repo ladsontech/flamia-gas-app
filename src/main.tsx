@@ -1,6 +1,4 @@
-
 import { StrictMode } from 'react';
-import * as React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import ErrorBoundary from './components/ErrorBoundary.tsx'
@@ -114,7 +112,10 @@ const saveOfflineAction = async (action: any): Promise<boolean> => {
 if (isServiceWorkerSupported()) {
   window.addEventListener('load', async () => {
     try {
+      // Register both service workers
       const registration = await navigator.serviceWorker.register('/sw.js');
+      
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       
       // Function to check for updates
       const checkForUpdates = () => {
@@ -258,37 +259,14 @@ declare global {
 }
 
 // Ensure React is available before attempting to render
-const waitForReact = (): Promise<void> => {
-  return new Promise((resolve) => {
-    const checkReact = () => {
-      // Check if React hooks are available
-      try {
-        // Test if React context is available
-        if (typeof React !== 'undefined' && React.useState) {
-          resolve();
-        } else {
-          setTimeout(checkReact, 50);
-        }
-      } catch (error) {
-        setTimeout(checkReact, 50);
-      }
-    };
-    checkReact();
-  });
-};
-
-// Safe initialization with proper React context checks
 const initializeApp = async () => {
   try {
-    // Wait for React to be fully available
-    await waitForReact();
-    
-    // Additional delay to ensure external scripts have settled
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Small delay to ensure DOM is ready
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // Verify container still exists
     if (!container) {
-      throw new Error("Root container not found after initialization");
+      throw new Error("Root container not found");
     }
 
     const root = createRoot(container);
@@ -306,47 +284,24 @@ const initializeApp = async () => {
   } catch (error) {
     console.error('Error initializing React app:', error);
     
-    // Fallback: wait longer and try again
-    setTimeout(async () => {
-      try {
-        await waitForReact();
-        const root = createRoot(container);
-        root.render(
-          <StrictMode>
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
-          </StrictMode>
-        );
-        console.log('React app initialized on fallback');
-      } catch (fallbackError) {
-        console.error('Fallback initialization failed:', fallbackError);
-        // Last resort: show error message
-        if (container) {
-          container.innerHTML = `
-            <div style="padding: 20px; text-align: center; color: #ef4444;">
-              <h2>Loading Error</h2>
-              <p>Please refresh the page to continue.</p>
-              <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">
-                Refresh Page
-              </button>
-            </div>
-          `;
-        }
-      }
-    }, 2000);
+    // Show error message
+    if (container) {
+      container.innerHTML = `
+        <div style="padding: 20px; text-align: center; color: #ef4444;">
+          <h2>Loading Error</h2>
+          <p>Please refresh the page to continue.</p>
+          <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">
+            Refresh Page
+          </button>
+        </div>
+      `;
+    }
   }
 };
 
-// Wait for DOM to be ready and external scripts to settle
+// Wait for DOM to be ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
-  // Ensure React is loaded before initializing
-  if (typeof React !== 'undefined') {
-    initializeApp();
-  } else {
-    // Wait for React to load
-    setTimeout(initializeApp, 100);
-  }
+  initializeApp();
 }

@@ -1,26 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import { useSellerShop } from "@/hooks/useSellerShop";
+import { useAffiliateShop } from "@/hooks/useAffiliateShop";
 import { getUserBusinesses } from "@/services/adminService";
-import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck } from "lucide-react";
+import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
-import { ReferralHub } from "@/components/account/ReferralHub";
-import OrdersManager from "@/components/account/OrdersManager";
-import { UnifiedDeliveryDashboard } from "@/components/account/UnifiedDeliveryDashboard";
-import { AdminOrdersDashboard } from "@/components/admin/AdminOrdersDashboard";
-import { BulkSmsMarketing } from "@/components/admin/BulkSmsMarketing";
-import { CommissionsWithdrawalsManager } from "@/components/admin/CommissionsWithdrawalsManager";
-import { UserManagement } from "@/components/admin/UserManagement";
+import { FlamiaLoader } from "@/components/ui/FlamiaLoader";
+import { useQuery } from "@tanstack/react-query";
+
+// Lazy load heavy components
+const ReferralHub = lazy(() => import("@/components/account/ReferralHub").then(m => ({ default: m.ReferralHub })));
+const DeliveryManSection = lazy(() => import("@/components/account/DeliveryManSection").then(m => ({ default: m.DeliveryManSection })));
+const DeliveryOrdersSection = lazy(() => import("@/components/account/DeliveryOrdersSection").then(m => ({ default: m.DeliveryOrdersSection })));
+const CustomerOrdersSection = lazy(() => import("@/components/account/CustomerOrdersSection").then(m => ({ default: m.CustomerOrdersSection })));
+const AdminOrdersDashboard = lazy(() => import("@/components/admin/AdminOrdersDashboard").then(m => ({ default: m.AdminOrdersDashboard })));
+const BulkSmsMarketing = lazy(() => import("@/components/admin/BulkSmsMarketing").then(m => ({ default: m.BulkSmsMarketing })));
+const CommissionsWithdrawalsManager = lazy(() => import("@/components/admin/CommissionsWithdrawalsManager").then(m => ({ default: m.CommissionsWithdrawalsManager })));
+const UserManagement = lazy(() => import("@/components/admin/UserManagement").then(m => ({ default: m.UserManagement })));
 
 // Define interfaces
 interface Profile {
@@ -40,15 +51,19 @@ interface Business {
 const Account = () => {
   const navigateRouter = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
+  
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  
+  // Push notification state
+  const [notifTitle, setNotifTitle] = useState("");
+  const [notifMessage, setNotifMessage] = useState("");
+  const [targetPage, setTargetPage] = useState("/");
+  const [notifLoading, setNotifLoading] = useState(false);
+  
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const {
     userRole,
     isAdmin,
@@ -56,27 +71,67 @@ const Account = () => {
     isDeliveryMan,
     loading: roleLoading
   } = useUserRole();
+  
+  const {
+    canManageGasOrders,
+    canManageShopOrders,
+    canManageUsers,
+    canManageCommissions,
+    canManageMarketing,
+    loading: permissionsLoading
+  } = useAdminPermissions();
+
+  const { 
+    shop: sellerShop, 
+    application: sellerApplication,
+    isSeller, 
+    isApproved: sellerApproved,
+    hasPendingApplication 
+  } = useSellerShop();
+
+  const {
+    shop: affiliateShop,
+    isAffiliate,
+    tier: affiliateTier
+  } = useAffiliateShop();
+
+
+  // Cached profile query
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id && !isPhoneUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  // Cached businesses query
+  const { data: businesses = [] } = useQuery({
+    queryKey: ['userBusinesses', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      return await getUserBusinesses(user.id);
+    },
+    enabled: !!user?.id && isBusinessOwner,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
   useEffect(() => {
     checkAuthStatus();
   }, []);
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (user && !roleLoading) {
-        await fetchProfile(user.id);
-
-        // Fetch businesses if user is business owner
-        if (isBusinessOwner) {
-          try {
-            const userBusinesses = await getUserBusinesses(user.id);
-            setBusinesses(userBusinesses);
-          } catch (error) {
-            console.error('Error fetching user businesses:', error);
-          }
-        }
-      }
-    };
-    loadUserData();
-  }, [user, isBusinessOwner, roleLoading]);
   const checkAuthStatus = async () => {
     try {
       // First check for Supabase authenticated user
@@ -96,7 +151,6 @@ const Account = () => {
         const userName = localStorage.getItem('userName');
         if (phoneVerified && userName) {
           setIsPhoneUser(true);
-          await fetchPhoneProfile(phoneVerified);
           setUser({
             id: phoneVerified,
             email: null,
@@ -131,36 +185,6 @@ const Account = () => {
       console.error('Error ensuring display name:', error);
     }
   };
-  const fetchProfile = async (userId: string) => {
-    try {
-      const {
-        data,
-        error
-      } = await supabase.from('profiles').select('*').eq('id', userId).single();
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error);
-        return;
-      }
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-  const fetchPhoneProfile = async (phoneNumber: string) => {
-    try {
-      const {
-        data,
-        error
-      } = await supabase.from('profiles').select('*').eq('phone_number', phoneNumber).single();
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching phone profile:', error);
-        return;
-      }
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching phone profile:', error);
-    }
-  };
   const handleSignOut = async () => {
     try {
       if (isPhoneUser) {
@@ -190,25 +214,60 @@ const Account = () => {
       });
     }
   };
+  
+  // Handle push notification sending
+  const handleSendNotification = async () => {
+    if (!notifTitle.trim() || !notifMessage.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter both title and message",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setNotifLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-push-notification', {
+        body: { title: notifTitle, message: notifMessage, targetPage }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Notifications Sent",
+        description: `Successfully sent to ${data.sent} subscribers`,
+      });
+
+      setNotifTitle("");
+      setNotifMessage("");
+      setTargetPage("/");
+    } catch (error: any) {
+      console.error('Error sending notifications:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send notifications",
+        variant: "destructive"
+      });
+    } finally {
+      setNotifLoading(false);
+    }
+  };
+  
   const navigate = (path: string) => {
     window.location.href = path;
   };
   const getDisplayName = () => {
     return profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || 'User';
   };
-  if (loading) {
-    return <div className="min-h-screen bg-background pt-16 sm:pt-20 pb-20">
-        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-4 sm:py-6">
-          <div className="animate-pulse space-y-4">
-            {[1, 2, 3].map(i => <Card key={i}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </CardContent>
-              </Card>)}
-          </div>
+  if (loading || roleLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <FlamiaLoader message="Loading your account..." />
         </div>
-      </div>;
+      </div>
+    );
   }
 
   // If not authenticated, redirect to sign in
@@ -246,113 +305,118 @@ const Account = () => {
 
           {/* Compact Menu Items */}
           <div className="space-y-2">
-            {/* Super Admin Menu */}
-            {isAdmin && (
-              <>
-                {/* Gas Orders */}
-                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                  <CardContent className="p-0">
-                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('gas-orders')}>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <TrendingUp className="w-5 h-5 text-accent" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-foreground">Gas Orders</span>
-                          <p className="text-xs text-muted-foreground">Manage gas orders</p>
-                        </div>
+            {/* Admin Menu - Show based on permissions */}
+            {/* Gas Orders */}
+            {(isAdmin || canManageGasOrders) && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('gas-orders')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 text-accent" />
                       </div>
-                      <div className="text-muted-foreground">›</div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Shop Orders */}
-                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                  <CardContent className="p-0">
-                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('shop-orders')}>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <Store className="w-5 h-5 text-accent" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-foreground">Shop Orders</span>
-                          <p className="text-xs text-muted-foreground">Manage shop orders</p>
-                        </div>
+                      <div>
+                        <span className="font-medium text-foreground">Gas Orders</span>
+                        <p className="text-xs text-muted-foreground">Manage gas orders</p>
                       </div>
-                      <div className="text-muted-foreground">›</div>
                     </div>
-                  </CardContent>
-                </Card>
-
-
-                {/* Users */}
-                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                  <CardContent className="p-0">
-                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('users')}>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <Users className="w-5 h-5 text-accent" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-foreground">Users</span>
-                          <p className="text-xs text-muted-foreground">Manage users</p>
-                        </div>
-                      </div>
-                      <div className="text-muted-foreground">›</div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Commissions & Withdrawals */}
-                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                  <CardContent className="p-0">
-                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('commissions')}>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <DollarSign className="w-5 h-5 text-accent" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-foreground">Commissions & Withdrawals</span>
-                          <p className="text-xs text-muted-foreground">Referral payouts</p>
-                        </div>
-                      </div>
-                      <div className="text-muted-foreground">›</div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Marketing */}
-                <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
-                  <CardContent className="p-0">
-                    <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('marketing')}>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <BarChart3 className="w-5 h-5 text-accent" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-foreground">Marketing</span>
-                          <p className="text-xs text-muted-foreground">Bulk SMS & Ads</p>
-                        </div>
-                      </div>
-                      <div className="text-muted-foreground">›</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
-            {/* Deliveries - Only for Delivery Men (Shown first) */}
+            {/* Shop Orders */}
+            {(isAdmin || canManageShopOrders) && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('shop-orders')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Store className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Shop Orders</span>
+                        <p className="text-xs text-muted-foreground">Manage shop orders</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Users */}
+            {(isAdmin || canManageUsers) && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('users')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Users</span>
+                        <p className="text-xs text-muted-foreground">Manage users</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Commissions & Withdrawals */}
+            {(isAdmin || canManageCommissions) && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('commissions')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <DollarSign className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Commissions & Withdrawals</span>
+                        <p className="text-xs text-muted-foreground">Referral payouts</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Marketing */}
+            {(isAdmin || canManageMarketing) && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('marketing')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <BarChart3 className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Marketing</span>
+                        <p className="text-xs text-muted-foreground">Bulk SMS & Push</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* My Deliveries - Only for Delivery Men (Shown first) */}
             {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('deliveries')}>
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('my-deliveries')}>
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
                         <Truck className="w-5 h-5 text-accent" />
                       </div>
                       <div>
-                        <span className="font-medium text-foreground">Deliveries</span>
-                        <p className="text-xs text-muted-foreground">Assigned orders & map</p>
+                        <span className="font-medium text-foreground">My Deliveries</span>
+                        <p className="text-xs text-muted-foreground">Assigned delivery orders</p>
                       </div>
                     </div>
                     <div className="text-muted-foreground">›</div>
@@ -360,14 +424,32 @@ const Account = () => {
                 </CardContent>
               </Card>}
 
-            {/* Regular User Menu - Orders (Hide for delivery men) */}
-            {!isAdmin && !isDeliveryMan && (
-              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+            {/* My Orders - For Delivery Men */}
+            {isDeliveryMan && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
                 <CardContent className="p-0">
-                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('orders')}>
+                  <div className="p-4 flex items-center justify-between" onClick={() => setActiveSection('my-orders')}>
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                        <BarChart3 className="w-5 h-5 text-accent" />
+                        <ShoppingBag className="w-5 h-5 text-accent" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">My Orders</span>
+                        <p className="text-xs text-muted-foreground">Track my personal orders</p>
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">›</div>
+                  </div>
+                </CardContent>
+              </Card>}
+
+            {/* Regular User Menu - Orders (Hide for delivery men and admins with permissions) */}
+            {!isAdmin && !isDeliveryMan && !canManageGasOrders && !canManageShopOrders && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <div className="p-4 flex items-center justify-between" onClick={() => navigateRouter('/orders')}>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <Package className="w-5 h-5 text-accent" />
                       </div>
                       <div>
                         <span className="font-medium text-foreground">My Orders</span>
@@ -415,6 +497,94 @@ const Account = () => {
                   </div>
                 </CardContent>
               </Card>}
+
+            {/* Seller Shop Dashboard */}
+            {isSeller && sellerApproved && <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <Link to="/seller/dashboard">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Store className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">My Shop</span>
+                          <p className="text-xs text-muted-foreground">{sellerShop?.shop_name}</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>}
+
+            {/* Pending Application Status */}
+            {!isSeller && hasPendingApplication && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-yellow-500/20">
+                <CardContent className="p-0">
+                  <Link to="/sell">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                          <Clock className="w-5 h-5 text-yellow-600" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Seller Application</span>
+                          <p className="text-xs text-yellow-600">Under Review</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Start Selling - Unified Entry Point */}
+            {!isSeller && !isAffiliate && !hasPendingApplication && !isAdmin && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-primary/20">
+                <CardContent className="p-0">
+                  <Link to="/seller-options">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-500 rounded-lg flex items-center justify-center">
+                          <Store className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Start Selling</span>
+                          <p className="text-xs text-muted-foreground">Merchant or Affiliate shop</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Affiliate Shop Dashboard */}
+            {isAffiliate && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]">
+                <CardContent className="p-0">
+                  <Link to="/affiliate/dashboard">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
+                          <Users className="w-5 h-5 text-purple-500" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Affiliate Shop</span>
+                          <p className="text-xs text-muted-foreground">
+                            {affiliateShop?.shop_name} • {affiliateTier === 'free' ? 'Free Tier' : 'Premium'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
 
 
             {/* Referrals - Only for non-admin users */}
@@ -525,38 +695,122 @@ const Account = () => {
                   {activeSection === 'marketing' && 'Marketing'}
                   {activeSection === 'profile' && 'Profile Settings'}
                   {activeSection === 'business' && 'My Business'}
-                  {activeSection === 'deliveries' && 'Deliveries'}
+                  {activeSection === 'delivery-account' && 'Orders & Deliveries'}
+                  {activeSection === 'my-deliveries' && 'My Deliveries'}
+                  {activeSection === 'my-orders' && 'My Orders'}
                   {activeSection === 'referrals' && 'Referrals & Earnings'}
                 </h2>
               </div>
               
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4">
-              {activeSection === 'orders' && !isAdmin && <OrdersManager userRole={userRole} userId={user?.id} />}
+                  <Suspense fallback={<div className="flex justify-center py-8"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div></div>}>
+              {activeSection === 'orders' && !isAdmin && !canManageGasOrders && !canManageShopOrders && (
+                <Card className="p-6 text-center">
+                  <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">View Your Orders</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Click the button below to view your order history
+                  </p>
+                  <Button onClick={() => navigate('/orders')}>
+                    View Orders
+                  </Button>
+                </Card>
+              )}
               
-              {/* Super Admin Sections */}
-              {activeSection === 'gas-orders' && isAdmin && (
+              {/* Admin Sections - Based on permissions */}
+              {activeSection === 'gas-orders' && (isAdmin || canManageGasOrders) && (
                 <AdminOrdersDashboard 
                   userRole="super_admin" 
                   userId="" 
                   orderType="gas"
                 />
               )}
-              {activeSection === 'shop-orders' && isAdmin && (
+              {activeSection === 'shop-orders' && (isAdmin || canManageShopOrders) && (
                 <AdminOrdersDashboard 
                   userRole="super_admin" 
                   userId="" 
                   orderType="shop"
                 />
               )}
-              {activeSection === 'users' && isAdmin && (
+              {activeSection === 'users' && (isAdmin || canManageUsers) && (
                 <UserManagement />
               )}
-              {activeSection === 'commissions' && isAdmin && (
+              {activeSection === 'commissions' && (isAdmin || canManageCommissions) && (
                 <CommissionsWithdrawalsManager />
               )}
-              {activeSection === 'marketing' && isAdmin && (
-                <BulkSmsMarketing />
+              {activeSection === 'marketing' && (isAdmin || canManageMarketing) && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Bulk SMS Marketing</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <BulkSmsMarketing />
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="p-4 sm:p-6">
+                      <CardTitle className="text-base sm:text-lg">Push Notifications</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-6 pt-0">
+                      <div className="space-y-3">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="notif-title" className="text-sm">Title</Label>
+                          <Input
+                            id="notif-title"
+                            placeholder="e.g., New Promotion Available"
+                            value={notifTitle}
+                            onChange={(e) => setNotifTitle(e.target.value)}
+                            maxLength={50}
+                            className="text-sm"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="notif-message" className="text-sm">Message</Label>
+                          <Textarea
+                            id="notif-message"
+                            placeholder="Enter your notification message..."
+                            value={notifMessage}
+                            onChange={(e) => setNotifMessage(e.target.value)}
+                            maxLength={200}
+                            rows={3}
+                            className="text-sm resize-none"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {notifMessage.length}/200
+                          </p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="notif-target" className="text-sm">Target Page</Label>
+                          <Input
+                            id="notif-target"
+                            placeholder="/"
+                            value={targetPage}
+                            onChange={(e) => setTargetPage(e.target.value)}
+                            className="text-sm"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Redirect users on click
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={handleSendNotification}
+                          disabled={notifLoading || !notifTitle.trim() || !notifMessage.trim()}
+                          className="w-full"
+                          size="sm"
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          {notifLoading ? "Sending..." : "Send Notification"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
               
               {activeSection === 'profile' && <div className="space-y-6">
@@ -586,7 +840,9 @@ const Account = () => {
                   <AddressManager />
                   <PhoneManager />
                 </div>}
-              {activeSection === 'deliveries' && <UnifiedDeliveryDashboard userId={user.id} />}
+               {activeSection === 'delivery-account' && <DeliveryManSection userId={user.id} />}
+               {activeSection === 'my-deliveries' && <DeliveryOrdersSection userId={user.id} />}
+               {activeSection === 'my-orders' && <CustomerOrdersSection userId={user.id} />}
               {activeSection === 'business' && <div className="space-y-4">
                   <Card>
                     <CardHeader>
@@ -646,6 +902,7 @@ const Account = () => {
                    </Card>
                  </div>}
                {activeSection === 'referrals' && <ReferralHub />}
+                  </Suspense>
                 </div>
               </div>
             </div>

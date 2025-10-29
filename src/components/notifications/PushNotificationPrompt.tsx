@@ -16,30 +16,37 @@ export const PushNotificationPrompt = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Initialize message listener
+      pushNotificationService.initialize();
+
       const isSubscribed = await pushNotificationService.getSubscriptionStatus();
       const permission = Notification.permission;
 
-      // If already subscribed, do nothing
-      if (isSubscribed) return;
+      // If already subscribed, ensure listener is active
+      if (isSubscribed && permission === 'granted') {
+        pushNotificationService.initialize();
+        return;
+      }
 
-      // If permission already granted, automatically subscribe
+      // If permission already granted, automatically subscribe silently
       if (permission === 'granted') {
         try {
           await pushNotificationService.subscribe();
-          toast({
-            title: "Notifications Enabled",
-            description: "You'll receive important updates about your orders",
-          });
         } catch (error) {
           console.error('Auto-subscribe error:', error);
         }
         return;
       }
 
-      // If permission is default, show prompt
-      const hasShownPrompt = localStorage.getItem('push-notification-prompt-shown');
-      if (!hasShownPrompt && permission === 'default') {
-        setTimeout(() => setShow(true), 2000);
+      // Check if we should show the prompt (weekly reminder)
+      const lastDismissed = localStorage.getItem('push-notification-last-dismissed');
+      const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
+      
+      if (permission === 'default') {
+        // Show if never dismissed or if a week has passed since last dismissal
+        if (!lastDismissed || parseInt(lastDismissed) < oneWeekAgo) {
+          setTimeout(() => setShow(true), 2000);
+        }
       }
     };
 
@@ -88,13 +95,15 @@ export const PushNotificationPrompt = () => {
       });
     } finally {
       setLoading(false);
-      localStorage.setItem('push-notification-prompt-shown', 'true');
+      // Store timestamp of dismissal for weekly reminders
+      localStorage.setItem('push-notification-last-dismissed', Date.now().toString());
     }
   };
 
   const handleDismiss = () => {
     setShow(false);
-    localStorage.setItem('push-notification-prompt-shown', 'true');
+    // Store timestamp so we can remind them again in a week
+    localStorage.setItem('push-notification-last-dismissed', Date.now().toString());
   };
 
   if (!show) return null;

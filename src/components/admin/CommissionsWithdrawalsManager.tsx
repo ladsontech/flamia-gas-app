@@ -6,8 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, User, Phone, CheckCircle, Clock, X, TrendingUp, AlertCircle } from "lucide-react";
+import { DollarSign, User, Phone, CheckCircle, Clock, X, TrendingUp, AlertCircle, Shield } from "lucide-react";
 import { format } from "date-fns";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface CommissionWithDetails {
   id: string;
@@ -49,6 +51,27 @@ export const CommissionsWithdrawalsManager = () => {
   const [processing, setProcessing] = useState<Set<string>>(new Set());
   const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
   const { toast } = useToast();
+  const { isAdmin } = useUserRole();
+  const { canManageCommissions, loading: permissionsLoading } = useAdminPermissions();
+
+  // Check if user has permission to view this component
+  if (!loading && !permissionsLoading && !isAdmin && !canManageCommissions) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center space-y-4">
+            <Shield className="h-12 w-12 text-muted-foreground mx-auto" />
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Access Denied</h3>
+              <p className="text-muted-foreground">
+                You don't have permission to manage commissions and withdrawals.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   useEffect(() => {
     fetchData();
@@ -258,7 +281,7 @@ export const CommissionsWithdrawalsManager = () => {
   const totalPendingWithdrawals = pendingWithdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
   const totalCompletedWithdrawals = completedWithdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
 
-  if (loading) {
+  if (loading || permissionsLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">

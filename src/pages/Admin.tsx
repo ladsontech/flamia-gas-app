@@ -9,12 +9,16 @@ import { ArrowLeft, Shield } from "lucide-react";
 
 // Import components
 import AdminAppBar from "@/components/admin/AdminAppBar";
-import ShopItemsManager from "@/components/admin/ShopItemsManager";
 import CarouselManager from "@/components/admin/CarouselManager";
-import { PushNotificationManager } from "@/components/admin/PushNotificationManager";
+import { SubAdminManager } from "@/components/admin/SubAdminManager";
+import PromotionsManager from "@/components/admin/PromotionsManager";
+import { PromoCodesManager } from "@/components/admin/PromoCodesManager";
+import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
+import GadgetsManager from "@/components/admin/GadgetsManager";
 
 // Import services
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -24,6 +28,7 @@ const Admin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAdmin, loading: roleLoading } = useUserRole();
+  const { canManageUsers, loading: permissionsLoading } = useAdminPermissions();
 
   // Check authentication and admin role
   useEffect(() => {
@@ -109,18 +114,39 @@ const Admin = () => {
         {/* Mobile Tabs */}
         <div className="block lg:hidden px-1">
           <ScrollArea className="w-full">
-            <Tabs defaultValue="shop" className="w-full">
+            <Tabs defaultValue="gadgets" className="w-full">
               <TabsList className="inline-flex h-8 items-center justify-start rounded-md bg-muted p-0.5 text-muted-foreground w-max mb-2">
-                <TabsTrigger value="shop" className="text-xs px-2 h-7">🛍️ Shop</TabsTrigger>
+                <TabsTrigger value="gadgets" className="text-xs px-2 h-7">📱 Gadgets</TabsTrigger>
+                <TabsTrigger value="promotions" className="text-xs px-2 h-7">📢 Ads</TabsTrigger>
+                <TabsTrigger value="promo-codes" className="text-xs px-2 h-7">🏷️ Promo</TabsTrigger>
                 <TabsTrigger value="carousel" className="text-xs px-2 h-7">🎠 Carousel</TabsTrigger>
-                <TabsTrigger value="notifications" className="text-xs px-2 h-7">🔔 Push</TabsTrigger>
+                <TabsTrigger value="sellers" className="text-xs px-2 h-7">🏪 Sellers</TabsTrigger>
+                {(isAdmin || canManageUsers) && (
+                  <TabsTrigger value="users" className="text-xs px-2 h-7">👥 Users</TabsTrigger>
+                )}
               </TabsList>
               <ScrollBar orientation="horizontal" />
               
-              <TabsContent value="shop" className="mt-0 space-y-2">
+              <TabsContent value="gadgets" className="mt-0 space-y-2">
                 <Card className="mx-1">
                   <CardContent className="pt-4">
-                    <ShopItemsManager />
+                    <GadgetsManager />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="promotions" className="mt-0 space-y-2">
+                <Card className="mx-1">
+                  <CardContent className="pt-4">
+                    <PromotionsManager />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="promo-codes" className="mt-0 space-y-2">
+                <Card className="mx-1">
+                  <CardContent className="pt-4">
+                    <PromoCodesManager />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -133,13 +159,23 @@ const Admin = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="notifications" className="mt-0 space-y-2">
+              <TabsContent value="sellers" className="mt-0 space-y-2">
                 <Card className="mx-1">
                   <CardContent className="pt-4">
-                    <PushNotificationManager />
+                    <SellerApplicationsManager />
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {(isAdmin || canManageUsers) && (
+                <TabsContent value="users" className="mt-0 space-y-2">
+                  <Card className="mx-1">
+                    <CardContent className="pt-4">
+                      <SubAdminManager />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              )}
             </Tabs>
           </ScrollArea>
         </div>
@@ -150,13 +186,41 @@ const Admin = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  🛍️
+                  📱
                 </div>
-                Shop Items
+                Gadgets
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ShopItemsManager />
+              <GadgetsManager />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  📢
+                </div>
+                Promotional Products
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PromotionsManager />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  🏷️
+                </div>
+                Promo Codes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PromoCodesManager />
             </CardContent>
           </Card>
 
@@ -178,15 +242,31 @@ const Admin = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  🔔
+                  🏪
                 </div>
-                Push Notifications
+                Seller Applications
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <PushNotificationManager />
+              <SellerApplicationsManager />
             </CardContent>
           </Card>
+
+          {(isAdmin || canManageUsers) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    👥
+                  </div>
+                  Sub Admin Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SubAdminManager />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

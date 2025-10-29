@@ -115,10 +115,12 @@ const Delivery = () => {
     };
   };
 
-  // Initialize Google Maps
+  // Initialize Google Maps (only once)
   useEffect(() => {
+    if (map) return; // Prevent re-initialization
+
     const initMap = () => {
-      if (!mapRef.current) return;
+      if (!mapRef.current || map) return;
 
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center: { lat: 0.3476, lng: 32.5825 }, // Kampala coordinates
@@ -158,30 +160,6 @@ const Delivery = () => {
       });
 
       setMap(mapInstance);
-
-      // Add markers for assigned orders
-      deliveryOrders.forEach(order => {
-        const orderLocation = getOrderLocation(order);
-        
-        const marker = new window.google.maps.Marker({
-          position: orderLocation,
-          map: mapInstance,
-          title: `${order.customerName} - ${order.description}`,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            fillColor: '#EF4444',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 3,
-            scale: 12
-          }
-        });
-
-        marker.addListener('click', () => {
-          setSelectedOrder(order);
-          mapInstance.panTo(orderLocation);
-        });
-      });
     };
 
     const loadGoogleMaps = async () => {
@@ -209,7 +187,45 @@ const Delivery = () => {
     };
 
     loadGoogleMaps();
-  }, [deliveryOrders]);
+  }, []);
+
+  // Update markers when orders change
+  useEffect(() => {
+    if (!map) return;
+
+    const markers: google.maps.Marker[] = [];
+
+    // Add markers for assigned orders
+    deliveryOrders.forEach(order => {
+      const orderLocation = getOrderLocation(order);
+      
+      const marker = new window.google.maps.Marker({
+        position: orderLocation,
+        map: map,
+        title: `${order.customerName} - ${order.description}`,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#EF4444',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 3,
+          scale: 12
+        }
+      });
+
+      marker.addListener('click', () => {
+        setSelectedOrder(order);
+        map.panTo(orderLocation);
+      });
+
+      markers.push(marker);
+    });
+
+    // Cleanup markers when orders change
+    return () => {
+      markers.forEach(marker => marker.setMap(null));
+    };
+  }, [map, deliveryOrders]);
 
   // Real-time location tracking with route
   useEffect(() => {
@@ -375,15 +391,20 @@ const Delivery = () => {
             className="absolute bottom-4 left-4 right-4 z-40"
           >
             <Card className="bg-white shadow-2xl border-2 border-blue-500">
-              <div className="p-3 space-y-2">
+              <div className="p-3 space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm text-gray-900 truncate">{selectedOrder.customerName}</h3>
-                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{selectedOrder.description}</p>
-                  </div>
+                  <h3 className="font-bold text-sm text-gray-900">{selectedOrder.customerName}</h3>
                   <Badge className="text-xs shrink-0">
                     {selectedOrder.status?.replace('_', ' ') || 'assigned'}
                   </Badge>
+                </div>
+                
+                <div className="space-y-1.5 text-xs">
+                  {selectedOrder.description.split('\n').filter(line => line.trim()).map((line, idx) => (
+                    <div key={idx} className="text-gray-700">
+                      {line.trim()}
+                    </div>
+                  ))}
                 </div>
                 
                 <div className="flex items-start gap-1.5 text-xs text-gray-700">

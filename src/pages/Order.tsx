@@ -150,15 +150,29 @@ const Order = () => {
         let finalPrice = item.price;
         let promoDiscountPerItem = 0;
         
-        // Calculate promo discount per item if applicable
-        if (promoDiscount > 0) {
+        // Calculate promo discount per item if applicable (only for gas items)
+        const isGasItem = item.type === 'full_set' || item.type === 'refill' || item.type === 'accessory';
+        if (promoDiscount > 0 && isGasItem) {
           const itemTotal = item.price * item.quantity;
           const cartSubtotal = getSubtotal();
           promoDiscountPerItem = Math.floor((itemTotal / cartSubtotal) * promoDiscount);
           finalPrice = Math.max(0, item.price - Math.floor(promoDiscountPerItem / item.quantity));
         }
         
-        if (item.type === 'full_set') {
+        if (item.type === 'shop') {
+          // Shop item format - different from gas
+          orderDescription = `🛍️ SHOP ORDER\n\n`;
+          orderDescription += `Business: ${item.businessName}\n`;
+          orderDescription += `Product: ${item.name}\n`;
+          if (item.description) {
+            orderDescription += `Description: ${item.description}\n`;
+          }
+          orderDescription += `Quantity: ${item.quantity}\n`;
+          orderDescription += `Unit Price: UGX ${item.price.toLocaleString()}\n`;
+          orderDescription += `Total Amount: UGX ${(item.price * item.quantity).toLocaleString()}\n\n`;
+          orderDescription += `Customer Contact: ${deliveryData.contact}\n`;
+          orderDescription += `Delivery Address: ${deliveryData.location?.address || 'Not specified'}`;
+        } else if (item.type === 'full_set') {
           orderDescription = `Order Type: Full Set\nBrand: ${item.brand}\nSize: ${item.size?.toUpperCase()}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
           if (promoCode) {
             orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
@@ -177,11 +191,16 @@ const Order = () => {
           }
           orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
         } else if (item.type === 'gadget') {
-          orderDescription = `Order Type: Gadget/Promotion\nItem: ${item.name}\nQuantity: ${item.quantity}\nOriginal Price: UGX ${item.price.toLocaleString()}`;
-          if (promoCode) {
-            orderDescription += `\nPromo Code: ${promoCode.toUpperCase()}\nDiscount Per Item: UGX ${Math.floor(promoDiscountPerItem / item.quantity).toLocaleString()}\nFinal Price: UGX ${finalPrice.toLocaleString()}`;
+          orderDescription = `📦 PRODUCT ORDER\n\n`;
+          orderDescription += `Item: ${item.name}\n`;
+          if (item.description) {
+            orderDescription += `Description: ${item.description}\n`;
           }
-          orderDescription += `\nTotal Amount: UGX ${(finalPrice * item.quantity).toLocaleString()}\nContact: ${deliveryData.contact}\nDelivery Location: ${deliveryData.location?.address || 'Not specified'}`;
+          orderDescription += `Quantity: ${item.quantity}\n`;
+          orderDescription += `Unit Price: UGX ${item.price.toLocaleString()}\n`;
+          orderDescription += `Total Amount: UGX ${(item.price * item.quantity).toLocaleString()}\n\n`;
+          orderDescription += `Customer Contact: ${deliveryData.contact}\n`;
+          orderDescription += `Delivery Address: ${deliveryData.location?.address || 'Not specified'}`;
         }
         
         await OrderService.createOrder(orderDescription, referralCode, deliveryData.location);

@@ -99,7 +99,10 @@ export class OrderService {
       switch (userRole) {
         case 'delivery_man':
           if (userId) {
-            ordersQuery = ordersQuery.eq('delivery_man_id', userId);
+            // Explicitly filter to only orders assigned to this delivery person
+            ordersQuery = ordersQuery
+              .eq('delivery_man_id', userId)
+              .not('delivery_man_id', 'is', null);
           }
           break;
         case 'user':
@@ -154,9 +157,17 @@ export class OrderService {
         created_at: order.created_at,
         description: order.description,
         delivery_man_id: order.delivery_man_id,
-        status: order.status as 'pending' | 'assigned' | 'in_progress' | 'completed',
+        status: order.status as 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled',
         assigned_at: order.assigned_at,
         user_id: order.user_id,
+        delivery_address: order.delivery_address,
+        delivery_latitude: order.delivery_latitude,
+        delivery_longitude: order.delivery_longitude,
+        total_amount: order.total_amount,
+        manual_delivery_person: order.manual_delivery_person,
+        cancellation_reason: order.cancellation_reason,
+        cancelled_at: order.cancelled_at,
+        cancelled_by: order.cancelled_by,
         delivery_man: order.delivery_man_id ? 
           deliveryPersons.find(dp => dp.id === order.delivery_man_id) : undefined
       }));

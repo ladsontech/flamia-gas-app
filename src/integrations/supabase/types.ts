@@ -89,44 +89,216 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_orders: {
+        Row: {
+          affiliate_shop_id: string
+          approved_at: string | null
+          business_product_id: string
+          commission_amount: number
+          created_at: string
+          id: string
+          order_id: string
+          status: string
+        }
+        Insert: {
+          affiliate_shop_id: string
+          approved_at?: string | null
+          business_product_id: string
+          commission_amount: number
+          created_at?: string
+          id?: string
+          order_id: string
+          status?: string
+        }
+        Update: {
+          affiliate_shop_id?: string
+          approved_at?: string | null
+          business_product_id?: string
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_orders_affiliate_shop_id_fkey"
+            columns: ["affiliate_shop_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_orders_business_product_id_fkey"
+            columns: ["business_product_id"]
+            isOneToOne: false
+            referencedRelation: "business_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_orders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_shop_products: {
+        Row: {
+          added_at: string
+          affiliate_shop_id: string
+          business_product_id: string
+          commission_rate: number | null
+          commission_type: string | null
+          fixed_commission: number | null
+          id: string
+          is_active: boolean
+        }
+        Insert: {
+          added_at?: string
+          affiliate_shop_id: string
+          business_product_id: string
+          commission_rate?: number | null
+          commission_type?: string | null
+          fixed_commission?: number | null
+          id?: string
+          is_active?: boolean
+        }
+        Update: {
+          added_at?: string
+          affiliate_shop_id?: string
+          business_product_id?: string
+          commission_rate?: number | null
+          commission_type?: string | null
+          fixed_commission?: number | null
+          id?: string
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_shop_products_affiliate_shop_id_fkey"
+            columns: ["affiliate_shop_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_shop_products_business_product_id_fkey"
+            columns: ["business_product_id"]
+            isOneToOne: false
+            referencedRelation: "business_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_shops: {
+        Row: {
+          created_at: string
+          custom_domain: string | null
+          id: string
+          is_active: boolean
+          last_payment_date: string | null
+          monthly_fee: number
+          next_payment_due: string | null
+          shop_description: string | null
+          shop_logo_url: string | null
+          shop_name: string
+          shop_slug: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number
+          next_payment_due?: string | null
+          shop_description?: string | null
+          shop_logo_url?: string | null
+          shop_name: string
+          shop_slug: string
+          tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number
+          next_payment_due?: string | null
+          shop_description?: string | null
+          shop_logo_url?: string | null
+          shop_name?: string
+          shop_slug?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_products: {
         Row: {
+          affiliate_enabled: boolean | null
           business_id: string
           category: string | null
+          category_id: string | null
+          commission_rate: number | null
+          commission_type: string | null
           created_at: string
           description: string | null
+          fixed_commission: number | null
           id: string
           image_url: string | null
           is_available: boolean
           is_featured: boolean
+          min_commission: number | null
           name: string
           original_price: number | null
           price: number
           updated_at: string
         }
         Insert: {
+          affiliate_enabled?: boolean | null
           business_id: string
           category?: string | null
+          category_id?: string | null
+          commission_rate?: number | null
+          commission_type?: string | null
           created_at?: string
           description?: string | null
+          fixed_commission?: number | null
           id?: string
           image_url?: string | null
           is_available?: boolean
           is_featured?: boolean
+          min_commission?: number | null
           name: string
           original_price?: number | null
           price: number
           updated_at?: string
         }
         Update: {
+          affiliate_enabled?: boolean | null
           business_id?: string
           category?: string | null
+          category_id?: string | null
+          commission_rate?: number | null
+          commission_type?: string | null
           created_at?: string
           description?: string | null
+          fixed_commission?: number | null
           id?: string
           image_url?: string | null
           is_available?: boolean
           is_featured?: boolean
+          min_commission?: number | null
           name?: string
           original_price?: number | null
           price?: number
@@ -140,10 +312,18 @@ export type Database = {
             referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "business_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
         ]
       }
       businesses: {
         Row: {
+          category_id: string | null
           contact: string
           created_at: string
           description: string | null
@@ -153,9 +333,12 @@ export type Database = {
           is_featured: boolean
           location: string
           name: string
+          owner_type: string | null
+          shop_id: string | null
           updated_at: string
         }
         Insert: {
+          category_id?: string | null
           contact: string
           created_at?: string
           description?: string | null
@@ -165,9 +348,12 @@ export type Database = {
           is_featured?: boolean
           location: string
           name: string
+          owner_type?: string | null
+          shop_id?: string | null
           updated_at?: string
         }
         Update: {
+          category_id?: string | null
           contact?: string
           created_at?: string
           description?: string | null
@@ -177,9 +363,26 @@ export type Database = {
           is_featured?: boolean
           location?: string
           name?: string
+          owner_type?: string | null
+          shop_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "businesses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "businesses_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "seller_shops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       carousel_images: {
         Row: {
@@ -359,6 +562,7 @@ export type Database = {
           delivery_man_id: string | null
           description: string
           id: string
+          manual_delivery_person: string | null
           referral_id: string | null
           status: string | null
           total_amount: number | null
@@ -376,6 +580,7 @@ export type Database = {
           delivery_man_id?: string | null
           description: string
           id?: string
+          manual_delivery_person?: string | null
           referral_id?: string | null
           status?: string | null
           total_amount?: number | null
@@ -393,6 +598,7 @@ export type Database = {
           delivery_man_id?: string | null
           description?: string
           id?: string
+          manual_delivery_person?: string | null
           referral_id?: string | null
           status?: string | null
           total_amount?: number | null
@@ -421,6 +627,50 @@ export type Database = {
         }
         Relationships: []
       }
+      product_categories: {
+        Row: {
+          created_at: string
+          display_order: number
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_id: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_id?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           additional_phone_number: string | null
@@ -428,7 +678,6 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
-          password_hash: string | null
           phone_number: string | null
           referral_code: string | null
           updated_at: string
@@ -439,7 +688,6 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
-          password_hash?: string | null
           phone_number?: string | null
           referral_code?: string | null
           updated_at?: string
@@ -450,9 +698,44 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
-          password_hash?: string | null
           phone_number?: string | null
           referral_code?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          discount_amount: number
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_amount: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_amount?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -580,6 +863,200 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_applications: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sample_images: string[] | null
+          sample_product_name: string | null
+          shop_name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sample_images?: string[] | null
+          sample_product_name?: string | null
+          shop_name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sample_images?: string[] | null
+          sample_product_name?: string | null
+          shop_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_seller_applications_category"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_payments: {
+        Row: {
+          amount: number
+          billing_period_end: string | null
+          billing_period_start: string | null
+          created_at: string
+          id: string
+          payment_date: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          seller_shop_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          created_at?: string
+          id?: string
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          seller_shop_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          created_at?: string
+          id?: string
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          seller_shop_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_payments_seller_shop_id_fkey"
+            columns: ["seller_shop_id"]
+            isOneToOne: false
+            referencedRelation: "seller_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_shops: {
+        Row: {
+          application_id: string | null
+          business_id: string | null
+          category_id: string
+          commission_enabled: boolean
+          created_at: string
+          custom_domain: string | null
+          id: string
+          is_active: boolean
+          is_approved: boolean
+          last_payment_date: string | null
+          monthly_fee: number
+          next_payment_due: string | null
+          shop_description: string | null
+          shop_logo_url: string | null
+          shop_name: string
+          shop_slug: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_id?: string | null
+          business_id?: string | null
+          category_id: string
+          commission_enabled?: boolean
+          created_at?: string
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number
+          next_payment_due?: string | null
+          shop_description?: string | null
+          shop_logo_url?: string | null
+          shop_name: string
+          shop_slug: string
+          tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_id?: string | null
+          business_id?: string | null
+          category_id?: string
+          commission_enabled?: boolean
+          created_at?: string
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number
+          next_payment_due?: string | null
+          shop_description?: string | null
+          shop_logo_url?: string | null
+          shop_name?: string
+          shop_slug?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_shops_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "seller_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_shops_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_shops_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           business_id: string | null
@@ -611,6 +1088,44 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      withdrawal_access_log: {
+        Row: {
+          accessed_at: string
+          accessed_by: string
+          action: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          withdrawal_id: string
+        }
+        Insert: {
+          accessed_at?: string
+          accessed_by: string
+          action: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          withdrawal_id: string
+        }
+        Update: {
+          accessed_at?: string
+          accessed_by?: string
+          action?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          withdrawal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_access_log_withdrawal_id_fkey"
+            columns: ["withdrawal_id"]
+            isOneToOne: false
+            referencedRelation: "withdrawals"
             referencedColumns: ["id"]
           },
         ]

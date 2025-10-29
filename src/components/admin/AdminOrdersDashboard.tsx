@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { OrderService, OrderWithDetails, DeliveryPersonProfile } from "@/services/orderService";
@@ -12,6 +14,7 @@ import {
   Clock, Package, Truck, CheckCircle, User, MapPin, Phone, Calendar, XCircle,
   DollarSign, TrendingUp, ShoppingCart, Filter, BarChart3, ChevronDown, Navigation
 } from "lucide-react";
+import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 import { format, isToday, isYesterday, startOfWeek, isThisWeek, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,6 +49,8 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
   const [assigningOrders, setAssigningOrders] = useState<Set<string>>(new Set());
   const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
   const [cancellationReason, setCancellationReason] = useState('');
+  const [completingOrder, setCompletingOrder] = useState<string | null>(null);
+  const [manualDeliveryPerson, setManualDeliveryPerson] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -132,6 +137,11 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
   };
 
   const isShopOrder = (description: string) => {
+    // Explicit check for shop orders first
+    if (description.includes('🛍️ SHOP ORDER') || description.includes('Business:')) {
+      return true;
+    }
+    // Otherwise, non-gas orders are shop orders
     return !isGasOrder(description);
   };
 
@@ -256,29 +266,67 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
     }
   };
 
-  const handleCancelOrder = async () => {
-    if (!cancellingOrder || !cancellationReason.trim()) return;
+  const handleCompleteOrder = async () => {
+    if (!completingOrder) return;
+    
+    // Find the order to check if it has a delivery_man_id
+    const currentOrder = orders.find(o => o.id === completingOrder);
+    
+    // If no delivery_man_id, require manual_delivery_person
+    if (!currentOrder?.delivery_man_id && !manualDeliveryPerson.trim()) {
+      toast({ title: "Error", description: "Please provide the delivery person name", variant: "destructive" });
+      return;
+    }
+    
     try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          status: 'completed',
+          ...(manualDeliveryPerson.trim() && { manual_delivery_person: manualDeliveryPerson.trim() })
+        })
+        .eq('id', completingOrder);
+
+      if (error) throw error;
+
+      toast({ title: "Success", description: "Order completed successfully" });
+      setCompletingOrder(null);
+      setManualDeliveryPerson('');
+      fetchData();
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to complete order", variant: "destructive" });
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!cancellingOrder || !cancellationReason.trim()) {
+      toast({ title: "Error", description: "Please provide a cancellation reason", variant: "destructive" });
+      return;
+    }
+    
+    try {
+      console.log('Cancelling order:', cancellingOrder, 'Reason:', cancellationReason);
       await OrderService.cancelOrder(cancellingOrder, cancellationReason);
       toast({ title: "Success", description: "Order cancelled successfully" });
       setCancellingOrder(null);
       setCancellationReason('');
       fetchData();
     } catch (error) {
-      toast({ title: "Error", description: "Failed to cancel order", variant: "destructive" });
+      console.error('Cancel order error:', error);
+      toast({ title: "Error", description: error instanceof Error ? error.message : "Failed to cancel order", variant: "destructive" });
     }
   };
 
   const getStatusBadge = (status?: string) => {
     const statusConfig = {
-      pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
-      assigned: { color: 'bg-blue-100 text-blue-800', label: 'Assigned' },
-      in_progress: { color: 'bg-orange-100 text-orange-800', label: 'In Progress' },
-      completed: { color: 'bg-green-100 text-green-800', label: 'Completed' },
-      cancelled: { color: 'bg-red-100 text-red-800', label: 'Cancelled' }
+      pending: { color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20', label: 'Pending' },
+      assigned: { color: 'bg-blue-500/10 text-blue-700 border-blue-500/20', label: 'Assigned' },
+      in_progress: { color: 'bg-orange-500/10 text-orange-700 border-orange-500/20', label: 'In Progress' },
+      completed: { color: 'bg-green-500/10 text-green-700 border-green-500/20', label: 'Completed' },
+      cancelled: { color: 'bg-red-500/10 text-red-700 border-red-500/20', label: 'Cancelled' }
     };
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return <Badge className={`${config.color} text-xs`}>{config.label}</Badge>;
+    return <Badge className={`${config.color} text-xs font-medium border`}>{config.label}</Badge>;
   };
 
   if (loading) {
@@ -293,53 +341,53 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
   }
 
   return (
-    <div className="space-y-3 px-2 sm:px-0">
-      {/* Overall Statistics - Compact mobile */}
+    <div className="space-y-4 px-0">
+      {/* Overall Statistics - Mobile optimized */}
       {userRole === 'super_admin' && (
-        <div className="grid grid-cols-3 gap-2">
-          <Card className="p-2">
+        <div className="grid grid-cols-3 gap-3">
+          <Card className="p-3 bg-gradient-to-br from-card to-muted/20 border-border/50">
             <div className="text-center">
-              <DollarSign className="h-4 w-4 text-primary mx-auto mb-0.5" />
-              <p className="text-[10px] text-muted-foreground">Revenue</p>
-              <p className="text-xs sm:text-sm font-bold">
+              <DollarSign className="h-5 w-5 text-primary mx-auto mb-1" />
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Revenue</p>
+              <p className="text-sm sm:text-base font-bold">
                 {overallStats.totalRevenue > 1000000 
                   ? `${(overallStats.totalRevenue / 1000000).toFixed(1)}M`
                   : `${(overallStats.totalRevenue / 1000).toFixed(0)}K`}
               </p>
             </div>
           </Card>
-          <Card className="p-2">
+          <Card className="p-3 bg-gradient-to-br from-card to-muted/20 border-border/50">
             <div className="text-center">
-              <ShoppingCart className="h-4 w-4 text-primary mx-auto mb-0.5" />
-              <p className="text-[10px] text-muted-foreground">Orders</p>
-              <p className="text-xs sm:text-sm font-bold">{overallStats.total}</p>
+              <ShoppingCart className="h-5 w-5 text-primary mx-auto mb-1" />
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Orders</p>
+              <p className="text-sm sm:text-base font-bold">{overallStats.total}</p>
             </div>
           </Card>
-          <Card className="p-2">
+          <Card className="p-3 bg-gradient-to-br from-card to-muted/20 border-border/50">
             <div className="text-center">
-              <CheckCircle className="h-4 w-4 text-green-600 mx-auto mb-0.5" />
-              <p className="text-[10px] text-muted-foreground">Done</p>
-              <p className="text-xs sm:text-sm font-bold">{overallStats.completed}</p>
+              <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Done</p>
+              <p className="text-sm sm:text-base font-bold">{overallStats.completed}</p>
             </div>
           </Card>
         </div>
       )}
 
-      {/* Filters - Compact */}
-      <Card className="p-2 sm:p-3">
-        <div className="space-y-2">
+      {/* Filters */}
+      <Card className="p-4 border-border/50">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base sm:text-lg font-semibold">Orders</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{orders.length} total</p>
+              <h2 className="text-lg sm:text-xl font-bold">Orders</h2>
+              <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
             </div>
-            <Badge variant="outline" className="text-[10px] sm:text-xs">
+            <Badge variant="outline" className="text-xs font-semibold">
               {filteredOrders.length}
             </Badge>
           </div>
           <div className="flex gap-2">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="flex-1 h-8 text-xs">
+              <SelectTrigger className="flex-1 h-9 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -352,7 +400,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
             </Select>
             {orderType !== 'shop' && (
               <Select value={productFilter} onValueChange={setProductFilter}>
-                <SelectTrigger className="flex-1 h-8 text-xs">
+                <SelectTrigger className="flex-1 h-9 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -371,103 +419,155 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
 
       {/* Orders by Day */}
       {dayGroups.length === 0 ? (
-        <Card className="p-6 sm:p-8">
+        <Card className="p-8 border-border/50">
           <div className="text-center">
-            <Package className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-2 sm:mb-4" />
-            <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">No orders found</h3>
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+              <Package className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No orders found</h3>
             <p className="text-sm text-muted-foreground">Orders will appear here once customers place them.</p>
           </div>
         </Card>
       ) : (
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-4">
           {dayGroups.map((dayGroup) => (
-            <Card key={dayGroup.date} className="overflow-hidden">
-              <CardHeader className="p-3 sm:p-4 pb-2 sm:pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base sm:text-lg">{dayGroup.displayName}</CardTitle>
-                  <div className="flex gap-1 sm:gap-2">
-                    <Badge variant="outline" className="text-xs">{dayGroup.stats.total}</Badge>
+            <Card key={dayGroup.date} className="overflow-hidden border-border/50">
+              <CardHeader className="p-4 pb-3 bg-muted/20">
+                <div className="flex items-center justify-between mb-3">
+                  <CardTitle className="text-base sm:text-lg font-bold">{dayGroup.displayName}</CardTitle>
+                  <div className="flex gap-2">
+                    <Badge variant="outline" className="text-xs font-semibold">{dayGroup.stats.total}</Badge>
                     {userRole === 'super_admin' && dayGroup.stats.totalRevenue > 0 && (
-                      <Badge className="bg-primary/10 text-primary text-xs hidden sm:inline-flex">
+                      <Badge className="bg-primary/10 text-primary text-xs font-semibold border-primary/20 border hidden sm:inline-flex">
                         UGX {dayGroup.stats.totalRevenue.toLocaleString()}
                       </Badge>
                     )}
                   </div>
                 </div>
                 {userRole === 'super_admin' && (
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    <div className="text-center">
-                      <p className="text-lg sm:text-xl font-bold text-yellow-600">{dayGroup.stats.pending}</p>
-                      <p className="text-xs text-muted-foreground">Pending</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center bg-card rounded-lg p-2 border border-border/50">
+                      <p className="text-xl sm:text-2xl font-bold text-yellow-600">{dayGroup.stats.pending}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pending</p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-lg sm:text-xl font-bold text-blue-600">{dayGroup.stats.assigned}</p>
-                      <p className="text-xs text-muted-foreground">Assigned</p>
+                    <div className="text-center bg-card rounded-lg p-2 border border-border/50">
+                      <p className="text-xl sm:text-2xl font-bold text-blue-600">{dayGroup.stats.assigned}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Assigned</p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-lg sm:text-xl font-bold text-green-600">{dayGroup.stats.completed}</p>
-                      <p className="text-xs text-muted-foreground">Completed</p>
+                    <div className="text-center bg-card rounded-lg p-2 border border-border/50">
+                      <p className="text-xl sm:text-2xl font-bold text-green-600">{dayGroup.stats.completed}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Completed</p>
                     </div>
                   </div>
                 )}
               </CardHeader>
-              <CardContent className="p-3 sm:p-4 pt-0">
-                <div className="space-y-2">
-                  {dayGroup.orders.map((order) => {
-                    const orderInfo = extractOrderInfo(order.description);
-                    return (
-                      <CompactOrderCard
-                        key={order.id}
-                        order={order}
-                        orderInfo={orderInfo}
-                        userRole={userRole}
-                        deliveryPersons={deliveryPersons}
-                        onAssignOrder={handleAssignOrder}
-                        onUpdateStatus={handleUpdateStatus}
-                        onCancelOrder={() => setCancellingOrder(order.id)}
-                        assigningOrders={assigningOrders}
-                        getStatusBadge={getStatusBadge}
-                      />
-                    );
-                  })}
-                </div>
+              <CardContent className="p-3 space-y-3">
+                {dayGroup.orders.map((order) => {
+                  const orderInfo = extractOrderInfo(order.description);
+                  return (
+                    <CompactOrderCard
+                      key={order.id}
+                      order={order}
+                      orderInfo={orderInfo}
+                      userRole={userRole}
+                      deliveryPersons={deliveryPersons}
+                      onAssignOrder={handleAssignOrder}
+                      onUpdateStatus={handleUpdateStatus}
+                      onCompleteOrder={() => setCompletingOrder(order.id)}
+                      onCancelOrder={() => setCancellingOrder(order.id)}
+                      assigningOrders={assigningOrders}
+                      getStatusBadge={getStatusBadge}
+                    />
+                  );
+                })}
               </CardContent>
             </Card>
           ))}
         </div>
       )}
 
+      {/* Complete Order Dialog */}
+      <Dialog open={!!completingOrder} onOpenChange={() => setCompletingOrder(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Complete Order</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="manual-delivery-person">Delivery Person Name</Label>
+              <Input
+                id="manual-delivery-person"
+                placeholder="Enter delivery person name"
+                value={manualDeliveryPerson}
+                onChange={(e) => setManualDeliveryPerson(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                {orders.find(o => o.id === completingOrder)?.delivery_man_id 
+                  ? "Optional - Order already assigned to a delivery person"
+                  : "Required - No delivery person assigned"}
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCompletingOrder(null);
+                setManualDeliveryPerson('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-green-600 hover:bg-green-700" 
+              onClick={handleCompleteOrder}
+              disabled={!orders.find(o => o.id === completingOrder)?.delivery_man_id && !manualDeliveryPerson.trim()}
+            >
+              Complete Order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Cancel Order Dialog */}
-      <Dialog open={!!cancellingOrder} onOpenChange={() => setCancellingOrder(null)}>
+      <Dialog open={!!cancellingOrder} onOpenChange={() => {
+        setCancellingOrder(null);
+        setCancellationReason('');
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Cancel Order</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="Reason for cancellation..."
-              value={cancellationReason}
-              onChange={(e) => setCancellationReason(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <Button
-                variant="destructive"
-                onClick={handleCancelOrder}
-                disabled={!cancellationReason.trim()}
-              >
-                Cancel Order
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setCancellingOrder(null);
-                  setCancellationReason('');
-                }}
-              >
-                Close
-              </Button>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="cancellation-reason">Cancellation Reason *</Label>
+              <Textarea
+                id="cancellation-reason"
+                placeholder="Enter the reason for cancellation"
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                rows={4}
+              />
             </div>
           </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCancellingOrder(null);
+                setCancellationReason('');
+              }}
+            >
+              Close
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleCancelOrder}
+              disabled={!cancellationReason.trim()}
+            >
+              Cancel Order
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -482,6 +582,7 @@ interface CompactOrderCardProps {
   deliveryPersons: DeliveryPersonProfile[];
   onAssignOrder: (orderId: string, deliveryPersonId: string) => void;
   onUpdateStatus: (orderId: string, status: string) => void;
+  onCompleteOrder: () => void;
   onCancelOrder: () => void;
   assigningOrders: Set<string>;
   getStatusBadge: (status?: string) => React.ReactNode;
@@ -493,163 +594,308 @@ const CompactOrderCard = ({
   userRole, 
   deliveryPersons, 
   onAssignOrder, 
-  onUpdateStatus, 
+  onUpdateStatus,
+  onCompleteOrder,
   onCancelOrder,
   assigningOrders,
   getStatusBadge 
 }: CompactOrderCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Calculate order total
+  const getOrderTotal = () => {
+    if (order.total_amount) return order.total_amount;
+    if (orderInfo.total) {
+      const cleanAmount = orderInfo.total.replace(/[^\d]/g, '');
+      return parseInt(cleanAmount) || 0;
+    }
+    if (orderInfo.price) {
+      const cleanAmount = orderInfo.price.replace(/[^\d]/g, '');
+      return parseInt(cleanAmount) || 0;
+    }
+    return 0;
+  };
+
+  const orderTotal = getOrderTotal();
+
   return (
-    <div className="border rounded-lg bg-card">
-      {/* Compact Header */}
+    <div className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
+      {/* Compact List View */}
       <div 
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+        className="flex items-center gap-3 p-4 cursor-pointer active:bg-muted/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-            <Package className="h-4 w-4 text-primary" />
+        {/* Icon */}
+        <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+          <img src="/images/icon.png" alt="Flamia" className="w-12 h-12 rounded-full" />
+        </div>
+
+        {/* Order Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-sm truncate">
+              {orderInfo.brand && orderInfo.size 
+                ? `${orderInfo.brand} • ${orderInfo.size}`
+                : orderInfo.item || 'Order'
+              }
+            </h3>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-medium text-sm truncate">
-                {orderInfo.brand || 'Gas'} • {orderInfo.size || 'Standard'} • {orderInfo.type || 'Refill'}
-              </span>
-              {orderInfo.quantity && (
-                <Badge variant="secondary" className="text-xs shrink-0">
-                  {orderInfo.quantity}x
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span>{format(new Date(order.created_at), 'h:mm a')}</span>
-              {orderInfo.total && (
-                <>
-                  <span>•</span>
-                  <span className="font-medium text-primary">{orderInfo.total}</span>
-                </>
-              )}
-            </div>
+          <p className="text-xs text-muted-foreground mb-0.5">
+            {format(new Date(order.created_at), 'dd/MM/yyyy, h:mm a')}
+          </p>
+          <div className="flex items-center gap-2">
+            {getStatusBadge(order.status)}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {getStatusBadge(order.status)}
-          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+
+        {/* Amount & Arrow */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="text-right">
+            <p className="font-bold text-base">
+              {orderTotal > 0 ? orderTotal.toLocaleString() : '-'}
+            </p>
+            <p className="text-xs text-muted-foreground">UGX</p>
+          </div>
+          <ChevronDown 
+            className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${
+              isExpanded ? 'rotate-180' : ''
+            }`} 
+          />
         </div>
       </div>
 
-      {/* Expanded Details */}
+      {/* Expanded Details View */}
       {isExpanded && (
-        <div className="border-t bg-muted/20 p-3 space-y-3">
-          {/* Customer Info */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Customer Details</h4>
-            <div className="grid grid-cols-1 gap-2 text-sm">
-              {orderInfo.contact && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-3 w-3 text-muted-foreground" />
-                  <span>{orderInfo.contact}</span>
+        <div className="border-t border-border/50 bg-muted/30">
+          <div className="p-4 space-y-4">
+            {/* Order Summary */}
+            <div className="bg-card rounded-lg p-3 border border-border/50">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Order Details
+              </h4>
+              <div className="space-y-2 text-sm">
+                {orderInfo.brand && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Brand</span>
+                    <span className="font-medium">{orderInfo.brand}</span>
+                  </div>
+                )}
+                {orderInfo.size && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Size</span>
+                    <span className="font-medium">{orderInfo.size}</span>
+                  </div>
+                )}
+                {orderInfo.type && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Type</span>
+                    <span className="font-medium">{orderInfo.type}</span>
+                  </div>
+                )}
+                {orderInfo.quantity && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Quantity</span>
+                    <span className="font-medium">{orderInfo.quantity}</span>
+                  </div>
+                )}
+                {orderInfo.item && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Item</span>
+                    <span className="font-medium">{orderInfo.item}</span>
+                  </div>
+                )}
+                <div className="flex justify-between pt-2 border-t border-border/50">
+                  <span className="text-muted-foreground font-semibold">Total</span>
+                  <span className="font-bold text-primary">
+                    UGX {orderTotal > 0 ? orderTotal.toLocaleString() : '-'}
+                  </span>
                 </div>
-              )}
-              {orderInfo.address && (
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-3 w-3 text-muted-foreground mt-0.5 shrink-0" />
-                  <span className="text-xs leading-relaxed">{orderInfo.address}</span>
-                </div>
-              )}
-              
-              {/* Location coordinates and navigation */}
-              {(order.delivery_latitude && order.delivery_longitude) && (
-                <div className="mt-2 p-2 bg-muted/50 rounded border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Navigation className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
+              </div>
+            </div>
+
+            {/* Customer Info */}
+            <div className="bg-card rounded-lg p-3 border border-border/50">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Customer Details
+              </h4>
+              <div className="space-y-3 text-sm">
+                {orderInfo.contact && (
+                  <div className="flex items-start gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5">Contact</p>
+                      <p className="font-medium">{orderInfo.contact}</p>
+                    </div>
+                  </div>
+                )}
+                {(orderInfo.address || order.delivery_address) && (
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground mb-0.5">Delivery Address</p>
+                      <p className="font-medium leading-relaxed">
+                        {orderInfo.address || order.delivery_address}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Location coordinates with navigation */}
+                {(order.delivery_latitude && order.delivery_longitude) && (
+                  <div className="bg-muted/50 rounded-lg p-2.5 border border-border/30">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Navigation className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground font-mono">
                         {order.delivery_latitude.toFixed(6)}, {order.delivery_longitude.toFixed(6)}
                       </span>
                     </div>
                     {(userRole === 'delivery_man' || userRole === 'super_admin') && (
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="h-6 px-2 text-xs"
-                        onClick={() => {
+                        className="w-full h-8 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           const url = `https://www.google.com/maps/dir/?api=1&destination=${order.delivery_latitude},${order.delivery_longitude}`;
                           window.open(url, '_blank');
                         }}
                       >
-                        Navigate
+                        <Navigation className="h-3 w-3 mr-1" />
+                        Navigate with Google Maps
                       </Button>
                     )}
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Delivery Info */}
-          {order.delivery_man && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Delivery</h4>
-              <div className="flex items-center gap-2 text-sm">
-                <User className="h-3 w-3 text-muted-foreground" />
-                <span>Assigned to <strong>{order.delivery_man.name}</strong></span>
-                {order.assigned_at && (
-                  <span className="text-xs text-muted-foreground">
-                    on {format(new Date(order.assigned_at), 'MMM d, h:mm a')}
-                  </span>
                 )}
               </div>
             </div>
-          )}
 
-          {/* Actions */}
-          <div className="flex items-center justify-between pt-2 border-t">
-            {userRole === 'super_admin' && !order.delivery_man_id && deliveryPersons.length > 0 && (
-              <Select onValueChange={(value) => onAssignOrder(order.id, value)}>
-                <SelectTrigger className="h-8 text-xs max-w-[150px]">
-                  <SelectValue placeholder="Assign delivery" />
-                </SelectTrigger>
-                <SelectContent>
-                  {deliveryPersons.map((person) => (
-                    <SelectItem key={person.id} value={person.id} className="text-xs">
-                      {person.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Delivery Info - Only visible to admin */}
+            {userRole === 'super_admin' && (order.delivery_man || order.manual_delivery_person) && (
+              <div className="bg-card rounded-lg p-3 border border-border/50">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                  {order.status === 'completed' ? 'Delivered By' : 'Delivery Person'}
+                </h4>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold">
+                      {order.manual_delivery_person || order.delivery_man?.name}
+                    </p>
+                    {order.assigned_at && (
+                      <p className="text-xs text-muted-foreground">
+                        Assigned {format(new Date(order.assigned_at), 'MMM d, h:mm a')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
 
-            <div className="flex gap-2 ml-auto">
-              {userRole === 'delivery_man' && order.status === 'assigned' && (
-                <Button 
-                  size="sm" 
-                  className="h-8 text-xs px-3"
-                  onClick={() => onUpdateStatus(order.id, 'in_progress')}
-                >
-                  Start Delivery
-                </Button>
+            {/* Cancellation Info */}
+            {order.status === 'cancelled' && order.cancellation_reason && (
+              <div className="bg-destructive/10 rounded-lg p-3 border border-destructive/20">
+                <h4 className="text-xs font-semibold text-destructive uppercase tracking-wider mb-3">
+                  Cancellation Details
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Reason</p>
+                    <p className="font-medium text-destructive">{order.cancellation_reason}</p>
+                  </div>
+                  {order.cancelled_at && (
+                    <p className="text-xs text-muted-foreground">
+                      Cancelled on {format(new Date(order.cancelled_at), 'MMM d, yyyy h:mm a')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Order ID */}
+            <div className="bg-card rounded-lg p-3 border border-border/50">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Order ID
+              </h4>
+              <p className="text-xs font-mono text-muted-foreground">#{order.id.slice(0, 8)}</p>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-2 pt-2">
+              {/* Delivery Man Actions */}
+              {userRole === 'delivery_man' && (
+                <div className="flex gap-2">
+                  {order.status === 'assigned' && (
+                    <Button 
+                      className="flex-1 h-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateStatus(order.id, 'in_progress');
+                      }}
+                    >
+                      <Truck className="h-4 w-4 mr-2" />
+                      Start Delivery
+                    </Button>
+                  )}
+                  {order.status === 'in_progress' && (
+                    <Button 
+                      className="flex-1 h-10 bg-green-600 hover:bg-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateStatus(order.id, 'completed');
+                      }}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Mark as Completed
+                    </Button>
+                  )}
+                </div>
               )}
-              {userRole === 'delivery_man' && order.status === 'in_progress' && (
-                <Button 
-                  size="sm"
-                  className="h-8 text-xs px-3 bg-green-600 hover:bg-green-700"
-                  onClick={() => onUpdateStatus(order.id, 'completed')}
-                >
-                  Complete
-                </Button>
-              )}
+
+              {/* Super Admin Actions */}
               {userRole === 'super_admin' && order.status !== 'completed' && order.status !== 'cancelled' && (
-                <Button 
-                  variant="destructive" 
-                  size="sm"
-                  className="h-8 text-xs px-3"
-                  onClick={onCancelOrder}
-                >
-                  Cancel
-                </Button>
+                <div className="space-y-2">
+                  {/* Assignment Dropdown */}
+                  {deliveryPersons.length > 0 && (
+                    <Select onValueChange={(value) => onAssignOrder(order.id, value)} value={order.delivery_man_id || undefined}>
+                      <SelectTrigger className="w-full h-10">
+                        <SelectValue placeholder={order.delivery_man_id ? "Reassign delivery person" : "Assign to delivery person"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {deliveryPersons.map((person) => (
+                          <SelectItem key={person.id} value={person.id}>
+                            {person.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  
+                   {/* Complete and Cancel Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 w-full">
+                    <Button 
+                      className="flex-1 h-10 bg-green-600 hover:bg-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCompleteOrder();
+                      }}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Complete Order
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      className="flex-1 h-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCancelOrder();
+                      }}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancel Order
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

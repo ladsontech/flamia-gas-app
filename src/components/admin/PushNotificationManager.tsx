@@ -26,11 +26,6 @@ export const PushNotificationManager = () => {
 
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Not authenticated');
-      }
-
       const { data, error } = await supabase.functions.invoke('send-push-notification', {
         body: { title, message, targetPage }
       });
@@ -59,43 +54,46 @@ export const PushNotificationManager = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Notification Title</Label>
+    <div className="space-y-3">
+      <div className="space-y-1.5">
+        <Label htmlFor="title" className="text-sm">Title</Label>
         <Input
           id="title"
-          placeholder="Enter notification title"
+          placeholder="e.g., New Promotion Available"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={50}
+          className="text-sm"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="message">Message</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="message" className="text-sm">Message</Label>
         <Textarea
           id="message"
-          placeholder="Enter notification message"
+          placeholder="Enter your notification message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={200}
-          rows={4}
+          rows={3}
+          className="text-sm resize-none"
         />
         <p className="text-xs text-muted-foreground">
-          {message.length}/200 characters
+          {message.length}/200
         </p>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="targetPage">Target Page (URL)</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="targetPage" className="text-sm">Target Page</Label>
         <Input
           id="targetPage"
           placeholder="/"
           value={targetPage}
           onChange={(e) => setTargetPage(e.target.value)}
+          className="text-sm"
         />
         <p className="text-xs text-muted-foreground">
-          Users will be redirected here when clicking the notification
+          Redirect users on click
         </p>
       </div>
 
@@ -103,9 +101,10 @@ export const PushNotificationManager = () => {
         onClick={handleSend}
         disabled={loading || !title.trim() || !message.trim()}
         className="w-full"
+        size="sm"
       >
         <Send className="h-4 w-4 mr-2" />
-        {loading ? "Sending..." : "Send Push Notification"}
+        {loading ? "Sending..." : "Send Notification"}
       </Button>
     </div>
   );

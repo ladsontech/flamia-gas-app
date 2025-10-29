@@ -1,17 +1,94 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const FCM_ENDPOINT = 'https://fcm.googleapis.com/fcm/send';
+const FCM_PROJECT_ID = 'flamia-d69dd';
+const FCM_ENDPOINT = `https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`;
 
 interface PushSubscription {
   endpoint: string;
   p256dh: string;
   auth: string;
   fcm_token?: string;
+}
+
+// Function to generate OAuth 2.0 access token from service account
+async function getAccessToken(serviceAccountJson: string): Promise<string> {
+  const serviceAccount = JSON.parse(serviceAccountJson);
+  
+  const header = {
+    alg: 'RS256',
+    typ: 'JWT',
+    kid: serviceAccount.private_key_id,
+  };
+
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    iss: serviceAccount.client_email,
+    sub: serviceAccount.client_email,
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+    scope: 'https://www.googleapis.com/auth/firebase.messaging',
+  };
+
+  const encoder = new TextEncoder();
+  const headerB64 = btoa(String.fromCharCode(...encoder.encode(JSON.stringify(header))))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  const payloadB64 = btoa(String.fromCharCode(...encoder.encode(JSON.stringify(payload))))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+  const signatureInput = `${headerB64}.${payloadB64}`;
+  
+  // Import the private key
+  const privateKey = serviceAccount.private_key.replace(/\\n/g, '\n');
+  const key = await crypto.subtle.importKey(
+    'pkcs8',
+    pemToArrayBuffer(privateKey),
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    key,
+    encoder.encode(signatureInput)
+  );
+
+  const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+  const jwt = `${signatureInput}.${signatureB64}`;
+
+  // Exchange JWT for access token
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt,
+    }),
+  });
+
+  const tokenData = await tokenResponse.json();
+  return tokenData.access_token;
+}
+
+function pemToArrayBuffer(pem: string): ArrayBuffer {
+  const b64 = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s/g, '');
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
 }
 
 Deno.serve(async (req) => {
@@ -85,15 +162,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get FCM Server Key
-    const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
-    if (!fcmServerKey) {
-      console.error('FCM_SERVER_KEY not configured');
+    // Get FCM Service Account Key
+    const fcmServiceAccountKey = Deno.env.get('FCM_SERVICE_ACCOUNT_KEY');
+    if (!fcmServiceAccountKey) {
+      console.error('FCM_SERVICE_ACCOUNT_KEY not configured');
       return new Response(
-        JSON.stringify({ error: 'FCM not configured. Please add FCM_SERVER_KEY to secrets.' }),
+        JSON.stringify({ error: 'FCM not configured. Please add FCM_SERVICE_ACCOUNT_KEY to secrets.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Generate OAuth 2.0 access token
+    const accessToken = await getAccessToken(fcmServiceAccountKey);
 
     // Send notifications to all subscriptions
     let successCount = 0;
@@ -107,23 +187,32 @@ Deno.serve(async (req) => {
       }
 
       try {
+        // FCM v1 API payload format
         const fcmPayload = {
-          to: sub.fcm_token,
-          notification: {
-            title,
-            body: message,
-            icon: '/icon.png',
-            click_action: targetPage || '/'
+          message: {
+            token: sub.fcm_token,
+            notification: {
+              title,
+              body: message,
+            },
+            data: {
+              url: targetPage || '/',
+            },
+            webpush: {
+              fcm_options: {
+                link: targetPage || '/',
+              },
+              notification: {
+                icon: '/icon.png',
+              },
+            },
           },
-          data: {
-            url: targetPage || '/'
-          }
         };
 
         const response = await fetch(FCM_ENDPOINT, {
           method: 'POST',
           headers: {
-            'Authorization': `key=${fcmServerKey}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(fcmPayload),
@@ -131,16 +220,16 @@ Deno.serve(async (req) => {
 
         const result = await response.json();
         
-        if (response.ok && result.success === 1) {
+        if (response.ok) {
           successCount++;
           console.log(`Successfully sent to FCM token: ${sub.fcm_token.substring(0, 20)}...`);
         } else {
           console.error(`Failed to send to ${sub.fcm_token}:`, result);
           failedEndpoints.push(sub.endpoint);
           
-          // Remove invalid tokens (NotRegistered or InvalidRegistration)
-          if (result.results?.[0]?.error === 'NotRegistered' || 
-              result.results?.[0]?.error === 'InvalidRegistration') {
+          // Remove invalid tokens
+          if (result.error?.details?.[0]?.errorCode === 'UNREGISTERED' || 
+              result.error?.status === 'NOT_FOUND') {
             await supabase
               .from('push_subscriptions')
               .delete()
