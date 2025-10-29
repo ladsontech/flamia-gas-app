@@ -29,7 +29,13 @@ const SellerStorefront = () => {
   const getSubdomainSlug = () => {
     if (typeof window === 'undefined') return null;
     const match = window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i);
-    return match ? match[1] : null;
+    if (!match) return null;
+    const subdomain = match[1];
+    // Exclude common non-shop subdomains
+    if (['www', 'app', 'admin', 'api'].includes(subdomain.toLowerCase())) {
+      return null;
+    }
+    return subdomain;
   };
 
   const isIndependentStorefront = !!getSubdomainSlug();
@@ -41,7 +47,14 @@ const SellerStorefront = () => {
 
   const loadShopData = async () => {
     const effectiveSlug = slug || getSubdomainSlug();
-    if (!effectiveSlug) return;
+    if (!effectiveSlug) {
+      // If no slug and we're on www subdomain, redirect to home
+      const isWwwSubdomain = window.location.hostname.toLowerCase().startsWith('www.');
+      if (isWwwSubdomain) {
+        window.location.href = 'https://flamia.store';
+      }
+      return;
+    }
     
     try {
       setLoading(true);
