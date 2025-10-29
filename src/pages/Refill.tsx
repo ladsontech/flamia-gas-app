@@ -208,30 +208,7 @@ const Refill = () => {
           </div>}
 
         {/* Contact Section */}
-        <motion.div initial={{
-        opacity: 0,
-        y: 20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: 0.6,
-        duration: 0.6
-      }} className="mt-12 md:mt-16">
-          <Card className="max-w-4xl mx-auto p-6 md:p-8 bg-gradient-to-r from-accent/10 to-blue-50 border-0">
-            <div className="text-center">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">
-                Need Help? Contact Our Gas Experts
-              </h3>
-              <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6 max-w-2xl mx-auto">
-                Our gas experts are here to help you get the best gas refill prices in Uganda.
-              </p>
-            <Button onClick={() => navigate("/order")} className="bg-accent hover:bg-accent/90 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base font-semibold">
-              Place Order
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
+        
       </div>
     </div>;
 };
