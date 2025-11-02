@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Search, RefreshCw, AlertCircle, Store, Package, ShoppingBag } from 'lucide-react';
+import { Search, RefreshCw, AlertCircle, Store, Package, ShoppingBag, ChevronRight } from 'lucide-react';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProductCard } from '@/components/shop/ProductCard';
 
 const Shop: React.FC = () => {
   const { categories, loading, error, refetch } = useMarketplaceProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -37,6 +38,18 @@ const Shop: React.FC = () => {
     });
 
     navigate('/order');
+  };
+
+  const toggleCategory = (categorySlug: string) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categorySlug)) {
+        newSet.delete(categorySlug);
+      } else {
+        newSet.add(categorySlug);
+      }
+      return newSet;
+    });
   };
 
   // Filter products based on search and category
@@ -62,12 +75,12 @@ const Shop: React.FC = () => {
           <title>Shop - Flamia Marketplace Uganda</title>
           <meta name="description" content="Shop household materials, electronics, phones, laptops and more at Flamia marketplace Uganda" />
         </Helmet>
-        <div className="min-h-screen bg-gray-50 pt-20 pb-20">
-          <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6 space-y-6">
+        <div className="min-h-screen bg-background pt-20 pb-20">
+          <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
             <Skeleton className="h-12 w-full max-w-md" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-64 w-full" />
+                <Skeleton key={i} className="h-80 w-full" />
               ))}
             </div>
           </div>
@@ -82,11 +95,11 @@ const Shop: React.FC = () => {
         <Helmet>
           <title>Shop - Flamia Marketplace Uganda</title>
         </Helmet>
-        <div className="min-h-screen bg-gray-50 pt-20 pb-20 flex items-center justify-center">
+        <div className="min-h-screen bg-background pt-20 pb-20 flex items-center justify-center">
           <div className="text-center">
-            <AlertCircle className="w-12 h-12 text-red-400 mb-3 mx-auto" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Products</h2>
-            <p className="text-gray-600 mb-4">{error}</p>
+            <AlertCircle className="w-12 h-12 text-destructive mb-3 mx-auto" />
+            <h2 className="text-2xl font-bold mb-2">Error Loading Products</h2>
+            <p className="text-muted-foreground mb-4">{error}</p>
             <Button onClick={refetch} variant="outline">
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
@@ -110,48 +123,49 @@ const Shop: React.FC = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-50 pt-20 pb-20">
+      <div className="min-h-screen bg-background pt-20 pb-20">
         {/* Header */}
-        <div className="bg-white shadow-sm sticky top-16 z-10 border-b">
-          <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="bg-card shadow-sm sticky top-16 z-10 border-b">
+          <div className="container max-w-7xl mx-auto px-4 py-4 sm:py-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                  <Store className="w-8 h-8 text-primary" />
+                <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+                  <Store className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   Flamia Marketplace
                 </h1>
-                <p className="text-gray-600 mt-1">Your one-stop shop for household materials</p>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">Your one-stop shop for household materials</p>
               </div>
-              <div className="flex items-center gap-6 text-sm text-gray-600">
+              <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-primary" />
-                  <span><strong>{totalProducts}</strong> Products</span>
+                  <Package className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  <span><strong className="text-foreground">{totalProducts}</strong> Products</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-primary" />
-                  <span><strong>{uniqueCategories}</strong> Categories</span>
+                  <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  <span><strong className="text-foreground">{uniqueCategories}</strong> Categories</span>
                 </div>
               </div>
             </div>
 
             {/* Search */}
-            <div className="relative max-w-2xl">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="relative max-w-2xl mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12 text-base"
+                className="pl-10 h-10 sm:h-12 text-sm sm:text-base"
               />
             </div>
 
             {/* Category Filter */}
             {categories.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 <Button
                   variant={selectedCategory === 'all' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedCategory('all')}
+                  className="flex-shrink-0"
                 >
                   All Categories
                 </Button>
@@ -161,6 +175,7 @@ const Shop: React.FC = () => {
                     variant={selectedCategory === category.slug ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedCategory(category.slug)}
+                    className="flex-shrink-0"
                   >
                     {category.name} ({category.products.length})
                   </Button>
@@ -171,11 +186,11 @@ const Shop: React.FC = () => {
         </div>
 
         {/* Products by Category */}
-        <div className="px-3 sm:px-4 lg:px-32 xl:px-48 2xl:px-64 py-6 space-y-12">
+        <div className="container max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8 sm:space-y-12">
           {filteredCategories.length === 0 ? (
             <div className="text-center py-12">
-              <AlertCircle className="w-12 h-12 text-gray-400 mb-3 mx-auto" />
-              <p className="text-gray-500">No products found matching your search.</p>
+              <AlertCircle className="w-12 h-12 text-muted-foreground mb-3 mx-auto" />
+              <p className="text-muted-foreground">No products found matching your search.</p>
               {searchTerm && (
                 <Button 
                   variant="outline" 
@@ -187,67 +202,76 @@ const Shop: React.FC = () => {
               )}
             </div>
           ) : (
-            filteredCategories.map(category => (
-              <section key={category.id} className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
-                  <Badge variant="secondary">{category.products.length} items</Badge>
-                </div>
+            filteredCategories.map(category => {
+              const isExpanded = expandedCategories.has(category.slug);
+              const featuredProducts = category.products.filter(p => p.featured);
+              const regularProducts = category.products.filter(p => !p.featured);
+              const initialShowCount = window.innerWidth < 640 ? 4 : 6;
+              const displayProducts = isExpanded 
+                ? category.products 
+                : [...featuredProducts, ...regularProducts].slice(0, initialShowCount);
+              const hasMore = category.products.length > initialShowCount;
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {category.products.map(product => (
-                    <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-square relative bg-gray-100">
-                        {product.image_url ? (
-                          <img 
-                            src={product.image_url} 
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-12 h-12 text-gray-400" />
-                          </div>
-                        )}
-                        {product.featured && (
-                          <Badge className="absolute top-2 left-2">Featured</Badge>
-                        )}
-                        {product.source === 'seller' && product.shop_name && (
-                          <Badge variant="secondary" className="absolute top-2 right-2 text-xs">
-                            {product.shop_name}
-                          </Badge>
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                          {product.description}
-                        </p>
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg font-bold text-primary">
-                            UGX {product.price.toLocaleString()}
-                          </span>
-                          {product.original_price && product.original_price > product.price && (
-                            <span className="text-xs text-gray-500 line-through">
-                              UGX {product.original_price.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                        <Button 
-                          className="w-full" 
-                          size="sm"
-                          onClick={() => handleAddToCart(product)}
-                        >
-                          Add to Cart
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </section>
-            ))
+              return (
+                <section key={category.id} className="space-y-4 sm:space-y-6">
+                  {/* Category Header */}
+                  <div className="flex items-center justify-between border-b pb-3">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">{category.name}</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {featuredProducts.length > 0 && `${featuredProducts.length} featured • `}
+                        {category.products.length} total items
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs sm:text-sm">
+                      {category.products.length}
+                    </Badge>
+                  </div>
+
+                  {/* Products Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+                    {displayProducts.map(product => (
+                      <ProductCard
+                        key={product.id}
+                        name={product.name}
+                        description={product.description}
+                        price={product.price}
+                        originalPrice={product.original_price}
+                        imageUrl={product.image_url}
+                        featured={product.featured}
+                        shopName={product.shop_name}
+                        source={product.source}
+                        onAddToCart={() => handleAddToCart(product)}
+                      />
+                    ))}
+                  </div>
+
+                  {/* View More Button */}
+                  {hasMore && !isExpanded && (
+                    <div className="flex justify-center pt-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => toggleCategory(category.slug)}
+                        className="group"
+                      >
+                        View More Products
+                        <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
+                  )}
+                  {isExpanded && (
+                    <div className="flex justify-center pt-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => toggleCategory(category.slug)}
+                      >
+                        Show Less
+                      </Button>
+                    </div>
+                  )}
+                </section>
+              );
+            })
           )}
         </div>
       </div>

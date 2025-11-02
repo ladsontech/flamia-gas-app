@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, Store, LayoutGrid, LayoutList } from 'lucide-react';
+import { Store, LayoutGrid, LayoutList, Grid2x2, List } from 'lucide-react';
+import { ProductCard } from '@/components/shop/ProductCard';
 import { fetchSellerShopBySlug } from '@/services/sellerService';
 import type { SellerShop } from '@/types/seller';
 import type { BusinessProduct } from '@/types/business';
@@ -24,7 +23,7 @@ const SellerStorefront = () => {
   const [shop, setShop] = useState<SellerShop | null>(null);
   const [products, setProducts] = useState<BusinessProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [gridLayout, setGridLayout] = useState<'single' | 'double'>('double');
+  const [gridLayout, setGridLayout] = useState<'1' | '2' | '3' | '4'>('3');
 
   const getSubdomainSlug = () => {
     if (typeof window === 'undefined') return null;
@@ -193,27 +192,45 @@ const SellerStorefront = () => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Our Products</h2>
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground">Browse {products.length} quality products</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">View:</Label>
+          <div className="flex items-center gap-3">
+            <Label className="text-sm font-medium hidden sm:block">Columns:</Label>
             <RadioGroup
               value={gridLayout}
-              onValueChange={(value: 'single' | 'double') => setGridLayout(value)}
+              onValueChange={(value: '1' | '2' | '3' | '4') => setGridLayout(value)}
               className="flex gap-2"
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="double" id="double" className="peer sr-only" />
+                <RadioGroupItem value="1" id="col-1" className="peer sr-only" />
                 <Label
-                  htmlFor="double"
-                  className="flex items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                  htmlFor="col-1"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+                >
+                  <List className="h-4 w-4" />
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="2" id="col-2" className="peer sr-only" />
+                <Label
+                  htmlFor="col-2"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+                >
+                  <Grid2x2 className="h-4 w-4" />
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="3" id="col-3" className="peer sr-only" />
+                <Label
+                  htmlFor="col-3"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
                 >
                   <LayoutGrid className="h-4 w-4" />
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="single" id="single" className="peer sr-only" />
+                <RadioGroupItem value="4" id="col-4" className="peer sr-only" />
                 <Label
-                  htmlFor="single"
-                  className="flex items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                  htmlFor="col-4"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
                 >
                   <LayoutList className="h-4 w-4" />
                 </Label>
@@ -223,74 +240,29 @@ const SellerStorefront = () => {
         </div>
 
         {products.length === 0 ? (
-          <Card className="p-8 sm:p-12 md:p-16 text-center border-2">
-            <ShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-muted-foreground mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">No Products Yet</h3>
-            <p className="text-sm sm:text-base md:text-lg text-muted-foreground">This shop is still setting up. Check back soon for amazing products!</p>
-          </Card>
+          <div className="text-center py-16 px-4">
+            <Store className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-2xl font-bold mb-2">No Products Yet</h3>
+            <p className="text-muted-foreground">This shop is still setting up. Check back soon for amazing products!</p>
+          </div>
         ) : (
-          <div className={`grid gap-4 sm:gap-5 md:gap-6 ${
-              gridLayout === 'single' 
-                ? 'grid-cols-1 max-w-2xl mx-auto' 
-                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          <div className={`grid gap-4 ${
+              gridLayout === '1' ? 'grid-cols-1 max-w-2xl mx-auto' :
+              gridLayout === '2' ? 'grid-cols-1 sm:grid-cols-2' :
+              gridLayout === '3' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3' :
+              'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
             }`}>
               {products.map((product) => (
-                <Card 
+                <ProductCard
                   key={product.id}
-                  className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border hover:border-primary/50 flex flex-col bg-card"
-                >
-                  <div className="relative aspect-square overflow-hidden bg-muted">
-                    <img
-                      src={product.image_url || '/placeholder.svg'}
-                      alt={product.name}
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {product.is_featured && (
-                      <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground shadow-lg text-xs font-semibold">
-                        ⭐ Featured
-                      </Badge>
-                    )}
-                    {product.original_price && product.original_price > product.price && (
-                      <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground shadow-lg text-xs font-bold">
-                        -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
-                    <h3 className="font-bold text-lg sm:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-                      {product.name}
-                    </h3>
-                    
-                    {product.description && (
-                      <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2 flex-1 leading-relaxed">
-                        {product.description}
-                      </p>
-                    )}
-                    
-                    <div className="space-y-3 mt-auto">
-                      <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-2xl sm:text-3xl font-extrabold text-primary">
-                          UGX {product.price.toLocaleString()}
-                        </span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-sm sm:text-base text-muted-foreground line-through">
-                            UGX {product.original_price.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <Button 
-                        onClick={() => handleAddToCart(product)}
-                        className="w-full h-11 sm:h-12 text-base sm:text-lg font-semibold group-hover:shadow-xl transition-all"
-                        size="lg"
-                      >
-                        <ShoppingCart className="w-5 h-5 mr-2" />
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  name={product.name}
+                  description={product.description}
+                  price={product.price}
+                  originalPrice={product.original_price}
+                  imageUrl={product.image_url}
+                  featured={product.is_featured}
+                  onAddToCart={() => handleAddToCart(product)}
+                />
               ))}
             </div>
         )}

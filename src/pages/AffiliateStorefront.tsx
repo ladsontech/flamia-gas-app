@@ -4,12 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { fetchAffiliateShopBySlug, fetchAffiliateShopProducts } from '@/services/affiliateService';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, ShoppingCart, Store, LayoutGrid, LayoutList } from 'lucide-react';
+import { Loader2, Store, Grid2x2, List, LayoutGrid, LayoutList } from 'lucide-react';
+import { ProductCard } from '@/components/shop/ProductCard';
 import type { AffiliateShop, AffiliateShopProduct } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
 
@@ -19,7 +18,7 @@ export default function AffiliateStorefront() {
   const [shop, setShop] = useState<AffiliateShop | null>(null);
   const [products, setProducts] = useState<(BusinessProduct & { commission_rate?: number })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [gridLayout, setGridLayout] = useState<'single' | 'double'>('double');
+  const [gridLayout, setGridLayout] = useState<'1' | '2' | '3' | '4'>('3');
 
   useEffect(() => {
     if (slug) {
@@ -90,11 +89,11 @@ export default function AffiliateStorefront() {
   if (!shop) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="p-8 text-center max-w-md">
+        <div className="text-center max-w-md px-4">
           <Store className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Shop Not Found</h2>
           <p className="text-muted-foreground">The shop you're looking for doesn't exist or has been deactivated.</p>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -149,27 +148,45 @@ export default function AffiliateStorefront() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Shop Our Collection</h2>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg">Discover {products.length} amazing products</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">View:</Label>
+          <div className="flex items-center gap-3">
+            <Label className="text-sm font-medium hidden sm:block">Columns:</Label>
             <RadioGroup
               value={gridLayout}
-              onValueChange={(value: 'single' | 'double') => setGridLayout(value)}
+              onValueChange={(value: '1' | '2' | '3' | '4') => setGridLayout(value)}
               className="flex gap-2"
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="double" id="double" className="peer sr-only" />
+                <RadioGroupItem value="1" id="col-1" className="peer sr-only" />
                 <Label
-                  htmlFor="double"
-                  className="flex items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                  htmlFor="col-1"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+                >
+                  <List className="h-4 w-4" />
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="2" id="col-2" className="peer sr-only" />
+                <Label
+                  htmlFor="col-2"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+                >
+                  <Grid2x2 className="h-4 w-4" />
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="3" id="col-3" className="peer sr-only" />
+                <Label
+                  htmlFor="col-3"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
                 >
                   <LayoutGrid className="h-4 w-4" />
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="single" id="single" className="peer sr-only" />
+                <RadioGroupItem value="4" id="col-4" className="peer sr-only" />
                 <Label
-                  htmlFor="single"
-                  className="flex items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer"
+                  htmlFor="col-4"
+                  className="flex items-center justify-center rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
                 >
                   <LayoutList className="h-4 w-4" />
                 </Label>
@@ -179,62 +196,28 @@ export default function AffiliateStorefront() {
         </div>
 
         {products.length === 0 ? (
-          <Card className="p-8 sm:p-12 md:p-16 text-center border-2">
-            <ShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">No Products Available</h2>
-            <p className="text-muted-foreground text-sm sm:text-base md:text-lg">This shop doesn't have any products listed yet. Check back soon!</p>
-          </Card>
+          <div className="text-center py-16 px-4">
+            <Store className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">No Products Available</h2>
+            <p className="text-muted-foreground">This shop doesn't have any products listed yet. Check back soon!</p>
+          </div>
         ) : (
-          <div className={`grid gap-4 sm:gap-5 md:gap-6 ${
-              gridLayout === 'single' 
-                ? 'grid-cols-1 max-w-2xl mx-auto' 
-                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          <div className={`grid gap-4 ${
+              gridLayout === '1' ? 'grid-cols-1 max-w-2xl mx-auto' :
+              gridLayout === '2' ? 'grid-cols-1 sm:grid-cols-2' :
+              gridLayout === '3' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3' :
+              'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
             }`}>
               {products.map((product) => (
-                <Card key={product.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border hover:border-primary/50 flex flex-col bg-card">
-                  <div className="relative aspect-square overflow-hidden bg-muted">
-                    <img 
-                      src={product.image_url} 
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {product.original_price && product.original_price > product.price && (
-                      <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground shadow-lg text-xs font-bold">
-                        -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
-                      </Badge>
-                    )}
-                  </div>
-                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
-                    <h3 className="font-bold text-lg sm:text-xl mb-2 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-                      {product.name}
-                    </h3>
-                    {product.description && (
-                      <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2 flex-1 leading-relaxed">
-                        {product.description}
-                      </p>
-                    )}
-                    <div className="space-y-3 mt-auto">
-                      <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-2xl sm:text-3xl font-extrabold text-primary">
-                          UGX {product.price.toLocaleString()}
-                        </span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-sm sm:text-base text-muted-foreground line-through">
-                            UGX {product.original_price.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-                      <Button 
-                        className="w-full h-11 sm:h-12 text-base sm:text-lg font-semibold group-hover:shadow-xl transition-all"
-                        onClick={() => handleAddToCart(product)}
-                        size="lg"
-                      >
-                        <ShoppingCart className="w-5 h-5 mr-2" />
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ProductCard
+                  key={product.id}
+                  name={product.name}
+                  description={product.description}
+                  price={product.price}
+                  originalPrice={product.original_price}
+                  imageUrl={product.image_url}
+                  onAddToCart={() => handleAddToCart(product)}
+                />
               ))}
             </div>
         )}
