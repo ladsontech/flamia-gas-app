@@ -35,7 +35,7 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
   // Define active states
   const isSignInActive = path === "/signin" || path === "/signup";
   const isHomeActive = path === "/" || path === "/home";
-  const isGadgetsActive = path === "/gadgets";
+  const isShopActive = path === "/shop" || path === "/gadgets";
   const isAccountActive = path === "/account" || isSignInActive;
 
   // Determine account navigation
@@ -52,10 +52,10 @@ export const BottomNav = ({ isAdmin, user }: BottomNavProps) => {
           isActive={isHomeActive}
         />
         <NavItem
-          to="/gadgets"
+          to="/shop"
           icon={ShoppingBag}
           label="Shop"
-          isActive={isGadgetsActive}
+          isActive={isShopActive}
         />
         {/* Foods section temporarily hidden */}
         <NavItem

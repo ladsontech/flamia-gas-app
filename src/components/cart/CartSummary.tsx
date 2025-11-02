@@ -41,8 +41,8 @@ export const CartSummary: React.FC = () => {
           <Button onClick={() => navigate('/')} className="w-full">
             Browse Gas Cylinders
           </Button>
-          <Button onClick={() => navigate('/gadgets')} variant="outline" className="w-full">
-            Browse Gadgets
+          <Button onClick={() => navigate('/shop')} variant="outline" className="w-full">
+            Browse Shop
           </Button>
           <Button onClick={() => navigate('/accessories')} variant="outline" className="w-full">
             Browse Accessories

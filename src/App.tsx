@@ -17,6 +17,7 @@ import Account from './pages/Account';
 import Orders from './pages/Orders';
 import Gadgets from './pages/Gadgets';
 // import Foods from './pages/Foods'; // Temporarily hidden
+import Shop from './pages/Shop';
 import Home from './pages/Index';
 import Order from './pages/Order';
 import Refill from './pages/Refill';
@@ -91,8 +92,9 @@ const AppContent = () => {
             <Route path="*" element={<SellerStorefront />} />
           ) : (
             <>
-              <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
           <Route path="/gadgets" element={<Gadgets />} />
           {/* <Route path="/foods" element={<Foods />} /> */}
           <Route path="/orders" element={<Orders />} />
