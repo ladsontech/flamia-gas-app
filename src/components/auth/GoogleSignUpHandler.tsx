@@ -1,11 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export const GoogleSignUpHandler = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
