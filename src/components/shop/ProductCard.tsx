@@ -55,11 +55,6 @@ export const ProductCard = ({
               <span className="text-xs">New</span>
             </Badge>
           )}
-          {discountPercent > 0 && (
-            <Badge className="bg-red-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
-              -{discountPercent}%
-            </Badge>
-          )}
         </div>
 
         {/* Shop Name Badge for Seller Products */}
