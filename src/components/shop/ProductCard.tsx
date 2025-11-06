@@ -47,8 +47,8 @@ export const ProductCard = ({
           </div>
         )}
         
-        {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1 z-0">
+        {/* Badges - Ensure they stay below sticky header (z-40) and AppBar (z-50) */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1" style={{ zIndex: 1 }}>
           {featured && (
             <Badge className="bg-orange-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
               <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 fill-current" />
@@ -64,7 +64,7 @@ export const ProductCard = ({
 
         {/* Shop Name Badge for Seller Products */}
         {shopName && source === 'seller' && (
-          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs px-1.5 sm:px-2 py-0.5 bg-white/90 backdrop-blur-sm border border-gray-200 z-0">
+          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs px-1.5 sm:px-2 py-0.5 bg-white/90 backdrop-blur-sm border border-gray-200" style={{ zIndex: 1 }}>
             {shopName}
           </Badge>
         )}
@@ -86,18 +86,23 @@ export const ProductCard = ({
         {/* Price Section */}
         <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
           <div className="flex flex-col gap-1 sm:gap-1.5 mb-2 sm:mb-3">
-            {/* Always show current price - make it very prominent */}
+            {/* Always show current price - make it very prominent and always visible */}
             <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-              <span className="text-base sm:text-lg font-bold text-orange-600 leading-tight">
-                UGX {price.toLocaleString()}
-              </span>
+              {/* Current Price - Always displayed first and prominently */}
+              {price && price > 0 ? (
+                <span className="text-base sm:text-lg font-bold text-orange-600 leading-tight block">
+                  UGX {price.toLocaleString()}
+                </span>
+              ) : (
+                <span className="text-base sm:text-lg font-bold text-gray-400 leading-tight block">
+                  Price on request
+                </span>
+              )}
               {/* Show original price if it exists and is higher than current price */}
-              {originalPrice && originalPrice > price && (
-                <>
-                  <span className="text-xs sm:text-sm text-gray-500 line-through">
-                    UGX {originalPrice.toLocaleString()}
-                  </span>
-                </>
+              {originalPrice && originalPrice > 0 && price && originalPrice > price && (
+                <span className="text-xs sm:text-sm text-gray-500 line-through block">
+                  UGX {originalPrice.toLocaleString()}
+                </span>
               )}
             </div>
             {/* Show discount percentage if applicable */}

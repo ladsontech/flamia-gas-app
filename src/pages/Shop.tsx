@@ -236,7 +236,7 @@ const Shop: React.FC = () => {
                     </div>
 
                     {/* Products Grid - Responsive: 2 cols mobile, 3 tablet, 4 desktop, 5 large */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5 relative z-0">
                       {displayProducts.map(product => (
                         <ProductCard
                           key={product.id}
