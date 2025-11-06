@@ -91,15 +91,65 @@ export const useMarketplaceProducts = () => {
       if (categoriesError) throw categoriesError;
 
       // Map gadgets to marketplace products with proper categories
+      // Match gadget categories to product_categories
       const flamiaProducts: MarketplaceProduct[] = (gadgets || []).map((gadget: any) => {
         let categoryName = gadget.category;
-        // Map gadget categories to proper categories
-        if (gadget.category.toLowerCase().includes('phone')) {
-          categoryName = 'Phones & Tablets';
-        } else if (gadget.category.toLowerCase().includes('laptop') || gadget.category.toLowerCase().includes('computer')) {
-          categoryName = 'Laptops & Computers';
-        } else if (gadget.category.toLowerCase().includes('accessory') || gadget.category.toLowerCase().includes('cable') || gadget.category.toLowerCase().includes('charger')) {
-          categoryName = 'Electronics Accessories';
+        let categoryId: string | undefined;
+        
+        // Try to find matching category in product_categories
+        const gadgetCategoryLower = gadget.category.toLowerCase();
+        
+        // Map gadget categories to product categories
+        const categoryMapping: { [key: string]: string } = {
+          'phone': 'Phones',
+          'phones': 'Phones',
+          'smartphone': 'Phones',
+          'tablet': 'Phones',
+          'laptop': 'Laptops & PCs',
+          'laptops': 'Laptops & PCs',
+          'computer': 'Laptops & PCs',
+          'pc': 'Laptops & PCs',
+          'tv': 'TVs',
+          'television': 'TVs',
+          'speaker': 'Audio & Speakers',
+          'audio': 'Audio & Speakers',
+          'headphone': 'Audio & Speakers',
+          'earphone': 'Audio & Speakers',
+          'accessory': 'Electronics',
+          'accessories': 'Electronics',
+          'cable': 'Electronics',
+          'charger': 'Electronics',
+        };
+
+        // Find matching category
+        for (const [key, mappedCategory] of Object.entries(categoryMapping)) {
+          if (gadgetCategoryLower.includes(key)) {
+            categoryName = mappedCategory;
+            // Find the category ID from product_categories
+            const matchedCategory = productCategories?.find(c => 
+              c.name.toLowerCase() === mappedCategory.toLowerCase() ||
+              c.slug.toLowerCase() === mappedCategory.toLowerCase().replace(/\s+/g, '-')
+            );
+            if (matchedCategory) {
+              categoryId = matchedCategory.id;
+              categoryName = matchedCategory.name; // Use the exact name from database
+            }
+            break;
+          }
+        }
+
+        // If no match found, try to find by slug or use 'Electronics' as default
+        if (!categoryId) {
+          const defaultCategory = productCategories?.find(c => 
+            c.slug === 'electronics' || c.name.toLowerCase() === 'electronics'
+          );
+          if (defaultCategory) {
+            categoryName = defaultCategory.name;
+            categoryId = defaultCategory.id;
+          } else {
+            // Fallback to original category name
+            categoryName = gadget.category;
+          }
         }
 
         return {
@@ -110,6 +160,7 @@ export const useMarketplaceProducts = () => {
           original_price: gadget.original_price,
           image_url: gadget.image_url,
           category: categoryName,
+          category_id: categoryId,
           source: 'flamia',
           in_stock: gadget.in_stock,
           featured: gadget.featured,
@@ -138,29 +189,75 @@ export const useMarketplaceProducts = () => {
         };
       });
 
-      // Combine all products
+      // Combine all products (gadgets + seller products)
       const allProducts = [...flamiaProducts, ...mappedSellerProducts];
 
-      // Group products by category
+      // Group products by category - use both parent and subcategories
       const categoryMap = new Map<string, CategoryGroup>();
 
-      allProducts.forEach(product => {
-        const categoryKey = product.category;
-        if (!categoryMap.has(categoryKey)) {
-          categoryMap.set(categoryKey, {
-            id: product.category_id || categoryKey,
-            name: categoryKey,
-            slug: categoryKey.toLowerCase().replace(/\s+/g, '-'),
-            products: [],
-          });
-        }
-        categoryMap.get(categoryKey)!.products.push(product);
+      // Create category groups from all product_categories (parent and subcategories)
+      productCategories?.forEach(cat => {
+        categoryMap.set(cat.name, {
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          products: [],
+        });
       });
 
-      // Convert to array and sort by product count
-      const categorizedProducts = Array.from(categoryMap.values()).sort((a, b) => 
-        b.products.length - a.products.length
-      );
+      // Now add products to their categories
+      allProducts.forEach(product => {
+        const categoryKey = product.category;
+        
+        // Try to find exact match first
+        if (categoryMap.has(categoryKey)) {
+          categoryMap.get(categoryKey)!.products.push(product);
+        } else {
+          // Try to find by slug or name match
+          const matchedCategory = productCategories?.find(c => 
+            c.name.toLowerCase() === categoryKey.toLowerCase() ||
+            c.slug.toLowerCase() === categoryKey.toLowerCase().replace(/\s+/g, '-')
+          );
+          
+          if (matchedCategory) {
+            const matchedKey = matchedCategory.name;
+            if (!categoryMap.has(matchedKey)) {
+              categoryMap.set(matchedKey, {
+                id: matchedCategory.id,
+                name: matchedCategory.name,
+                slug: matchedCategory.slug,
+                products: [],
+              });
+            }
+            categoryMap.get(matchedKey)!.products.push(product);
+          } else {
+            // Create category group for unmatched categories (fallback)
+            if (!categoryMap.has(categoryKey)) {
+              categoryMap.set(categoryKey, {
+                id: product.category_id || categoryKey,
+                name: categoryKey,
+                slug: categoryKey.toLowerCase().replace(/\s+/g, '-'),
+                products: [],
+              });
+            }
+            categoryMap.get(categoryKey)!.products.push(product);
+          }
+        }
+      });
+
+      // Convert to array - show all categories from product_categories, sorted by display_order
+      const categorizedProducts = Array.from(categoryMap.values())
+        .sort((a, b) => {
+          // Get display_order from product_categories
+          const aOrder = productCategories?.find(pc => pc.name === a.name || pc.slug === a.slug)?.display_order || 999;
+          const bOrder = productCategories?.find(pc => pc.name === b.name || pc.slug === b.slug)?.display_order || 999;
+          
+          // Categories with products first, then by display_order
+          if (a.products.length > 0 && b.products.length === 0) return -1;
+          if (a.products.length === 0 && b.products.length > 0) return 1;
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return b.products.length - a.products.length;
+        });
 
       setCategories(categorizedProducts);
     } catch (err) {

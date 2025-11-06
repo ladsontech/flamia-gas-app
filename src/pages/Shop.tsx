@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { supabase } from '@/integrations/supabase/client';
+import type { ProductCategory } from '@/types/seller';
 
 const Shop: React.FC = () => {
   const { categories, loading, error, refetch } = useMarketplaceProducts();
@@ -19,9 +21,31 @@ const Shop: React.FC = () => {
   const [initialShowCount, setInitialShowCount] = useState(6);
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [allCategories, setAllCategories] = useState<ProductCategory[]>([]);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Fetch all product categories (even without products)
+  useEffect(() => {
+    const fetchAllCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('product_categories')
+          .select('*')
+          .eq('is_active', true)
+          .is('parent_id', null) // Only parent categories
+          .order('display_order', { ascending: true });
+        
+        if (error) throw error;
+        setAllCategories(data || []);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+    
+    fetchAllCategories();
+  }, []);
 
   // Calculate initial show count based on screen size
   useEffect(() => {
@@ -188,7 +212,7 @@ const Shop: React.FC = () => {
                     </SheetHeader>
                     <div className="py-4 space-y-6 overflow-y-auto">
                       {/* Categories */}
-                      {categories.length > 0 && (
+                      {allCategories.length > 0 && (
                         <div>
                           <h3 className="font-semibold text-sm mb-3 text-gray-900">Categories</h3>
                           <div className="grid grid-cols-2 gap-2">
@@ -200,17 +224,21 @@ const Shop: React.FC = () => {
                             >
                               All
                             </Button>
-                            {categories.map(category => (
-                              <Button
-                                key={category.slug}
-                                variant={selectedCategory === category.slug ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setSelectedCategory(category.slug)}
-                                className={selectedCategory === category.slug ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
-                              >
-                                {category.name}
-                              </Button>
-                            ))}
+                            {allCategories.map(category => {
+                              const categorySlug = category.slug;
+                              const hasProducts = categories.some(c => c.slug === categorySlug);
+                              return (
+                                <Button
+                                  key={category.id}
+                                  variant={selectedCategory === categorySlug ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={() => setSelectedCategory(categorySlug)}
+                                  className={`${selectedCategory === categorySlug ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''} ${!hasProducts ? 'opacity-60' : ''}`}
+                                >
+                                  {category.name}
+                                </Button>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
@@ -265,40 +293,7 @@ const Shop: React.FC = () => {
                 </Sheet>
               </div>
 
-              {/* Desktop: Category Filter Only - Cleaner */}
-              {categories.length > 0 && (
-                <div className="hidden md:flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                  <Button
-                    variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedCategory('all')}
-                    className={`flex-shrink-0 text-sm h-9 px-4 ${
-                      selectedCategory === 'all'
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    All
-                  </Button>
-                  {categories.map(category => (
-                    <Button
-                      key={category.slug}
-                      variant={selectedCategory === category.slug ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setSelectedCategory(category.slug)}
-                      className={`flex-shrink-0 text-sm h-9 px-4 whitespace-nowrap ${
-                        selectedCategory === category.slug
-                          ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                          : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                      }`}
-                    >
-                      {category.name}
-                    </Button>
-                  ))}
-                </div>
-              )}
-
-              {/* Desktop: Sort Controls - Compact */}
+              {/* Desktop: Sort Controls - Compact (in header) */}
               <div className="hidden md:flex items-center gap-2">
                 <span className="text-xs text-gray-600 font-medium">Sort:</span>
                 <div className="flex gap-1.5">
@@ -356,8 +351,57 @@ const Shop: React.FC = () => {
           </div>
         </div>
 
-        {/* Products by Category */}
-        <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        {/* Main Content with Sidebar */}
+        <div className="flex gap-6 container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+          {/* Desktop Sidebar - Categories */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+              <h3 className="font-semibold text-sm text-gray-900 mb-4">Categories</h3>
+              <div className="space-y-1">
+                <Button
+                  variant={selectedCategory === 'all' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedCategory('all')}
+                  className={`w-full justify-start text-sm h-9 ${
+                    selectedCategory === 'all'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  All Categories
+                </Button>
+                {allCategories.map(category => {
+                  const categorySlug = category.slug;
+                  const hasProducts = categories.some(c => c.slug === categorySlug);
+                  return (
+                    <Button
+                      key={category.id}
+                      variant={selectedCategory === categorySlug ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setSelectedCategory(categorySlug)}
+                      className={`w-full justify-start text-sm h-9 ${
+                        selectedCategory === categorySlug
+                          ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      } ${!hasProducts ? 'opacity-60' : ''}`}
+                    >
+                      <span className="flex-1 text-left">{category.name}</span>
+                      {hasProducts && (
+                        <span className={`text-xs ml-2 ${
+                          selectedCategory === categorySlug ? 'text-white/80' : 'text-gray-500'
+                        }`}>
+                          ({categories.find(c => c.slug === categorySlug)?.products.length || 0})
+                        </span>
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          </aside>
+
+          {/* Products by Category */}
+          <div className="flex-1 min-w-0">
           {filteredCategories.length === 0 ? (
             <div className="text-center py-16 sm:py-20">
               <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mb-4 mx-auto" />
@@ -497,6 +541,7 @@ const Shop: React.FC = () => {
               })}
             </div>
           )}
+          </div>
         </div>
       </div>
     </>
