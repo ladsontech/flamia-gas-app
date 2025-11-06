@@ -490,6 +490,7 @@ const Shop: React.FC = () => {
                                       featured={product1.featured}
                                       shopName={product1.shop_name}
                                       source={product1.source}
+                                      viewCount={product1.viewCount}
                                       onAddToCart={() => handleAddToCart(product1)}
                                     />
                                   </div>
@@ -507,6 +508,7 @@ const Shop: React.FC = () => {
                                       featured={product2.featured}
                                       shopName={product2.shop_name}
                                       source={product2.source}
+                                      viewCount={product2.viewCount}
                                       onAddToCart={() => handleAddToCart(product2)}
                                     />
                                   </div>
@@ -534,6 +536,7 @@ const Shop: React.FC = () => {
                                 featured={product.featured}
                                 shopName={product.shop_name}
                                 source={product.source}
+                                viewCount={product.viewCount}
                                 onAddToCart={() => handleAddToCart(product)}
                               />
                             </div>

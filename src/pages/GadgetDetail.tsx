@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
@@ -6,16 +6,17 @@ import { useGadgets } from '@/hooks/useGadgets';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ShoppingCart, Share2, Star } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Share2, Star, Eye, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import GadgetCard from '@/components/gadgets/GadgetCard';
-import { Loader2 } from 'lucide-react';
+import { trackProductView, getProductViewCount } from '@/services/productViewsService';
 
 const GadgetDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { gadgets, loading } = useGadgets();
+  const [viewCount, setViewCount] = useState<number>(0);
 
   const gadget = gadgets.find(g => g.id === id);
   const relatedGadgets = gadgets.filter(g => 
@@ -24,6 +25,14 @@ const GadgetDetail = () => {
   ).slice(0, 8);
 
   const canonicalUrl = `https://flamia.store/gadget/${id}`;
+
+  // Track product view when component mounts and load view count
+  useEffect(() => {
+    if (gadget && id) {
+      trackProductView(id, 'gadget');
+      getProductViewCount(id).then(count => setViewCount(count));
+    }
+  }, [gadget, id]);
 
   const handleOrder = () => {
     navigate("/order?type=gadget");
@@ -198,7 +207,15 @@ const GadgetDetail = () => {
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight">
                 {gadget.name}
               </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-accent font-medium">{gadget.category}</p>
+              <div className="flex items-center gap-4 flex-wrap">
+                <p className="text-base sm:text-lg lg:text-xl text-accent font-medium">{gadget.category}</p>
+                {viewCount > 0 && (
+                  <div className="flex items-center gap-1 text-sm text-gray-500">
+                    <Eye className="w-4 h-4" />
+                    <span>{viewCount.toLocaleString()} {viewCount === 1 ? 'view' : 'views'}</span>
+                  </div>
+                )}
+              </div>
               {gadget.brand && (
                 <p className="text-gray-600 text-sm sm:text-base lg:text-lg">Brand: {gadget.brand}</p>
               )}

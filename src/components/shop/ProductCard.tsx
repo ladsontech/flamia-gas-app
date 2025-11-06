@@ -1,8 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Package, Star } from 'lucide-react';
+import { ShoppingCart, Package, Star, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getProductViewCount } from '@/services/productViewsService';
 
 interface ProductCardProps {
   id?: string;
@@ -14,6 +16,7 @@ interface ProductCardProps {
   featured?: boolean;
   shopName?: string;
   source?: string;
+  viewCount?: number;
   onAddToCart: () => void;
 }
 
@@ -27,12 +30,22 @@ export const ProductCard = ({
   featured,
   shopName,
   source,
+  viewCount: initialViewCount,
   onAddToCart,
 }: ProductCardProps) => {
   const navigate = useNavigate();
+  const [viewCount, setViewCount] = useState<number>(initialViewCount || 0);
+  
   const discountPercent = originalPrice && originalPrice > price
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
+
+  // Fetch view count if not provided
+  useEffect(() => {
+    if (id && initialViewCount === undefined) {
+      getProductViewCount(id).then(count => setViewCount(count));
+    }
+  }, [id, initialViewCount]);
 
   const handleCardClick = () => {
     if (id) {
@@ -74,6 +87,14 @@ export const ProductCard = ({
             </Badge>
           )}
         </div>
+
+        {/* View Count Badge */}
+        {viewCount > 0 && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-xs px-1.5 sm:px-2 py-0.5 rounded-full" style={{ zIndex: 1 }}>
+            <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span>{viewCount > 999 ? `${(viewCount / 1000).toFixed(1)}K` : viewCount}</span>
+          </div>
+        )}
 
         {/* Shop Name Badge for Seller Products */}
         {shopName && source === 'seller' && (

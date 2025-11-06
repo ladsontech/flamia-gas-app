@@ -17,6 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
 import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
+import { getProductViewCounts } from '@/services/productViewsService';
 
 const SellerStorefront = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -87,7 +88,19 @@ const SellerStorefront = () => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setProducts((productsData || []) as BusinessProduct[]);
+        const products = (productsData || []) as BusinessProduct[];
+        
+        // Fetch view counts for products
+        const productIds = products.map(p => p.id);
+        const viewCounts = await getProductViewCounts(productIds);
+        
+        // Add view counts to products
+        const productsWithViews = products.map(product => ({
+          ...product,
+          viewCount: viewCounts[product.id] || 0
+        }));
+        
+        setProducts(productsWithViews);
       }
     } catch (error: any) {
       console.error('Error loading shop:', error);
@@ -632,6 +645,7 @@ const SellerStorefront = () => {
                       originalPrice={product.original_price}
                       imageUrl={product.image_url}
                       featured={product.is_featured}
+                      viewCount={(product as any).viewCount}
                       onAddToCart={() => handleAddToCart(product)}
                     />
                   ))}

@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
 import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
 import { Helmet } from 'react-helmet';
+import { getProductViewCounts } from '@/services/productViewsService';
 
 export default function AffiliateStorefront() {
   const { slug } = useParams<{ slug: string }>();
@@ -64,7 +65,17 @@ export default function AffiliateStorefront() {
         commission_rate: affiliateProducts.find(ap => ap.business_product_id === product.id)?.commission_rate
       })) as (BusinessProduct & { commission_rate?: number })[];
 
-      setProducts(productsWithCommission);
+      // Fetch view counts for products
+      const productIds = productsWithCommission.map(p => p.id);
+      const viewCounts = await getProductViewCounts(productIds);
+      
+      // Add view counts to products
+      const productsWithViews = productsWithCommission.map(product => ({
+        ...product,
+        viewCount: viewCounts[product.id] || 0
+      }));
+
+      setProducts(productsWithViews);
     } catch (error: any) {
       console.error('Error loading shop:', error);
       toast.error('Failed to load shop');
@@ -594,6 +605,7 @@ export default function AffiliateStorefront() {
                       price={product.price}
                       originalPrice={product.original_price}
                       imageUrl={product.image_url}
+                      viewCount={(product as any).viewCount}
                       onAddToCart={() => handleAddToCart(product)}
                     />
                   ))}

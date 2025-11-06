@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ShoppingCart, Share2, Star, Package } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Share2, Star, Package, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
 import { Loader2 } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
+import { trackProductView, getProductViewCount } from '@/services/productViewsService';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ const ProductDetail = () => {
   const { toast } = useToast();
   const { categories, loading } = useMarketplaceProducts();
   const { addToCart } = useCart();
+  const [viewCount, setViewCount] = useState<number>(0);
 
   // Find product across all categories
   const product = categories
@@ -32,6 +34,15 @@ const ProductDetail = () => {
     : [];
 
   const canonicalUrl = `https://flamia.store/product/${id}`;
+
+  // Track product view when component mounts and load view count
+  useEffect(() => {
+    if (product) {
+      const productType = product.source === 'flamia' ? 'gadget' : 'business_product';
+      trackProductView(product.id, productType);
+      getProductViewCount(product.id).then(count => setViewCount(count));
+    }
+  }, [product]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -214,9 +225,17 @@ const ProductDetail = () => {
                     )}
                   </div>
                 </div>
-                <p className="text-sm sm:text-base text-gray-500">
-                  Category: <span className="font-medium text-gray-700">{product.category}</span>
-                </p>
+                <div className="flex items-center gap-4 mb-2">
+                  <p className="text-sm sm:text-base text-gray-500">
+                    Category: <span className="font-medium text-gray-700">{product.category}</span>
+                  </p>
+                  {viewCount > 0 && (
+                    <div className="flex items-center gap-1 text-sm text-gray-500">
+                      <Eye className="w-4 h-4" />
+                      <span>{viewCount.toLocaleString()} {viewCount === 1 ? 'view' : 'views'}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Price Section */}
@@ -317,6 +336,7 @@ const ProductDetail = () => {
                   featured={relatedProduct.featured}
                   shopName={relatedProduct.shop_name}
                   source={relatedProduct.source}
+                  viewCount={relatedProduct.viewCount}
                   onAddToCart={() => {
                     addToCart({
                       type: 'shop',

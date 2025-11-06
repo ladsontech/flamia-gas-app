@@ -8,16 +8,8 @@ import {
   LogOut, 
   ShoppingBag, 
   Settings,
-  BarChart3,
-  Menu
+  BarChart3
 } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,11 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { supabase } from '@/integrations/supabase/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface StorefrontHeaderProps {
   shopName: string;
@@ -50,27 +38,44 @@ export const StorefrontHeader = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [signInOpen, setSignInOpen] = useState(false);
-  const [signUpOpen, setSignUpOpen] = useState(false);
-  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
     checkUser();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        await loadUserProfile(session.user.id);
+      } else {
+        setUserProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url, full_name')
+        .eq('id', userId)
+        .single();
+      
+      setUserProfile(profile);
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+  };
+
   const checkUser = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (user) {
+        await loadUserProfile(user.id);
+      }
     } catch (error) {
       console.error('Error checking user:', error);
     } finally {
@@ -78,10 +83,15 @@ export const StorefrontHeader = ({
     }
   };
 
+  const getInitials = (email: string) => {
+    return email.substring(0, 2).toUpperCase();
+  };
+
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
       setUser(null);
+      setUserProfile(null);
       toast({
         title: 'Signed out',
         description: 'You have been signed out successfully.',
@@ -105,22 +115,13 @@ export const StorefrontHeader = ({
     window.location.href = 'https://flamia.store/orders';
   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
+  const handleGoogleSignIn = async () => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      setSignInOpen(false);
-      setEmail('');
-      setPassword('');
-      await checkUser();
-      toast({
-        title: 'Signed in',
-        description: 'Welcome back!',
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + window.location.pathname
+        }
       });
     } catch (error: any) {
       toast({
@@ -128,35 +129,6 @@ export const StorefrontHeader = ({
         description: error.message,
         variant: 'destructive',
       });
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (error) throw error;
-      setSignUpOpen(false);
-      setEmail('');
-      setPassword('');
-      toast({
-        title: 'Account created',
-        description: 'Please check your email to verify your account.',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setAuthLoading(false);
     }
   };
 
@@ -204,10 +176,17 @@ export const StorefrontHeader = ({
                 )}
 
                 {/* Account Menu */}
-                <DropdownMenu open={accountMenuOpen} onOpenChange={setAccountMenuOpen}>
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 sm:h-9 sm:w-9 p-0">
-                      <User className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Button variant="ghost" size="sm" className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full">
+                      <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
+                        <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name || user?.email} />
+                        <AvatarFallback className="bg-orange-500 text-white text-xs font-semibold">
+                          {userProfile?.full_name 
+                            ? userProfile.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+                            : getInitials(user?.email || 'U')}
+                        </AvatarFallback>
+                      </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -253,89 +232,22 @@ export const StorefrontHeader = ({
               </>
             ) : (
               <>
-                {/* Sign In Button */}
-                <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-xs sm:text-sm h-8 sm:h-9">
-                      <LogIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      Sign In
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Sign In</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSignIn} className="space-y-4 mt-4">
-                      <div>
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                      <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={authLoading}>
-                        {authLoading ? 'Signing in...' : 'Sign In'}
-                      </Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-
-                {/* Sign Up Button */}
-                <Dialog open={signUpOpen} onOpenChange={setSignUpOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="default" size="sm" className="text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600">
-                      Sign Up
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Create Account</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSignUp} className="space-y-4 mt-4">
-                      <div>
-                        <Label htmlFor="signup-email">Email</Label>
-                        <Input
-                          id="signup-email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="signup-password">Password</Label>
-                        <Input
-                          id="signup-password"
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          minLength={6}
-                          className="mt-1"
-                        />
-                      </div>
-                      <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={authLoading}>
-                        {authLoading ? 'Creating account...' : 'Sign Up'}
-                      </Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                {/* Sign In with Google Button */}
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600"
+                  onClick={handleGoogleSignIn}
+                >
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  <LogIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  Sign In
+                </Button>
               </>
             )}
           </div>

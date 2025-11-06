@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Gadget } from '@/types/gadget';
 import { BusinessProduct } from '@/types/business';
+import { getProductViewCounts } from '@/services/productViewsService';
 
 export interface MarketplaceProduct {
   id: string;
@@ -18,6 +19,7 @@ export interface MarketplaceProduct {
   in_stock?: boolean;
   is_available?: boolean;
   featured?: boolean;
+  viewCount?: number;
 }
 
 export interface CategoryGroup {
@@ -259,7 +261,20 @@ export const useMarketplaceProducts = () => {
           return b.products.length - a.products.length;
         });
 
-      setCategories(categorizedProducts);
+      // Fetch view counts for all products in bulk
+      const allProductIds = categorizedProducts.flatMap(cat => cat.products.map(p => p.id));
+      const viewCounts = await getProductViewCounts(allProductIds);
+      
+      // Add view counts to products
+      const categorizedProductsWithViews = categorizedProducts.map(category => ({
+        ...category,
+        products: category.products.map(product => ({
+          ...product,
+          viewCount: viewCounts[product.id] || 0
+        }))
+      }));
+
+      setCategories(categorizedProductsWithViews);
     } catch (err) {
       console.error('Error fetching marketplace products:', err);
       setError(err instanceof Error ? err.message : 'Failed to load products');
