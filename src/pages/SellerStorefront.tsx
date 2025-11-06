@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, Info } from 'lucide-react';
+import { Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, Info, X } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { fetchSellerShopBySlug } from '@/services/sellerService';
 import type { SellerShop } from '@/types/seller';
@@ -15,6 +15,8 @@ import { SellerCartButton } from '@/components/seller/SellerCartButton';
 import { Helmet } from 'react-helmet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
+import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
 
 const SellerStorefront = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -30,6 +32,9 @@ const SellerStorefront = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [storeDetailsOpen, setStoreDetailsOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   const getSubdomainSlug = () => {
     if (typeof window === 'undefined') return null;
@@ -98,7 +103,50 @@ const SellerStorefront = () => {
 
   useEffect(() => {
     loadShopData();
+    checkOwner();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (shop) {
+        checkOwnerStatus(session?.user?.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [loadShopData]);
+
+  const checkOwner = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      if (shop && user) {
+        checkOwnerStatus(user.id);
+      }
+    } catch (error) {
+      console.error('Error checking owner:', error);
+    }
+  };
+
+  const checkOwnerStatus = async (userId?: string) => {
+    if (!shop || !userId) {
+      setIsOwner(false);
+      return;
+    }
+    // Check if the logged-in user owns this shop
+    const { data: sellerShop } = await supabase
+      .from('seller_shops')
+      .select('user_id')
+      .eq('id', shop.id)
+      .eq('user_id', userId)
+      .single();
+    
+    setIsOwner(!!sellerShop);
+  };
+
+  useEffect(() => {
+    if (shop && user) {
+      checkOwnerStatus(user.id);
+    }
+  }, [shop, user]);
 
   const handleAddToCart = (product: BusinessProduct) => {
     addToCart({
@@ -178,15 +226,53 @@ const SellerStorefront = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      <Helmet>
-        <title>{shop.shop_name} – Storefront | Flamia</title>
-        <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
-        <link rel="canonical" href={`https://${shop.shop_slug}.flamia.store/`} />
-      </Helmet>
-      {/* Compact Header - App Style */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+      return (
+        <div className="min-h-screen bg-white">
+          <Helmet>
+            <title>{shop.shop_name} – Storefront | Flamia</title>
+            <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
+            <link rel="canonical" href={`https://${shop.shop_slug}.flamia.store/`} />
+          </Helmet>
+          
+          {/* Storefront Header with Auth */}
+          <StorefrontHeader
+            shopName={shop.shop_name}
+            shopLogoUrl={shop.shop_logo_url}
+            isOwner={isOwner}
+            shopType="seller"
+            onShowAnalytics={() => setShowAnalytics(true)}
+          />
+
+          {/* Analytics Modal/Sheet */}
+          {showAnalytics && isOwner && (
+            <Dialog open={showAnalytics} onOpenChange={setShowAnalytics}>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <span>Store Analytics</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAnalytics(false)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                  <StorefrontAnalytics
+                    shopId={shop.id}
+                    businessId={shop.business_id}
+                    shopType="seller"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Compact Header - App Style */}
+          <header className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
           {/* Top Bar: Logo + Name (Compact) */}
           <div className="flex items-center gap-2 sm:gap-3 py-2 sm:py-3">

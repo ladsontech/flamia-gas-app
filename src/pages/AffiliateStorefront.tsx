@@ -6,12 +6,15 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, Info } from 'lucide-react';
+import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, Info, X } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import type { AffiliateShop } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
+import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
+import { Helmet } from 'react-helmet';
 
 export default function AffiliateStorefront() {
   const { slug } = useParams<{ slug: string }>();
@@ -25,6 +28,9 @@ export default function AffiliateStorefront() {
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [storeDetailsOpen, setStoreDetailsOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   const loadShopData = useCallback(async () => {
     if (!slug) return;
@@ -71,7 +77,50 @@ export default function AffiliateStorefront() {
     if (slug) {
       loadShopData();
     }
+    checkOwner();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (shop) {
+        checkOwnerStatus(session?.user?.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [slug, loadShopData]);
+
+  const checkOwner = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      if (shop && user) {
+        checkOwnerStatus(user.id);
+      }
+    } catch (error) {
+      console.error('Error checking owner:', error);
+    }
+  };
+
+  const checkOwnerStatus = async (userId?: string) => {
+    if (!shop || !userId) {
+      setIsOwner(false);
+      return;
+    }
+    // Check if the logged-in user owns this affiliate shop
+    const { data: affiliateShop } = await supabase
+      .from('affiliate_shops')
+      .select('user_id')
+      .eq('id', shop.id)
+      .eq('user_id', userId)
+      .single();
+    
+    setIsOwner(!!affiliateShop);
+  };
+
+  useEffect(() => {
+    if (shop && user) {
+      checkOwnerStatus(user.id);
+    }
+  }, [shop, user]);
 
   const handleAddToCart = (product: BusinessProduct) => {
     addToCart({
@@ -141,10 +190,52 @@ export default function AffiliateStorefront() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Compact Header - App Style */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+      return (
+        <div className="min-h-screen bg-white">
+          <Helmet>
+            <title>{shop.shop_name} – Affiliate Store | Flamia</title>
+            <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
+            <link rel="canonical" href={`https://flamia.store/affiliate/${shop.shop_slug}`} />
+          </Helmet>
+
+          {/* Storefront Header with Auth */}
+          <StorefrontHeader
+            shopName={shop.shop_name}
+            shopLogoUrl={shop.shop_logo_url}
+            isOwner={isOwner}
+            shopType="affiliate"
+            onShowAnalytics={() => setShowAnalytics(true)}
+          />
+
+          {/* Analytics Modal/Sheet */}
+          {showAnalytics && isOwner && (
+            <Dialog open={showAnalytics} onOpenChange={setShowAnalytics}>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <span>Store Analytics</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAnalytics(false)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                  <StorefrontAnalytics
+                    shopId={shop.id}
+                    shopType="affiliate"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Compact Header - App Style */}
+          <header className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
           {/* Top Bar: Logo + Name (Compact) */}
           <div className="flex items-center gap-2 sm:gap-3 py-2 sm:py-3">
