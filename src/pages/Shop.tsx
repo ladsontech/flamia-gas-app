@@ -47,13 +47,13 @@ const Shop: React.FC = () => {
     fetchAllCategories();
   }, []);
 
-  // Calculate initial show count based on screen size
+  // Calculate initial show count based on screen size - show more products
   useEffect(() => {
     const calculateShowCount = () => {
-      if (window.innerWidth < 640) return 2; // Mobile: 1 column
-      if (window.innerWidth < 1024) return 6; // Tablet: 2 columns
-      if (window.innerWidth < 1280) return 8; // Desktop: 3 columns
-      return 10; // Large: 4-5 columns
+      if (window.innerWidth < 640) return 4; // Mobile: 2 columns, 2 rows
+      if (window.innerWidth < 1024) return 12; // Tablet: 3 columns, 4 rows
+      if (window.innerWidth < 1280) return 15; // Desktop: 5 columns, 3 rows
+      return 20; // Large: 5 columns, 4 rows
     };
 
     setInitialShowCount(calculateShowCount());
@@ -433,17 +433,39 @@ const Shop: React.FC = () => {
 
                 return (
                   <section key={category.id} className="space-y-4 sm:space-y-5">
-                    {/* Minimal Category Header */}
+                    {/* Category Header with View More Button (Desktop) */}
                     <div className="flex items-center justify-between">
                       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{category.name}</h2>
-                      {featuredProducts.length > 0 && (
-                        <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
-                          {featuredProducts.length} featured
-                        </span>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {featuredProducts.length > 0 && (
+                          <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
+                            {featuredProducts.length} featured
+                          </span>
+                        )}
+                        {/* Desktop: View More Button on Top - Orange */}
+                        {hasMore && (
+                          <Button
+                            variant="default"
+                            onClick={() => toggleCategory(category.slug)}
+                            className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600 text-white border-0"
+                          >
+                            {isExpanded ? (
+                              <>
+                                Show Less
+                                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 rotate-90 transition-transform" />
+                              </>
+                            ) : (
+                              <>
+                                View All ({category.products.length})
+                                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Products Grid - Mobile: 2 rows horizontal scroll, Desktop: Grid */}
+                    {/* Products - Horizontal Scroll for All Views */}
                     <div className="relative z-0">
                       {/* Mobile: Horizontal scroll with 2 rows */}
                       <div className="sm:hidden overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide snap-x snap-mandatory">
@@ -495,28 +517,31 @@ const Shop: React.FC = () => {
                         </div>
                       </div>
                       
-                      {/* Desktop: Grid layout */}
-                      <div className="hidden sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
-                        {displayProducts.map(product => (
-                          <ProductCard
-                            key={product.id}
-                            name={product.name}
-                            description={product.description}
-                            price={product.price}
-                            originalPrice={product.original_price}
-                            imageUrl={product.image_url}
-                            featured={product.featured}
-                            shopName={product.shop_name}
-                            source={product.source}
-                            onAddToCart={() => handleAddToCart(product)}
-                          />
-                        ))}
+                      {/* Desktop: Horizontal Scroll Layout */}
+                      <div className="hidden sm:block overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide snap-x snap-mandatory">
+                        <div className="inline-flex gap-3 sm:gap-4 md:gap-5">
+                          {displayProducts.map(product => (
+                            <div key={product.id} className="flex-shrink-0 snap-start w-[180px] sm:w-[200px] md:w-[220px]">
+                              <ProductCard
+                                name={product.name}
+                                description={product.description}
+                                price={product.price}
+                                originalPrice={product.original_price}
+                                imageUrl={product.image_url}
+                                featured={product.featured}
+                                shopName={product.shop_name}
+                                source={product.source}
+                                onAddToCart={() => handleAddToCart(product)}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    {/* View More Button */}
+                    {/* Mobile: View More Button at Bottom */}
                     {hasMore && (
-                      <div className="flex justify-center pt-2">
+                      <div className="flex justify-center pt-2 md:hidden">
                         <Button
                           variant="outline"
                           onClick={() => toggleCategory(category.slug)}
@@ -529,7 +554,7 @@ const Shop: React.FC = () => {
                             </>
                           ) : (
                             <>
-                              View All
+                              View All ({category.products.length})
                               <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
                             </>
                           )}
