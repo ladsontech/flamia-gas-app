@@ -31,32 +31,32 @@ export const ProductCard = ({
     : 0;
 
   return (
-    <Card className="group overflow-hidden hover:shadow-lg active:shadow-md transition-all duration-200 border border-border/50 hover:border-primary/40 flex flex-col h-full bg-card rounded-xl sm:rounded-2xl">
-      {/* Image Section */}
-      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/50 to-muted/30">
+    <Card className="group bg-white border border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col">
+      {/* Square Image Container */}
+      <div className="relative w-full pb-[100%] mb-2 sm:mb-3 rounded-lg overflow-hidden bg-gray-50">
         {imageUrl ? (
           <img 
             src={imageUrl} 
             alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-contain p-2 sm:p-3 group-hover:scale-110 transition-transform duration-500"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground/30" />
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+            <Package className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300" />
           </div>
         )}
         
         {/* Badges */}
-        <div className="absolute top-2 left-2 right-2 flex justify-between items-start gap-2 z-10">
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
           {featured && (
-            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-md backdrop-blur-sm text-xs px-2 py-0.5">
-              <Star className="w-3 h-3 mr-1 fill-current" />
-              <span className="hidden sm:inline">Featured</span>
+            <Badge className="bg-orange-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
+              <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 fill-current" />
+              <span className="text-xs">New</span>
             </Badge>
           )}
           {discountPercent > 0 && (
-            <Badge className="bg-destructive text-destructive-foreground border-0 shadow-md ml-auto text-xs px-2 py-0.5">
+            <Badge className="bg-red-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
               -{discountPercent}%
             </Badge>
           )}
@@ -64,34 +64,26 @@ export const ProductCard = ({
 
         {/* Shop Name Badge for Seller Products */}
         {shopName && source === 'seller' && (
-          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs backdrop-blur-sm bg-background/90 border-0 shadow-sm px-2 py-0.5">
+          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs px-1.5 sm:px-2 py-0.5 bg-white/90 backdrop-blur-sm border border-gray-200">
             {shopName}
           </Badge>
         )}
       </div>
       
       {/* Content Section */}
-      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-2">
-        <div className="flex-1 min-h-0">
-          <h3 className="font-semibold text-sm sm:text-base mb-1.5 line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-            {name}
-          </h3>
-          
-          {description && (
-            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-              {description}
-            </p>
-          )}
-        </div>
+      <div className="flex-grow px-1 sm:px-2 flex flex-col">
+        <h3 className="text-xs sm:text-sm font-semibold mb-1 sm:mb-1.5 text-gray-900 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+          {name}
+        </h3>
         
         {/* Price Section */}
-        <div className="space-y-2 sm:space-y-3 mt-auto pt-2 sm:pt-3 border-t border-border/50">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-lg sm:text-xl font-bold text-primary">
+        <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
+          <div className="flex items-baseline gap-1.5 sm:gap-2 mb-2 sm:mb-3 flex-wrap">
+            <span className="text-sm sm:text-base font-bold text-primary">
               UGX {price.toLocaleString()}
             </span>
             {originalPrice && originalPrice > price && (
-              <span className="text-xs sm:text-sm text-muted-foreground line-through">
+              <span className="text-xs text-gray-400 line-through">
                 UGX {originalPrice.toLocaleString()}
               </span>
             )}
@@ -99,14 +91,14 @@ export const ProductCard = ({
           
           <Button 
             onClick={onAddToCart}
-            className="w-full font-medium sm:font-semibold h-9 sm:h-10 text-sm sm:text-base active:scale-[0.98] transition-transform touch-manipulation"
+            className="w-full font-medium h-8 sm:h-9 text-xs sm:text-sm active:scale-[0.98] transition-transform touch-manipulation bg-primary hover:bg-primary/90"
             size="default"
           >
-            <ShoppingCart className="w-4 h-4 mr-1.5 sm:mr-2" />
+            <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
             Add to Cart
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 };

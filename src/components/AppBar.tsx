@@ -10,6 +10,10 @@ const AppBar = () => {
     label: 'Home',
     icon: Home
   }, {
+    path: '/shop',
+    label: 'Marketplace',
+    icon: ShoppingBag
+  }, {
     path: '/gadgets',
     label: 'Gadgets',
     icon: ShoppingBag
