@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchAffiliateShopBySlug, fetchAffiliateShopProducts } from '@/services/affiliateService';
@@ -21,16 +21,12 @@ export default function AffiliateStorefront() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  useEffect(() => {
-    if (slug) {
-      loadShopData();
-    }
-  }, [slug]);
-
-  const loadShopData = async () => {
+  const loadShopData = useCallback(async () => {
+    if (!slug) return;
+    
     try {
       // Fetch shop
-      const shopData = await fetchAffiliateShopBySlug(slug!);
+      const shopData = await fetchAffiliateShopBySlug(slug);
       if (!shopData) {
         toast.error('Shop not found');
         setLoading(false);
@@ -64,7 +60,13 @@ export default function AffiliateStorefront() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug]);
+
+  useEffect(() => {
+    if (slug) {
+      loadShopData();
+    }
+  }, [slug, loadShopData]);
 
   const handleAddToCart = (product: BusinessProduct) => {
     addToCart({

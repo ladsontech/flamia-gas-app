@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -41,15 +41,11 @@ const SellerStorefront = () => {
   const isIndependentStorefront = !!getSubdomainSlug();
   const addToCart = isIndependentStorefront ? sellerCart.addToCart : flamiaCart.addToCart;
 
-  useEffect(() => {
-    loadShopData();
-  }, [slug]);
-
-  const loadShopData = async () => {
+  const loadShopData = useCallback(async () => {
     const effectiveSlug = slug || getSubdomainSlug();
     if (!effectiveSlug) {
       // If no slug and we're on www subdomain, redirect to home
-      const isWwwSubdomain = window.location.hostname.toLowerCase().startsWith('www.');
+      const isWwwSubdomain = typeof window !== 'undefined' && window.location.hostname.toLowerCase().startsWith('www.');
       if (isWwwSubdomain) {
         window.location.href = 'https://flamia.store';
       }
@@ -93,7 +89,11 @@ const SellerStorefront = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, toast]);
+
+  useEffect(() => {
+    loadShopData();
+  }, [loadShopData]);
 
   const handleAddToCart = (product: BusinessProduct) => {
     addToCart({
