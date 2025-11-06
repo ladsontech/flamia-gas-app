@@ -140,7 +140,7 @@ const Shop: React.FC = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20 pb-20 sm:pb-24">
+      <div className="min-h-screen bg-white pt-16 sm:pt-20 pb-20 sm:pb-24">
         {/* Sticky Header - Search & Filters */}
         <div className="bg-white shadow-sm sticky top-16 z-10 border-b border-gray-200">
           <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
@@ -158,12 +158,16 @@ const Shop: React.FC = () => {
 
               {/* Category Filter */}
               {categories.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+                <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
                   <Button
                     variant={selectedCategory === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedCategory('all')}
-                    className="flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9 bg-white hover:bg-gray-50 border-gray-200"
+                    className={`flex-shrink-0 text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4 snap-start touch-manipulation ${
+                      selectedCategory === 'all'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
                   >
                     All
                   </Button>
@@ -173,7 +177,11 @@ const Shop: React.FC = () => {
                       variant={selectedCategory === category.slug ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setSelectedCategory(category.slug)}
-                      className="flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9 bg-white hover:bg-gray-50 border-gray-200"
+                      className={`flex-shrink-0 text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4 snap-start touch-manipulation whitespace-nowrap ${
+                        selectedCategory === category.slug
+                          ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                          : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                      }`}
                     >
                       {category.name}
                     </Button>
@@ -188,13 +196,13 @@ const Shop: React.FC = () => {
         <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
           {filteredCategories.length === 0 ? (
             <div className="text-center py-16 sm:py-20">
-              <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mb-4 mx-auto" />
-              <p className="text-gray-600 text-sm sm:text-base">No products found matching your search.</p>
+              <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mb-4 mx-auto" />
+              <p className="text-gray-700 text-sm sm:text-base">No products found matching your search.</p>
               {searchTerm && (
                 <Button 
                   variant="outline" 
                   onClick={() => setSearchTerm('')}
-                  className="mt-4"
+                  className="mt-4 bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 >
                   Clear search
                 </Button>
@@ -221,7 +229,7 @@ const Shop: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{category.name}</h2>
                       {featuredProducts.length > 0 && (
-                        <span className="text-xs sm:text-sm text-gray-500 hidden sm:inline">
+                        <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
                           {featuredProducts.length} featured
                         </span>
                       )}
@@ -251,7 +259,7 @@ const Shop: React.FC = () => {
                         <Button
                           variant="outline"
                           onClick={() => toggleCategory(category.slug)}
-                          className="group text-xs sm:text-sm h-8 sm:h-9 bg-white hover:bg-gray-50 border-gray-200"
+                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
                         >
                           {isExpanded ? (
                             <>

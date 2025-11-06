@@ -76,22 +76,42 @@ export const ProductCard = ({
           {name}
         </h3>
         
+        {/* Description */}
+        {description && (
+          <p className="text-xs text-gray-600 line-clamp-2 mb-2 sm:mb-2.5 leading-snug">
+            {description}
+          </p>
+        )}
+        
         {/* Price Section */}
         <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
-          <div className="flex items-baseline gap-1.5 sm:gap-2 mb-2 sm:mb-3 flex-wrap">
-            <span className="text-sm sm:text-base font-bold text-primary">
-              UGX {price.toLocaleString()}
-            </span>
-            {originalPrice && originalPrice > price && (
-              <span className="text-xs text-gray-400 line-through">
-                UGX {originalPrice.toLocaleString()}
+          <div className="flex flex-col gap-1 sm:gap-1.5 mb-2 sm:mb-3">
+            {originalPrice && originalPrice > price ? (
+              <>
+                <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+                  <span className="text-sm sm:text-base font-bold text-primary">
+                    UGX {price.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-gray-500 line-through">
+                    UGX {originalPrice.toLocaleString()}
+                  </span>
+                </div>
+                {discountPercent > 0 && (
+                  <span className="text-xs font-medium text-orange-600">
+                    Save {discountPercent}%
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-sm sm:text-base font-bold text-primary">
+                UGX {price.toLocaleString()}
               </span>
             )}
           </div>
           
           <Button 
             onClick={onAddToCart}
-            className="w-full font-medium h-8 sm:h-9 text-xs sm:text-sm active:scale-[0.98] transition-transform touch-manipulation bg-primary hover:bg-primary/90"
+            className="w-full font-medium h-8 sm:h-9 text-xs sm:text-sm active:scale-[0.98] transition-transform touch-manipulation bg-orange-500 hover:bg-orange-600 text-white"
             size="default"
           >
             <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
