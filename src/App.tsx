@@ -66,13 +66,30 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const { isAdmin } = useUserRole();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
+  
   const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
   const isStorefrontRoute = location.pathname.startsWith('/shop/') || location.pathname.startsWith('/affiliate/');
   const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
   const isStorefrontHost = !!subdomainMatch;
   const isStorefront = isStorefrontRoute || isStorefrontHost;
+  
+  // Routes that don't need loading screen (no redirects)
+  const isHomeRoute = location.pathname === '/' || location.pathname === '/home';
+  const shouldShowLoading = !isStorefront && !isPolicyRoute && !isHomeRoute && roleLoading;
+
+  // Show loading screen only for routes that might redirect (not home page)
+  if (shouldShowLoading) {
+    return (
+      <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-2 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-muted-foreground text-xs sm:text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

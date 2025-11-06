@@ -12,7 +12,11 @@ const SignIn = () => {
 
   useEffect(() => {
     // Check if user is already authenticated and redirect based on role
+    // Add a small delay to prevent blinking during initial load
     const checkAuth = async () => {
+      // Wait a bit to ensure app has fully loaded
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const role = await getUserRole(user.id);

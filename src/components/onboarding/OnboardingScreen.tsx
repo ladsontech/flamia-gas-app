@@ -26,46 +26,46 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const slides: OnboardingSlide[] = [
     {
       id: 1,
-      icon: <Flame className="w-16 h-16" />,
+      icon: <Flame className="w-full h-full" />,
       title: "Welcome to Flamia",
       description: "Fast LPG gas delivery & kitchen essentials in Uganda."
     },
     {
       id: 2,
-      icon: <Package className="w-16 h-16" />,
+      icon: <Package className="w-full h-full" />,
       title: "Gas & Refills",
       description: "6KG-45KG cylinders from Shell, Total, Hass, Oryx & Stabex. Same-day delivery.",
       image: "/images/Nova 6kg.png"
     },
     {
       id: 3,
-      icon: <Wrench className="w-16 h-16" />,
+      icon: <Wrench className="w-full h-full" />,
       title: "Accessories",
       description: "Regulators, pipes, burners, stoves & more for your kitchen.",
       image: "/images/regulator.jpeg"
     },
     {
       id: 4,
-      icon: <Smartphone className="w-16 h-16" />,
+      icon: <Smartphone className="w-full h-full" />,
       title: "Gadgets",
       description: "Quality electronics & appliances. Brand new and used items.",
     },
     {
       id: 5,
-      icon: <ShoppingBag className="w-16 h-16" />,
+      icon: <ShoppingBag className="w-full h-full" />,
       title: "Marketplace",
       description: "General online market for all products from verified sellers.",
       image: "/images/marketplace_shop.jpeg"
     },
     {
       id: 6,
-      icon: <FileText className="w-16 h-16" />,
+      icon: <FileText className="w-full h-full" />,
       title: "Terms and Conditions",
       description: "Please review and accept our terms to continue."
     },
     {
       id: 7,
-      icon: <Shield className="w-16 h-16" />,
+      icon: <Shield className="w-full h-full" />,
       title: "Privacy Policy",
       description: "Please review and accept our privacy policy to continue."
     }
