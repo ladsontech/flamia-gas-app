@@ -125,7 +125,7 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
       pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', label: 'Pending' },
       assigned: { color: 'bg-blue-100 text-blue-800 border-blue-200', label: 'Assigned' },
       in_progress: { color: 'bg-orange-100 text-orange-800 border-orange-200', label: 'In Progress' },
-      completed: { color: 'bg-green-100 text-green-800 border-green-200', label: 'Completed' },
+      completed: { color: 'bg-orange-100 text-orange-800 border-orange-200', label: 'Completed' },
       cancelled: { color: 'bg-red-100 text-red-800 border-red-200', label: 'Cancelled' }
     };
     
@@ -326,7 +326,7 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
                         e.stopPropagation();
                         window.open(`tel:${orderInfo.contact}`, '_self');
                       }}
-                      className="border-green-500 text-green-600 hover:bg-green-50"
+                      className="border-orange-500 text-orange-600 hover:bg-orange-50"
                     >
                       <Phone className="h-5 w-5 mr-2" />
                       Call
@@ -353,7 +353,7 @@ export const ExpandableOrderCard = ({ order, userRole, onUpdate }: ExpandableOrd
                         size="sm"
                         onClick={() => handleUpdateStatus('completed')}
                         disabled={isUpdating}
-                        className="flex-1 bg-green-600 hover:bg-green-700"
+                        className="flex-1 bg-orange-500 hover:bg-orange-600"
                       >
                         <CheckCircle className="h-4 w-4 mr-2" />
                         Mark as Completed

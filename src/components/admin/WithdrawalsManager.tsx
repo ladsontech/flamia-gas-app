@@ -160,7 +160,7 @@ export const WithdrawalsManager = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', label: 'Pending', icon: Clock },
-      completed: { color: 'bg-green-100 text-green-800 border-green-200', label: 'Completed', icon: CheckCircle },
+      completed: { color: 'bg-orange-100 text-orange-800 border-orange-200', label: 'Completed', icon: CheckCircle },
       rejected: { color: 'bg-red-100 text-red-800 border-red-200', label: 'Rejected', icon: X }
     };
     
@@ -267,7 +267,7 @@ export const WithdrawalsManager = () => {
                         size="sm"
                         onClick={() => handleProcessWithdrawal(withdrawal.id, 'completed')}
                         disabled={processing.has(withdrawal.id)}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-orange-500 hover:bg-orange-600"
                       >
                         {processing.has(withdrawal.id) ? 'Processing...' : 'Mark as Paid'}
                       </Button>

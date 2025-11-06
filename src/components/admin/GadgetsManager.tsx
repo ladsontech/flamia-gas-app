@@ -382,7 +382,7 @@ const GadgetsManager: React.FC = () => {
                 <Badge 
                   className={`text-xs ${
                     gadget.condition === 'brand_new' 
-                      ? 'bg-green-500 text-white' 
+                      ? 'bg-orange-500 text-white' 
                       : 'bg-yellow-500 text-white'
                   }`}
                 >

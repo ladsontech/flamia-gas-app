@@ -887,8 +887,8 @@ const Account = () => {
                           <p className="text-2xl font-bold">0</p>
                           <p className="text-sm text-muted-foreground">Total Orders</p>
                         </div>
-                        <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                          <DollarSign className="h-8 w-8 mx-auto mb-3 text-green-600" />
+                        <div className="text-center p-6 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                          <DollarSign className="h-8 w-8 mx-auto mb-3 text-orange-600" />
                           <p className="text-2xl font-bold">UGX 0</p>
                           <p className="text-sm text-muted-foreground">Revenue</p>
                         </div>

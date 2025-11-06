@@ -250,8 +250,8 @@ export const CommissionsWithdrawalsManager = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', label: 'Pending', icon: Clock },
-      approved: { color: 'bg-green-100 text-green-800 border-green-200', label: 'Approved', icon: CheckCircle },
-      completed: { color: 'bg-green-100 text-green-800 border-green-200', label: 'Completed', icon: CheckCircle },
+      approved: { color: 'bg-orange-100 text-orange-800 border-orange-200', label: 'Approved', icon: CheckCircle },
+      completed: { color: 'bg-orange-100 text-orange-800 border-orange-200', label: 'Completed', icon: CheckCircle },
       rejected: { color: 'bg-red-100 text-red-800 border-red-200', label: 'Rejected', icon: X },
       cancelled: { color: 'bg-gray-100 text-gray-800 border-gray-200', label: 'Cancelled', icon: X }
     };
@@ -339,10 +339,10 @@ export const CommissionsWithdrawalsManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground">Completed Withdrawals</p>
-                <p className="text-lg font-bold text-green-600">{formatCurrency(totalCompletedWithdrawals)}</p>
+                <p className="text-lg font-bold text-orange-600">{formatCurrency(totalCompletedWithdrawals)}</p>
                 <p className="text-xs text-muted-foreground">{completedWithdrawals.length} paid</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600 opacity-50" />
+              <CheckCircle className="h-8 w-8 text-orange-600 opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -404,7 +404,7 @@ export const CommissionsWithdrawalsManager = () => {
                       <p>{format(new Date(commission.created_at), 'MMM d, yyyy')}</p>
                       <p className="text-xs">{format(new Date(commission.created_at), 'h:mm a')}</p>
                       {commission.approved_at && (
-                        <p className="text-xs text-green-600 mt-1">
+                        <p className="text-xs text-orange-600 mt-1">
                           Approved: {format(new Date(commission.approved_at), 'MMM d')}
                         </p>
                       )}
@@ -472,7 +472,7 @@ export const CommissionsWithdrawalsManager = () => {
                         size="sm"
                         onClick={() => handleProcessWithdrawal(withdrawal.id, 'completed')}
                         disabled={processing.has(withdrawal.id)}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-orange-500 hover:bg-orange-600"
                       >
                         {processing.has(withdrawal.id) ? 'Processing...' : 'Mark as Paid'}
                       </Button>
@@ -536,7 +536,7 @@ export const CommissionsWithdrawalsManager = () => {
                     <div className="text-right text-sm text-muted-foreground">
                       <p>{format(new Date(withdrawal.created_at), 'MMM d, yyyy')}</p>
                       {withdrawal.processed_at && (
-                        <p className="text-xs text-green-600 mt-1">
+                        <p className="text-xs text-orange-600 mt-1">
                           Paid: {format(new Date(withdrawal.processed_at), 'MMM d, yyyy')}
                         </p>
                       )}

@@ -31,9 +31,9 @@ export const ProductCard = ({
     : 0;
 
   return (
-    <Card className="group bg-white border border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col">
+    <Card className="group bg-white border border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative z-0">
       {/* Square Image Container */}
-      <div className="relative w-full pb-[100%] mb-2 sm:mb-3 rounded-lg overflow-hidden bg-gray-50">
+      <div className="relative w-full pb-[100%] mb-2 sm:mb-3 rounded-lg overflow-hidden bg-gray-50 z-0">
         {imageUrl ? (
           <img 
             src={imageUrl} 
@@ -86,16 +86,18 @@ export const ProductCard = ({
         {/* Price Section */}
         <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
           <div className="flex flex-col gap-1 sm:gap-1.5 mb-2 sm:mb-3">
-            {/* Always show current price */}
+            {/* Always show current price - make it very prominent */}
             <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-              <span className="text-sm sm:text-base font-bold text-orange-600">
+              <span className="text-base sm:text-lg font-bold text-orange-600 leading-tight">
                 UGX {price.toLocaleString()}
               </span>
               {/* Show original price if it exists and is higher than current price */}
               {originalPrice && originalPrice > price && (
-                <span className="text-xs text-gray-500 line-through">
-                  UGX {originalPrice.toLocaleString()}
-                </span>
+                <>
+                  <span className="text-xs sm:text-sm text-gray-500 line-through">
+                    UGX {originalPrice.toLocaleString()}
+                  </span>
+                </>
               )}
             </div>
             {/* Show discount percentage if applicable */}

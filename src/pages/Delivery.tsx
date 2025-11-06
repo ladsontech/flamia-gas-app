@@ -444,7 +444,7 @@ const Delivery = () => {
                     <Button 
                       size="sm"
                       onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'in_progress')}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1 bg-orange-500 hover:bg-orange-600"
                     >
                       <Truck className="w-3.5 h-3.5 mr-1" />
                       Start
@@ -454,7 +454,7 @@ const Delivery = () => {
                     <Button 
                       size="sm"
                       onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'completed')}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1 bg-orange-500 hover:bg-orange-600"
                     >
                       <CheckCircle className="w-3.5 h-3.5 mr-1" />
                       Complete

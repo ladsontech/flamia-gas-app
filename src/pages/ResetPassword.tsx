@@ -139,7 +139,7 @@ const ResetPassword = () => {
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <CheckCircle className="h-16 w-16 text-green-500" />
+                  <CheckCircle className="h-16 w-16 text-orange-500" />
                 </div>
                 <h3 className="text-xl font-semibold">
                   {mode === 'reset' ? 'All Done!' : 'Check Your Email!'}

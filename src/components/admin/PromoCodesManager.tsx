@@ -300,10 +300,10 @@ export const PromoCodesManager: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <h3 className="text-base sm:text-lg font-semibold uppercase break-all">{promo.code}</h3>
-                    <span className="text-lg sm:text-xl font-bold text-green-600 whitespace-nowrap">
+                    <span className="text-lg sm:text-xl font-bold text-orange-600 whitespace-nowrap">
                       -{promo.discount_amount.toLocaleString()} UGX
                     </span>
-                    <span className={`px-2 py-1 rounded text-xs ${promo.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`px-2 py-1 rounded text-xs ${promo.is_active ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}`}>
                       {promo.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </div>

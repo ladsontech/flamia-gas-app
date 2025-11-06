@@ -160,7 +160,7 @@ const TestingHelper = () => {
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {testResults.map((result, index) => (
               <div key={index} className="flex items-start gap-2 p-2 bg-muted/50 rounded text-xs">
-                {result.status === 'pass' && <CheckCircle className="h-3 w-3 text-green-600 mt-0.5 flex-shrink-0" />}
+                {result.status === 'pass' && <CheckCircle className="h-3 w-3 text-orange-600 mt-0.5 flex-shrink-0" />}
                 {result.status === 'fail' && <AlertCircle className="h-3 w-3 text-red-600 mt-0.5 flex-shrink-0" />}
                 {result.status === 'info' && <Info className="h-3 w-3 text-blue-600 mt-0.5 flex-shrink-0" />}
                 <div className="min-w-0">

@@ -294,7 +294,7 @@ const PromotionsManager: React.FC = () => {
                     <p className="text-muted-foreground text-sm mt-1 break-words">{promotion.description}</p>
                   )}
                   {promotion.price && (
-                    <p className="text-green-600 font-semibold mt-2 text-sm sm:text-base">{promotion.price}</p>
+                    <p className="text-orange-600 font-semibold mt-2 text-sm sm:text-base">{promotion.price}</p>
                   )}
                   <p className="text-xs sm:text-sm text-muted-foreground mt-2">
                     Status: {promotion.is_active ? 'Active' : 'Inactive'}

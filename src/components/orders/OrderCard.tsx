@@ -43,7 +43,7 @@ const getStatusIcon = (status: string) => {
     case 'pending':
       return <Clock className="h-4 w-4 text-yellow-500" />;
     case 'completed':
-      return <CheckCircle className="h-4 w-4 text-green-500" />;
+      return <CheckCircle className="h-4 w-4 text-orange-500" />;
     case 'cancelled':
       return <XCircle className="h-4 w-4 text-red-500" />;
     default:
@@ -56,7 +56,7 @@ const getStatusColor = (status: string) => {
     case 'pending':
       return 'text-yellow-600 bg-yellow-50';
     case 'completed':
-      return 'text-green-600 bg-green-50';
+      return 'text-orange-600 bg-orange-50';
     case 'cancelled':
       return 'text-red-600 bg-red-50';
     default:

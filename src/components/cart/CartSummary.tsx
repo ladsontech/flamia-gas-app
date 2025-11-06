@@ -123,12 +123,12 @@ export const CartSummary: React.FC = () => {
           </div>
           
           {promoCode ? (
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge variant="secondary" className="bg-orange-100 text-orange-800">
                   {promoCode.toUpperCase()}
                 </Badge>
-                <span className="text-sm text-green-700">
+                <span className="text-sm text-orange-700">
                   -{promoDiscount.toLocaleString()} UGX per gas item
                 </span>
               </div>
@@ -189,7 +189,7 @@ export const CartSummary: React.FC = () => {
           </div>
           
           {promoDiscount > 0 && (
-            <div className="flex justify-between items-center text-green-600">
+            <div className="flex justify-between items-center text-orange-600">
               <span className="text-sm">Promo Discount:</span>
               <span className="text-sm">-UGX {promoDiscount.toLocaleString()}</span>
             </div>

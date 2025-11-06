@@ -56,7 +56,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               
                 <div className="space-y-3">
                 <div className="flex flex-col">
-                  <span className="text-lg font-bold text-green-600">
+                  <span className="text-lg font-bold text-orange-600">
                     UGX {product.price.toLocaleString()}
                   </span>
                   {product.original_price && product.original_price > product.price && <span className="text-sm text-gray-500 line-through">

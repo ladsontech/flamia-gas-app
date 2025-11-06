@@ -180,7 +180,7 @@ const GadgetDetail = () => {
               <Badge 
                 className={`text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 ${
                   gadget.condition === 'brand_new' 
-                    ? 'bg-green-500 text-white' 
+                    ? 'bg-orange-500 text-white' 
                     : 'bg-yellow-500 text-white'
                 }`}
               >

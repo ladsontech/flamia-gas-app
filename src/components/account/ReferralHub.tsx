@@ -277,8 +277,8 @@ export const ReferralHub: React.FC = () => {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-bold text-green-600">3</span>
+              <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-orange-600">3</span>
               </div>
               <div>
                 <p className="font-medium text-sm">Get Paid</p>
@@ -389,8 +389,8 @@ export const ReferralHub: React.FC = () => {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Available to Withdraw</p>

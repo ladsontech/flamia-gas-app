@@ -203,7 +203,7 @@ export const EmailSignUp = ({ referralCodeProp }: EmailSignUpProps) => {
             {referralCode && (
               <>
                 <br />
-                <span className="text-green-600">Referral code applied: <strong>{referralCode}</strong></span>
+                <span className="text-orange-600">Referral code applied: <strong>{referralCode}</strong></span>
               </>
             )}
           </AlertDescription>

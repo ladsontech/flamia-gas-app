@@ -181,9 +181,9 @@ const Sell = () => {
       },
       approved: {
         icon: CheckCircle,
-        color: 'text-green-600',
-        bgColor: 'bg-green-50',
-        borderColor: 'border-green-200',
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50',
+        borderColor: 'border-orange-200',
         title: 'Application Approved!',
         description: 'Congratulations! Your seller application has been approved. You can now access your seller dashboard.',
       },

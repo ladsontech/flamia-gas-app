@@ -203,8 +203,8 @@ export const DeliveryOrdersSection = ({ userId }: DeliveryOrdersSectionProps) =>
                       <div className="font-semibold text-yellow-600 dark:text-yellow-400">{dayGroup.stats.pending}</div>
                       <div className="text-muted-foreground">Pending</div>
                     </div>
-                    <div className="bg-green-50 dark:bg-green-950/20 rounded p-2 text-center">
-                      <div className="font-semibold text-green-600 dark:text-green-400">{dayGroup.stats.completed}</div>
+                    <div className="bg-orange-50 dark:bg-orange-950/20 rounded p-2 text-center">
+                      <div className="font-semibold text-orange-600 dark:text-orange-400">{dayGroup.stats.completed}</div>
                       <div className="text-muted-foreground">Completed</div>
                     </div>
                   </div>

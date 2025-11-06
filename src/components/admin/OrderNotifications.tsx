@@ -85,7 +85,7 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
 
   return (
     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Bell className={`h-4 w-4 ${isListening ? 'text-green-600' : 'text-gray-400'}`} />
+      <Bell className={`h-4 w-4 ${isListening ? 'text-orange-600' : 'text-gray-400'}`} />
       <span>{isListening ? 'Listening for new orders' : 'Not connected'}</span>
     </div>
   );

@@ -81,7 +81,7 @@ export const NotificationDropdown = ({
       case 'order_assigned':
         return <Truck className="h-4 w-4 text-orange-500" />;
       case 'order_status':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-orange-500" />;
       case 'new_referral':
         return <Users className="h-4 w-4 text-purple-500" />;
       case 'commission':

@@ -346,7 +346,7 @@ const BusinessProductsManager: React.FC = () => {
                   />
                 )}
                 
-                <p className="text-sm font-bold text-green-600 mb-1">
+                <p className="text-sm font-bold text-orange-600 mb-1">
                   UGX {product.price.toLocaleString()}
                   {product.original_price && product.original_price > product.price && (
                     <span className="text-xs text-gray-500 line-through ml-2">
@@ -371,7 +371,7 @@ const BusinessProductsManager: React.FC = () => {
                   )}
                   <span className={`text-xs px-2 py-1 rounded ${
                     product.is_available 
-                      ? 'bg-green-100 text-green-800' 
+                      ? 'bg-orange-100 text-orange-800' 
                       : 'bg-red-100 text-red-800'
                   }`}>
                     {product.is_available ? 'Available' : 'Unavailable'}

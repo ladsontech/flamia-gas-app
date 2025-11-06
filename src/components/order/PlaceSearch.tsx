@@ -293,13 +293,13 @@ export const PlaceSearch: React.FC<PlaceSearchProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-2 bg-green-50 border border-green-200 rounded-md"
+            className="p-2 bg-orange-50 border border-orange-200 rounded-md"
           >
             <div className="flex items-center gap-2 mb-1">
-              <Check className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium text-green-800">Location Selected</span>
+              <Check className="w-4 h-4 text-orange-600" />
+              <span className="text-sm font-medium text-orange-800">Location Selected</span>
             </div>
-            <p className="text-xs text-green-700 break-words">{selectedLocation.address}</p>
+            <p className="text-xs text-orange-700 break-words">{selectedLocation.address}</p>
           </motion.div>
         )}
       </Card>

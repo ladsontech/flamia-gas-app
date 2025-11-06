@@ -322,7 +322,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
       pending: { color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20', label: 'Pending' },
       assigned: { color: 'bg-blue-500/10 text-blue-700 border-blue-500/20', label: 'Assigned' },
       in_progress: { color: 'bg-orange-500/10 text-orange-700 border-orange-500/20', label: 'In Progress' },
-      completed: { color: 'bg-green-500/10 text-green-700 border-green-500/20', label: 'Completed' },
+      completed: { color: 'bg-orange-500/10 text-orange-700 border-orange-500/20', label: 'Completed' },
       cancelled: { color: 'bg-red-500/10 text-red-700 border-red-500/20', label: 'Cancelled' }
     };
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
@@ -365,7 +365,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
           </Card>
           <Card className="p-3 bg-gradient-to-br from-card to-muted/20 border-border/50">
             <div className="text-center">
-              <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <CheckCircle className="h-5 w-5 text-orange-600 mx-auto mb-1" />
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Done</p>
               <p className="text-sm sm:text-base font-bold">{overallStats.completed}</p>
             </div>
@@ -455,7 +455,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Assigned</p>
                     </div>
                     <div className="text-center bg-card rounded-lg p-2 border border-border/50">
-                      <p className="text-xl sm:text-2xl font-bold text-green-600">{dayGroup.stats.completed}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-orange-600">{dayGroup.stats.completed}</p>
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Completed</p>
                     </div>
                   </div>
@@ -519,7 +519,7 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
               Cancel
             </Button>
             <Button 
-              className="bg-green-600 hover:bg-green-700" 
+              className="bg-orange-500 hover:bg-orange-600" 
               onClick={handleCompleteOrder}
               disabled={!orders.find(o => o.id === completingOrder)?.delivery_man_id && !manualDeliveryPerson.trim()}
             >
@@ -839,7 +839,7 @@ const CompactOrderCard = ({
                   )}
                   {order.status === 'in_progress' && (
                     <Button 
-                      className="flex-1 h-10 bg-green-600 hover:bg-green-700"
+                      className="flex-1 h-10 bg-orange-500 hover:bg-orange-600"
                       onClick={(e) => {
                         e.stopPropagation();
                         onUpdateStatus(order.id, 'completed');
@@ -874,7 +874,7 @@ const CompactOrderCard = ({
                    {/* Complete and Cancel Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2 w-full">
                     <Button 
-                      className="flex-1 h-10 bg-green-600 hover:bg-green-700"
+                      className="flex-1 h-10 bg-orange-500 hover:bg-orange-600"
                       onClick={(e) => {
                         e.stopPropagation();
                         onCompleteOrder();

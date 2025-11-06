@@ -38,7 +38,7 @@ const GasSafety = () => {
       id: 2,
       icon: Eye,
       title: "Leak Detection",
-      color: "from-green-500 to-green-600",
+      color: "from-orange-500 to-orange-600",
       tips: [
         "Perform the 'soapy water test' on connections",
         "Never use matches or lighters to check for leaks",
@@ -169,7 +169,7 @@ const GasSafety = () => {
                           key={tipIndex}
                           className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg"
                         >
-                          <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
                           <span className="text-sm text-gray-700">{tipText}</span>
                         </div>
                       ))}
@@ -240,7 +240,7 @@ const GasSafety = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  { frequency: "Daily", task: "Visual inspection of connections", color: "bg-green-100 text-green-800" },
+                  { frequency: "Daily", task: "Visual inspection of connections", color: "bg-orange-100 text-orange-800" },
                   { frequency: "Weekly", task: "Check for gas odors around cylinder", color: "bg-blue-100 text-blue-800" },
                   { frequency: "Monthly", task: "Soap test on all connections", color: "bg-yellow-100 text-yellow-800" },
                   { frequency: "Quarterly", task: "Professional inspection", color: "bg-purple-100 text-purple-800" },
@@ -308,7 +308,7 @@ const GasSafety = () => {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 onClick={() => window.open("https://wa.me/256787899483", "_blank")}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-semibold"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 text-sm font-semibold"
               >
                 <Phone className="w-4 h-4 mr-2" />
                 WhatsApp Expert

@@ -64,7 +64,7 @@ const GadgetCard: React.FC<GadgetCardProps> = ({ gadget }) => {
           <Badge 
             className={`text-xs px-1.5 py-0.5 ${
               gadget.condition === 'brand_new' 
-                ? 'bg-green-500 text-white' 
+                ? 'bg-orange-500 text-white' 
                 : 'bg-yellow-500 text-white'
             }`}
           >
