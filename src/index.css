@@ -30,6 +30,26 @@
     @apply border-border;
   }
 
+  /* Remove all outlines and focus rings completely */
+  *:focus,
+  *:focus-visible,
+  *:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Remove default browser focus styles */
+  a:focus,
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus,
+  header:focus,
+  nav:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
   }
