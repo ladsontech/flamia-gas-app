@@ -5,12 +5,10 @@ import { fetchAffiliateShopBySlug, fetchAffiliateShopProducts } from '@/services
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, Store, Grid2x2, List, LayoutGrid, LayoutList, Search } from 'lucide-react';
+import { Loader2, Store, Search } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
-import type { AffiliateShop, AffiliateShopProduct } from '@/types/affiliate';
+import type { AffiliateShop } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
 
 export default function AffiliateStorefront() {
@@ -19,7 +17,7 @@ export default function AffiliateStorefront() {
   const [shop, setShop] = useState<AffiliateShop | null>(null);
   const [products, setProducts] = useState<(BusinessProduct & { commission_rate?: number })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [gridLayout, setGridLayout] = useState<'1' | '2' | '3' | '4'>('3');
+  const gridLayout: '1' | '2' | '3' | '4' = '3';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 

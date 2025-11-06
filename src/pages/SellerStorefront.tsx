@@ -3,10 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Store, LayoutGrid, LayoutList, Grid2x2, List, Search } from 'lucide-react';
+import { Store, Search } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { fetchSellerShopBySlug } from '@/services/sellerService';
 import type { SellerShop } from '@/types/seller';
@@ -24,7 +22,7 @@ const SellerStorefront = () => {
   const [shop, setShop] = useState<SellerShop | null>(null);
   const [products, setProducts] = useState<BusinessProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [gridLayout, setGridLayout] = useState<'1' | '2' | '3' | '4'>('3');
+  const gridLayout: '1' | '2' | '3' | '4' = '3';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
