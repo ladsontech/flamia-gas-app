@@ -199,65 +199,93 @@ export default function AffiliateDashboard() {
   // Create shop form
   if (!shop) {
     return (
-      <div className="min-h-screen bg-background pt-16 pb-20">
+      <div className="min-h-screen bg-gradient-to-br from-background via-orange-50/20 to-background pt-16 sm:pt-20 pb-20">
         <BackButton />
-        <div className="container max-w-2xl mx-auto px-4 py-6 sm:py-8">
-          <Card className="p-4 sm:p-6">
-            <div className="flex items-center gap-3 mb-4 sm:mb-6">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Store className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold">Create Affiliate Shop</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground">Start earning commissions</p>
+        <div className="container max-w-2xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+          <Card className="border-2 shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-primary/20 p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 sm:p-3 bg-primary/10 rounded-xl border-2 border-primary/20">
+                  <Store className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Create Affiliate Shop</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">Start earning commissions by promoting products</p>
+                </div>
               </div>
             </div>
 
-            <form onSubmit={handleCreateShop} className="space-y-4">
-              <div>
-                <Label htmlFor="shopName">Shop Name *</Label>
-                <Input
-                  id="shopName"
-                  value={shopName}
-                  onChange={(e) => setShopName(e.target.value)}
-                  placeholder="My Affiliate Store"
-                  required
+            <div className="p-4 sm:p-6">
+              <form onSubmit={handleCreateShop} className="space-y-4 sm:space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="shopName" className="text-sm sm:text-base font-semibold">Shop Name *</Label>
+                  <Input
+                    id="shopName"
+                    value={shopName}
+                    onChange={(e) => setShopName(e.target.value)}
+                    placeholder="My Affiliate Store"
+                    className="h-11 sm:h-12 text-sm sm:text-base"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="shopDescription" className="text-sm sm:text-base font-semibold">Description</Label>
+                  <Textarea
+                    id="shopDescription"
+                    value={shopDescription}
+                    onChange={(e) => setShopDescription(e.target.value)}
+                    placeholder="Tell customers about your shop..."
+                    rows={4}
+                    className="text-sm sm:text-base resize-none"
+                  />
+                </div>
+
+                <ShopImageUpload
+                  bucket="shop-logos"
+                  onUploadComplete={setShopLogoUrl}
+                  currentImage={shopLogoUrl}
+                  title="Shop Logo"
                 />
-              </div>
 
-              <div>
-                <Label htmlFor="shopDescription">Description</Label>
-                <Textarea
-                  id="shopDescription"
-                  value={shopDescription}
-                  onChange={(e) => setShopDescription(e.target.value)}
-                  placeholder="Tell customers about your shop..."
-                  rows={4}
-                />
-              </div>
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl border border-orange-200/50 p-4 sm:p-5">
+                  <h3 className="font-semibold text-sm sm:text-base mb-3 text-foreground">Free Tier Includes:</h3>
+                  <ul className="text-xs sm:text-sm text-muted-foreground space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Up to <strong className="text-foreground">15 products</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Unique shop link for sharing</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Commission tracking & analytics</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Performance dashboard</span>
+                    </li>
+                  </ul>
+                </div>
 
-              <ShopImageUpload
-                bucket="shop-logos"
-                onUploadComplete={setShopLogoUrl}
-                currentImage={shopLogoUrl}
-                title="Shop Logo"
-              />
-
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">Free Tier Includes:</h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Up to 15 products</li>
-                  <li>• Unique shop link</li>
-                  <li>• Commission tracking</li>
-                  <li>• Analytics dashboard</li>
-                </ul>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isCreating}>
-                {isCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Create Shop
-              </Button>
-            </form>
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg" 
+                  disabled={isCreating}
+                >
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
+                      Creating Shop...
+                    </>
+                  ) : (
+                    'Create Affiliate Shop'
+                  )}
+                </Button>
+              </form>
+            </div>
           </Card>
         </div>
       </div>

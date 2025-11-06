@@ -173,8 +173,9 @@ const Sell = () => {
     const statusConfig = {
       pending: {
         icon: Clock,
-        color: 'text-yellow-600',
-        bgColor: 'bg-yellow-50',
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50',
+        borderColor: 'border-orange-200',
         title: 'Application Under Review',
         description: 'Your seller application is currently being reviewed by our team. We\'ll notify you once a decision is made.',
       },
@@ -182,6 +183,7 @@ const Sell = () => {
         icon: CheckCircle,
         color: 'text-green-600',
         bgColor: 'bg-green-50',
+        borderColor: 'border-green-200',
         title: 'Application Approved!',
         description: 'Congratulations! Your seller application has been approved. You can now access your seller dashboard.',
       },
@@ -189,6 +191,7 @@ const Sell = () => {
         icon: XCircle,
         color: 'text-red-600',
         bgColor: 'bg-red-50',
+        borderColor: 'border-red-200',
         title: 'Application Rejected',
         description: application?.review_notes || 'Unfortunately, your application was not approved at this time.',
       },
@@ -199,51 +202,71 @@ const Sell = () => {
     const StatusIcon = config.icon;
 
     return (
-      <div className="min-h-screen bg-background pt-16 pb-20">
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-          <Card>
-            <CardHeader>
-              <div className={`flex items-center gap-2 ${config.color} mb-2`}>
-                <StatusIcon className="h-6 w-6" />
-                <CardTitle>{config.title}</CardTitle>
+      <div className="min-h-screen bg-gradient-to-br from-background via-orange-50/20 to-background pt-16 sm:pt-20 pb-20">
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-2xl">
+          <Card className="border-2 shadow-lg overflow-hidden">
+            <div className={`${config.bgColor} ${config.borderColor} border-b-2 px-4 sm:px-6 py-4 sm:py-6`}>
+              <div className={`flex items-center gap-3 ${config.color}`}>
+                <div className={`p-2 sm:p-3 rounded-xl ${config.bgColor} border-2 ${config.borderColor}`}>
+                  <StatusIcon className="h-5 w-5 sm:h-6 sm:w-6" />
+                </div>
+                <div>
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold">{config.title}</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">{config.description}</p>
+                </div>
               </div>
-              <CardDescription>{config.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            </div>
+            
+            <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {application && (
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Shop Name:</span>
-                    <span className="text-sm text-muted-foreground">{application.shop_name}</span>
+                <div className="space-y-3 sm:space-y-4 bg-muted/30 rounded-xl p-4 sm:p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Shop Name:</span>
+                    <span className="text-sm sm:text-base font-medium text-foreground">{application.shop_name}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Status:</span>
-                    <Badge variant={status === 'approved' ? 'default' : status === 'rejected' ? 'destructive' : 'secondary'}>
-                      {status}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Status:</span>
+                    <Badge 
+                      variant={status === 'approved' ? 'default' : status === 'rejected' ? 'destructive' : 'secondary'}
+                      className="w-fit text-xs sm:text-sm px-2 sm:px-3 py-1"
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
                     </Badge>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Submitted:</span>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(application.created_at).toLocaleDateString()}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Submitted:</span>
+                    <span className="text-sm sm:text-base text-foreground">
+                      {new Date(application.created_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
                     </span>
                   </div>
                 </div>
               )}
               
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button onClick={() => navigate('/account')} variant="outline" className="sm:flex-1">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+                <Button 
+                  onClick={() => navigate('/account')} 
+                  variant="outline" 
+                  className="sm:flex-1 h-11 sm:h-12 text-sm sm:text-base"
+                >
                   Go to My Account
                 </Button>
                 {status === 'approved' && (
                   <>
-                    <Button onClick={() => navigate('/seller/dashboard')} className="sm:flex-1">
+                    <Button 
+                      onClick={() => navigate('/seller/dashboard')} 
+                      className="sm:flex-1 h-11 sm:h-12 text-sm sm:text-base bg-primary hover:bg-primary/90"
+                    >
                       Manage Store
                     </Button>
                     <Button 
                       onClick={() => sellerSlug && navigate(`/shop/${sellerSlug}`)} 
                       disabled={!sellerSlug}
-                      className="sm:flex-1"
+                      className="sm:flex-1 h-11 sm:h-12 text-sm sm:text-base"
+                      variant="outline"
                     >
                       Visit Storefront
                     </Button>
@@ -258,42 +281,48 @@ const Sell = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16 pb-20">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Store className="h-6 w-6" />
-              Become a Seller on Flamia
-            </CardTitle>
-            <CardDescription>
-              Apply to sell on Flamia marketplace - Monthly fee: 50,000 UGX
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-orange-50/20 to-background pt-16 sm:pt-20 pb-20">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-2xl">
+        <Card className="border-2 shadow-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-primary/20 p-4 sm:p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 sm:p-3 bg-primary/10 rounded-xl border-2 border-primary/20">
+                <Store className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              </div>
               <div>
-                <Label htmlFor="shop_name">Shop Name *</Label>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl">Become a Seller on Flamia</CardTitle>
+                <CardDescription className="text-xs sm:text-sm mt-1">
+                  Apply to sell on Flamia marketplace - Monthly fee: 50,000 UGX
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="p-4 sm:p-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="shop_name" className="text-sm sm:text-base font-semibold">Shop Name *</Label>
                 <Input 
                   id="shop_name" 
                   value={form.shop_name} 
                   onChange={(e) => setForm({ ...form, shop_name: e.target.value })} 
                   placeholder="Enter your shop name"
+                  className="h-11 sm:h-12 text-sm sm:text-base"
                   required 
                 />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Your shop will be: <span className="font-mono font-semibold">{shopSlugPreview}.flamia.store</span>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">
+                  Your shop will be: <span className="font-mono font-semibold text-primary">{shopSlugPreview}.flamia.store</span>
                 </p>
               </div>
 
-              <div>
-                <Label htmlFor="category">Shop Category *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-sm sm:text-base font-semibold">Shop Category *</Label>
                 <Select 
                   value={form.category_id} 
                   onValueChange={(value) => setForm({ ...form, category_id: value })}
                   required
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 sm:h-12 text-sm sm:text-base">
                     <SelectValue placeholder="Select your shop category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -304,65 +333,93 @@ const Sell = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">
                   Choose one main category for your shop
                 </p>
               </div>
 
-              <div>
-                <Label htmlFor="sample_product_name">Sample Product Name</Label>
+              <div className="space-y-2">
+                <Label htmlFor="sample_product_name" className="text-sm sm:text-base font-semibold">Sample Product Name</Label>
                 <Input 
                   id="sample_product_name" 
                   value={form.sample_product_name} 
                   onChange={(e) => setForm({ ...form, sample_product_name: e.target.value })} 
                   placeholder="Example of what you'll sell"
+                  className="h-11 sm:h-12 text-sm sm:text-base"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="description">About Your Shop</Label>
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-sm sm:text-base font-semibold">About Your Shop</Label>
                 <Textarea 
                   id="description" 
                   rows={4} 
                   value={form.description} 
                   onChange={(e) => setForm({ ...form, description: e.target.value })} 
                   placeholder="Tell us about your business and what you plan to sell"
+                  className="text-sm sm:text-base resize-none"
                 />
               </div>
 
-              <div>
-                <Label>Sample Images ({form.sample_images.length}/{imagesLimit})</Label>
+              <div className="space-y-2">
+                <Label className="text-sm sm:text-base font-semibold">
+                  Sample Images ({form.sample_images.length}/{imagesLimit})
+                </Label>
                 <Input 
                   type="file" 
                   accept="image/*" 
                   multiple 
                   onChange={handleFileChange}
                   disabled={form.sample_images.length >= imagesLimit}
+                  className="h-11 sm:h-12 text-xs sm:text-sm"
                 />
                 {form.sample_images.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mt-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mt-3">
                     {form.sample_images.map((url) => (
-                      <img 
-                        key={url} 
-                        src={url} 
-                        alt="sample" 
-                        className="w-full h-24 object-cover rounded border" 
-                      />
+                      <div key={url} className="relative group">
+                        <img 
+                          src={url} 
+                          alt="sample" 
+                          className="w-full h-24 sm:h-32 object-cover rounded-lg border-2 border-border shadow-sm" 
+                        />
+                      </div>
                     ))}
                   </div>
                 )}
+                {form.sample_images.length >= imagesLimit && (
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    Maximum {imagesLimit} images allowed
+                  </p>
+                )}
               </div>
 
-              <div className="pt-2 space-y-2">
-                <div className="p-3 bg-muted rounded-md text-sm">
-                  <p className="font-semibold mb-1">Pricing:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Basic tier: 50,000 UGX/month (subdomain: yourshop.flamia.store)</li>
-                    <li>Premium tier: Custom domain support (coming soon)</li>
+              <div className="pt-2 space-y-3 sm:space-y-4">
+                <div className="p-3 sm:p-4 bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl border border-orange-200/50">
+                  <p className="font-semibold text-sm sm:text-base mb-2 sm:mb-3 text-foreground">Pricing Information</p>
+                  <ul className="text-xs sm:text-sm text-muted-foreground space-y-1.5 sm:space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Basic tier: <strong className="text-foreground">50,000 UGX/month</strong> (subdomain: yourshop.flamia.store)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Premium tier: Custom domain support (coming soon)</span>
+                    </li>
                   </ul>
                 </div>
-                <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? 'Submitting...' : 'Submit Application'}
+                <Button 
+                  type="submit" 
+                  disabled={loading} 
+                  className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit Application'
+                  )}
                 </Button>
               </div>
             </form>
