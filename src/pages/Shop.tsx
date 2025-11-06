@@ -142,7 +142,7 @@ const Shop: React.FC = () => {
 
       <div className="min-h-screen bg-white pt-16 sm:pt-20 pb-20 sm:pb-24">
         {/* Sticky Header - Search & Filters */}
-        <div className="bg-white shadow-sm sticky top-16 z-10 border-b border-gray-200">
+        <div className="bg-white shadow-sm sticky top-16 z-40 border-b border-gray-200">
           <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex flex-col gap-3 sm:gap-4">
               {/* Search */}

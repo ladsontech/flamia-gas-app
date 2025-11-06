@@ -48,7 +48,7 @@ export const ProductCard = ({
         )}
         
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-0">
           {featured && (
             <Badge className="bg-orange-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
               <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 fill-current" />
@@ -64,7 +64,7 @@ export const ProductCard = ({
 
         {/* Shop Name Badge for Seller Products */}
         {shopName && source === 'seller' && (
-          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs px-1.5 sm:px-2 py-0.5 bg-white/90 backdrop-blur-sm border border-gray-200">
+          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs px-1.5 sm:px-2 py-0.5 bg-white/90 backdrop-blur-sm border border-gray-200 z-0">
             {shopName}
           </Badge>
         )}
@@ -86,25 +86,22 @@ export const ProductCard = ({
         {/* Price Section */}
         <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
           <div className="flex flex-col gap-1 sm:gap-1.5 mb-2 sm:mb-3">
-            {originalPrice && originalPrice > price ? (
-              <>
-                <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-                  <span className="text-sm sm:text-base font-bold text-primary">
-                    UGX {price.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-gray-500 line-through">
-                    UGX {originalPrice.toLocaleString()}
-                  </span>
-                </div>
-                {discountPercent > 0 && (
-                  <span className="text-xs font-medium text-orange-600">
-                    Save {discountPercent}%
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="text-sm sm:text-base font-bold text-primary">
+            {/* Always show current price */}
+            <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+              <span className="text-sm sm:text-base font-bold text-orange-600">
                 UGX {price.toLocaleString()}
+              </span>
+              {/* Show original price if it exists and is higher than current price */}
+              {originalPrice && originalPrice > price && (
+                <span className="text-xs text-gray-500 line-through">
+                  UGX {originalPrice.toLocaleString()}
+                </span>
+              )}
+            </div>
+            {/* Show discount percentage if applicable */}
+            {originalPrice && originalPrice > price && discountPercent > 0 && (
+              <span className="text-xs font-medium text-orange-600">
+                Save {discountPercent}%
               </span>
             )}
           </div>
