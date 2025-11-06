@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, RefreshCw, AlertCircle, ChevronRight } from 'lucide-react';
+import { Search, RefreshCw, AlertCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/components/shop/ProductCard';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const Shop: React.FC = () => {
   const { categories, loading, error, refetch } = useMarketplaceProducts();
@@ -17,6 +18,7 @@ const Shop: React.FC = () => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [initialShowCount, setInitialShowCount] = useState(6);
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -160,26 +162,117 @@ const Shop: React.FC = () => {
         {/* Sticky Header - Search & Filters */}
         <div className="bg-white shadow-sm sticky top-16 z-40 border-b border-gray-200">
           <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-            <div className="flex flex-col gap-3 sm:gap-4">
-              {/* Search */}
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
-                <Input
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 sm:pl-10 h-10 sm:h-11 text-sm sm:text-base w-full bg-gray-50 border-gray-200 focus:bg-white"
-                />
+            <div className="flex flex-col gap-3">
+              {/* Search Bar with Filter Button */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
+                  <Input
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 sm:pl-10 h-10 sm:h-11 text-sm sm:text-base w-full bg-gray-50 border-gray-200 focus:bg-white"
+                  />
+                </div>
+                {/* Mobile Filter Button */}
+                <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="default" className="md:hidden h-10 sm:h-11 px-4">
+                      <SlidersHorizontal className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[85vh]">
+                    <SheetHeader>
+                      <SheetTitle>Filters & Sort</SheetTitle>
+                    </SheetHeader>
+                    <div className="py-4 space-y-6 overflow-y-auto">
+                      {/* Categories */}
+                      {categories.length > 0 && (
+                        <div>
+                          <h3 className="font-semibold text-sm mb-3 text-gray-900">Categories</h3>
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setSelectedCategory('all')}
+                              className={selectedCategory === 'all' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                            >
+                              All
+                            </Button>
+                            {categories.map(category => (
+                              <Button
+                                key={category.slug}
+                                variant={selectedCategory === category.slug ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setSelectedCategory(category.slug)}
+                                className={selectedCategory === category.slug ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                              >
+                                {category.name}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Sort */}
+                      <div>
+                        <h3 className="font-semibold text-sm mb-3 text-gray-900">Sort By</h3>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant={sortBy === 'newest' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSortBy('newest')}
+                            className={sortBy === 'newest' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                          >
+                            Newest
+                          </Button>
+                          <Button
+                            variant={sortBy === 'popular' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSortBy('popular')}
+                            className={sortBy === 'popular' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                          >
+                            Popular
+                          </Button>
+                          <Button
+                            variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSortBy('price-low')}
+                            className={sortBy === 'price-low' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                          >
+                            Price: Low-High
+                          </Button>
+                          <Button
+                            variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSortBy('price-high')}
+                            className={sortBy === 'price-high' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                          >
+                            Price: High-Low
+                          </Button>
+                        </div>
+                      </div>
+
+                      <Button 
+                        onClick={() => setFiltersOpen(false)} 
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white mt-4"
+                      >
+                        Apply Filters
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
 
-              {/* Category Filter */}
+              {/* Desktop: Category Filter Only - Cleaner */}
               {categories.length > 0 && (
-                <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
+                <div className="hidden md:flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   <Button
                     variant={selectedCategory === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedCategory('all')}
-                    className={`flex-shrink-0 text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4 snap-start touch-manipulation ${
+                    className={`flex-shrink-0 text-sm h-9 px-4 ${
                       selectedCategory === 'all'
                         ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
                         : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
@@ -193,7 +286,7 @@ const Shop: React.FC = () => {
                       variant={selectedCategory === category.slug ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setSelectedCategory(category.slug)}
-                      className={`flex-shrink-0 text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4 snap-start touch-manipulation whitespace-nowrap ${
+                      className={`flex-shrink-0 text-sm h-9 px-4 whitespace-nowrap ${
                         selectedCategory === category.slug
                           ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
                           : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
@@ -205,57 +298,59 @@ const Shop: React.FC = () => {
                 </div>
               )}
 
-              {/* Sort Controls */}
-              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
-                <span className="text-xs text-gray-600 self-center mr-1 flex-shrink-0">Sort:</span>
-                <Button
-                  variant={sortBy === 'newest' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSortBy('newest')}
-                  className={`flex-shrink-0 text-xs h-8 px-3 ${
-                    sortBy === 'newest'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                  }`}
-                >
-                  Newest
-                </Button>
-                <Button
-                  variant={sortBy === 'popular' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSortBy('popular')}
-                  className={`flex-shrink-0 text-xs h-8 px-3 ${
-                    sortBy === 'popular'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                  }`}
-                >
-                  Popular
-                </Button>
-                <Button
-                  variant={sortBy === 'price-low' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSortBy('price-low')}
-                  className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
-                    sortBy === 'price-low'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                  }`}
-                >
-                  Price: Low-High
-                </Button>
-                <Button
-                  variant={sortBy === 'price-high' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSortBy('price-high')}
-                  className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
-                    sortBy === 'price-high'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                  }`}
-                >
-                  Price: High-Low
-                </Button>
+              {/* Desktop: Sort Controls - Compact */}
+              <div className="hidden md:flex items-center gap-2">
+                <span className="text-xs text-gray-600 font-medium">Sort:</span>
+                <div className="flex gap-1.5">
+                  <Button
+                    variant={sortBy === 'newest' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('newest')}
+                    className={`text-xs h-8 px-3 ${
+                      sortBy === 'newest'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Newest
+                  </Button>
+                  <Button
+                    variant={sortBy === 'popular' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('popular')}
+                    className={`text-xs h-8 px-3 ${
+                      sortBy === 'popular'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Popular
+                  </Button>
+                  <Button
+                    variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('price-low')}
+                    className={`text-xs h-8 px-3 whitespace-nowrap ${
+                      sortBy === 'price-low'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Price: Low-High
+                  </Button>
+                  <Button
+                    variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('price-high')}
+                    className={`text-xs h-8 px-3 whitespace-nowrap ${
+                      sortBy === 'price-high'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Price: High-Low
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
