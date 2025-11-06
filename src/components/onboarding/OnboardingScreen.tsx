@@ -96,110 +96,142 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col overflow-hidden">
       {/* Skip button */}
-      <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleSkip}
-          className="text-muted-foreground text-sm md:text-base"
+          className="text-muted-foreground text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 touch-manipulation"
         >
-          Skip
-          <X className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2" />
+          <span className="hidden sm:inline">Skip</span>
+          <X className="w-4 h-4 sm:w-4 sm:h-4 sm:ml-1.5" />
         </Button>
       </div>
 
       {/* Slide content - with proper scrolling */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="min-h-full flex items-center justify-center px-4 py-16 md:px-8 md:py-12">
+        <div className="min-h-full flex items-center justify-center px-4 sm:px-6 py-12 sm:py-16 md:py-20">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="max-w-lg w-full space-y-6 md:space-y-10 text-center"
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="max-w-md sm:max-w-lg w-full space-y-4 sm:space-y-6 md:space-y-8 text-center"
             >
               {/* Icon */}
-              <div className="flex justify-center">
-                <div className="p-4 md:p-6 bg-primary/10 rounded-full text-primary">
-                  {slides[currentSlide].icon}
-                </div>
+              <div className="flex justify-center mb-2 sm:mb-4">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                  className="p-3 sm:p-4 md:p-5 bg-primary/10 rounded-full sm:rounded-2xl text-primary"
+                >
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20">
+                    {slides[currentSlide].icon}
+                  </div>
+                </motion.div>
               </div>
 
               {/* Image if available */}
               {slides[currentSlide].image && (
-                <div className="flex justify-center my-4 md:my-8">
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.15, duration: 0.3 }}
+                  className="flex justify-center my-4 sm:my-6 md:my-8"
+                >
                   <img
                     src={slides[currentSlide].image}
                     alt={slides[currentSlide].title}
-                    className="w-32 h-32 md:w-48 md:h-48 object-contain rounded-lg"
+                    className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   />
-                </div>
+                </motion.div>
               )}
 
               {/* Title */}
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground px-4">
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground px-2 sm:px-4 leading-tight"
+              >
                 {slides[currentSlide].title}
-              </h2>
+              </motion.h2>
 
               {/* Description */}
-              <p className="text-muted-foreground text-base md:text-lg lg:text-xl leading-relaxed px-4 md:px-6">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25, duration: 0.3 }}
+                className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed px-3 sm:px-4 md:px-6 max-w-md mx-auto"
+              >
                 {slides[currentSlide].description}
-              </p>
+              </motion.p>
 
               {/* Terms Acceptance on slide 6 */}
               {currentSlide === 5 && (
-                <div className="max-w-md mx-auto mt-6 md:mt-8 space-y-4 md:space-y-6">
-                  <div className="flex items-start space-x-3 md:space-x-4 p-4 md:p-6 bg-card border border-border rounded-lg">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.3 }}
+                  className="max-w-md mx-auto mt-4 sm:mt-6 md:mt-8"
+                >
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 md:p-5 bg-card border border-border/50 rounded-xl sm:rounded-2xl shadow-sm">
                     <Checkbox
                       id="terms"
                       checked={termsAccepted}
                       onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                      className="mt-1"
+                      className="mt-0.5 sm:mt-1 h-5 w-5 sm:h-5 sm:w-5"
                     />
-                    <div className="flex-1">
-                      <label htmlFor="terms" className="text-sm md:text-base text-foreground cursor-pointer">
+                    <div className="flex-1 pt-0.5">
+                      <label htmlFor="terms" className="text-xs sm:text-sm md:text-base text-foreground cursor-pointer leading-relaxed block">
                         I accept the{' '}
                         <Link
                           to="/terms-and-conditions"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 underline hover:text-blue-700"
+                          className="text-primary underline hover:text-primary/80 font-medium"
                         >
                           Terms and Conditions
                         </Link>
                       </label>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Privacy Acceptance on slide 7 */}
               {currentSlide === 6 && (
-                <div className="max-w-md mx-auto mt-6 md:mt-8 space-y-4 md:space-y-6">
-                  <div className="flex items-start space-x-3 md:space-x-4 p-4 md:p-6 bg-card border border-border rounded-lg">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.3 }}
+                  className="max-w-md mx-auto mt-4 sm:mt-6 md:mt-8"
+                >
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 md:p-5 bg-card border border-border/50 rounded-xl sm:rounded-2xl shadow-sm">
                     <Checkbox
                       id="privacy"
                       checked={privacyAccepted}
                       onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
-                      className="mt-1"
+                      className="mt-0.5 sm:mt-1 h-5 w-5 sm:h-5 sm:w-5"
                     />
-                    <div className="flex-1">
-                      <label htmlFor="privacy" className="text-sm md:text-base text-foreground cursor-pointer">
+                    <div className="flex-1 pt-0.5">
+                      <label htmlFor="privacy" className="text-xs sm:text-sm md:text-base text-foreground cursor-pointer leading-relaxed block">
                         I accept the{' '}
                         <Link
                           to="/privacy-policy"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 underline hover:text-blue-700"
+                          className="text-primary underline hover:text-primary/80 font-medium"
                         >
                           Privacy Policy
                         </Link>
                       </label>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )}
             </motion.div>
           </AnimatePresence>
@@ -207,18 +239,17 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       </div>
 
       {/* Bottom navigation - fixed at bottom */}
-      <div className="flex-shrink-0 p-4 md:p-8 space-y-4 md:space-y-6 bg-background border-t border-border">
-
+      <div className="flex-shrink-0 p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4 bg-background/95 backdrop-blur-sm border-t border-border/50 safe-area-inset-bottom">
         {/* Progress dots */}
-        <div className="flex justify-center gap-1.5 md:gap-2">
+        <div className="flex justify-center gap-1.5 sm:gap-2">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-1.5 md:h-2 rounded-full transition-all ${
+              className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-manipulation ${
                 index === currentSlide
-                  ? 'w-6 md:w-8 bg-primary'
-                  : 'w-1.5 md:w-2 bg-muted-foreground/30'
+                  ? 'w-6 sm:w-8 bg-primary'
+                  : 'w-1.5 sm:w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -232,11 +263,11 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             (currentSlide === 5 && !termsAccepted) ||
             (currentSlide === 6 && !privacyAccepted)
           }
-          className="w-full max-w-lg mx-auto flex items-center justify-center gap-2 md:gap-3 h-12 md:h-14 text-base md:text-lg"
+          className="w-full max-w-md sm:max-w-lg mx-auto flex items-center justify-center gap-2 h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg font-semibold active:scale-[0.98] transition-transform touch-manipulation shadow-lg"
           size="lg"
         >
           {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
-          <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </Button>
       </div>
     </div>
