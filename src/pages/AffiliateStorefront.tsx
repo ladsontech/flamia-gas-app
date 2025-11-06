@@ -494,17 +494,18 @@ export default function AffiliateStorefront() {
                 gridLayout === '3' ? 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3' :
                 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
               }`}>
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  name={product.name}
-                  description={product.description}
-                  price={product.price}
-                  originalPrice={product.original_price}
-                  imageUrl={product.image_url}
-                  onAddToCart={() => handleAddToCart(product)}
-                />
-              ))}
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      name={product.name}
+                      description={product.description}
+                      price={product.price}
+                      originalPrice={product.original_price}
+                      imageUrl={product.image_url}
+                      onAddToCart={() => handleAddToCart(product)}
+                    />
+                  ))}
             </div>
           )}
         </div>

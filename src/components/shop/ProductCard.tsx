@@ -2,8 +2,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Package, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
+  id?: string;
   name: string;
   description?: string;
   price: number;
@@ -16,6 +18,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({
+  id,
   name,
   description,
   price,
@@ -26,12 +29,27 @@ export const ProductCard = ({
   source,
   onAddToCart,
 }: ProductCardProps) => {
+  const navigate = useNavigate();
   const discountPercent = originalPrice && originalPrice > price
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
+  const handleCardClick = () => {
+    if (id) {
+      navigate(`/product/${id}`);
+    }
+  };
+
+  const handleAddToCartClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click when clicking button
+    onAddToCart();
+  };
+
   return (
-    <Card className="group bg-white border border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative z-0">
+    <Card 
+      className="group bg-white border border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative z-0 cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Square Image Container */}
       <div className="relative w-full pb-[100%] mb-2 sm:mb-3 rounded-lg overflow-hidden bg-gray-50 z-0">
         {imageUrl ? (
@@ -109,7 +127,7 @@ export const ProductCard = ({
           </div>
           
           <Button 
-            onClick={onAddToCart}
+            onClick={handleAddToCartClick}
             className="w-full font-medium h-8 sm:h-9 text-xs sm:text-sm active:scale-[0.98] transition-transform touch-manipulation bg-orange-500 hover:bg-orange-600 text-white"
             size="default"
           >

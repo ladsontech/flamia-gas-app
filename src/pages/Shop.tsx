@@ -481,6 +481,7 @@ const Shop: React.FC = () => {
                                 {product1 && (
                                   <div className="flex-shrink-0" style={{ width: 'calc((100vw - 2rem - 0.75rem) / 2)' }}>
                                     <ProductCard
+                                      id={product1.id}
                                       name={product1.name}
                                       description={product1.description}
                                       price={product1.price}
@@ -497,6 +498,7 @@ const Shop: React.FC = () => {
                                 {product2 && (
                                   <div className="flex-shrink-0" style={{ width: 'calc((100vw - 2rem - 0.75rem) / 2)' }}>
                                     <ProductCard
+                                      id={product2.id}
                                       name={product2.name}
                                       description={product2.description}
                                       price={product2.price}
@@ -523,6 +525,7 @@ const Shop: React.FC = () => {
                           {displayProducts.map(product => (
                             <div key={product.id} className="flex-shrink-0 snap-start w-[180px] sm:w-[200px] md:w-[220px]">
                               <ProductCard
+                                id={product.id}
                                 name={product.name}
                                 description={product.description}
                                 price={product.price}

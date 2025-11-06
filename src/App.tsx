@@ -24,6 +24,7 @@ import Refill from './pages/Refill';
 import GasSafety from './pages/GasSafety';
 import Accessories from './pages/Accessories';
 import GadgetDetail from './pages/GadgetDetail';
+import ProductDetail from './pages/ProductDetail';
 import ResetPassword from './pages/ResetPassword';
 import Delivery from './pages/Delivery';
 import Sell from './pages/Sell';
@@ -124,6 +125,7 @@ const AppContent = () => {
           <Route path="/gas-safety" element={<GasSafety />} />
           <Route path="/accessories" element={<Accessories />} />
           <Route path="/gadget/:id" element={<GadgetDetail />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/admin" element={<Admin />} />
