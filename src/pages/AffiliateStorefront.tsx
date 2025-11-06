@@ -244,7 +244,7 @@ export default function AffiliateStorefront() {
             © {new Date().getFullYear()} {shop.shop_name}. All rights reserved.
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            Powered by <span className="font-semibold text-primary">Flamia</span>
+            Powered by <span className="font-semibold text-orange-600">Flamia</span>
           </p>
         </div>
       </footer>
