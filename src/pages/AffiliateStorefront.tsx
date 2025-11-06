@@ -6,7 +6,7 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Store, Search } from 'lucide-react';
+import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import type { AffiliateShop } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
@@ -17,9 +17,10 @@ export default function AffiliateStorefront() {
   const [shop, setShop] = useState<AffiliateShop | null>(null);
   const [products, setProducts] = useState<(BusinessProduct & { commission_rate?: number })[]>([]);
   const [loading, setLoading] = useState(true);
-  const gridLayout: '1' | '2' | '3' | '4' = '3';
+  const [gridLayout, setGridLayout] = useState<'1' | '2' | '3' | '4'>('3');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
 
   const loadShopData = useCallback(async () => {
     if (!slug) return;
@@ -90,16 +91,31 @@ export default function AffiliateStorefront() {
     return Array.from(cats).sort();
   }, [products]);
 
-  // Filter products by search and category
+  // Filter and sort products
   const filteredProducts = useMemo(() => {
-    return products.filter(p => {
+    let filtered = products.filter(p => {
       const matchesSearch = !searchTerm || 
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [products, searchTerm, selectedCategory]);
+
+    // Sort products
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'popular':
+          return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
+        case 'newest':
+        default:
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+  }, [products, searchTerm, selectedCategory, sortBy]);
 
   if (loading) {
     return (
@@ -212,12 +228,106 @@ export default function AffiliateStorefront() {
       {/* Products Section */}
       <section className="bg-white py-4 sm:py-6">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
-          {/* Products Count */}
+          {/* Products Count, Sort & Grid Layout Controls */}
           {filteredProducts.length > 0 && (
-            <div className="mb-3 sm:mb-4">
-              <p className="text-xs sm:text-sm text-gray-600">
-                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
-              </p>
+            <div className="mb-3 sm:mb-4 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+                </p>
+                
+                {/* Grid Layout Controls - Desktop */}
+                <div className="hidden sm:flex gap-1 bg-gray-100 rounded-lg p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setGridLayout('1')}
+                    className={`h-7 w-7 p-0 ${gridLayout === '1' ? 'bg-white shadow-sm' : ''}`}
+                    title="Single column"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setGridLayout('2')}
+                    className={`h-7 w-7 p-0 ${gridLayout === '2' ? 'bg-white shadow-sm' : ''}`}
+                    title="Two columns"
+                  >
+                    <Grid2x2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setGridLayout('3')}
+                    className={`h-7 w-7 p-0 ${gridLayout === '3' ? 'bg-white shadow-sm' : ''}`}
+                    title="Three columns"
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setGridLayout('4')}
+                    className={`h-7 w-7 p-0 ${gridLayout === '4' ? 'bg-white shadow-sm' : ''}`}
+                    title="Four columns"
+                  >
+                    <Grip className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Sort Controls */}
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+                <Button
+                  variant={sortBy === 'newest' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('newest')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 ${
+                    sortBy === 'newest'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Newest
+                </Button>
+                <Button
+                  variant={sortBy === 'popular' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('popular')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 ${
+                    sortBy === 'popular'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Popular
+                </Button>
+                <Button
+                  variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('price-low')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
+                    sortBy === 'price-low'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Price: Low-High
+                </Button>
+                <Button
+                  variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('price-high')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
+                    sortBy === 'price-high'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Price: High-Low
+                </Button>
+              </div>
             </div>
           )}
 
@@ -229,7 +339,7 @@ export default function AffiliateStorefront() {
                 <p className="text-sm text-gray-600 mb-4">
                   {searchTerm || selectedCategory !== 'all' 
                     ? 'Try adjusting your search or filter.' 
-                    : 'This shop doesn't have any products listed yet. Check back soon!'}
+                    : 'This shop does not have any products listed yet. Check back soon!'}
                 </p>
                 {(searchTerm || selectedCategory !== 'all') && (
                   <Button 

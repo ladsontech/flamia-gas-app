@@ -16,6 +16,7 @@ const Shop: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [initialShowCount, setInitialShowCount] = useState(6);
+  const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -71,7 +72,7 @@ const Shop: React.FC = () => {
     });
   };
 
-  // Filter products based on search and category
+  // Filter products based on search and category, then apply sorting
   const filteredCategories = categories
     .map(category => ({
       ...category,
@@ -80,6 +81,21 @@ const Shop: React.FC = () => {
           product.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory === 'all' || category.slug === selectedCategory;
         return matchesSearch && matchesCategory;
+      }).sort((a, b) => {
+        switch (sortBy) {
+          case 'price-low':
+            return a.price - b.price;
+          case 'price-high':
+            return b.price - a.price;
+          case 'popular':
+            return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+          case 'newest':
+          default:
+            // Featured products first, then by created_at
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return 0; // Keep existing order for same featured status
+        }
       }),
     }))
     .filter(category => category.products.length > 0);
@@ -188,6 +204,59 @@ const Shop: React.FC = () => {
                   ))}
                 </div>
               )}
+
+              {/* Sort Controls */}
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+                <span className="text-xs text-gray-600 self-center mr-1 flex-shrink-0">Sort:</span>
+                <Button
+                  variant={sortBy === 'newest' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('newest')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 ${
+                    sortBy === 'newest'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Newest
+                </Button>
+                <Button
+                  variant={sortBy === 'popular' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('popular')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 ${
+                    sortBy === 'popular'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Popular
+                </Button>
+                <Button
+                  variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('price-low')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
+                    sortBy === 'price-low'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Price: Low-High
+                </Button>
+                <Button
+                  variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSortBy('price-high')}
+                  className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
+                    sortBy === 'price-high'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  Price: High-Low
+                </Button>
+              </div>
             </div>
           </div>
         </div>
