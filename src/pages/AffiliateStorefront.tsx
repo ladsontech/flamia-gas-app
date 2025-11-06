@@ -6,7 +6,7 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, Info, X } from 'lucide-react';
+import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, X } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import type { AffiliateShop } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
@@ -28,7 +28,6 @@ export default function AffiliateStorefront() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [storeDetailsOpen, setStoreDetailsOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -245,82 +244,9 @@ export default function AffiliateStorefront() {
             </Dialog>
           )}
 
-          {/* Compact Header - App Style */}
-          <header className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
-        <div className="container max-w-7xl mx-auto px-3 sm:px-4">
-          {/* Top Bar: Logo + Name (Compact) */}
-          <div className="flex items-center gap-2 sm:gap-3 py-2 sm:py-3">
-            {/* Logo - Small on mobile - Clickable */}
-            <Dialog open={storeDetailsOpen} onOpenChange={setStoreDetailsOpen}>
-              <DialogTrigger asChild>
-                <button className="flex-shrink-0 hover:opacity-80 transition-opacity">
-                  {shop.shop_logo_url ? (
-                    <img 
-                      src={shop.shop_logo_url} 
-                      alt={shop.shop_name}
-                      className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg object-cover border border-gray-200"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5 flex items-center justify-center border border-gray-200">
-                      <Store className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-orange-600" />
-                    </div>
-                  )}
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-lg">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-3">
-                    {shop.shop_logo_url ? (
-                      <img src={shop.shop_logo_url} alt={shop.shop_name} className="w-12 h-12 rounded-lg object-cover" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5 flex items-center justify-center">
-                        <Store className="w-6 h-6 text-orange-600" />
-                      </div>
-                    )}
-                    <span>{shop.shop_name}</span>
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  {shop.shop_description && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-gray-700 mb-1 flex items-center gap-2">
-                        <Info className="w-4 h-4" />
-                        About
-                      </h4>
-                      <p className="text-sm text-gray-600">{shop.shop_description}</p>
-                    </div>
-                  )}
-                  {shop.tier === 'premium' && (
-                    <div className="pt-2 border-t">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-                        ⭐ Premium Store
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
-            
-            {/* Store Name - Compact */}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 truncate">
-                {shop.shop_name}
-              </h1>
-              {shop.shop_description && (
-                <p className="text-xs sm:text-sm text-gray-500 line-clamp-1 hidden sm:block">
-                  {shop.shop_description}
-                </p>
-              )}
-            </div>
-
-            {/* Badge - Compact */}
-            {shop.tier === 'premium' && (
-              <span className="hidden sm:inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-                ⭐
-              </span>
-            )}
-          </div>
-
+          {/* Search and Filters Section */}
+          <div className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
           {/* Search Bar */}
           <div className="relative mb-2 sm:mb-3">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
@@ -457,7 +383,7 @@ export default function AffiliateStorefront() {
             )}
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Products Section */}
       <section className="bg-white py-4 sm:py-6">
