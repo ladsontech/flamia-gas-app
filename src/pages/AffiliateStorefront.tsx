@@ -6,10 +6,12 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip } from 'lucide-react';
+import { Loader2, Store, Search, List, Grid2x2, LayoutGrid, Grip, SlidersHorizontal, Info } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import type { AffiliateShop } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export default function AffiliateStorefront() {
   const { slug } = useParams<{ slug: string }>();
@@ -21,6 +23,8 @@ export default function AffiliateStorefront() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [storeDetailsOpen, setStoreDetailsOpen] = useState(false);
 
   const loadShopData = useCallback(async () => {
     if (!slug) return;
@@ -144,20 +148,56 @@ export default function AffiliateStorefront() {
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
           {/* Top Bar: Logo + Name (Compact) */}
           <div className="flex items-center gap-2 sm:gap-3 py-2 sm:py-3">
-            {/* Logo - Small on mobile */}
-            <div className="flex-shrink-0">
-              {shop.shop_logo_url ? (
-                <img 
-                  src={shop.shop_logo_url} 
-                  alt={shop.shop_name}
-                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg object-cover border border-gray-200"
-                />
-              ) : (
-                <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5 flex items-center justify-center border border-gray-200">
-                  <Store className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-orange-600" />
+            {/* Logo - Small on mobile - Clickable */}
+            <Dialog open={storeDetailsOpen} onOpenChange={setStoreDetailsOpen}>
+              <DialogTrigger asChild>
+                <button className="flex-shrink-0 hover:opacity-80 transition-opacity">
+                  {shop.shop_logo_url ? (
+                    <img 
+                      src={shop.shop_logo_url} 
+                      alt={shop.shop_name}
+                      className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg object-cover border border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5 flex items-center justify-center border border-gray-200">
+                      <Store className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-orange-600" />
+                    </div>
+                  )}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-3">
+                    {shop.shop_logo_url ? (
+                      <img src={shop.shop_logo_url} alt={shop.shop_name} className="w-12 h-12 rounded-lg object-cover" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5 flex items-center justify-center">
+                        <Store className="w-6 h-6 text-orange-600" />
+                      </div>
+                    )}
+                    <span>{shop.shop_name}</span>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  {shop.shop_description && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-700 mb-1 flex items-center gap-2">
+                        <Info className="w-4 h-4" />
+                        About
+                      </h4>
+                      <p className="text-sm text-gray-600">{shop.shop_description}</p>
+                    </div>
+                  )}
+                  {shop.tier === 'premium' && (
+                    <div className="pt-2 border-t">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+                        ⭐ Premium Store
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </DialogContent>
+            </Dialog>
             
             {/* Store Name - Compact */}
             <div className="flex-1 min-w-0">
@@ -190,47 +230,139 @@ export default function AffiliateStorefront() {
             />
           </div>
 
-          {/* Category Filter */}
-          {categories.length > 0 && (
-            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
-              <Button
-                variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedCategory('all')}
-                className={`flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4 snap-start touch-manipulation ${
-                  selectedCategory === 'all'
-                    ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                    : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                }`}
-              >
-                All
-              </Button>
-              {categories.map(category => (
+          {/* Filters Button - Mobile */}
+          <div className="md:hidden mb-2">
+            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full h-9">
+                  <SlidersHorizontal className="w-4 h-4 mr-2" />
+                  Filters & Sort
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[80vh]">
+                <SheetHeader>
+                  <SheetTitle>Filters & Sort</SheetTitle>
+                </SheetHeader>
+                <div className="py-4 space-y-6">
+                  {/* Categories */}
+                  {categories.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-sm mb-3">Categories</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setSelectedCategory('all')}
+                          className={selectedCategory === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                        >
+                          All
+                        </Button>
+                        {categories.map(category => (
+                          <Button
+                            key={category}
+                            variant={selectedCategory === category ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSelectedCategory(category)}
+                            className={selectedCategory === category ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                          >
+                            {category}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sort */}
+                  <div>
+                    <h3 className="font-semibold text-sm mb-3">Sort By</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant={sortBy === 'newest' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSortBy('newest')}
+                        className={sortBy === 'newest' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                      >
+                        Newest
+                      </Button>
+                      <Button
+                        variant={sortBy === 'popular' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSortBy('popular')}
+                        className={sortBy === 'popular' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                      >
+                        Popular
+                      </Button>
+                      <Button
+                        variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSortBy('price-low')}
+                        className={sortBy === 'price-low' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                      >
+                        Price: Low-High
+                      </Button>
+                      <Button
+                        variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSortBy('price-high')}
+                        className={sortBy === 'price-high' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                      >
+                        Price: High-Low
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button onClick={() => setFiltersOpen(false)} className="w-full bg-orange-500 hover:bg-orange-600">
+                    Apply Filters
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop Filters - Hidden on Mobile */}
+          <div className="hidden md:block space-y-2 mb-2">
+            {/* Category Filter */}
+            {categories.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 <Button
-                  key={category}
-                  variant={selectedCategory === category ? 'default' : 'outline'}
+                  variant={selectedCategory === 'all' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className={`flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4 snap-start touch-manipulation whitespace-nowrap ${
-                    selectedCategory === category
+                  onClick={() => setSelectedCategory('all')}
+                  className={`flex-shrink-0 text-sm h-9 px-4 ${
+                    selectedCategory === 'all'
                       ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
                       : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                   }`}
                 >
-                  {category}
+                  All
                 </Button>
-              ))}
-            </div>
-          )}
+                {categories.map(category => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category)}
+                    className={`flex-shrink-0 text-sm h-9 px-4 whitespace-nowrap ${
+                      selectedCategory === category
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Products Section */}
       <section className="bg-white py-4 sm:py-6">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
-          {/* Products Count, Sort & Grid Layout Controls */}
+          {/* Products Count & Grid Layout Controls */}
           {filteredProducts.length > 0 && (
-            <div className="mb-3 sm:mb-4 space-y-2">
+            <div className="mb-3 sm:mb-4">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs sm:text-sm text-gray-600">
                   {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
@@ -277,8 +409,8 @@ export default function AffiliateStorefront() {
                 </div>
               </div>
 
-              {/* Sort Controls */}
-              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+              {/* Sort Controls - Desktop Only */}
+              <div className="hidden md:flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
                 <Button
                   variant={sortBy === 'newest' ? 'default' : 'outline'}
                   size="sm"
