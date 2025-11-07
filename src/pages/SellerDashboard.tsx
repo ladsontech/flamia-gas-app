@@ -167,7 +167,14 @@ const SellerDashboard = () => {
           </div>
           <Button 
             variant="outline" 
-            onClick={() => window.open(`https://${shop.shop_slug}.flamia.store`, '_blank')}
+            onClick={async () => {
+              const { data: { session } } = await supabase.auth.getSession();
+              const base = `https://${shop.shop_slug}.flamia.store`;
+              const url = session?.access_token && session?.refresh_token
+                ? `${base}#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`
+                : base;
+              window.open(url, '_blank');
+            }}
             className="w-full sm:w-auto"
             size="sm"
           >

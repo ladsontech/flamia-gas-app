@@ -319,7 +319,14 @@ export default function AffiliateDashboard() {
               <Copy className="w-4 h-4 mr-2" />
               Copy
             </Button>
-            <Button onClick={() => window.open(`https://${shop.shop_slug}.flamia.store`, '_blank')} size="sm" className="flex-1 sm:flex-none">
+            <Button onClick={async () => {
+              const { data: { session } } = await supabase.auth.getSession();
+              const base = `https://${shop.shop_slug}.flamia.store`;
+              const url = session?.access_token && session?.refresh_token
+                ? `${base}#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`
+                : base;
+              window.open(url, '_blank');
+            }} size="sm" className="flex-1 sm:flex-none">
               <ExternalLink className="w-4 h-4 mr-2" />
               View
             </Button>

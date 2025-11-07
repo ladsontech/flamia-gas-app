@@ -41,6 +41,28 @@ export const StorefrontHeader = ({
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // Accept session handoff via URL (for subdomain storefronts opened from main app)
+  useEffect(() => {
+    const paramsFromHash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const paramsFromQuery = new URLSearchParams(window.location.search);
+    const accessToken = paramsFromHash.get('access_token') || paramsFromQuery.get('access_token');
+    const refreshToken = paramsFromHash.get('refresh_token') || paramsFromQuery.get('refresh_token');
+    if (accessToken && refreshToken) {
+      (async () => {
+        try {
+          await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+        } catch (e) {
+          console.warn('Session handoff failed', e);
+        } finally {
+          // Clean tokens from URL
+          const cleanUrl = window.location.origin + window.location.pathname + window.location.search.replace(/([?&])(access_token|refresh_token)=[^&#]*(#|&|$)/g, '$1')
+            .replace(/[?&]$/, '');
+          window.history.replaceState({}, '', cleanUrl);
+        }
+      })();
+    }
+  }, []);
+
   useEffect(() => {
     checkUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
