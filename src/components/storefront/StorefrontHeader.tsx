@@ -120,7 +120,8 @@ export const StorefrontHeader = ({
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + window.location.pathname
+          // Return to the exact storefront URL (keeps slug/subdomain, query, and hash)
+          redirectTo: window.location.href
         }
       });
     } catch (error: any) {
