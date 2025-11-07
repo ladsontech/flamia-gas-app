@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchAffiliateShopBySlug, fetchAffiliateShopProducts } from '@/services/affiliateService';
 import { useCart } from '@/contexts/CartContext';
@@ -16,9 +16,13 @@ import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
 import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
 import { Helmet } from 'react-helmet';
 import { getProductViewCounts } from '@/services/productViewsService';
+import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
+import { StorePerformance } from '@/components/storefront/StorePerformance';
+import type { MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 
 export default function AffiliateStorefront() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [shop, setShop] = useState<AffiliateShop | null>(null);
   const [products, setProducts] = useState<(BusinessProduct & { commission_rate?: number })[]>([]);
@@ -31,6 +35,7 @@ export default function AffiliateStorefront() {
   const [isOwner, setIsOwner] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState<MarketplaceProduct | null>(null);
 
   const loadShopData = useCallback(async () => {
     if (!slug) return;
@@ -65,8 +70,8 @@ export default function AffiliateStorefront() {
       })) as (BusinessProduct & { commission_rate?: number })[];
 
       // Fetch view counts for products
-      const productIds = productsWithCommission.map(p => p.id);
-      const viewCounts = await getProductViewCounts(productIds);
+      const viewCountProductIds = productsWithCommission.map(p => p.id);
+      const viewCounts = await getProductViewCounts(viewCountProductIds);
       
       // Add view counts to products
       const productsWithViews = productsWithCommission.map(product => ({
@@ -242,6 +247,13 @@ export default function AffiliateStorefront() {
                 </div>
               </DialogContent>
             </Dialog>
+          )}
+
+          {/* Store Performance - Only visible to owner */}
+          {isOwner && shop && (
+            <div className="mb-6">
+              <StorePerformance shopId={shop.id} shopType="affiliate" />
+            </div>
           )}
 
           {/* Search and Filters Section */}
@@ -533,6 +545,7 @@ export default function AffiliateStorefront() {
                       imageUrl={product.image_url}
                       viewCount={(product as any).viewCount}
                       onAddToCart={() => handleAddToCart(product)}
+                      onQuickView={() => setQuickViewProduct(product as any)}
                     />
                   ))}
             </div>
@@ -551,6 +564,25 @@ export default function AffiliateStorefront() {
           </p>
         </div>
       </footer>
+
+      {/* Product Quick View Modal */}
+      <ProductQuickViewModal
+        product={quickViewProduct}
+        open={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onAddToCart={() => {
+          if (quickViewProduct) {
+            handleAddToCart(quickViewProduct as any);
+            setQuickViewProduct(null);
+          }
+        }}
+        onViewDetails={() => {
+          if (quickViewProduct?.id) {
+            navigate(`/product/${quickViewProduct.id}`);
+            setQuickViewProduct(null);
+          }
+        }}
+      />
     </div>
   );
 }
