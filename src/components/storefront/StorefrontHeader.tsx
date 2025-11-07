@@ -166,7 +166,7 @@ export const StorefrontHeader = ({
       <div className="container max-w-7xl mx-auto px-3 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo/Shop Name */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-1 min-w-0">
             {shopLogoUrl ? (
               <img 
                 src={shopLogoUrl} 
@@ -184,7 +184,7 @@ export const StorefrontHeader = ({
           </div>
 
           {/* Right Side - Auth & Account */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {user ? (
               <>
                 {/* Owner Analytics Button */}
@@ -204,31 +204,31 @@ export const StorefrontHeader = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8"
+                  className="text-xs h-8 px-2 sm:px-3"
                   onClick={handleNavigateToAccount}
                 >
                   <User className="w-3 h-3 mr-1" />
-                  Account
+                  <span className="hidden sm:inline">Account</span>
                 </Button>
 
                 {/* Visible Orders Button */}
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 hidden sm:inline-flex"
+                  className="text-xs h-8 px-2 sm:px-3"
                   onClick={handleNavigateToOrders}
                 >
                   <ShoppingBag className="w-3 h-3 mr-1" />
-                  Orders
+                  <span className="hidden sm:inline">Orders</span>
                 </Button>
 
-                {/* Account Menu */}
+                {/* Account Menu - Compact on mobile */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full">
-                      <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
+                    <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-9 sm:w-9 p-0 rounded-full">
+                      <Avatar className="h-7 w-7 sm:h-9 sm:w-9">
                         <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name || user?.email} />
-                        <AvatarFallback className="bg-orange-500 text-white text-xs font-semibold">
+                        <AvatarFallback className="bg-orange-500 text-white text-[10px] sm:text-xs font-semibold">
                           {userProfile?.full_name 
                             ? userProfile.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
                             : getInitials(user?.email || 'U')}
@@ -238,16 +238,17 @@ export const StorefrontHeader = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <div className="px-2 py-1.5">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                         {user.email}
                       </p>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleNavigateToAccount}>
+                    {/* Show in dropdown on desktop, hidden on mobile since buttons are visible */}
+                    <DropdownMenuItem onClick={handleNavigateToAccount} className="hidden sm:flex">
                       <User className="w-4 h-4 mr-2" />
                       Account
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleNavigateToOrders}>
+                    <DropdownMenuItem onClick={handleNavigateToOrders} className="hidden sm:flex">
                       <ShoppingBag className="w-4 h-4 mr-2" />
                       My Orders
                     </DropdownMenuItem>
