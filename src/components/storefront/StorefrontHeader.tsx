@@ -162,7 +162,7 @@ export const StorefrontHeader = ({
   }
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 sticky top-0 z-50 shadow-md">
       <div className="container max-w-7xl mx-auto px-3 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo/Shop Name */}
@@ -171,14 +171,14 @@ export const StorefrontHeader = ({
               <img 
                 src={shopLogoUrl} 
                 alt={shopName}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover border-2 border-orange-200"
               />
             ) : (
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5 flex items-center justify-center">
-                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-sm">
+                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
             )}
-            <h1 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 truncate">
+            <h1 className="text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent truncate">
               {shopName}
             </h1>
           </div>
@@ -204,7 +204,7 @@ export const StorefrontHeader = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 px-2 sm:px-3"
+                  className="text-xs h-8 px-2 sm:px-3 border-orange-300 hover:bg-orange-50 hover:text-orange-600"
                   onClick={handleNavigateToAccount}
                 >
                   <User className="w-3 h-3 mr-1" />
@@ -215,7 +215,7 @@ export const StorefrontHeader = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 px-2 sm:px-3"
+                  className="text-xs h-8 px-2 sm:px-3 border-orange-300 hover:bg-orange-50 hover:text-orange-600"
                   onClick={handleNavigateToOrders}
                 >
                   <ShoppingBag className="w-3 h-3 mr-1" />
@@ -284,7 +284,7 @@ export const StorefrontHeader = ({
                 <Button 
                   variant="default" 
                   size="sm" 
-                  className="text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600"
+                  className="text-xs sm:text-sm h-8 sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-md"
                   onClick={handleGoogleSignIn}
                 >
                   <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" viewBox="0 0 24 24">
