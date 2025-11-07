@@ -33,7 +33,7 @@ export default function AffiliateStorefront() {
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  
   const [user, setUser] = useState<any>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<MarketplaceProduct | null>(null);
 
@@ -219,40 +219,15 @@ export default function AffiliateStorefront() {
             shopLogoUrl={shop.shop_logo_url}
             isOwner={isOwner}
             shopType="affiliate"
-            onShowAnalytics={() => setShowAnalytics(true)}
           />
 
-          {/* Analytics Modal/Sheet */}
-          {showAnalytics && isOwner && (
-            <Dialog open={showAnalytics} onOpenChange={setShowAnalytics}>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center justify-between">
-                    <span>Store Analytics</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowAnalytics(false)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="py-4">
-                  <StorefrontAnalytics
-                    shopId={shop.id}
-                    shopType="affiliate"
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-
-          {/* Store Performance - Only visible to owner */}
+          {/* Owner Insights */}
           {isOwner && shop && (
             <div className="mb-6">
               <StorePerformance shopId={shop.id} shopType="affiliate" />
+              <div className="mt-4">
+                <StorefrontAnalytics shopId={shop.id} shopType="affiliate" />
+              </div>
             </div>
           )}
 

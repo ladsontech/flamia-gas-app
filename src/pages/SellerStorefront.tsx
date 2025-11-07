@@ -38,7 +38,7 @@ const SellerStorefront = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [storeDetailsOpen, setStoreDetailsOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  
   const [user, setUser] = useState<any>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<MarketplaceProduct | null>(null);
 
@@ -258,36 +258,7 @@ const SellerStorefront = () => {
             shopLogoUrl={shop.shop_logo_url}
             isOwner={isOwner}
             shopType="seller"
-            onShowAnalytics={() => setShowAnalytics(true)}
           />
-
-          {/* Analytics Modal/Sheet */}
-          {showAnalytics && isOwner && (
-            <Dialog open={showAnalytics} onOpenChange={setShowAnalytics}>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center justify-between">
-                    <span>Store Analytics</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowAnalytics(false)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="py-4">
-                  <StorefrontAnalytics
-                    shopId={shop.id}
-                    businessId={shop.business_id}
-                    shopType="seller"
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
 
           {/* Compact Header - App Style */}
           <header className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
@@ -431,6 +402,19 @@ const SellerStorefront = () => {
           </div>
         </div>
       </header>
+
+      {/* Inline Analytics for Owners */}
+      {isOwner && (
+        <section className="bg-white">
+          <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+            <StorefrontAnalytics
+              shopId={shop.id}
+              businessId={shop.business_id}
+              shopType="seller"
+            />
+          </div>
+        </section>
+      )}
 
       {/* Products Section */}
       <section className="bg-white py-4 sm:py-6">
