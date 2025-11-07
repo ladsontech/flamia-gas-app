@@ -60,7 +60,7 @@ export const ProductCard = ({
 
   return (
     <Card 
-      className="group bg-white border border-gray-100 shadow-sm hover:shadow-md p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative z-0 cursor-pointer"
+      className="group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-lg p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative z-0 cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Square Image Container */}
@@ -106,54 +106,42 @@ export const ProductCard = ({
       
       {/* Content Section */}
       <div className="flex-grow px-1 sm:px-2 flex flex-col">
-        <h3 className="text-xs sm:text-sm font-semibold mb-1 sm:mb-1.5 text-gray-900 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+        {shopName && (
+          <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 leading-none line-clamp-1">{shopName}</div>
+        )}
+        <h3 className="text-sm sm:text-base font-medium mb-1 sm:mb-2 text-gray-900 line-clamp-2 group-hover:text-gray-700 transition-colors leading-snug">
           {name}
         </h3>
-        
-        {/* Description */}
-        {description && (
-          <p className="text-xs text-gray-600 line-clamp-2 mb-2 sm:mb-2.5 leading-snug">
-            {description}
-          </p>
-        )}
-        
         {/* Price Section */}
-        <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
-          <div className="flex flex-col gap-1 sm:gap-1.5 mb-2 sm:mb-3">
-            {/* Always show current price - make it very prominent and always visible */}
-            <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-              {/* Current Price - Always displayed first and prominently */}
-              {price && price > 0 ? (
-                <span className="text-base sm:text-lg font-bold text-orange-600 leading-tight block">
-                  UGX {price.toLocaleString()}
-                </span>
-              ) : (
-                <span className="text-base sm:text-lg font-bold text-gray-400 leading-tight block">
-                  Price on request
-                </span>
-              )}
-              {/* Show original price if it exists and is higher than current price */}
-              {originalPrice && originalPrice > 0 && price && originalPrice > price && (
-                <span className="text-xs sm:text-sm text-gray-500 line-through block">
-                  UGX {originalPrice.toLocaleString()}
-                </span>
-              )}
-            </div>
-            {/* Show discount percentage if applicable */}
+        <div className="mt-auto">
+          <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap mb-2 sm:mb-3">
+            {price && price > 0 ? (
+              <span className="text-base sm:text-lg font-semibold text-gray-900 leading-tight block">
+                UGX {price.toLocaleString()}
+              </span>
+            ) : (
+              <span className="text-base sm:text-lg font-semibold text-gray-400 leading-tight block">
+                Price on request
+              </span>
+            )}
+            {originalPrice && originalPrice > 0 && price && originalPrice > price && (
+              <span className="text-xs sm:text-sm text-gray-500 line-through block">
+                UGX {originalPrice.toLocaleString()}
+              </span>
+            )}
             {originalPrice && originalPrice > price && discountPercent > 0 && (
-              <span className="text-xs font-medium text-orange-600">
+              <span className="text-[10px] sm:text-xs font-medium text-orange-600">
                 Save {discountPercent}%
               </span>
             )}
           </div>
-          
           <Button 
             onClick={handleAddToCartClick}
-            className="w-full font-medium h-8 sm:h-9 text-xs sm:text-sm active:scale-[0.98] transition-transform touch-manipulation bg-orange-500 hover:bg-orange-600 text-white"
+            className="w-full font-medium h-8 sm:h-9 text-xs sm:text-sm active:scale-[0.98] transition-transform touch-manipulation bg-gray-900 hover:bg-black text-white"
             size="default"
           >
             <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
-            Add to Cart
+            Add to cart
           </Button>
         </div>
       </div>

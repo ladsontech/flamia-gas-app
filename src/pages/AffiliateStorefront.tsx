@@ -251,10 +251,10 @@ export default function AffiliateStorefront() {
           <div className="relative mb-2 sm:mb-3">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
             <Input
-              placeholder="Search products..."
+              placeholder="Search products"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 sm:pl-10 h-9 sm:h-10 text-sm bg-gray-50 border-gray-200 focus:bg-white"
+              className="pl-9 sm:pl-10 h-9 sm:h-10 text-sm bg-white border border-gray-300 rounded-full focus:bg-white"
             />
           </div>
 
@@ -516,7 +516,7 @@ export default function AffiliateStorefront() {
               </div>
             </div>
           ) : (
-            <div className={`grid gap-3 sm:gap-4 ${
+            <div className={`grid gap-4 md:gap-6 ${
                 gridLayout === '1' ? 'grid-cols-1 max-w-2xl mx-auto' :
                 gridLayout === '2' ? 'grid-cols-1 sm:grid-cols-2' :
                 gridLayout === '3' ? 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3' :
