@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,9 +18,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
 import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
 import { getProductViewCounts } from '@/services/productViewsService';
+import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
+import { StorePerformance } from '@/components/storefront/StorePerformance';
+import type { MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 
 const SellerStorefront = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const flamiaCart = useCart();
   const sellerCart = useSellerCart();
@@ -36,6 +40,7 @@ const SellerStorefront = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState<MarketplaceProduct | null>(null);
 
   const getSubdomainSlug = () => {
     if (typeof window === 'undefined') return null;
@@ -647,6 +652,7 @@ const SellerStorefront = () => {
                       featured={product.is_featured}
                       viewCount={(product as any).viewCount}
                       onAddToCart={() => handleAddToCart(product)}
+                      onQuickView={() => setQuickViewProduct(product as any)}
                     />
                   ))}
             </div>
@@ -668,6 +674,25 @@ const SellerStorefront = () => {
           </p>
         </div>
       </footer>
+
+      {/* Product Quick View Modal */}
+      <ProductQuickViewModal
+        product={quickViewProduct}
+        open={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onAddToCart={() => {
+          if (quickViewProduct) {
+            handleAddToCart(quickViewProduct as any);
+            setQuickViewProduct(null);
+          }
+        }}
+        onViewDetails={() => {
+          if (quickViewProduct?.id) {
+            navigate(`/product/${quickViewProduct.id}`);
+            setQuickViewProduct(null);
+          }
+        }}
+      />
     </div>
   );
 };

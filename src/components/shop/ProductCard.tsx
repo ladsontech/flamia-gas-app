@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Package, Star, Eye } from 'lucide-react';
+import { ShoppingCart, Package, Star, Eye, Maximize2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getProductViewCount } from '@/services/productViewsService';
@@ -18,6 +18,7 @@ interface ProductCardProps {
   source?: string;
   viewCount?: number;
   onAddToCart: () => void;
+  onQuickView?: () => void;
 }
 
 export const ProductCard = ({
@@ -32,6 +33,7 @@ export const ProductCard = ({
   source,
   viewCount: initialViewCount,
   onAddToCart,
+  onQuickView,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const [viewCount, setViewCount] = useState<number>(initialViewCount || 0);
@@ -65,6 +67,20 @@ export const ProductCard = ({
     >
       {/* Square Image Container */}
       <div className="relative w-full pb-[100%] mb-2 sm:mb-3 rounded-lg overflow-hidden bg-gray-50 z-0">
+        {/* Quick View Button */}
+        {onQuickView && id && (
+          <Button
+            size="icon"
+            variant="secondary"
+            className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 h-8 w-8"
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickView();
+            }}
+          >
+            <Maximize2 className="w-4 h-4" />
+          </Button>
+        )}
         {imageUrl ? (
           <img 
             src={imageUrl} 

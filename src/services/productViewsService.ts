@@ -21,9 +21,9 @@ export const trackProductView = async (productId: string, productType: 'gadget' 
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id || null;
 
-    // Insert view record
+    // Insert view record using type assertion for table that may not be in types yet
     const { error } = await supabase
-      .from('product_views')
+      .from('product_views' as any)
       .insert({
         product_id: productId,
         product_type: productType,
@@ -40,13 +40,10 @@ export const trackProductView = async (productId: string, productType: 'gadget' 
   }
 };
 
-/**
- * Get total view count for a product
- */
 export const getProductViewCount = async (productId: string): Promise<number> => {
   try {
     const { count, error } = await supabase
-      .from('product_views')
+      .from('product_views' as any)
       .select('*', { count: 'exact', head: true })
       .eq('product_id', productId);
 
@@ -62,9 +59,6 @@ export const getProductViewCount = async (productId: string): Promise<number> =>
   }
 };
 
-/**
- * Get view counts for multiple products
- */
 export const getProductViewCounts = async (productIds: string[]): Promise<Record<string, number>> => {
   try {
     if (!productIds || productIds.length === 0) {
@@ -72,7 +66,7 @@ export const getProductViewCounts = async (productIds: string[]): Promise<Record
     }
 
     const { data, error } = await supabase
-      .from('product_views')
+      .from('product_views' as any)
       .select('product_id')
       .in('product_id', productIds);
 
@@ -85,7 +79,7 @@ export const getProductViewCounts = async (productIds: string[]): Promise<Record
     const counts: Record<string, number> = {};
     productIds.forEach(id => counts[id] = 0);
     
-    data?.forEach(view => {
+    (data as any)?.forEach((view: any) => {
       if (view.product_id) {
         counts[view.product_id] = (counts[view.product_id] || 0) + 1;
       }

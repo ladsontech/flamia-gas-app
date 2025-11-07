@@ -12,6 +12,7 @@ import { ProductCard } from '@/components/shop/ProductCard';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import type { ProductCategory } from '@/types/seller';
+import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
 
 const Shop: React.FC = () => {
   const { categories, loading, error, refetch } = useMarketplaceProducts();
@@ -22,6 +23,7 @@ const Shop: React.FC = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'popular'>('newest');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [allCategories, setAllCategories] = useState<ProductCategory[]>([]);
+  const [quickViewProduct, setQuickViewProduct] = useState<MarketplaceProduct | null>(null);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -480,7 +482,7 @@ const Shop: React.FC = () => {
                                 {/* First product in pair */}
                                 {product1 && (
                                   <div className="flex-shrink-0" style={{ width: 'calc((100vw - 2rem - 0.75rem) / 2)' }}>
-                                    <ProductCard
+                                  <ProductCard
                                       id={product1.id}
                                       name={product1.name}
                                       description={product1.description}
@@ -492,6 +494,7 @@ const Shop: React.FC = () => {
                                       source={product1.source}
                                       viewCount={product1.viewCount}
                                       onAddToCart={() => handleAddToCart(product1)}
+                                      onQuickView={() => setQuickViewProduct(product1)}
                                     />
                                   </div>
                                 )}
@@ -510,6 +513,7 @@ const Shop: React.FC = () => {
                                       source={product2.source}
                                       viewCount={product2.viewCount}
                                       onAddToCart={() => handleAddToCart(product2)}
+                                      onQuickView={() => setQuickViewProduct(product2)}
                                     />
                                   </div>
                                 )}
@@ -538,6 +542,7 @@ const Shop: React.FC = () => {
                                 source={product.source}
                                 viewCount={product.viewCount}
                                 onAddToCart={() => handleAddToCart(product)}
+                                onQuickView={() => setQuickViewProduct(product)}
                               />
                             </div>
                           ))}
@@ -575,6 +580,25 @@ const Shop: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Quick View Modal */}
+      <ProductQuickViewModal
+        product={quickViewProduct}
+        open={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onAddToCart={() => {
+          if (quickViewProduct) {
+            handleAddToCart(quickViewProduct);
+            setQuickViewProduct(null);
+          }
+        }}
+        onViewDetails={() => {
+          if (quickViewProduct?.id) {
+            navigate(`/product/${quickViewProduct.id}`);
+            setQuickViewProduct(null);
+          }
+        }}
+      />
     </>
   );
 };
