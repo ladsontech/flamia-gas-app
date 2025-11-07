@@ -211,6 +211,17 @@ export const StorefrontHeader = ({
                   Account
                 </Button>
 
+                {/* Visible Orders Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-8 hidden sm:inline-flex"
+                  onClick={handleNavigateToOrders}
+                >
+                  <ShoppingBag className="w-3 h-3 mr-1" />
+                  Orders
+                </Button>
+
                 {/* Account Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
