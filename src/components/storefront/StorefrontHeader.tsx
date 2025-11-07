@@ -200,6 +200,17 @@ export const StorefrontHeader = ({
                   </Button>
                 )}
 
+                {/* Visible Account Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-8"
+                  onClick={handleNavigateToAccount}
+                >
+                  <User className="w-3 h-3 mr-1" />
+                  Account
+                </Button>
+
                 {/* Account Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
