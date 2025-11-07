@@ -139,11 +139,13 @@ export const StorefrontHeader = ({
 
   const handleGoogleSignIn = async () => {
     try {
+      const returnTo = window.location.href;
+      const redirectTo = `https://flamia.store/auth/callback?return_to=${encodeURIComponent(returnTo)}`;
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Return to the exact storefront URL (keeps slug/subdomain, query, and hash)
-          redirectTo: window.location.href
+          // Use main site callback which will bounce back to this storefront via return_to
+          redirectTo
         }
       });
     } catch (error: any) {

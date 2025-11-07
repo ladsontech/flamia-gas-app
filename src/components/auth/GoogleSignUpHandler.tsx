@@ -11,6 +11,16 @@ export const GoogleSignUpHandler = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
+        // If a return_to param is present, bounce the user back to their storefront (or previous page)
+        const url = new URL(window.location.href);
+        const returnTo = url.searchParams.get('return_to') || new URLSearchParams(window.location.hash.replace(/^#/, '')).get('return_to');
+        if (returnTo) {
+          // Small delay to allow any toasts/referral logic to settle
+          setTimeout(() => {
+            window.location.href = returnTo;
+          }, 50);
+          return;
+        }
         // Check for temporary referral code
         const tempReferralCode = localStorage.getItem('tempReferralCode');
         
