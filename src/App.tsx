@@ -31,6 +31,7 @@ import Sell from './pages/Sell';
 import SellerOptions from './pages/SellerOptions';
 import SellerDashboard from './pages/SellerDashboard';
 import SellerStorefront from './pages/SellerStorefront';
+import StorefrontProductDetail from './pages/StorefrontProductDetail';
 import AffiliateDashboard from './pages/AffiliateDashboard';
 import AffiliateStorefront from './pages/AffiliateStorefront';
 import TermsAndConditions from './pages/TermsAndConditions';
@@ -107,7 +108,10 @@ const AppContent = () => {
       <main className={isStorefront ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
         <Routes>
           {isStorefrontHost ? (
-            <Route path="*" element={<SellerStorefront />} />
+            <>
+              <Route path="/product/:id" element={<StorefrontProductDetail />} />
+              <Route path="*" element={<SellerStorefront />} />
+            </>
           ) : (
             <>
           <Route path="/" element={<Home />} />
@@ -132,9 +136,11 @@ const AppContent = () => {
         <Route path="/seller-options" element={<SellerOptions />} />
         <Route path="/sell" element={<Sell />} />
         <Route path="/seller/dashboard" element={<SellerDashboard />} />
-        <Route path="/shop/:slug" element={<SellerStorefront />} />
+          <Route path="/shop/:slug" element={<SellerStorefront />} />
+          <Route path="/shop/:slug/product/:id" element={<StorefrontProductDetail />} />
         <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
-        <Route path="/affiliate/:slug" element={<AffiliateStorefront />} />
+          <Route path="/affiliate/:slug" element={<AffiliateStorefront />} />
+          <Route path="/affiliate/:slug/product/:id" element={<StorefrontProductDetail />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           

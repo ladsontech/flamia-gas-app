@@ -545,6 +545,7 @@ export default function AffiliateStorefront() {
                       imageUrl={product.image_url}
                       viewCount={(product as any).viewCount}
                       onAddToCart={() => handleAddToCart(product)}
+                      detailsHref={`/affiliate/${slug}/product/${product.id}`}
                       onQuickView={() => setQuickViewProduct(product as any)}
                     />
                   ))}
@@ -578,7 +579,7 @@ export default function AffiliateStorefront() {
         }}
         onViewDetails={() => {
           if (quickViewProduct?.id) {
-            navigate(`/product/${quickViewProduct.id}`);
+            navigate(`/affiliate/${slug}/product/${quickViewProduct.id}`);
             setQuickViewProduct(null);
           }
         }}

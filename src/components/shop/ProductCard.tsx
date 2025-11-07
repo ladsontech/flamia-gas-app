@@ -19,6 +19,7 @@ interface ProductCardProps {
   viewCount?: number;
   onAddToCart: () => void;
   onQuickView?: () => void;
+  detailsHref?: string;
 }
 
 export const ProductCard = ({
@@ -34,6 +35,7 @@ export const ProductCard = ({
   viewCount: initialViewCount,
   onAddToCart,
   onQuickView,
+  detailsHref,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const [viewCount, setViewCount] = useState<number>(initialViewCount || 0);
@@ -51,7 +53,11 @@ export const ProductCard = ({
 
   const handleCardClick = () => {
     if (id) {
-      navigate(`/product/${id}`);
+      if (detailsHref) {
+        navigate(detailsHref);
+      } else {
+        navigate(`/product/${id}`);
+      }
     }
   };
 
