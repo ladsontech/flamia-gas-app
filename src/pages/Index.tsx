@@ -15,24 +15,24 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Flamia - Best Gas Delivery Service in Uganda | Same Day LPG Delivery</title>
-        <meta name="description" content="Order gas cylinders with same-day delivery in Kampala, Uganda. Best prices on Total, Shell, Oryx, Stabex gas cylinders. Free delivery in Kampala, Wakiso, Mukono." />
-        <meta name="keywords" content="gas cylinders Uganda, gas delivery Kampala, LPG delivery, cooking gas, Total gas, Shell gas, Oryx gas, Stabex gas" />
+        <title>Flamia - Fast Gas Delivery Uganda | Cooking Gas Refill Kampala | LPG Home Delivery</title>
+        <meta name="description" content="🔥 Best gas delivery service in Uganda! Order cooking gas refill, LPG cylinder delivery in Kampala, Entebbe, Wakiso. Total, Shell, Oryx gas. Same-day delivery. Affordable prices. Cook with confidence!" />
+        <meta name="keywords" content="gas delivery Uganda, cooking gas delivery Kampala, home gas refill service, LPG gas refill near me, gas cylinder refill Kampala, Oryx gas refill price, Shell gas delivery, Total gas refill Uganda, buy gas cylinder online, order gas delivery in Entebbe, gas cylinder exchange, gas refill home delivery, 3kg gas refill, 6kg gas refill, 12.5kg gas refill, fast gas delivery Uganda, affordable gas refill prices, gas refill cost Kampala, LPG gas price Uganda, best gas prices in Kampala, gas delivery in Kampala, gas refill Entebbe, gas suppliers Namugongo, gas refill Kira, gas shop near me, LPG gas delivery Kampala suburbs, cooking gas supplier Uganda, gas refill Wakiso, LPG gas cylinder supply, gas delivery service provider, convenient cooking solutions, reliable home energy source, hassle-free gas delivery, cook with confidence, fast safe affordable gas, clean energy for every home" />
         
         {/* Canonical URL */}
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
-        <meta property="og:title" content="Flamia - Best Gas Delivery Service in Uganda" />
-        <meta property="og:description" content="Order gas cylinders with same-day delivery in Kampala. Best prices on Total, Shell, Oryx gas cylinders. Free delivery." />
+        <meta property="og:title" content="Flamia - Fast Gas Delivery Uganda | Cooking Gas Refill Kampala" />
+        <meta property="og:description" content="🔥 Best gas delivery service in Uganda! Order cooking gas refill, LPG cylinder delivery in Kampala, Entebbe, Wakiso. Same-day delivery. Affordable prices. Cook with confidence!" />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Flamia Gas Delivery" />
+        <meta property="og:site_name" content="Flamia - Fast & Reliable Gas Delivery" />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Flamia - Best Gas Delivery Service in Uganda" />
-        <meta name="twitter:description" content="Order gas cylinders with same-day delivery in Kampala. Best prices on Total, Shell, Oryx gas cylinders." />
+        <meta name="twitter:title" content="Flamia - Fast Gas Delivery Uganda | Cooking Gas Refill Kampala" />
+        <meta name="twitter:description" content="🔥 Order cooking gas refill, LPG cylinder delivery in Kampala, Entebbe, Wakiso. Same-day delivery. Affordable prices!" />
         
         {/* Additional SEO */}
         <meta name="robots" content="index, follow" />

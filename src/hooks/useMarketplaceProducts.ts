@@ -46,11 +46,11 @@ export const useMarketplaceProducts = () => {
 const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
   // Fetch all data in parallel for better performance
   const [categoriesResult, productsResult] = await Promise.all([
-    // Fetch product categories
+      // Fetch product categories
     supabase
-      .from('product_categories')
-      .select('*')
-      .eq('is_active', true)
+        .from('product_categories')
+        .select('*')
+        .eq('is_active', true)
       .order('display_order'),
     
     // Fetch all business products (Flamia + Sellers) with shop info in one query
@@ -103,57 +103,57 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
     const category = categoryLookup.get(product.category_id);
     const isFlamiaProduct = product.business_id === FLAMIA_BUSINESS_ID;
     const shop = !isFlamiaProduct ? sellerShopsMap.get(product.business_id) : null;
-
-    return {
-      id: product.id,
-      name: product.name,
-      description: product.description || '',
-      price: product.price,
-      original_price: product.original_price,
-      image_url: product.image_url,
+        
+        return {
+          id: product.id,
+          name: product.name,
+          description: product.description || '',
+          price: product.price,
+          original_price: product.original_price,
+          image_url: product.image_url,
       category: category?.name || 'Other',
-      category_id: product.category_id,
+          category_id: product.category_id,
       source: isFlamiaProduct ? 'flamia' : 'seller',
-      shop_name: shop?.shop_name,
-      shop_slug: shop?.shop_slug,
-      is_available: product.is_available,
+          shop_name: shop?.shop_name,
+          shop_slug: shop?.shop_slug,
+          is_available: product.is_available,
       featured: product.is_featured || false,
       viewCount: 0 // Will be loaded lazily if needed
-    };
-  });
+        };
+      });
 
   // Group products by category
-  const categoryMap = new Map<string, CategoryGroup>();
+      const categoryMap = new Map<string, CategoryGroup>();
 
   // Initialize all categories (even empty ones)
   productCategories.forEach((cat: any) => {
     categoryMap.set(cat.id, {
-      id: cat.id,
-      name: cat.name,
-      slug: cat.slug,
-      products: [],
-    });
-  });
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          products: [],
+        });
+      });
 
   // Add products to their categories
   mappedProducts.forEach(product => {
     if (product.category_id && categoryMap.has(product.category_id)) {
       categoryMap.get(product.category_id)!.products.push(product);
-    } else {
+        } else {
       // Fallback: try to find category by name
       const matchedCategory = Array.from(categoryMap.values()).find(
         cat => cat.name.toLowerCase() === product.category.toLowerCase()
       );
-      if (matchedCategory) {
+          if (matchedCategory) {
         matchedCategory.products.push(product);
-      }
-    }
-  });
+          }
+        }
+      });
 
   // Convert to array and sort
-  const categorizedProducts = Array.from(categoryMap.values())
+      const categorizedProducts = Array.from(categoryMap.values())
     .filter(cat => cat.products.length > 0) // Only show categories with products
-    .sort((a, b) => {
+        .sort((a, b) => {
       const aCat = categoryLookup.get(a.id) as any;
       const bCat = categoryLookup.get(b.id) as any;
       const aOrder = aCat?.display_order || 999;

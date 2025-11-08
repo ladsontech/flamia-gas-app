@@ -243,7 +243,7 @@ export default function AffiliateStorefront() {
                 <StorePerformance shopId={shop.id} shopType="affiliate" />
                 <StorefrontAnalytics shopId={shop.id} shopType="affiliate" />
               </div>
-            </div>
+                </div>
           )}
 
           {/* Search and Filters Section */}

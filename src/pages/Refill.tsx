@@ -121,10 +121,35 @@ const Refill = () => {
   };
   return <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 pt-16">
       <Helmet>
-        <title>Gas Refill Prices Uganda Today | Best LPG Refill Service Kampala</title>
-        <meta name="description" content="Compare today's gas refill prices in Uganda. Best rates for Total, Shell, Oryx, Stabex gas cylinders with free same-day delivery in Kampala, Wakiso, Mukono." />
-        <meta name="keywords" content="gas refill prices Uganda today, cheap gas refill Kampala, best gas delivery service Uganda, Total gas refill price, Shell gas cylinder refill, Stabex gas refill cost, Hass gas refill Wakiso, affordable gas refill Kampala, LPG refill near me" />
+        <title>Gas Refill Home Delivery | LPG Gas Refill Near Me | Affordable Gas Refill Prices Kampala</title>
+        <meta name="description" content="🔥 Home gas refill service in Uganda! 3kg, 6kg, 12.5kg gas cylinder refill. Total gas refill, Shell gas delivery, Oryx gas refill price. Fast delivery in Kampala, Entebbe, Wakiso, Kira. Order now!" />
+        <meta name="keywords" content="home gas refill service, LPG gas refill near me, gas cylinder refill Kampala, gas refill home delivery, 3kg gas refill, 6kg gas refill, 12.5kg gas refill, butane canister refill, refillable gas lighter supplies, gas torch flame refill, affordable gas refill prices, gas refill cost Kampala, LPG gas price Uganda, gas refill price list, Shell gas pricing Uganda, Total gas refill cost, Oryx gas 13kg price, cheap gas refill deals, best gas prices in Kampala, cost-effective gas supply, gas refill Entebbe, gas refill Kira, gas refill Wakiso, Total gas refill Uganda, Shell gas delivery, Oryx gas refill price, gas cylinder exchange, fast gas delivery Uganda, hassle-free gas delivery, convenient cooking solutions" />
         <link rel="canonical" href="https://flamia.store/refill" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Gas Refill Home Delivery | LPG Gas Refill Near Me" />
+        <meta property="og:description" content="🔥 Home gas refill service! 3kg, 6kg, 12.5kg gas cylinder refill. Total, Shell, Oryx gas. Fast delivery in Kampala, Entebbe, Wakiso." />
+        <meta property="og:url" content="https://flamia.store/refill" />
+        <meta property="og:type" content="website" />
+        
+        {/* Local Business Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Flamia Gas Refill Service",
+            "description": "Home gas refill service in Kampala, Uganda. Fast LPG cylinder refill delivery.",
+            "priceRange": "UGX 25,000 - UGX 100,000",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Kampala",
+              "addressRegion": "Central Region",
+              "addressCountry": "UG"
+            },
+            "areaServed": ["Kampala", "Entebbe", "Wakiso", "Kira", "Namugongo", "Mukono"],
+            "serviceType": ["Gas Refill", "LPG Delivery", "Gas Cylinder Refill"]
+          })}
+        </script>
       </Helmet>
       
       <div className="container px-4 md:px-6 lg:px-8 py-6 max-w-7xl mx-auto">

@@ -14,6 +14,7 @@ import { Flame, Truck } from "lucide-react";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderService } from "@/services/orderService";
+import { Helmet } from "react-helmet";
 
 const Order = () => {
   const navigate = useNavigate();
@@ -229,6 +230,11 @@ const Order = () => {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/10 to-white">
+        <Helmet>
+          <title>Checkout - Buy Gas Cylinder Online | Order Gas Delivery Uganda</title>
+          <meta name="description" content="Complete your gas cylinder order. Fast delivery in Kampala, Entebbe, Wakiso. Buy gas cylinder online with secure checkout." />
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
         <div className="container max-w-md px-3 py-6">
           <BackButton />
           <motion.div
@@ -266,6 +272,13 @@ const Order = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-white">
+      <Helmet>
+        <title>Buy Gas Cylinder Online | Order Gas Delivery in Entebbe | Fast Gas Delivery Uganda</title>
+        <meta name="description" content="🔥 Buy gas cylinder online in Uganda! Complete your order for cooking gas delivery in Kampala, Entebbe, Wakiso. Gas cylinder exchange available. Fast, safe, affordable gas delivery service." />
+        <meta name="keywords" content="buy gas cylinder online, order gas delivery in Entebbe, gas cylinder exchange, fast gas delivery Uganda, cooking gas delivery Kampala, LPG gas delivery Kampala suburbs, gas delivery service provider, hassle-free gas delivery, reliable home energy source" />
+        <meta name="robots" content="noindex, follow" />
+        <link rel="canonical" href="https://flamia.store/order" />
+      </Helmet>
       <div className="container max-w-md px-3 py-6">
         <BackButton />
         

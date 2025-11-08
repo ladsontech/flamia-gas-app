@@ -254,11 +254,11 @@ const SellerStorefront = () => {
           
           {/* Storefront Header with Auth - Only show on subdomain visits */}
           {isIndependentStorefront && (
-            <StorefrontHeader
-              shopName={shop.shop_name}
-              shopLogoUrl={shop.shop_logo_url}
-              isOwner={isOwner}
-              shopType="seller"
+          <StorefrontHeader
+            shopName={shop.shop_name}
+            shopLogoUrl={shop.shop_logo_url}
+            isOwner={isOwner}
+            shopType="seller"
             />
           )}
 
@@ -292,12 +292,12 @@ const SellerStorefront = () => {
             <div className="bg-gray-50 py-6">
               <div className="container max-w-7xl mx-auto px-4 space-y-6">
                 <StorePerformance shopId={shop.id} shopType="seller" />
-                <StorefrontAnalytics
-                  shopId={shop.id}
-                  businessId={shop.business_id}
-                  shopType="seller"
-                />
-              </div>
+                  <StorefrontAnalytics
+                    shopId={shop.id}
+                    businessId={shop.business_id}
+                    shopType="seller"
+                  />
+                </div>
             </div>
           )}
 

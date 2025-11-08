@@ -174,13 +174,49 @@ const Shop: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Shop - Flamia Marketplace | Household Materials, Electronics & More Uganda</title>
-        <meta name="description" content="Shop the largest marketplace for household materials in Uganda. Phones, laptops, electronics, appliances and products from verified sellers. Fast delivery in Kampala." />
-        <meta name="keywords" content="marketplace Uganda, household materials, electronics Uganda, phones Kampala, laptops Uganda, shop online Uganda" />
+        <title>Flamia Marketplace Uganda | LPG Gas Cylinder Supply | Gas Accessories | Bulk Gas Supply</title>
+        <meta name="description" content="🛒 Shop gas accessories Uganda, LPG gas cylinder supply, gas regulators, gas stove refill supplies, bulk gas supply Uganda. Plus household materials, electronics, phones, laptops from verified sellers. Fast delivery Kampala!" />
+        <meta name="keywords" content="LPG gas cylinder supply, gas regulator installation, oxygen cylinder refill, gas leak detection system, gas stove refill, bulk gas supply Uganda, refillable gas cylinders, gas accessories Uganda, home gas safety equipment, gas delivery service provider, marketplace Uganda, household materials, electronics Uganda, phones Kampala, laptops Uganda, shop online Uganda, gas shop near me, cooking gas supplier Uganda, convenient cooking solutions, simplify your kitchen life, clean energy for every home" />
         <link rel="canonical" href="https://flamia.store/shop" />
-        <meta property="og:title" content="Flamia Marketplace - Household Materials Uganda" />
-        <meta property="og:description" content="Uganda's largest marketplace for household materials and electronics" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Flamia Marketplace - Gas Accessories & Household Materials Uganda" />
+        <meta property="og:description" content="🛒 Shop gas accessories, LPG cylinder supply, household materials, electronics. Fast delivery in Kampala!" />
         <meta property="og:url" content="https://flamia.store/shop" />
+        <meta property="og:type" content="website" />
+        
+        {/* Product Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Store",
+            "name": "Flamia Marketplace",
+            "description": "Uganda's marketplace for gas accessories, LPG supplies, and household materials",
+            "url": "https://flamia.store/shop",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Kampala",
+              "addressCountry": "UG"
+            },
+            "areaServed": "Uganda",
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Gas Accessories & Household Products",
+              "itemListElement": [
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Gas Accessories",
+                  "itemListElement": [
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Gas Regulators"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Gas Cylinders"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Gas Safety Equipment"}}
+                  ]
+                }
+              ]
+            }
+          })}
+        </script>
+        
         <meta name="robots" content="index, follow" />
       </Helmet>
 
