@@ -1,39 +1,43 @@
+# Flamia Gas Delivery - robots.txt
+# https://flamia.store
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /orders
+Disallow: /signin
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /auth/
 
-# Allow all bots to access everything
+# Allow important pages for SEO
+Allow: /
 Allow: /refill
-Allow: /accessories
+Allow: /shop
 Allow: /order
+Allow: /accessories
 Allow: /gas-delivery-kampala
-Allow: /gas-refill-wakiso
-Allow: /gas-delivery-mukono
-Allow: /gas-refill-entebbe
-Allow: /stabex-gas-uganda
-Allow: /total-gas-uganda
-Allow: /shell-gas-uganda
-Allow: /hass-gas-uganda
-Allow: /oryx-gas-uganda
-Allow: /ultimate-gas-uganda
-Allow: /c-gas-uganda
-Allow: /brand-new-gas-cylinders-uganda
-Allow: /gas-cylinder-delivery-kampala
-Allow: /gas-cylinder-prices-uganda
-Allow: /gas-vs-fumbaa-gas
-
-# New optimized delivery pages
 Allow: /gas-delivery-uganda
+Allow: /gas-delivery-mukono
 Allow: /fastest-gas-delivery-kampala
 Allow: /same-day-gas-delivery-uganda
-Allow: /free-gas-delivery-service-uganda
+Allow: /gas-refill-wakiso
+Allow: /total-gas-uganda
+Allow: /shell-gas-uganda
+Allow: /oryx-gas-uganda
+Allow: /stabex-gas-uganda
+Allow: /hass-gas-uganda
+Allow: /ultimate-gas-uganda
+Allow: /c-gas-uganda
 Allow: /alternative-to-fumbaa-gas
+Allow: /gas-vs-fumbaa-gas
+Allow: /brand-new-gas-cylinders-uganda
+Allow: /sell
+Allow: /delivery
 
-# Encourage crawling of important pages
-Allow: /sitemap.xml
-
-# Specify sitemap location
+# Sitemap
 Sitemap: https://flamia.store/sitemap.xml
 
-# Better server performance
+# Crawl-delay for polite crawling
 Crawl-delay: 1

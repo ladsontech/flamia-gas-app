@@ -27,6 +27,7 @@ import GadgetDetail from './pages/GadgetDetail';
 import ProductDetail from './pages/ProductDetail';
 import ResetPassword from './pages/ResetPassword';
 import Delivery from './pages/Delivery';
+import StudentGasDelivery from './pages/StudentGasDelivery';
 import Sell from './pages/Sell';
 import SellerOptions from './pages/SellerOptions';
 import SellerDashboard from './pages/SellerDashboard';
@@ -142,6 +143,7 @@ const AppContent = () => {
           <Route path="/refill" element={<Refill />} />
           <Route path="/gas-safety" element={<GasSafety />} />
           <Route path="/accessories" element={<Accessories />} />
+          <Route path="/student-gas-delivery" element={<StudentGasDelivery />} />
           <Route path="/gadget/:id" element={<GadgetDetail />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/reset-password" element={<ResetPassword />} />

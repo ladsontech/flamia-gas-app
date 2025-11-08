@@ -174,14 +174,14 @@ const Shop: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Flamia Marketplace Uganda | LPG Gas Cylinder Supply | Gas Accessories | Bulk Gas Supply</title>
-        <meta name="description" content="🛒 Shop gas accessories Uganda, LPG gas cylinder supply, gas regulators, gas stove refill supplies, bulk gas supply Uganda. Plus household materials, electronics, phones, laptops from verified sellers. Fast delivery Kampala!" />
-        <meta name="keywords" content="LPG gas cylinder supply, gas regulator installation, oxygen cylinder refill, gas leak detection system, gas stove refill, bulk gas supply Uganda, refillable gas cylinders, gas accessories Uganda, home gas safety equipment, gas delivery service provider, marketplace Uganda, household materials, electronics Uganda, phones Kampala, laptops Uganda, shop online Uganda, gas shop near me, cooking gas supplier Uganda, convenient cooking solutions, simplify your kitchen life, clean energy for every home" />
+        <title>Flamia Marketplace Uganda | Shop Phones, Laptops, Fashion, Home Appliances | Black Friday Deals</title>
+        <meta name="description" content="🛒 Uganda's biggest online marketplace! Shop phones, laptops, fashion, home appliances at massive discounts. Black Friday deals, flash sales, mega savings up to 80% off! Gas accessories, LPG cylinder supply. Verified sellers, secure shopping, fast delivery Kampala." />
+        <meta name="keywords" content="online shopping Uganda, shop online Kampala, marketplace Uganda, e-commerce Uganda, buy online Uganda, phones Black Friday sale Uganda, Black Friday phone deals Uganda, huge phone deals Uganda, smartphones Uganda, cheap phones Kampala, Samsung phones Uganda, Tecno phones Uganda, Infinix phones Uganda, iPhone Uganda, laptops Uganda, cheap laptops Kampala, laptop deals Uganda, HP laptops Uganda, Dell laptops Uganda, Lenovo laptops Uganda, MacBook Uganda, fashion Black Friday sale Uganda, women's fashion Uganda, men's fashion Uganda, clothing Uganda, shoes Uganda, home appliances Uganda, kitchen appliances Uganda, refrigerators Uganda, washing machines Uganda, TVs Uganda, Black Friday Uganda, flash sale Uganda, mega savings Uganda, up to 80% off Uganda, treasure hunt deals, biggest sale of the year, verified sellers Uganda, secure online shopping Uganda, LPG gas cylinder supply, gas accessories Uganda, household materials, electronics Uganda" />
         <link rel="canonical" href="https://flamia.store/shop" />
         
         {/* Open Graph */}
-        <meta property="og:title" content="Flamia Marketplace - Gas Accessories & Household Materials Uganda" />
-        <meta property="og:description" content="🛒 Shop gas accessories, LPG cylinder supply, household materials, electronics. Fast delivery in Kampala!" />
+        <meta property="og:title" content="Flamia Marketplace - Shop Phones, Laptops, Fashion, Home Appliances Uganda" />
+        <meta property="og:description" content="🛒 Uganda's biggest online marketplace! Phones, laptops, fashion, home appliances at massive discounts. Black Friday deals, flash sales, mega savings!" />
         <meta property="og:url" content="https://flamia.store/shop" />
         <meta property="og:type" content="website" />
         
@@ -190,8 +190,8 @@ const Shop: React.FC = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Store",
-            "name": "Flamia Marketplace",
-            "description": "Uganda's marketplace for gas accessories, LPG supplies, and household materials",
+            "name": "Flamia Marketplace Uganda",
+            "description": "Uganda's biggest online marketplace for phones, laptops, fashion, home appliances, gas accessories, and household materials",
             "url": "https://flamia.store/shop",
             "address": {
               "@type": "PostalAddress",
@@ -199,10 +199,42 @@ const Shop: React.FC = () => {
               "addressCountry": "UG"
             },
             "areaServed": "Uganda",
+            "priceRange": "UGX 10,000 - UGX 10,000,000",
+            "paymentAccepted": ["Cash", "Mobile Money", "Bank Transfer"],
             "hasOfferCatalog": {
               "@type": "OfferCatalog",
-              "name": "Gas Accessories & Household Products",
+              "name": "Electronics, Fashion, Home Appliances & Gas Accessories",
               "itemListElement": [
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Electronics & Phones",
+                  "itemListElement": [
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Smartphones"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Laptops"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Computers"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "TVs"}}
+                  ]
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Fashion",
+                  "itemListElement": [
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Women's Fashion"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Men's Fashion"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Shoes"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bags"}}
+                  ]
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Home Appliances",
+                  "itemListElement": [
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Refrigerators"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Washing Machines"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Microwaves"}},
+                    {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Blenders"}}
+                  ]
+                },
                 {
                   "@type": "OfferCatalog",
                   "name": "Gas Accessories",

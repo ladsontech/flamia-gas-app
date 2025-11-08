@@ -123,7 +123,7 @@ const Refill = () => {
       <Helmet>
         <title>Gas Refill Home Delivery | LPG Gas Refill Near Me | Affordable Gas Refill Prices Kampala</title>
         <meta name="description" content="🔥 Home gas refill service in Uganda! 3kg, 6kg, 12.5kg gas cylinder refill. Total gas refill, Shell gas delivery, Oryx gas refill price. Fast delivery in Kampala, Entebbe, Wakiso, Kira. Order now!" />
-        <meta name="keywords" content="home gas refill service, LPG gas refill near me, gas cylinder refill Kampala, gas refill home delivery, 3kg gas refill, 6kg gas refill, 12.5kg gas refill, butane canister refill, refillable gas lighter supplies, gas torch flame refill, affordable gas refill prices, gas refill cost Kampala, LPG gas price Uganda, gas refill price list, Shell gas pricing Uganda, Total gas refill cost, Oryx gas 13kg price, cheap gas refill deals, best gas prices in Kampala, cost-effective gas supply, gas refill Entebbe, gas refill Kira, gas refill Wakiso, Total gas refill Uganda, Shell gas delivery, Oryx gas refill price, gas cylinder exchange, fast gas delivery Uganda, hassle-free gas delivery, convenient cooking solutions" />
+        <meta name="keywords" content="home gas refill service, LPG gas refill near me, gas cylinder refill Kampala, gas refill home delivery, 3kg gas refill, 6kg gas refill, 12.5kg gas refill, butane canister refill, refillable gas lighter supplies, gas torch flame refill, affordable gas refill prices, gas refill cost Kampala, LPG gas price Uganda, gas refill price list, Shell gas pricing Uganda, Total gas refill cost, Oryx gas 13kg price, cheap gas refill deals, best gas prices in Kampala, cost-effective gas supply, gas refill Entebbe, gas refill Kira, gas refill Wakiso, gas refill Banda, gas refill Kyambogo, gas refill Kinawataka, gas refill Kireka, gas refill Ntinda, gas refill Kiwatule, gas refill Nakawa, gas refill Mbuya, gas refill Bukoto, gas refill Kisasi, gas refill Bweyogerere, gas refill Bugolobi, gas refill Naguru, gas refill Mutungo, gas refill Luzira, gas refill Namboole, gas refill Seeta, gas refill Naalya, gas refill Ntinda Stage, gas refill Ministers Village, gas refill Bukasa, gas refill Muyenga, gas refill Kololo, gas refill Kamwokya, gas refill Wandegeya, gas refill Kasubi, gas refill Kawaala, gas refill Naakulabye, gas refill Makerere, gas refill MUBS Nakawa, gas refill KIU Kansanga, student gas delivery Kampala, university area gas refill, Total gas refill Uganda, Shell gas delivery, Oryx gas refill price, gas cylinder exchange, fast gas delivery Uganda, hassle-free gas delivery, convenient cooking solutions" />
         <link rel="canonical" href="https://flamia.store/refill" />
         
         {/* Open Graph */}
@@ -146,7 +146,16 @@ const Refill = () => {
               "addressRegion": "Central Region",
               "addressCountry": "UG"
             },
-            "areaServed": ["Kampala", "Entebbe", "Wakiso", "Kira", "Namugongo", "Mukono"],
+            "areaServed": [
+              "Kampala", "Entebbe", "Wakiso", "Mukono",
+              "Banda", "Kyambogo", "Kinawataka", "Kireka", "Ntinda", "Kiwatule",
+              "Nakawa", "Mbuya", "Bukoto", "Kisasi", "Bweyogerere", "Bugolobi",
+              "Naguru", "Mutungo", "Luzira", "Namboole", "Namugongo", "Kira",
+              "Seeta", "Naalya", "Ntinda Stage", "Ministers Village", "Bukasa",
+              "Muyenga", "Kololo", "Kamwokya",
+              "Wandegeya", "Kasubi", "Kawaala", "Naakulabye",
+              "Makerere University", "MUBS", "KIU Kansanga"
+            ],
             "serviceType": ["Gas Refill", "LPG Delivery", "Gas Cylinder Refill"]
           })}
         </script>

@@ -1,6 +1,9 @@
 
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { GraduationCap, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import HeaderSection from "@/components/home/HeaderSection";
 import OverlayCarousel from "@/components/home/OverlayCarousel";
 import QuickActionsSection from "@/components/home/QuickActionsSection";
@@ -17,7 +20,7 @@ const Index = () => {
       <Helmet>
         <title>Flamia - Fast Gas Delivery Uganda | Cooking Gas Refill Kampala | LPG Home Delivery</title>
         <meta name="description" content="🔥 Best gas delivery service in Uganda! Order cooking gas refill, LPG cylinder delivery in Kampala, Entebbe, Wakiso. Total, Shell, Oryx gas. Same-day delivery. Affordable prices. Cook with confidence!" />
-        <meta name="keywords" content="gas delivery Uganda, cooking gas delivery Kampala, home gas refill service, LPG gas refill near me, gas cylinder refill Kampala, Oryx gas refill price, Shell gas delivery, Total gas refill Uganda, buy gas cylinder online, order gas delivery in Entebbe, gas cylinder exchange, gas refill home delivery, 3kg gas refill, 6kg gas refill, 12.5kg gas refill, fast gas delivery Uganda, affordable gas refill prices, gas refill cost Kampala, LPG gas price Uganda, best gas prices in Kampala, gas delivery in Kampala, gas refill Entebbe, gas suppliers Namugongo, gas refill Kira, gas shop near me, LPG gas delivery Kampala suburbs, cooking gas supplier Uganda, gas refill Wakiso, LPG gas cylinder supply, gas delivery service provider, convenient cooking solutions, reliable home energy source, hassle-free gas delivery, cook with confidence, fast safe affordable gas, clean energy for every home" />
+        <meta name="keywords" content="gas delivery Uganda, cooking gas delivery Kampala, home gas refill service, LPG gas refill near me, gas cylinder refill Kampala, Oryx gas refill price, Shell gas delivery, Total gas refill Uganda, buy gas cylinder online, order gas delivery in Entebbe, gas cylinder exchange, gas refill home delivery, 3kg gas refill, 6kg gas refill, 12.5kg gas refill, fast gas delivery Uganda, affordable gas refill prices, gas refill cost Kampala, LPG gas price Uganda, best gas prices in Kampala, gas delivery in Kampala, gas refill Entebbe, gas suppliers Namugongo, gas refill Kira, gas shop near me, LPG gas delivery Kampala suburbs, cooking gas supplier Uganda, gas refill Wakiso, gas delivery Banda, gas refill Kyambogo, gas delivery Kinawataka, gas refill Kireka, gas delivery Ntinda, gas refill Kiwatule, gas delivery Nakawa, gas refill Mbuya, gas delivery Bukoto, gas refill Kisasi, gas delivery Bweyogerere, gas refill Bugolobi, gas delivery Naguru, gas refill Mutungo, gas delivery Luzira, gas refill Namboole, gas delivery Seeta, gas refill Naalya, gas delivery Ntinda Stage, gas refill Ministers Village, gas delivery Bukasa, gas refill Muyenga, gas delivery Kololo, gas refill Kamwokya, gas delivery Wandegeya, gas refill Kasubi, gas delivery Kawaala, gas refill Naakulabye, gas delivery near Makerere University, gas refill Makerere, gas delivery near MUBS, gas refill MUBS Nakawa, gas delivery near KIU, gas refill KIU Kansanga, student gas delivery Kampala, university area gas refill, LPG gas cylinder supply, gas delivery service provider, convenient cooking solutions, reliable home energy source, hassle-free gas delivery, cook with confidence, fast safe affordable gas, clean energy for every home" />
         
         {/* Canonical URL */}
         <link rel="canonical" href={canonicalUrl} />
@@ -55,6 +58,37 @@ const Index = () => {
             
             <div className="space-y-6 lg:space-y-10 xl:space-y-14">
               <OverlayCarousel />
+              
+              {/* Student Promo Banner */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Link to="/student-gas-delivery">
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-shadow cursor-pointer">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 text-white">
+                        <div className="bg-white/20 p-3 rounded-full">
+                          <GraduationCap className="w-8 h-8" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl sm:text-2xl font-bold mb-1">
+                            🎓 Student Special Offer!
+                          </h3>
+                          <p className="text-sm sm:text-base opacity-90">
+                            Affordable 3kg gas + Free delivery to Makerere, Kyambogo, MUBS, KIU
+                          </p>
+                        </div>
+                      </div>
+                      <Button className="bg-white text-orange-600 hover:bg-gray-100 whitespace-nowrap">
+                        View Offers
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
               
               <QuickActionsSection />
               
