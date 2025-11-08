@@ -96,14 +96,14 @@ const Account = () => {
   } = useAffiliateShop();
 
 
-  // Cached profile query
+  // Cached profile query - only fetch essential fields
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, full_name, display_name, phone_number')
         .eq('id', user.id)
         .single();
       
@@ -114,11 +114,12 @@ const Account = () => {
       return data;
     },
     enabled: !!user?.id && !isPhoneUser,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
-  // Cached businesses query
+  // Cached businesses query - only fetch when needed
   const { data: businesses = [] } = useQuery({
     queryKey: ['userBusinesses', user?.id],
     queryFn: async () => {
@@ -126,8 +127,9 @@ const Account = () => {
       return await getUserBusinesses(user.id);
     },
     enabled: !!user?.id && isBusinessOwner,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
   useEffect(() => {
     checkAuthStatus();
@@ -142,9 +144,10 @@ const Account = () => {
       } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
+        setLoading(false); // Set loading false immediately
 
-        // Auto-sync display name if missing
-        await ensureDisplayName(user);
+        // Auto-sync display name if missing (non-blocking)
+        ensureDisplayName(user).catch(err => console.error('Error syncing display name:', err));
       } else {
         // Check for phone-verified user
         const phoneVerified = localStorage.getItem('phoneVerified');
@@ -160,10 +163,10 @@ const Account = () => {
             }
           });
         }
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
-    } finally {
       setLoading(false);
     }
   };
