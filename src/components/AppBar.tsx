@@ -1,4 +1,4 @@
-import { Flame, ShoppingBag, User, Shield } from "lucide-react";
+import { Flame, ShoppingBag, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { NotificationBell } from "./notifications/NotificationBell";
 
@@ -19,12 +19,6 @@ const AppBar = () => {
       isActive: ['/shop', '/gadgets'].includes(location.pathname) || 
                 location.pathname.startsWith('/shop/') || 
                 location.pathname.startsWith('/affiliate/')
-    },
-    {
-      path: '/gas-safety',
-      label: 'Safety',
-      icon: Shield,
-      isActive: location.pathname === '/gas-safety'
     },
     {
       path: '/account',

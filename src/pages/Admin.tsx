@@ -14,7 +14,7 @@ import { SubAdminManager } from "@/components/admin/SubAdminManager";
 import PromotionsManager from "@/components/admin/PromotionsManager";
 import { PromoCodesManager } from "@/components/admin/PromoCodesManager";
 import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
-import GadgetsManager from "@/components/admin/GadgetsManager";
+import FlamiaProductsManager from "@/components/admin/FlamiaProductsManager";
 
 // Import services
 import { useUserRole } from "@/hooks/useUserRole";
@@ -186,13 +186,13 @@ const Admin = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  📱
+                  📦
                 </div>
-                Gadgets
+                Flamia Products
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <GadgetsManager />
+              <FlamiaProductsManager />
             </CardContent>
           </Card>
 
