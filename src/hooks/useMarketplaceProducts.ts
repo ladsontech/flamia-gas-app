@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Gadget } from '@/types/gadget';
-import { BusinessProduct } from '@/types/business';
-import { getProductViewCounts } from '@/services/productViewsService';
 
 export interface MarketplaceProduct {
   id: string;
@@ -16,7 +13,6 @@ export interface MarketplaceProduct {
   source: 'flamia' | 'seller';
   shop_name?: string;
   shop_slug?: string;
-  in_stock?: boolean;
   is_available?: boolean;
   featured?: boolean;
   viewCount?: number;
@@ -28,6 +24,8 @@ export interface CategoryGroup {
   slug: string;
   products: MarketplaceProduct[];
 }
+
+const FLAMIA_BUSINESS_ID = '00000000-0000-0000-0000-000000000001';
 
 export const useMarketplaceProducts = () => {
   const [categories, setCategories] = useState<CategoryGroup[]>([]);
@@ -43,137 +41,66 @@ export const useMarketplaceProducts = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch Flamia gadgets
-      const { data: gadgets, error: gadgetsError } = await supabase
-        .from('gadgets')
-        .select('*')
-        .eq('in_stock', true);
-
-      if (gadgetsError) throw gadgetsError;
-
-      // Fetch approved seller shops and their products
-      const { data: sellerShops, error: shopsError } = await supabase
-        .from('seller_shops')
-        .select(`
-          id,
-          shop_name,
-          shop_slug,
-          category_id,
-          business_id
-        `)
-        .eq('is_active', true)
-        .eq('is_approved', true);
-
-      if (shopsError) throw shopsError;
-
-      // Fetch products from seller shops' businesses
-      const businessIds = sellerShops
-        ?.filter(shop => shop.business_id)
-        .map(shop => shop.business_id);
-
-      let sellerProducts: any[] = [];
-      if (businessIds && businessIds.length > 0) {
-        const { data: products, error: productsError } = await supabase
-          .from('business_products')
+      // Fetch all data in parallel for better performance
+      const [categoriesResult, productsResult] = await Promise.all([
+        // Fetch product categories
+        supabase
+          .from('product_categories')
           .select('*')
-          .in('business_id', businessIds)
-          .eq('is_available', true);
+          .eq('is_active', true)
+          .order('display_order'),
+        
+        // Fetch all business products (Flamia + Sellers) with shop info in one query
+        supabase
+          .from('business_products')
+          .select(`
+            *,
+            businesses!inner(
+              id,
+              name
+            )
+          `)
+          .eq('is_available', true)
+          .limit(500) // Limit to prevent loading too many products at once
+      ]);
 
-        if (productsError) throw productsError;
-        sellerProducts = products || [];
+      if (categoriesResult.error) throw categoriesResult.error;
+      if (productsResult.error) throw productsResult.error;
+
+      const productCategories = categoriesResult.data || [];
+      const allProducts = productsResult.data || [];
+
+      // Fetch seller shops for mapping (only for non-Flamia products)
+      const nonFlamiaProducts = allProducts.filter(p => p.business_id !== FLAMIA_BUSINESS_ID);
+      const businessIds = [...new Set(nonFlamiaProducts.map(p => p.business_id))];
+      
+      let sellerShopsMap = new Map();
+      if (businessIds.length > 0) {
+        const { data: sellerShops } = await supabase
+          .from('seller_shops')
+          .select('business_id, shop_name, shop_slug')
+          .in('business_id', businessIds)
+          .eq('is_active', true)
+          .eq('is_approved', true);
+
+        if (sellerShops) {
+          sellerShops.forEach(shop => {
+            sellerShopsMap.set(shop.business_id, shop);
+          });
+        }
       }
 
-      // Fetch product categories
-      const { data: productCategories, error: categoriesError } = await supabase
-        .from('product_categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order');
+      // Create category map for quick lookup
+      const categoryLookup = new Map(
+        productCategories.map(cat => [cat.id, cat])
+      );
 
-      if (categoriesError) throw categoriesError;
+      // Map products to marketplace format
+      const mappedProducts: MarketplaceProduct[] = allProducts.map(product => {
+        const category = categoryLookup.get(product.category_id);
+        const isFlamiaProduct = product.business_id === FLAMIA_BUSINESS_ID;
+        const shop = !isFlamiaProduct ? sellerShopsMap.get(product.business_id) : null;
 
-      // Map gadgets to marketplace products with proper categories
-      // Match gadget categories to product_categories
-      const flamiaProducts: MarketplaceProduct[] = (gadgets || []).map((gadget: any) => {
-        let categoryName = gadget.category;
-        let categoryId: string | undefined;
-        
-        // Try to find matching category in product_categories
-        const gadgetCategoryLower = gadget.category.toLowerCase();
-        
-        // Map gadget categories to product categories
-        const categoryMapping: { [key: string]: string } = {
-          'phone': 'Phones',
-          'phones': 'Phones',
-          'smartphone': 'Phones',
-          'tablet': 'Phones',
-          'laptop': 'Laptops & PCs',
-          'laptops': 'Laptops & PCs',
-          'computer': 'Laptops & PCs',
-          'pc': 'Laptops & PCs',
-          'tv': 'TVs',
-          'television': 'TVs',
-          'speaker': 'Audio & Speakers',
-          'audio': 'Audio & Speakers',
-          'headphone': 'Audio & Speakers',
-          'earphone': 'Audio & Speakers',
-          'accessory': 'Electronics',
-          'accessories': 'Electronics',
-          'cable': 'Electronics',
-          'charger': 'Electronics',
-        };
-
-        // Find matching category
-        for (const [key, mappedCategory] of Object.entries(categoryMapping)) {
-          if (gadgetCategoryLower.includes(key)) {
-            categoryName = mappedCategory;
-            // Find the category ID from product_categories
-            const matchedCategory = productCategories?.find(c => 
-              c.name.toLowerCase() === mappedCategory.toLowerCase() ||
-              c.slug.toLowerCase() === mappedCategory.toLowerCase().replace(/\s+/g, '-')
-            );
-            if (matchedCategory) {
-              categoryId = matchedCategory.id;
-              categoryName = matchedCategory.name; // Use the exact name from database
-            }
-            break;
-          }
-        }
-
-        // If no match found, try to find by slug or use 'Electronics' as default
-        if (!categoryId) {
-          const defaultCategory = productCategories?.find(c => 
-            c.slug === 'electronics' || c.name.toLowerCase() === 'electronics'
-          );
-          if (defaultCategory) {
-            categoryName = defaultCategory.name;
-            categoryId = defaultCategory.id;
-          } else {
-            // Fallback to original category name
-            categoryName = gadget.category;
-          }
-        }
-
-        return {
-          id: gadget.id,
-          name: gadget.name,
-          description: gadget.description,
-          price: gadget.price,
-          original_price: gadget.original_price,
-          image_url: gadget.image_url,
-          category: categoryName,
-          category_id: categoryId,
-          source: 'flamia',
-          in_stock: gadget.in_stock,
-          featured: gadget.featured,
-        };
-      });
-
-      // Map seller products to marketplace products
-      const mappedSellerProducts: MarketplaceProduct[] = sellerProducts.map((product: BusinessProduct) => {
-        const shop = sellerShops?.find(s => s.business_id === product.business_id);
-        const category = productCategories?.find(c => c.id === product.category_id);
-        
         return {
           id: product.id,
           name: product.name,
@@ -181,25 +108,23 @@ export const useMarketplaceProducts = () => {
           price: product.price,
           original_price: product.original_price,
           image_url: product.image_url,
-          category: category?.name || product.category || 'Other',
+          category: category?.name || 'Other',
           category_id: product.category_id,
-          source: 'seller',
+          source: isFlamiaProduct ? 'flamia' : 'seller',
           shop_name: shop?.shop_name,
           shop_slug: shop?.shop_slug,
           is_available: product.is_available,
-          featured: product.is_featured,
+          featured: product.is_featured || false,
+          viewCount: 0 // Will be loaded lazily if needed
         };
       });
 
-      // Combine all products (gadgets + seller products)
-      const allProducts = [...flamiaProducts, ...mappedSellerProducts];
-
-      // Group products by category - use both parent and subcategories
+      // Group products by category
       const categoryMap = new Map<string, CategoryGroup>();
 
-      // Create category groups from all product_categories (parent and subcategories)
-      productCategories?.forEach(cat => {
-        categoryMap.set(cat.name, {
+      // Initialize all categories (even empty ones)
+      productCategories.forEach(cat => {
+        categoryMap.set(cat.id, {
           id: cat.id,
           name: cat.name,
           slug: cat.slug,
@@ -207,74 +132,31 @@ export const useMarketplaceProducts = () => {
         });
       });
 
-      // Now add products to their categories
-      allProducts.forEach(product => {
-        const categoryKey = product.category;
-        
-        // Try to find exact match first
-        if (categoryMap.has(categoryKey)) {
-          categoryMap.get(categoryKey)!.products.push(product);
+      // Add products to their categories
+      mappedProducts.forEach(product => {
+        if (product.category_id && categoryMap.has(product.category_id)) {
+          categoryMap.get(product.category_id)!.products.push(product);
         } else {
-          // Try to find by slug or name match
-          const matchedCategory = productCategories?.find(c => 
-            c.name.toLowerCase() === categoryKey.toLowerCase() ||
-            c.slug.toLowerCase() === categoryKey.toLowerCase().replace(/\s+/g, '-')
+          // Fallback: try to find category by name
+          const matchedCategory = Array.from(categoryMap.values()).find(
+            cat => cat.name.toLowerCase() === product.category.toLowerCase()
           );
-          
           if (matchedCategory) {
-            const matchedKey = matchedCategory.name;
-            if (!categoryMap.has(matchedKey)) {
-              categoryMap.set(matchedKey, {
-                id: matchedCategory.id,
-                name: matchedCategory.name,
-                slug: matchedCategory.slug,
-                products: [],
-              });
-            }
-            categoryMap.get(matchedKey)!.products.push(product);
-          } else {
-            // Create category group for unmatched categories (fallback)
-            if (!categoryMap.has(categoryKey)) {
-              categoryMap.set(categoryKey, {
-                id: product.category_id || categoryKey,
-                name: categoryKey,
-                slug: categoryKey.toLowerCase().replace(/\s+/g, '-'),
-                products: [],
-              });
-            }
-            categoryMap.get(categoryKey)!.products.push(product);
+            matchedCategory.products.push(product);
           }
         }
       });
 
-      // Convert to array - show all categories from product_categories, sorted by display_order
+      // Convert to array and sort
       const categorizedProducts = Array.from(categoryMap.values())
+        .filter(cat => cat.products.length > 0) // Only show categories with products
         .sort((a, b) => {
-          // Get display_order from product_categories
-          const aOrder = productCategories?.find(pc => pc.name === a.name || pc.slug === a.slug)?.display_order || 999;
-          const bOrder = productCategories?.find(pc => pc.name === b.name || pc.slug === b.slug)?.display_order || 999;
-          
-          // Categories with products first, then by display_order
-          if (a.products.length > 0 && b.products.length === 0) return -1;
-          if (a.products.length === 0 && b.products.length > 0) return 1;
-          if (aOrder !== bOrder) return aOrder - bOrder;
-          return b.products.length - a.products.length;
+          const aOrder = categoryLookup.get(a.id)?.display_order || 999;
+          const bOrder = categoryLookup.get(b.id)?.display_order || 999;
+          return aOrder - bOrder;
         });
 
-      // Fetch view counts for all products in bulk
-      const allProductIds = categorizedProducts.flatMap(cat => cat.products.map(p => p.id));
-      const viewCounts = await getProductViewCounts(allProductIds);
-      
-      // Add view counts to products
-      const categorizedProductsWithViews = categorizedProducts.map(category => ({
-        ...category,
-        products: category.products.map(product => ({
-          ...product,
-          viewCount: viewCounts[product.id] || 0
-        }))
-      }));
-
-      setCategories(categorizedProductsWithViews);
+      setCategories(categorizedProducts);
     } catch (err) {
       console.error('Error fetching marketplace products:', err);
       setError(err instanceof Error ? err.message : 'Failed to load products');
