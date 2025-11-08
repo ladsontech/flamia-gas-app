@@ -265,10 +265,12 @@ const StorefrontProductDetail: React.FC = () => {
               {/* Show WhatsApp checkout for seller subdomains with WhatsApp enabled */}
               {shop && shop.whatsapp_number && (shop.checkout_type === 'whatsapp' || shop.checkout_type === 'both') && (
                 <WhatsAppCheckoutButton
+                  productId={product.id}
                   productName={product.name}
                   productPrice={product.price}
                   quantity={1}
                   whatsappNumber={shop.whatsapp_number}
+                  shopId={shop.id}
                   shopName={shop.shop_name}
                   productImage={product.image_url || undefined}
                   className="w-full py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-semibold rounded-lg sm:rounded-xl"

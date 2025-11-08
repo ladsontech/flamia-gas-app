@@ -15,6 +15,9 @@ export interface Order {
   cancellation_reason?: string | null;
   cancelled_at?: string | null;
   cancelled_by?: string | null;
+  seller_shop_id?: string | null;
+  affiliate_shop_id?: string | null;
+  checkout_method?: 'flamia' | 'whatsapp' | 'manual' | null;
 }
 
 export interface OrderFormData {

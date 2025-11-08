@@ -63,3 +63,24 @@ export interface SellerPayment {
   created_at: string;
   updated_at: string;
 }
+
+export interface SellerOrder {
+  id: string;
+  seller_shop_id: string;
+  order_id: string;
+  business_product_id: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  seller_commission: number;
+  flamia_commission: number;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  whatsapp_order_data?: {
+    customer_name?: string;
+    phone?: string;
+    message?: string;
+    timestamp?: string;
+  };
+  created_at: string;
+  updated_at: string;
+}

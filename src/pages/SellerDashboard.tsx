@@ -10,6 +10,7 @@ import { ProductForm } from '@/components/seller/ProductForm';
 import { ProductsList } from '@/components/seller/ProductsList';
 import { ShopSettingsForm } from '@/components/seller/ShopSettingsForm';
 import { CheckoutSettingsForm } from '@/components/seller/CheckoutSettingsForm';
+import { SellerOrdersList } from '@/components/seller/SellerOrdersList';
 import type { SellerShop } from '@/types/seller';
 import type { BusinessProduct } from '@/types/business';
 import { Package, Store, DollarSign, BarChart3, Plus } from 'lucide-react';
@@ -235,8 +236,9 @@ const SellerDashboard = () => {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="w-full sm:w-auto grid grid-cols-3 sm:inline-flex">
+          <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:inline-flex">
             <TabsTrigger value="products" className="text-xs sm:text-sm">Products</TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs sm:text-sm">Orders</TabsTrigger>
             <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
             <TabsTrigger value="payments" className="text-xs sm:text-sm">Payments</TabsTrigger>
           </TabsList>
@@ -278,6 +280,10 @@ const SellerDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="orders" className="space-y-4">
+            <SellerOrdersList shopId={shop.id} />
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">
