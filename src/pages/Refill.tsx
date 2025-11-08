@@ -189,7 +189,6 @@ const Refill = () => {
                         {brandData?.logo_url ? <img src={brandData.logo_url} alt={`${brand} logo`} className="w-full h-full object-contain" /> : <Flame className={`w-8 md:w-10 h-8 md:h-10 transition-colors duration-300 ${selectedBrand === brand ? 'text-accent' : 'text-gray-600'}`} />}
                       </div>
                       <h4 className="font-semibold text-xs md:text-sm text-gray-900">{brand}</h4>
-                      <p className="text-xs text-gray-500">Gas</p>
                       {selectedBrand === brand && <motion.div initial={{
                     scale: 0
                   }} animate={{
