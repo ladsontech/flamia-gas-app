@@ -213,26 +213,41 @@ export default function AffiliateStorefront() {
             <link rel="canonical" href={`https://flamia.store/affiliate/${shop.shop_slug}`} />
           </Helmet>
 
-          {/* Storefront Header with Auth */}
-          <StorefrontHeader
-            shopName={shop.shop_name}
-            shopLogoUrl={shop.shop_logo_url}
-            isOwner={isOwner}
-            shopType="affiliate"
-          />
+          {/* Shop Info Banner */}
+          <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 py-4 sm:py-6">
+            <div className="container max-w-7xl mx-auto px-4">
+              <div className="flex items-center gap-4">
+                {shop.shop_logo_url && (
+                  <img
+                    src={shop.shop_logo_url}
+                    alt={shop.shop_name}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-orange-200"
+                  />
+                )}
+                <div className="flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 text-transparent bg-clip-text">
+                    {shop.shop_name}
+                  </h1>
+                  {shop.shop_description && (
+                    <p className="text-sm sm:text-base text-gray-600 mt-1">{shop.shop_description}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
-          {/* Owner Insights */}
+          {/* Owner Analytics */}
           {isOwner && shop && (
-            <div className="mb-6">
-              <StorePerformance shopId={shop.id} shopType="affiliate" />
-              <div className="mt-4">
+            <div className="bg-gray-50 py-6">
+              <div className="container max-w-7xl mx-auto px-4 space-y-6">
+                <StorePerformance shopId={shop.id} shopType="affiliate" />
                 <StorefrontAnalytics shopId={shop.id} shopType="affiliate" />
               </div>
             </div>
           )}
 
           {/* Search and Filters Section */}
-          <div className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
+          <div className="bg-white border-b border-gray-200 sticky top-14 z-40 shadow-sm">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
           {/* Search Bar */}
           <div className="relative mb-2 sm:mb-3">

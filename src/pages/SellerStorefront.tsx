@@ -252,16 +252,57 @@ const SellerStorefront = () => {
             <link rel="canonical" href={`https://${shop.shop_slug}.flamia.store/`} />
           </Helmet>
           
-          {/* Storefront Header with Auth */}
-          <StorefrontHeader
-            shopName={shop.shop_name}
-            shopLogoUrl={shop.shop_logo_url}
-            isOwner={isOwner}
-            shopType="seller"
-          />
+          {/* Storefront Header with Auth - Only show on subdomain visits */}
+          {isIndependentStorefront && (
+            <StorefrontHeader
+              shopName={shop.shop_name}
+              shopLogoUrl={shop.shop_logo_url}
+              isOwner={isOwner}
+              shopType="seller"
+            />
+          )}
+
+          {/* Shop Info Banner - Only show when accessed via main store */}
+          {!isIndependentStorefront && (
+            <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 py-4 sm:py-6">
+              <div className="container max-w-7xl mx-auto px-4">
+                <div className="flex items-center gap-4">
+                  {shop.shop_logo_url && (
+                    <img
+                      src={shop.shop_logo_url}
+                      alt={shop.shop_name}
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-orange-200"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 text-transparent bg-clip-text">
+                      {shop.shop_name}
+                    </h1>
+                    {shop.shop_description && (
+                      <p className="text-sm sm:text-base text-gray-600 mt-1">{shop.shop_description}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Owner Analytics - Show inline when accessed via main store */}
+          {!isIndependentStorefront && isOwner && shop && (
+            <div className="bg-gray-50 py-6">
+              <div className="container max-w-7xl mx-auto px-4 space-y-6">
+                <StorePerformance shopId={shop.id} shopType="seller" />
+                <StorefrontAnalytics
+                  shopId={shop.id}
+                  businessId={shop.business_id}
+                  shopType="seller"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Compact Header - App Style */}
-          <header className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
+          <header className={`bg-white border-b border-gray-200 sticky z-40 shadow-sm ${isIndependentStorefront ? 'top-16' : 'top-14'}`}>
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
           {/* Top Bar removed to avoid duplication with StorefrontHeader */}
 
@@ -403,10 +444,11 @@ const SellerStorefront = () => {
         </div>
       </header>
 
-      {/* Inline Analytics for Owners */}
-      {isOwner && (
+      {/* Inline Analytics for Owners - Only show on subdomain visits */}
+      {isIndependentStorefront && isOwner && (
         <section className="bg-white">
-          <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6">
+            <StorePerformance shopId={shop.id} shopType="seller" />
             <StorefrontAnalytics
               shopId={shop.id}
               businessId={shop.business_id}
@@ -565,7 +607,7 @@ const SellerStorefront = () => {
                       featured={product.is_featured}
                       viewCount={(product as any).viewCount}
                       onAddToCart={() => handleAddToCart(product)}
-                      detailsHref={`/shop/${slug}/product/${product.id}`}
+                      detailsHref={isIndependentStorefront ? `/product/${product.id}` : `/shop/${slug}/product/${product.id}`}
                       onQuickView={() => setQuickViewProduct(product as any)}
                     />
                   ))}

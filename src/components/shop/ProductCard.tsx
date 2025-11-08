@@ -52,12 +52,12 @@ export const ProductCard = ({
   }, [id, initialViewCount]);
 
   const handleCardClick = () => {
-    if (id) {
-      if (detailsHref) {
-        navigate(detailsHref);
-      } else {
-        navigate(`/product/${id}`);
-      }
+    if (!id) return;
+    
+    if (detailsHref) {
+      navigate(detailsHref);
+    } else {
+      navigate(`/product/${id}`);
     }
   };
 
@@ -68,8 +68,16 @@ export const ProductCard = ({
 
   return (
     <Card 
-      className="group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-lg p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative z-0 cursor-pointer"
+      className="group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-lg p-2 sm:p-3 transition-all duration-300 overflow-hidden h-full flex flex-col relative cursor-pointer"
       onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
     >
       {/* Square Image Container */}
       <div className="relative w-full pb-[100%] mb-2 sm:mb-3 rounded-lg overflow-hidden bg-gray-50 z-0">

@@ -73,10 +73,10 @@ const AppContent = () => {
   const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
   
   const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
-  const isStorefrontRoute = location.pathname.startsWith('/shop/') || location.pathname.startsWith('/affiliate/');
   const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
   const isStorefrontHost = !!subdomainMatch;
-  const isStorefront = isStorefrontRoute || isStorefrontHost;
+  // Only treat subdomain visits as storefronts, not /shop/slug routes from main store
+  const isStorefront = isStorefrontHost;
   
   // Routes that don't need loading screen (no redirects)
   const isHomeRoute = location.pathname === '/' || location.pathname === '/home';

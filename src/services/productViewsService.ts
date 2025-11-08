@@ -1,27 +1,16 @@
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Track a product view - increments view count for a product
+ * Track a product view - counts every visit as a separate view (total views, not unique)
  * Works for both gadgets and business_products
  */
 export const trackProductView = async (productId: string, productType: 'gadget' | 'business_product' = 'business_product') => {
   try {
-    // Check if view already tracked in this session (prevent duplicate views)
-    const viewKey = `viewed_${productId}`;
-    const alreadyViewed = sessionStorage.getItem(viewKey);
-    
-    if (alreadyViewed) {
-      return; // Already viewed in this session
-    }
-
-    // Mark as viewed in session
-    sessionStorage.setItem(viewKey, 'true');
-
     // Get user ID if logged in
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id || null;
 
-    // Insert view record using type assertion for table that may not be in types yet
+    // Insert view record - every visit counts as a new view
     const { error } = await supabase
       .from('product_views' as any)
       .insert({
