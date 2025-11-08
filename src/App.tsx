@@ -64,8 +64,19 @@ import { Navigate } from 'react-router-dom';
 import { CartButton } from './components/cart/CartButton';
 import OnboardingScreen from './components/onboarding/OnboardingScreen';
 import { useOnboarding } from './hooks/useOnboarding';
+import { DataPrefetcher } from './components/DataPrefetcher';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
+      refetchOnWindowFocus: false, // Don't refetch on window focus
+      refetchOnReconnect: false, // Don't refetch on reconnect
+      retry: 1, // Only retry once on failure
+    },
+  },
+});
 
 const AppContent = () => {
   const location = useLocation();
@@ -104,6 +115,7 @@ const AppContent = () => {
       {!isStorefront && <InstallPWA />}
       {!isStorefront && <OccasionalSignInPopup />}
       {!isStorefront && <PushNotificationPrompt />}
+      {!isStorefront && <DataPrefetcher />}
       <Toaster />
       
       <main className={isStorefront ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
