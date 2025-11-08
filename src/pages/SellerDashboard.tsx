@@ -9,6 +9,7 @@ import { fetchSellerShopByUser } from '@/services/sellerService';
 import { ProductForm } from '@/components/seller/ProductForm';
 import { ProductsList } from '@/components/seller/ProductsList';
 import { ShopSettingsForm } from '@/components/seller/ShopSettingsForm';
+import { CheckoutSettingsForm } from '@/components/seller/CheckoutSettingsForm';
 import type { SellerShop } from '@/types/seller';
 import type { BusinessProduct } from '@/types/business';
 import { Package, Store, DollarSign, BarChart3, Plus } from 'lucide-react';
@@ -281,6 +282,7 @@ const SellerDashboard = () => {
 
           <TabsContent value="settings" className="space-y-4">
             <ShopSettingsForm shop={shop} onUpdate={() => setProductRefresh(prev => prev + 1)} />
+            <CheckoutSettingsForm shop={shop} onUpdate={() => setProductRefresh(prev => prev + 1)} />
           </TabsContent>
 
           <TabsContent value="payments" className="space-y-4">

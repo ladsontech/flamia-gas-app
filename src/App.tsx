@@ -34,6 +34,7 @@ import SellerStorefront from './pages/SellerStorefront';
 import StorefrontProductDetail from './pages/StorefrontProductDetail';
 import AffiliateDashboard from './pages/AffiliateDashboard';
 import AffiliateStorefront from './pages/AffiliateStorefront';
+import AuthCallback from './pages/AuthCallback';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
@@ -124,6 +125,7 @@ const AppContent = () => {
           
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/order" element={<Order />} />
           <Route path="/refill" element={<Refill />} />
           <Route path="/gas-safety" element={<GasSafety />} />

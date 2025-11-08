@@ -44,6 +44,8 @@ export interface SellerShop {
   next_payment_due?: string;
   shop_description?: string;
   shop_logo_url?: string;
+  checkout_type?: 'flamia' | 'whatsapp' | 'both';
+  whatsapp_number?: string;
   created_at: string;
   updated_at: string;
 }
