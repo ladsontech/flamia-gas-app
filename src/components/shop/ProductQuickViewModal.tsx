@@ -122,7 +122,7 @@ export const ProductQuickViewModal = ({
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Availability:</span>
               <span className="font-medium text-green-600">
-                {product.in_stock !== false && product.is_available !== false ? 'In Stock' : 'Out of Stock'}
+                {product.is_available !== false ? 'In Stock' : 'Out of Stock'}
               </span>
             </div>
 

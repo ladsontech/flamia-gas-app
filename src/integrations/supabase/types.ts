@@ -468,7 +468,7 @@ export type Database = {
           },
         ]
       }
-      gadgets: {
+      flamia_products: {
         Row: {
           brand: string | null
           category: string
@@ -946,6 +946,70 @@ export type Database = {
           },
         ]
       }
+      seller_orders: {
+        Row: {
+          business_product_id: string
+          created_at: string
+          id: string
+          order_id: string
+          quantity: number
+          seller_commission: number
+          seller_shop_id: string
+          status: string
+          total_price: number
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          business_product_id: string
+          created_at?: string
+          id?: string
+          order_id: string
+          quantity?: number
+          seller_commission?: number
+          seller_shop_id: string
+          status?: string
+          total_price: number
+          unit_price: number
+          updated_at?: string
+        }
+        Update: {
+          business_product_id?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          quantity?: number
+          seller_commission?: number
+          seller_shop_id?: string
+          status?: string
+          total_price?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_orders_business_product_id_fkey"
+            columns: ["business_product_id"]
+            isOneToOne: false
+            referencedRelation: "business_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_orders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_orders_seller_shop_id_fkey"
+            columns: ["seller_shop_id"]
+            isOneToOne: false
+            referencedRelation: "seller_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_payments: {
         Row: {
           amount: number
@@ -1001,6 +1065,7 @@ export type Database = {
           application_id: string | null
           business_id: string | null
           category_id: string
+          checkout_type: string | null
           commission_enabled: boolean
           created_at: string
           custom_domain: string | null
@@ -1022,6 +1087,7 @@ export type Database = {
           application_id?: string | null
           business_id?: string | null
           category_id: string
+          checkout_type?: string | null
           commission_enabled?: boolean
           created_at?: string
           custom_domain?: string | null
@@ -1043,6 +1109,7 @@ export type Database = {
           application_id?: string | null
           business_id?: string | null
           category_id?: string
+          checkout_type?: string | null
           commission_enabled?: boolean
           created_at?: string
           custom_domain?: string | null

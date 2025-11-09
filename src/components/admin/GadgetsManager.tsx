@@ -45,7 +45,7 @@ const GadgetsManager: React.FC = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('gadgets')
+        .from('flamia_products')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -102,7 +102,7 @@ const GadgetsManager: React.FC = () => {
   const handleToggleFeatured = async (gadget: Gadget) => {
     try {
       const { error } = await supabase
-        .from('gadgets')
+        .from('flamia_products')
         .update({ featured: !(gadget.featured || false) })
         .eq('id', gadget.id);
 
@@ -144,7 +144,7 @@ const GadgetsManager: React.FC = () => {
 
       if (editingGadget) {
         const { error } = await supabase
-          .from('gadgets')
+          .from('flamia_products')
           .update(gadgetData)
           .eq('id', editingGadget.id);
 
@@ -156,7 +156,7 @@ const GadgetsManager: React.FC = () => {
         });
       } else {
         const { error } = await supabase
-          .from('gadgets')
+          .from('flamia_products')
           .insert([gadgetData]);
 
         if (error) throw error;
@@ -186,7 +186,7 @@ const GadgetsManager: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('gadgets')
+        .from('flamia_products')
         .delete()
         .eq('id', id);
 

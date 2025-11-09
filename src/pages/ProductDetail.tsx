@@ -306,7 +306,7 @@ const ProductDetail = () => {
                 <div>
                   <p className="text-xs sm:text-sm text-gray-600 mb-1">Availability</p>
                   <p className="text-sm sm:text-base font-medium text-green-600">
-                    {product.in_stock !== false && product.is_available !== false ? 'In Stock' : 'Out of Stock'}
+                    {product.is_available !== false ? 'In Stock' : 'Out of Stock'}
                   </p>
                 </div>
               </div>
