@@ -59,8 +59,8 @@ const Index = () => {
             <div className="space-y-6 lg:space-y-10 xl:space-y-14">
               <OverlayCarousel />
               
-              {/* Student Promo Banner */}
-              <motion.div
+              {/* Student Promo Banner - DISABLED */}
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -88,7 +88,7 @@ const Index = () => {
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+              </motion.div> */}
               
               <QuickActionsSection />
               

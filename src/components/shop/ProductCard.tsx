@@ -125,13 +125,6 @@ export const ProductCard = ({
             <span>{viewCount > 999 ? `${(viewCount / 1000).toFixed(1)}K` : viewCount}</span>
           </div>
         )}
-
-        {/* Shop Name Badge for Seller Products */}
-        {shopName && source === 'seller' && (
-          <Badge variant="secondary" className="absolute bottom-2 right-2 text-xs px-1.5 sm:px-2 py-0.5 bg-white/90 backdrop-blur-sm border border-gray-200" style={{ zIndex: 1 }}>
-            {shopName}
-          </Badge>
-        )}
       </div>
       
       {/* Content Section */}

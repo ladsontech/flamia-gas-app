@@ -143,7 +143,7 @@ const AppContent = () => {
           <Route path="/refill" element={<Refill />} />
           <Route path="/gas-safety" element={<GasSafety />} />
           <Route path="/accessories" element={<Accessories />} />
-          <Route path="/student-gas-delivery" element={<StudentGasDelivery />} />
+          {/* <Route path="/student-gas-delivery" element={<StudentGasDelivery />} /> */}
           <Route path="/gadget/:id" element={<GadgetDetail />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/reset-password" element={<ResetPassword />} />
