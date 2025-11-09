@@ -11,9 +11,11 @@ import {
   countAffiliateShopProducts
 } from '@/services/affiliateService';
 import { AffiliateShopSettings } from '@/components/affiliate/AffiliateShopSettings';
+import { AffiliateEarningsComponent } from '@/components/affiliate/AffiliateEarnings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -402,9 +404,19 @@ export default function AffiliateDashboard() {
           </Card>
         </div>
 
-        {/* Browse Products Section */}
-        <Card className="p-4 sm:p-6 mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Browse Products</h2>
+        {/* Tabs for different sections */}
+        <Tabs defaultValue="products" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="earnings">Earnings</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+
+          {/* Products Tab */}
+          <TabsContent value="products" className="space-y-6">
+            {/* Browse Products Section */}
+            <Card className="p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Browse Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {availableProducts
               .filter(p => !affiliateProducts.some(ap => ap.business_product_id === p.id))
@@ -491,6 +503,18 @@ export default function AffiliateDashboard() {
             </Card>
           )}
         </div>
+          </TabsContent>
+
+          {/* Earnings Tab */}
+          <TabsContent value="earnings">
+            <AffiliateEarningsComponent affiliateShopId={shop.id} />
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings">
+            <AffiliateShopSettings shop={shop} onUpdate={loadShopData} />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <ProductPreviewModal

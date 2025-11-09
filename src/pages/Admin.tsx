@@ -15,6 +15,7 @@ import PromotionsManager from "@/components/admin/PromotionsManager";
 import { PromoCodesManager } from "@/components/admin/PromoCodesManager";
 import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
 import FlamiaProductsManager from "@/components/admin/FlamiaProductsManager";
+import { AffiliateCommissionsManager } from "@/components/admin/AffiliateCommissionsManager";
 
 // Import services
 import { useUserRole } from "@/hooks/useUserRole";
@@ -195,6 +196,9 @@ const Admin = () => {
               <FlamiaProductsManager />
             </CardContent>
           </Card>
+
+          {/* Affiliate Commissions */}
+          <AffiliateCommissionsManager />
 
           <Card>
             <CardHeader>

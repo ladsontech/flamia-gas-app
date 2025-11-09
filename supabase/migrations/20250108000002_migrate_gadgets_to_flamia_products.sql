@@ -26,6 +26,9 @@ INSERT INTO public.business_products (
   image_url,
   is_available,
   is_featured,
+  commission_type,
+  commission_rate,
+  affiliate_enabled,
   created_at,
   updated_at
 )
@@ -37,12 +40,16 @@ SELECT
   original_price,
   category,
   image_url,
-  in_stock as is_available,
+  COALESCE(in_stock, true) as is_available,
   COALESCE(featured, false) as is_featured,
+  'percentage' as commission_type,
+  10 as commission_rate,
+  true as affiliate_enabled,
   created_at,
   updated_at
 FROM public.gadgets
-WHERE NOT EXISTS (
+WHERE EXISTS (SELECT 1 FROM public.gadgets LIMIT 1)
+AND NOT EXISTS (
   SELECT 1 FROM public.business_products bp 
   WHERE bp.name = gadgets.name 
   AND bp.business_id = '00000000-0000-0000-0000-000000000001'::uuid
