@@ -537,67 +537,11 @@ const Shop: React.FC = () => {
 
                     {/* Products - Horizontal Scroll for All Views */}
                     <div className="relative z-0">
-                      {/* Mobile: Horizontal scroll with 2 rows */}
-                      <div className="sm:hidden overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide snap-x snap-mandatory">
-                        <div className="inline-flex flex-col gap-3">
-                          {/* Split products into pairs for 2 rows */}
-                          {Array.from({ length: Math.ceil(displayProducts.length / 2) }).map((_, pairIndex) => {
-                            const product1 = displayProducts[pairIndex * 2];
-                            const product2 = displayProducts[pairIndex * 2 + 1];
-                            
-                            return (
-                              <div key={pairIndex} className="flex gap-3 snap-start flex-shrink-0" style={{ width: 'calc(100vw - 2rem)' }}>
-                                {/* First product in pair */}
-                                {product1 && (
-                                  <div className="flex-shrink-0" style={{ width: 'calc((100vw - 2rem - 0.75rem) / 2)' }}>
-                                  <ProductCard
-                                      id={product1.id}
-                                      name={product1.name}
-                                      description={product1.description}
-                                      price={product1.price}
-                                      originalPrice={product1.original_price}
-                                      imageUrl={product1.image_url}
-                                      featured={product1.featured}
-                                      shopName={product1.shop_name}
-                                      source={product1.source}
-                                      viewCount={product1.viewCount}
-                                      onAddToCart={() => handleAddToCart(product1)}
-                                      onQuickView={() => setQuickViewProduct(product1)}
-                                    />
-                                  </div>
-                                )}
-                                {/* Second product in pair */}
-                                {product2 && (
-                                  <div className="flex-shrink-0" style={{ width: 'calc((100vw - 2rem - 0.75rem) / 2)' }}>
-                                    <ProductCard
-                                      id={product2.id}
-                                      name={product2.name}
-                                      description={product2.description}
-                                      price={product2.price}
-                                      originalPrice={product2.original_price}
-                                      imageUrl={product2.image_url}
-                                      featured={product2.featured}
-                                      shopName={product2.shop_name}
-                                      source={product2.source}
-                                      viewCount={product2.viewCount}
-                                      onAddToCart={() => handleAddToCart(product2)}
-                                      onQuickView={() => setQuickViewProduct(product2)}
-                                    />
-                                  </div>
-                                )}
-                                {/* Empty space if odd number of products */}
-                                {!product2 && <div className="flex-shrink-0" style={{ width: 'calc((100vw - 2rem - 0.75rem) / 2)' }} />}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      
-                      {/* Desktop: Horizontal Scroll Layout */}
-                      <div className="hidden sm:block overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide snap-x snap-mandatory">
+                      {/* All Screens: Horizontal Scroll Layout */}
+                      <div className="overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide snap-x snap-mandatory">
                         <div className="inline-flex gap-3 sm:gap-4 md:gap-5">
                           {displayProducts.map(product => (
-                            <div key={product.id} className="flex-shrink-0 snap-start w-[180px] sm:w-[200px] md:w-[220px]">
+                            <div key={product.id} className="flex-shrink-0 snap-start w-[150px] sm:w-[180px] md:w-[200px] lg:w-[220px]">
                               <ProductCard
                                 id={product.id}
                                 name={product.name}
