@@ -160,8 +160,9 @@ export const DeliveryManSection = ({ userId }: DeliveryManSectionProps) => {
 
   const ordersByDate = getOrdersByDate();
 
+  // Loading is now handled by parent Account page
   if (loading) {
-    return <FlamiaLoader message="Loading your data..." />;
+    return null;
   }
 
   return (

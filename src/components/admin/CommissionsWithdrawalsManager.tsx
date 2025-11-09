@@ -281,15 +281,9 @@ export const CommissionsWithdrawalsManager = () => {
   const totalPendingWithdrawals = pendingWithdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
   const totalCompletedWithdrawals = completedWithdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
 
+  // Loading is now handled by parent Account page
   if (loading || permissionsLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading data...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

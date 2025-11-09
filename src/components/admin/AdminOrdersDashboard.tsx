@@ -329,15 +329,9 @@ export const AdminOrdersDashboard = ({ userRole, userId, orderType = 'all' }: Ad
     return <Badge className={`${config.color} text-xs font-medium border`}>{config.label}</Badge>;
   };
 
+  // Loading is now handled by parent Account page
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6 text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Loading orders...</p>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   return (

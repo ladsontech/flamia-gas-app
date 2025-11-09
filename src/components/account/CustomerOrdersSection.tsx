@@ -89,8 +89,9 @@ export const CustomerOrdersSection = ({ userId }: CustomerOrdersSectionProps) =>
     }
   };
 
+  // Loading is now handled by parent Account page
   if (loading) {
-    return <FlamiaLoader message="Loading orders..." />;
+    return null;
   }
 
   return (

@@ -44,12 +44,9 @@ export const UserManagement = () => {
     }
   };
 
+  // Loading is now handled by parent Account page
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-muted-foreground">Loading users...</div>
-      </div>
-    );
+    return null;
   }
 
   return (
