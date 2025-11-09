@@ -131,7 +131,7 @@ const Admin = () => {
               <TabsContent value="gadgets" className="mt-0 space-y-2">
                 <Card className="mx-1">
                   <CardContent className="pt-4">
-                    <GadgetsManager />
+                    <FlamiaProductsManager />
                   </CardContent>
                 </Card>
               </TabsContent>
