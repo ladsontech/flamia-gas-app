@@ -58,7 +58,7 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
       .from('business_products')
       .select(`
         *,
-        businesses!inner(
+        businesses(
           id,
           name
         )

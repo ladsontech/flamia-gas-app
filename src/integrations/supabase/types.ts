@@ -671,6 +671,33 @@ export type Database = {
           },
         ]
       }
+      product_views: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          product_type: string
+          user_id: string | null
+          viewed_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          product_type: string
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          product_type?: string
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           additional_phone_number: string | null
@@ -1188,10 +1215,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      generate_referral_code: {
-        Args: { user_id: string }
-        Returns: string
-      }
+      generate_referral_code: { Args: { user_id: string }; Returns: string }
       get_user_businesses: {
         Args: { user_uuid: string }
         Returns: {
