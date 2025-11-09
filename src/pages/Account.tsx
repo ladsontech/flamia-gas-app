@@ -17,12 +17,12 @@ import { getUserBusinesses } from "@/services/adminService";
 import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
-import { LoadingSpinner } from "@/components/LoadingIndicator";
+import { LoadingIndicator, LoadingSpinner } from "@/components/LoadingIndicator";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
 import { FlamiaLoader } from "@/components/ui/FlamiaLoader";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Lazy load heavy components
 const ReferralHub = lazy(() => import("@/components/account/ReferralHub").then(m => ({ default: m.ReferralHub })));
@@ -51,6 +51,7 @@ interface Business {
 }
 const Account = () => {
   const navigateRouter = useNavigate();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
@@ -64,6 +65,7 @@ const Account = () => {
   const [notifLoading, setNotifLoading] = useState(false);
   
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [sectionLoading, setSectionLoading] = useState(false);
   const { toast } = useToast();
   const {
     userRole,
@@ -135,6 +137,50 @@ const Account = () => {
   useEffect(() => {
     checkAuthStatus();
   }, []);
+
+  // Handle section loading animation
+  useEffect(() => {
+    setSectionLoading(true);
+    const timer = setTimeout(() => {
+      setSectionLoading(false);
+    }, 200); // Short delay for smooth transition (reduced since we're prefetching)
+    return () => clearTimeout(timer);
+  }, [activeSection]);
+
+  // Prefetch all sections in the background for instant switching
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const prefetchSections = async () => {
+      // Delay prefetching to not block initial render
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Prefetch lazy-loaded components by importing them
+      const prefetchPromises = [
+        import("@/components/account/ReferralHub"),
+        import("@/components/account/DeliveryManSection"),
+        import("@/components/account/DeliveryOrdersSection"),
+        import("@/components/account/CustomerOrdersSection"),
+      ];
+
+      // Add admin components if user has permissions
+      if (isAdmin || canManageGasOrders || canManageShopOrders || canManageUsers || canManageCommissions || canManageMarketing) {
+        prefetchPromises.push(
+          import("@/components/admin/AdminOrdersDashboard"),
+          import("@/components/admin/BulkSmsMarketing"),
+          import("@/components/admin/CommissionsWithdrawalsManager"),
+          import("@/components/admin/UserManagement")
+        );
+      }
+
+      // Prefetch all components in parallel
+      await Promise.all(prefetchPromises).catch(err => 
+        console.log('Prefetch error (non-critical):', err)
+      );
+    };
+
+    prefetchSections();
+  }, [user?.id, isAdmin, canManageGasOrders, canManageShopOrders, canManageUsers, canManageCommissions, canManageMarketing]);
   const checkAuthStatus = async () => {
     try {
       // First check for Supabase authenticated user
@@ -708,6 +754,11 @@ const Account = () => {
               
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4">
+                  {sectionLoading ? (
+                    <div className="flex justify-center items-center py-20">
+                      <LoadingIndicator message="Loading..." />
+                    </div>
+                  ) : (
                   <Suspense fallback={<div className="flex justify-center py-8"><LoadingSpinner size="lg" /></div>}>
               {activeSection === 'orders' && !isAdmin && !canManageGasOrders && !canManageShopOrders && (
                 <Card className="p-6 text-center">
@@ -907,6 +958,7 @@ const Account = () => {
                  </div>}
                {activeSection === 'referrals' && <ReferralHub />}
                   </Suspense>
+                  )}
                 </div>
               </div>
             </div>
