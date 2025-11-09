@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { BottomNav } from './components/BottomNav';
 import AppBar from './components/AppBar';
 import UpdateNotification from './components/UpdateNotification';
+import { LoadingIndicator } from './components/LoadingIndicator';
 import { supabase } from './integrations/supabase/client';
 import { CartProvider } from '@/contexts/CartContext';
 import { SellerCartProvider } from '@/contexts/SellerCartContext';
@@ -96,14 +97,7 @@ const AppContent = () => {
 
   // Show loading screen only for routes that might redirect (not home page)
   if (shouldShowLoading) {
-    return (
-      <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-2 border-primary border-t-transparent mx-auto"></div>
-          <p className="text-muted-foreground text-xs sm:text-sm">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingIndicator fullScreen message="Loading your experience..." />;
   }
 
   return (

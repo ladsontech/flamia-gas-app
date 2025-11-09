@@ -17,6 +17,7 @@ import { getUserBusinesses } from "@/services/adminService";
 import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "@/components/LoadingIndicator";
 import AppBar from "@/components/AppBar";
 import { AddressManager } from "@/components/account/AddressManager";
 import { PhoneManager } from "@/components/account/PhoneManager";
@@ -707,7 +708,7 @@ const Account = () => {
               
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4">
-                  <Suspense fallback={<div className="flex justify-center py-8"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div></div>}>
+                  <Suspense fallback={<div className="flex justify-center py-8"><LoadingSpinner size="lg" /></div>}>
               {activeSection === 'orders' && !isAdmin && !canManageGasOrders && !canManageShopOrders && (
                 <Card className="p-6 text-center">
                   <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
