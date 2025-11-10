@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { fetchSellerShopByUser } from '@/services/sellerService';
+import { fetchSellerShopByUser, fetchSellerApplicationByUser } from '@/services/sellerService';
 import { ProductForm } from '@/components/seller/ProductForm';
 import { ProductsList } from '@/components/seller/ProductsList';
 import { ShopSettingsForm } from '@/components/seller/ShopSettingsForm';
@@ -52,14 +52,20 @@ const SellerDashboard = () => {
         const sellerShop = await fetchSellerShopByUser(user.id);
         
         if (!sellerShop) {
-          // Shop was deleted or doesn't exist
-          toast({
-            title: 'No seller shop found',
-            description: 'Your shop may have been removed. Please apply to become a seller.',
-            variant: 'destructive',
-          });
-          navigate('/sell');
-          return;
+          // Check if application exists and is approved, then guide to onboarding
+          const application = await fetchSellerApplicationByUser(user.id);
+          if (application?.status === 'approved') {
+            navigate('/seller/onboarding');
+            return;
+          } else {
+            toast({
+              title: 'No seller shop found',
+              description: 'Your shop may have been removed. Please apply to become a seller.',
+              variant: 'destructive',
+            });
+            navigate('/sell');
+            return;
+          }
         }
 
         if (!sellerShop.is_approved) {
