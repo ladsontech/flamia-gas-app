@@ -27,23 +27,24 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [isDesktop, setIsDesktop] = useState(false);
   const [direction, setDirection] = useState(1);
 
-  // Smoother, directional slide transitions
+  // Rapid appear/disappear transitions (no sliding)
   const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 60 : -60
+    enter: () => ({
+      opacity: 0,
+      scale: 0.995
     }),
     center: {
-      x: 0,
+      opacity: 1,
+      scale: 1,
       transition: {
-        type: 'spring',
-        stiffness: 320,
-        damping: 32,
-        mass: 0.8
+        duration: 0.18,
+        ease: 'easeOut'
       }
     },
-    exit: (dir: number) => ({
-      x: dir > 0 ? -60 : 60,
-      transition: { duration: 0.22, ease: 'easeInOut' }
+    exit: () => ({
+      opacity: 0,
+      scale: 1.005,
+      transition: { duration: 0.12, ease: 'easeIn' }
     })
   } as const;
 
