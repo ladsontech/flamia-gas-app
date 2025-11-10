@@ -33,6 +33,7 @@ import Sell from './pages/Sell';
 import SellerOptions from './pages/SellerOptions';
 import SellerDashboard from './pages/SellerDashboard';
 import SellerOnboarding from './pages/SellerOnboarding';
+import Shop from './pages/Shop';
 import SellerStorefront from './pages/SellerStorefront';
 import StorefrontProductDetail from './pages/StorefrontProductDetail';
 import AffiliateDashboard from './pages/AffiliateDashboard';
@@ -127,6 +128,7 @@ const AppContent = () => {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/shop/category/:slug" element={<Shop />} />
           <Route path="/gadgets" element={<Gadgets />} />
           {/* <Route path="/foods" element={<Foods />} /> */}
           <Route path="/orders" element={<Orders />} />

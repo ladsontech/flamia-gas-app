@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Search, RefreshCw, AlertCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { useCart } from '@/contexts/CartContext';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/components/shop/ProductCard';
@@ -28,6 +28,7 @@ const Shop: React.FC = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const { slug: categorySlugParam } = useParams<{ slug?: string }>();
   const { toast } = useToast();
   const [gridShowCount, setGridShowCount] = useState(24);
   const [isAutoLoading, setIsAutoLoading] = useState(false);
@@ -56,19 +57,29 @@ const Shop: React.FC = () => {
 
   // Read category from URL to support filtered "View All" pages
   useEffect(() => {
+    // Prefer route param (/shop/category/:slug); fallback to query (?category=slug)
     const params = new URLSearchParams(location.search);
-    const categoryParam = params.get('category');
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
+    const queryCategory = params.get('category');
+    if (categorySlugParam) {
+      setSelectedCategory(categorySlugParam);
+    } else if (queryCategory) {
+      setSelectedCategory(queryCategory);
     } else {
       setSelectedCategory('all');
     }
-  }, [location.search]);
+  }, [location.search, categorySlugParam]);
 
   // Reset grid pagination on filter/sort changes
   useEffect(() => {
     setGridShowCount(24);
   }, [selectedCategory, searchTerm, sortBy]);
+
+  // Scroll to top when switching into a category grid
+  useEffect(() => {
+    if (selectedCategory !== 'all') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedCategory]);
 
   // Calculate initial show count based on screen size - show more products
   useEffect(() => {
@@ -313,35 +324,28 @@ const Shop: React.FC = () => {
                         <div>
                           <h3 className="font-semibold text-xs mb-2 text-gray-800">Categories</h3>
                           <div className="grid grid-cols-2 gap-1.5">
-                            <Button
-                              variant={selectedCategory === 'all' ? 'secondary' : 'ghost'}
-                              size="sm"
-                              onClick={() => {
-                                setSelectedCategory('all');
-                                setFiltersOpen(false);
-                                navigate('/shop');
-                              }}
-                              className="h-8"
-                            >
-                              All
-                            </Button>
+                            <Link to="/shop" onClick={() => { setSelectedCategory('all'); setFiltersOpen(false); }}>
+                              <Button
+                                variant={selectedCategory === 'all' ? 'secondary' : 'ghost'}
+                                size="sm"
+                                className="h-8"
+                              >
+                                All
+                              </Button>
+                            </Link>
                             {allCategories.map(category => {
                               const categorySlug = category.slug;
                               const hasProducts = categories.some(c => c.slug === categorySlug);
                               return (
-                                <Button
-                                  key={category.id}
-                                  variant={selectedCategory === categorySlug ? 'secondary' : 'ghost'}
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedCategory(categorySlug);
-                                    setFiltersOpen(false);
-                                    navigate(`/shop?category=${categorySlug}`);
-                                  }}
-                                  className={`h-8 ${!hasProducts ? 'opacity-60' : ''}`}
-                                >
-                                  {category.name}
-                                </Button>
+                                <Link key={category.id} to={`/shop/category/${categorySlug}`} onClick={() => { setSelectedCategory(categorySlug); setFiltersOpen(false); }}>
+                                  <Button
+                                    variant={selectedCategory === categorySlug ? 'secondary' : 'ghost'}
+                                    size="sm"
+                                    className={`h-8 ${!hasProducts ? 'opacity-60' : ''}`}
+                                  >
+                                    {category.name}
+                                  </Button>
+                                </Link>
                               );
                             })}
                           </div>
@@ -476,29 +480,26 @@ const Shop: React.FC = () => {
                   const categorySlug = category.slug;
                   const hasProducts = categories.some(c => c.slug === categorySlug);
                   return (
-                    <Button
-                      key={category.id}
-                      variant={selectedCategory === categorySlug ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedCategory(categorySlug);
-                        navigate(`/shop?category=${categorySlug}`);
-                      }}
-                      className={`w-full justify-start text-sm h-9 ${
-                        selectedCategory === categorySlug
-                          ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      } ${!hasProducts ? 'opacity-60' : ''}`}
-                    >
-                      <span className="flex-1 text-left">{category.name}</span>
-                      {hasProducts && (
-                        <span className={`text-xs ml-2 ${
-                          selectedCategory === categorySlug ? 'text-white/80' : 'text-gray-500'
-                        }`}>
-                          ({categories.find(c => c.slug === categorySlug)?.products.length || 0})
-                        </span>
-                      )}
-                    </Button>
+                    <Link key={category.id} to={`/shop/category/${categorySlug}`} onClick={() => setSelectedCategory(categorySlug)}>
+                      <Button
+                        variant={selectedCategory === categorySlug ? 'default' : 'ghost'}
+                        size="sm"
+                        className={`w-full justify-start text-sm h-9 ${
+                          selectedCategory === categorySlug
+                            ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        } ${!hasProducts ? 'opacity-60' : ''}`}
+                      >
+                        <span className="flex-1 text-left">{category.name}</span>
+                        {hasProducts && (
+                          <span className={`text-xs ml-2 ${
+                            selectedCategory === categorySlug ? 'text-white/80' : 'text-gray-500'
+                          }`}>
+                            ({categories.find(c => c.slug === categorySlug)?.products.length || 0})
+                          </span>
+                        )}
+                      </Button>
+                    </Link>
                   );
                 })}
               </div>
@@ -635,14 +636,15 @@ const Shop: React.FC = () => {
                           </span>
                         )}
                         {/* Desktop: View All navigates to filtered grid page */}
-                        <Button
-                          variant="default"
-                          onClick={() => navigate(`/shop?category=${category.slug}`)}
-                          className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600 text-white border-0"
-                        >
-                          View All ({category.products.length})
-                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
-                        </Button>
+                        <Link to={`/shop/category/${category.slug}`} onClick={() => setSelectedCategory(category.slug)} className="hidden md:flex">
+                          <Button
+                            variant="default"
+                            className="items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600 text-white border-0"
+                          >
+                            View All ({category.products.length})
+                            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
+                          </Button>
+                        </Link>
                       </div>
                     </div>
 
@@ -676,14 +678,15 @@ const Shop: React.FC = () => {
 
                     {/* Mobile: View All navigates to filtered grid page */}
                     <div className="flex justify-center pt-2 md:hidden">
-                      <Button
-                        variant="outline"
-                        onClick={() => navigate(`/shop?category=${category.slug}`)}
-                        className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-                      >
-                        View All ({category.products.length})
-                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
-                      </Button>
+                      <Link to={`/shop/category/${category.slug}`} onClick={() => setSelectedCategory(category.slug)} className="w-full flex justify-center">
+                        <Button
+                          variant="outline"
+                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                        >
+                          View All ({category.products.length})
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                      </Link>
                     </div>
                   </section>
                 );
