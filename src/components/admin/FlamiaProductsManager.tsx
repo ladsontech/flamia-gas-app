@@ -334,7 +334,7 @@ const FlamiaProductsManager: React.FC = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
                         {categories.map(cat => (
                           <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                         ))}
@@ -398,7 +398,7 @@ const FlamiaProductsManager: React.FC = () => {
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
                             <SelectItem value="percentage">Percentage</SelectItem>
                             <SelectItem value="fixed">Fixed Amount</SelectItem>
                           </SelectContent>

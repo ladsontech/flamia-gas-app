@@ -323,7 +323,7 @@ const GadgetsManager: React.FC = () => {
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
                           {categories.map((category) => (
                             <SelectItem key={category} value={category}>
                               {category}
@@ -338,7 +338,7 @@ const GadgetsManager: React.FC = () => {
                         <SelectTrigger>
                           <SelectValue placeholder="Select brand" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
                           {brands.map((brand) => (
                             <SelectItem key={brand} value={brand}>
                               {brand}
@@ -356,7 +356,7 @@ const GadgetsManager: React.FC = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Select condition" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
                         <SelectItem value="brand_new">Brand New</SelectItem>
                         <SelectItem value="used">UK Used</SelectItem>
                       </SelectContent>
