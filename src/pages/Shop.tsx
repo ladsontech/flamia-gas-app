@@ -470,6 +470,60 @@ const Shop: React.FC = () => {
                 </Sheet>
               </div>
 
+              {/* Mobile: Compact Sort Buttons */}
+              <div className="md:hidden -mx-1 px-1 pb-1">
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                  <Button
+                    variant={sortBy === 'newest' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('newest')}
+                    className={`h-8 px-3 text-xs whitespace-nowrap ${
+                      sortBy === 'newest'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Newest
+                  </Button>
+                  <Button
+                    variant={sortBy === 'popular' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('popular')}
+                    className={`h-8 px-3 text-xs whitespace-nowrap ${
+                      sortBy === 'popular'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Popular
+                  </Button>
+                  <Button
+                    variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('price-low')}
+                    className={`h-8 px-3 text-xs whitespace-nowrap ${
+                      sortBy === 'price-low'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Price: Low-High
+                  </Button>
+                  <Button
+                    variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSortBy('price-high')}
+                    className={`h-8 px-3 text-xs whitespace-nowrap ${
+                      sortBy === 'price-high'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Price: High-Low
+                  </Button>
+                </div>
+              </div>
+
               {/* Desktop: Sort Controls - Compact (in header) */}
               <div className="hidden md:flex items-center gap-2">
                 <span className="text-xs text-gray-600 font-medium">Sort:</span>
@@ -534,48 +588,18 @@ const Shop: React.FC = () => {
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
               <h3 className="font-semibold text-sm text-gray-900 mb-4">Categories</h3>
-              <div className="space-y-1">
-                <Button
-                  variant={selectedCategory === 'all' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => {
-                    setSelectedCategory('all');
-                    navigate('/shop');
-                  }}
-                  className={`w-full justify-start text-sm h-9 ${
-                    selectedCategory === 'all'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  All Categories
-                </Button>
-                {allCategories.map(category => {
-                  const categorySlug = category.slug;
-                  const hasProducts = categories.some(c => c.slug === categorySlug);
-                  return (
-                    <Link key={category.id} to={`/shop/category/${categorySlug}`} onClick={() => setSelectedCategory(categorySlug)}>
-                      <Button
-                        variant={selectedCategory === categorySlug ? 'default' : 'ghost'}
-                        size="sm"
-                        className={`w-full justify-start text-sm h-9 ${
-                          selectedCategory === categorySlug
-                            ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        } ${!hasProducts ? 'opacity-60' : ''}`}
-                      >
-                        <span className="flex-1 text-left">{category.name}</span>
-                        {hasProducts && (
-                          <span className={`text-xs ml-2 ${
-                            selectedCategory === categorySlug ? 'text-white/80' : 'text-gray-500'
-                          }`}>
-                            ({categories.find(c => c.slug === categorySlug)?.products.length || 0})
-                          </span>
-                        )}
-                      </Button>
-                    </Link>
-                  );
-                })}
+              <div className="grid grid-cols-2 gap-3">
+                <Link to="/shop" onClick={() => setSelectedCategory('all')} className="block">
+                  <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
+                    <div className="relative w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
+                      <img src="/images/icon.png" alt="All" className="w-18 h-18 object-contain" />
+                    </div>
+                    <span className="mt-2 text-center text-xs text-gray-800">All</span>
+                  </div>
+                </Link>
+                {allCategories.map(category => (
+                  <CategoryCard key={category.id} slug={category.slug} name={category.name} />
+                ))}
               </div>
             </div>
           </aside>
