@@ -477,7 +477,7 @@ const Shop: React.FC = () => {
                             <Link to="/shop" onClick={() => { setSelectedCategory('all'); setFiltersOpen(false); }} className="block">
                               <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
                                 <div className="relative w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
-                                  <img src="/images/icon.png" alt="All" className="w-16 h-16 object-contain" />
+                                  <img src="/images/category_logos/all.png" alt="All" className="w-16 h-16 object-contain" />
                                 </div>
                                 <span className="mt-2 text-center text-xs text-gray-800">All</span>
                               </div>
@@ -490,45 +490,6 @@ const Shop: React.FC = () => {
                           </div>
                         </div>
                       )}
-
-                      {/* Sort */}
-                      <div>
-                        <h3 className="font-semibold text-xs mb-2 text-gray-800">Sort By</h3>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          <Button
-                            variant={sortBy === 'newest' ? 'secondary' : 'outline'}
-                            size="sm"
-                            onClick={() => setSortBy('newest')}
-                            className="h-8"
-                          >
-                            Newest
-                          </Button>
-                          <Button
-                            variant={sortBy === 'popular' ? 'secondary' : 'outline'}
-                            size="sm"
-                            onClick={() => setSortBy('popular')}
-                            className="h-8"
-                          >
-                            Popular
-                          </Button>
-                          <Button
-                            variant={sortBy === 'price-low' ? 'secondary' : 'outline'}
-                            size="sm"
-                            onClick={() => setSortBy('price-low')}
-                            className="h-8"
-                          >
-                            Price: Low-High
-                          </Button>
-                          <Button
-                            variant={sortBy === 'price-high' ? 'secondary' : 'outline'}
-                            size="sm"
-                            onClick={() => setSortBy('price-high')}
-                            className="h-8"
-                          >
-                            Price: High-Low
-                          </Button>
-                        </div>
-                      </div>
 
                     </div>
                   </SheetContent>
@@ -657,7 +618,7 @@ const Shop: React.FC = () => {
                 <Link to="/shop" onClick={() => setSelectedCategory('all')} className="block">
                   <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
                     <div className="relative w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
-                      <img src="/images/icon.png" alt="All" className="w-18 h-18 object-contain" />
+                      <img src="/images/category_logos/all.png" alt="All" className="w-18 h-18 object-contain" />
                     </div>
                     <span className="mt-2 text-center text-xs text-gray-800">All</span>
                   </div>
