@@ -11,6 +11,8 @@ interface OnboardingSlide {
   title: string;
   description: string;
   image?: string;
+  link?: string;
+  linkLabel?: string;
 }
 
 interface OnboardingScreenProps {
@@ -33,6 +35,33 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
     return () => mediaQuery.removeEventListener('change', update);
   }, []);
 
+  // Preload carousel images in background
+  useEffect(() => {
+    const createdPreloadLinks: HTMLLinkElement[] = [];
+    slides.forEach((slide) => {
+      if (slide.image) {
+        try {
+          const preload = document.createElement('link');
+          preload.rel = 'preload';
+          preload.as = 'image';
+          preload.href = slide.image;
+          document.head.appendChild(preload);
+          createdPreloadLinks.push(preload);
+          const img = new Image();
+          img.decoding = 'async';
+          img.src = slide.image;
+        } catch {}
+      }
+    });
+    return () => {
+      createdPreloadLinks.forEach((lnk) => {
+        try {
+          document.head.removeChild(lnk);
+        } catch {}
+      });
+    };
+  }, []);
+
   const slides: OnboardingSlide[] = [
     {
       id: 1,
@@ -45,27 +74,35 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       icon: <Package className="w-full h-full" />,
       title: "Gas & Refills",
       description: "6KG-45KG cylinders from Shell, Total, Hass, Oryx & Stabex. Same-day delivery.",
-      image: "/images/Nova 6kg.png"
+      image: "/images/Nova 6kg.png",
+      link: "/refill",
+      linkLabel: "Order a Refill"
     },
     {
       id: 3,
       icon: <Wrench className="w-full h-full" />,
       title: "Accessories",
       description: "Regulators, pipes, burners, stoves & more for your kitchen.",
-      image: "/images/regulator.jpeg"
+      image: "/images/regulator.jpeg",
+      link: "/accessories",
+      linkLabel: "Shop Accessories"
     },
     {
       id: 4,
       icon: <Smartphone className="w-full h-full" />,
       title: "Gadgets",
       description: "Quality electronics & appliances. Brand new and used items.",
+      link: "/gadgets",
+      linkLabel: "Browse Gadgets"
     },
     {
       id: 5,
       icon: <ShoppingBag className="w-full h-full" />,
       title: "Marketplace",
       description: "General online market for all products from verified sellers.",
-      image: "/images/marketplace_shop.jpeg"
+      image: "/images/marketplace_shop.jpeg",
+      link: "/shop",
+      linkLabel: "Explore Marketplace"
     },
     {
       id: 6,
@@ -152,23 +189,48 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   transition={{ delay: 0.15, duration: 0.3 }}
                   className="flex justify-center my-4 sm:my-6 md:my-8"
                 >
-                  <img
-                    src={slides[currentSlide].image}
-                    alt={slides[currentSlide].title}
-                    className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
-                  />
+                  {slides[currentSlide].link ? (
+                    <Link to={slides[currentSlide].link} className="block">
+                      <img
+                        src={slides[currentSlide].image}
+                        alt={slides[currentSlide].title}
+                        decoding="async"
+                        className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
+                      />
+                    </Link>
+                  ) : (
+                    <img
+                      src={slides[currentSlide].image}
+                      alt={slides[currentSlide].title}
+                      decoding="async"
+                      className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
+                    />
+                  )}
                 </motion.div>
               )}
 
               {/* Title */}
-              <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-                className="text-[clamp(1.5rem,6vw,2.25rem)] font-bold text-foreground px-2 sm:px-4 leading-tight"
-              >
-                {slides[currentSlide].title}
-              </motion.h2>
+              {slides[currentSlide].link ? (
+                <Link to={slides[currentSlide].link}>
+                  <motion.h2
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                    className="text-[clamp(1.5rem,6vw,2.25rem)] font-bold text-foreground px-2 sm:px-4 leading-tight hover:underline"
+                  >
+                    {slides[currentSlide].title}
+                  </motion.h2>
+                </Link>
+              ) : (
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.3 }}
+                  className="text-[clamp(1.5rem,6vw,2.25rem)] font-bold text-foreground px-2 sm:px-4 leading-tight"
+                >
+                  {slides[currentSlide].title}
+                </motion.h2>
+              )}
 
               {/* Description */}
               <motion.p
@@ -179,6 +241,18 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
               >
                 {slides[currentSlide].description}
               </motion.p>
+
+              {/* Slide CTA Link */}
+              {slides[currentSlide].link && (
+                <div className="flex justify-center">
+                  <Button asChild variant="outline" size="sm" className="mt-1 sm:mt-2">
+                    <Link to={slides[currentSlide].link}>
+                      {slides[currentSlide].linkLabel || 'Explore'}
+                      <ChevronRight className="w-4 h-4 ml-1.5" />
+                    </Link>
+                  </Button>
+                </div>
+              )}
 
               {/* Terms Acceptance on slide 6 */}
               {currentSlide === 5 && (
