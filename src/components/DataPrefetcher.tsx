@@ -98,6 +98,31 @@ export const DataPrefetcher = () => {
         staleTime: 10 * 60 * 1000,
       });
 
+      // Prefetch customer orders for faster Orders page
+      await queryClient.prefetchQuery({
+        queryKey: ['orders:customer', user.id],
+        queryFn: async () => {
+          const { data, error } = await supabase
+            .from('orders')
+            .select(`
+              id, created_at, description, delivery_man_id, status, 
+              assigned_at, user_id, delivery_address, total_amount
+            `)
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            console.error('Error prefetching customer orders:', error);
+            return [];
+          }
+          return (data || []).map(o => ({
+            ...o,
+            status: (o.status || 'pending')
+          }));
+        },
+        staleTime: 3 * 60 * 1000,
+      });
+
       // Check if user is a business owner and prefetch businesses
       const { data: role } = await supabase
         .from('user_roles')

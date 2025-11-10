@@ -30,12 +30,10 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   // Smoother, directional slide transitions
   const slideVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 30 : -30,
-      opacity: 0
+      x: dir > 0 ? 60 : -60
     }),
     center: {
       x: 0,
-      opacity: 1,
       transition: {
         type: 'spring',
         stiffness: 320,
@@ -44,8 +42,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       }
     },
     exit: (dir: number) => ({
-      x: dir > 0 ? -24 : 24,
-      opacity: 0,
+      x: dir > 0 ? -60 : 60,
       transition: { duration: 0.22, ease: 'easeInOut' }
     })
   } as const;
@@ -218,29 +215,19 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 >
                   {slides[currentSlide].link ? (
                     <Link to={slides[currentSlide].link} className="block">
-                      <motion.img
+                      <img
                         src={slides[currentSlide].image}
                         alt={slides[currentSlide].title}
                         decoding="async"
                         className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.02 }}
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ willChange: 'transform, opacity' }}
                       />
                     </Link>
                   ) : (
-                    <motion.img
+                    <img
                       src={slides[currentSlide].image}
                       alt={slides[currentSlide].title}
                       decoding="async"
                       className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.02 }}
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      style={{ willChange: 'transform, opacity' }}
                     />
                   )}
                 </motion.div>

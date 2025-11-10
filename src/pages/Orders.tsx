@@ -10,6 +10,7 @@ import AppBar from "@/components/AppBar";
 import { ExpandableOrderCard } from "@/components/orders/ExpandableOrderCard";
 import { useUserRole } from "@/hooks/useUserRole";
 import { FlamiaLoader } from "@/components/ui/FlamiaLoader";
+import { useQuery } from "@tanstack/react-query";
 
 interface Order {
   id: string;
@@ -46,7 +47,7 @@ const Orders = () => {
 
   // Fetch only customer orders for regular users
   useEffect(() => {
-    const checkUserAndFetchOrders = async () => {
+    const checkUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -54,7 +55,6 @@ const Orders = () => {
           return;
         }
         setUser(user);
-        await fetchCustomerOrders(user.id);
       } catch (error) {
         console.error('Error checking user:', error);
         toast({
@@ -67,26 +67,25 @@ const Orders = () => {
     };
 
     if (!roleLoading && !isDeliveryMan) {
-      checkUserAndFetchOrders();
+      checkUser();
     }
   }, [navigate, roleLoading, isDeliveryMan]);
 
-  const fetchCustomerOrders = async (userId: string) => {
-    try {
-      setLoading(true);
-      console.log('Fetching customer orders for user:', userId);
-      
+  // React Query for customer orders (benefits from background prefetch)
+  const { data: customerOrdersQuery, isLoading: ordersLoading } = useQuery({
+    queryKey: ['orders:customer', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
       const { data: customerData, error: customerError } = await supabase
         .from('orders')
         .select(`
           id, created_at, description, delivery_man_id, status, 
           assigned_at, user_id, delivery_address, total_amount
         `)
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (customerError) {
-        console.error('Error fetching customer orders:', customerError);
         throw customerError;
       }
 
@@ -94,22 +93,23 @@ const Orders = () => {
         ...order,
         status: (order.status || 'pending') as Order['status']
       }));
-      setCustomerOrders(transformedCustomerOrders);
-      console.log('Customer orders loaded:', transformedCustomerOrders.length);
-    } catch (error: any) {
-      console.error('Error in fetchCustomerOrders:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load orders",
-        variant: "destructive"
-      });
-    } finally {
+      return transformedCustomerOrders;
+    },
+    enabled: !!user?.id && !isDeliveryMan && !roleLoading,
+    staleTime: 3 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (customerOrdersQuery) {
+      setCustomerOrders(customerOrdersQuery);
       setLoading(false);
     }
-  };
+  }, [customerOrdersQuery]);
 
 
-  if (loading || roleLoading) {
+  if (loading || roleLoading || ordersLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center animate-fade-in">
