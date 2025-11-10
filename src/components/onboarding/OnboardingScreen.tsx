@@ -25,6 +25,30 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const navigate = useNavigate();
   const [isDesktop, setIsDesktop] = useState(false);
+  const [direction, setDirection] = useState(1);
+
+  // Smoother, directional slide transitions
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 30 : -30,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 320,
+        damping: 32,
+        mass: 0.8
+      }
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -24 : 24,
+      opacity: 0,
+      transition: { duration: 0.22, ease: 'easeInOut' }
+    })
+  } as const;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -120,6 +144,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
+      setDirection(1);
       // On Terms slide, save acceptance
       if (currentSlide === 5 && termsAccepted) {
         localStorage.setItem('flamia_terms_accepted', 'true');
@@ -161,11 +186,13 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
               className="max-w-md sm:max-w-lg w-full space-y-4 sm:space-y-6 md:space-y-8 text-center"
+              style={{ willChange: 'transform, opacity' }}
             >
               {/* Icon */}
               <div className="flex justify-center mb-2 sm:mb-4">
@@ -191,19 +218,29 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 >
                   {slides[currentSlide].link ? (
                     <Link to={slides[currentSlide].link} className="block">
-                      <img
+                      <motion.img
                         src={slides[currentSlide].image}
                         alt={slides[currentSlide].title}
                         decoding="async"
                         className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.02 }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ willChange: 'transform, opacity' }}
                       />
                     </Link>
                   ) : (
-                    <img
+                    <motion.img
                       src={slides[currentSlide].image}
                       alt={slides[currentSlide].title}
                       decoding="async"
                       className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-xl sm:rounded-2xl shadow-lg"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.02 }}
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ willChange: 'transform, opacity' }}
                     />
                   )}
                 </motion.div>
@@ -329,7 +366,10 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
           {slides.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => {
+                setDirection(index > currentSlide ? 1 : -1);
+                setCurrentSlide(index);
+              }}
               className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-manipulation ${
                 index === currentSlide
                   ? 'w-6 sm:w-8 bg-primary'
