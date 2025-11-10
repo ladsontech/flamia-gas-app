@@ -53,6 +53,7 @@ const GadgetsManager: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [editingGadget, setEditingGadget] = useState<Gadget | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -277,17 +278,39 @@ const GadgetsManager: React.FC = () => {
     }).format(price);
   };
 
+  // Filter and group by category
+  const normalizedQuery = searchTerm.trim().toLowerCase();
+  const filtered = gadgets.filter(g => {
+    if (!normalizedQuery) return true;
+    const hay = `${g.name} ${g.brand || ''} ${g.category || ''}`.toLowerCase();
+    return hay.includes(normalizedQuery);
+  });
+  const grouped: Record<string, Gadget[]> = filtered.reduce((acc, g) => {
+    const key = g.category || 'Uncategorized';
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(g);
+    return acc;
+  }, {} as Record<string, Gadget[]>);
+  const groupKeys = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
+
   return (
     <div className="space-y-4 md:space-y-6 p-2 md:p-0">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-xl md:text-2xl font-bold">Flamia Products Management</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={resetForm} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
-          </DialogTrigger>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h2 className="text-lg md:text-2xl font-bold">Flamia Products Management</h2>
+        <div className="flex w-full sm:w-auto items-center gap-2">
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name, brand, category..."
+            className="h-9 text-sm bg-white w-full sm:w-72"
+          />
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={resetForm} className="bg-accent hover:bg-accent/90 h-9">
+                <Plus className="w-4 h-4 mr-2" />
+                Add
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-full sm:max-w-5xl max-h-[90vh] overflow-y-auto mx-2">
             <DialogHeader>
               <DialogTitle>
@@ -427,10 +450,22 @@ const GadgetsManager: React.FC = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 w-full overflow-x-hidden">
-        {gadgets.map((gadget) => (
+      {groupKeys.length === 0 && (
+        <div className="text-center py-8 text-sm text-gray-500">No products match your search.</div>
+      )}
+
+      {groupKeys.map((key) => (
+        <div key={key} className="space-y-2 md:space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm md:text-base font-semibold text-gray-900">
+              {key} <span className="text-xs text-gray-500">({grouped[key].length})</span>
+            </h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 w-full overflow-x-hidden">
+            {grouped[key].map((gadget) => (
           <Card key={gadget.id} className="overflow-hidden w-full">
             <CardHeader className="p-3 md:p-4">
               {gadget.image_url && (
@@ -464,21 +499,21 @@ const GadgetsManager: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-3 md:p-4 pt-0">
-              <p className="text-sm text-gray-600 line-clamp-2 break-words mb-3">{gadget.description}</p>
+              <p className="text-xs md:text-sm text-gray-600 line-clamp-2 break-words mb-2">{gadget.description}</p>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="font-bold text-base md:text-lg text-accent">
+                  <span className="font-bold text-sm md:text-lg text-accent">
                     {formatPrice(gadget.price)}
                   </span>
                   {gadget.original_price && (
-                    <span className="text-sm text-gray-500 line-through ml-2 block sm:inline">
+                    <span className="text-xs md:text-sm text-gray-500 line-through ml-2 block sm:inline">
                       {formatPrice(gadget.original_price)}
                     </span>
                   )}
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <span className="text-sm text-gray-500">{gadget.brand}</span>
+                <span className="text-xs md:text-sm text-gray-500">{gadget.brand}</span>
                 <div className="flex gap-2">
                   <Button 
                     size="sm" 
@@ -497,8 +532,10 @@ const GadgetsManager: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {gadgets.length === 0 && !loading && (
         <div className="text-center py-8 md:py-12">
