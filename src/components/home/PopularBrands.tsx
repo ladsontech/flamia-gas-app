@@ -34,7 +34,7 @@ const PopularBrands: React.FC = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('gadgets')
+        .from('flamia_products')
         .select('*')
         .eq('in_stock', true)
         .eq('featured', true)
@@ -56,7 +56,7 @@ const PopularBrands: React.FC = () => {
       // Fallback to any gadgets if featured ones fail
       try {
         const { data, error } = await supabase
-          .from('gadgets')
+          .from('flamia_products')
           .select('*')
           .eq('in_stock', true)
           .order('created_at', { ascending: false })

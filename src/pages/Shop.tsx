@@ -161,7 +161,7 @@ const Shop: React.FC = () => {
             <AlertCircle className="w-12 h-12 text-destructive mb-3 mx-auto" />
             <h2 className="text-2xl font-bold mb-2">Error Loading Products</h2>
             <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={refetch} variant="outline">
+            <Button onClick={() => refetch()} variant="outline">
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>

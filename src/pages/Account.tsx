@@ -163,9 +163,9 @@ const Account = () => {
         import("@/components/account/CustomerOrdersSection"),
       ];
 
-      // Add admin components if user has permissions
+      // Add admin components if user has permissions (cast to any to avoid type issues)
       if (isAdmin || canManageGasOrders || canManageShopOrders || canManageUsers || canManageCommissions || canManageMarketing) {
-        prefetchPromises.push(
+        (prefetchPromises as any[]).push(
           import("@/components/admin/AdminOrdersDashboard"),
           import("@/components/admin/BulkSmsMarketing"),
           import("@/components/admin/CommissionsWithdrawalsManager"),

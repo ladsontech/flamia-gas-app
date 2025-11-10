@@ -88,7 +88,10 @@ const FlamiaProductsManager: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+      setProducts((data as any[])?.map(p => ({
+        ...p,
+        commission_type: p.commission_type as 'percentage' | 'fixed'
+      })) || []);
     } catch (error) {
       toast({
         title: "Error",

@@ -15,7 +15,7 @@ export const useGadgets = (filters?: GadgetFilters, searchQuery?: string) => {
     try {
       setLoading(true);
       let query = supabase
-        .from('gadgets')
+        .from('flamia_products')
         .select('*')
         .order('created_at', { ascending: false });
 

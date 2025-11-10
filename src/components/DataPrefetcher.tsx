@@ -87,10 +87,10 @@ export const DataPrefetcher = () => {
         queryKey: ['userRole', user.id],
         queryFn: async () => {
           const { data, error } = await supabase
-            .from('profiles')
+            .from('user_roles')
             .select('role')
-            .eq('id', user.id)
-            .single();
+            .eq('user_id', user.id)
+            .maybeSingle();
           
           if (error) return null;
           return data?.role || 'user';
@@ -99,13 +99,13 @@ export const DataPrefetcher = () => {
       });
 
       // Check if user is a business owner and prefetch businesses
-      const { data: profile } = await supabase
-        .from('profiles')
+      const { data: role } = await supabase
+        .from('user_roles')
         .select('role')
-        .eq('id', user.id)
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (profile?.role === 'business_owner') {
+      if (role?.role === 'business_owner') {
         await queryClient.prefetchQuery({
           queryKey: ['userBusinesses', user.id],
           queryFn: async () => {
