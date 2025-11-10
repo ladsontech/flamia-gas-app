@@ -97,7 +97,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <AdminAppBar onLogout={() => navigate("/")} />
       
       <div className="container mx-auto p-1 sm:p-4 max-w-7xl space-y-2 sm:space-y-6">

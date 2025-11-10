@@ -429,9 +429,9 @@ const GadgetsManager: React.FC = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 w-full overflow-x-hidden">
         {gadgets.map((gadget) => (
-          <Card key={gadget.id} className="overflow-hidden">
+          <Card key={gadget.id} className="overflow-hidden w-full">
             <CardHeader className="p-3 md:p-4">
               {gadget.image_url && (
                 <img
@@ -440,7 +440,7 @@ const GadgetsManager: React.FC = () => {
                   className="w-full aspect-square object-cover rounded-lg mb-3"
                 />
               )}
-              <CardTitle className="text-base md:text-lg line-clamp-2">{gadget.name}</CardTitle>
+              <CardTitle className="text-base md:text-lg line-clamp-2 break-words">{gadget.name}</CardTitle>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={gadget.in_stock ? "default" : "secondary"}>
                   {gadget.in_stock ? 'In Stock' : 'Out of Stock'}
@@ -464,7 +464,7 @@ const GadgetsManager: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-3 md:p-4 pt-0">
-              <p className="text-sm text-gray-600 line-clamp-2 mb-3">{gadget.description}</p>
+              <p className="text-sm text-gray-600 line-clamp-2 break-words mb-3">{gadget.description}</p>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <span className="font-bold text-base md:text-lg text-accent">
