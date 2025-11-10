@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
 import { useToast } from '@/hooks/use-toast';
-import { fetchParentCategories, generateShopSlug, fetchSellerApplicationByUser } from '@/services/sellerService';
+import { fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser, updateSellerShop } from '@/services/sellerService';
 
 export default function SellerOnboarding() {
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ export default function SellerOnboarding() {
     delivery_terms: '',
     category_id: '',
   });
+  const [existingShop, setExistingShop] = useState<any | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -50,6 +51,19 @@ export default function SellerOnboarding() {
           shop_description: app.description || prev.shop_description,
           category_id: app.category_id || prev.category_id,
         }));
+
+        // Check if an approved shop already exists (created by admin on approval)
+        const shop = await fetchSellerShopByUser(user.id);
+        if (shop) {
+          setExistingShop(shop);
+          setForm(prev => ({
+            ...prev,
+            shop_name: shop.shop_name || prev.shop_name,
+            shop_logo_url: shop.shop_logo_url || prev.shop_logo_url,
+            shop_description: shop.shop_description || prev.shop_description,
+            category_id: shop.category_id || prev.category_id,
+          }));
+        }
       } catch (e) {
         console.error(e);
         toast({ title: 'Error', description: 'Failed to load onboarding.', variant: 'destructive' });
@@ -70,63 +84,29 @@ export default function SellerOnboarding() {
 
     setSubmitting(true);
     try {
-      // Generate slug
-      const shopSlug = await generateShopSlug(form.shop_name);
-
-      // Create business
-      const { data: business, error: businessError } = await supabase
-        .from('businesses')
-        .insert({
-          name: form.shop_name,
-          description: form.shop_description || null,
-          location: 'Uganda',
-          contact: '',
-          is_active: true,
-          is_featured: false,
-          owner_type: 'seller',
-          category_id: form.category_id
-        })
-        .select()
-        .single();
-      if (businessError) throw businessError;
-
-      // Next payment due in 30 days
-      const nextPaymentDue = new Date();
-      nextPaymentDue.setDate(nextPaymentDue.getDate() + 30);
-
-      // Create shop
-      const { data: shop, error: shopError } = await supabase
-        .from('seller_shops')
-        .insert({
-          user_id: userId,
-          business_id: business.id,
+      if (existingShop) {
+        // Update existing shop created during approval
+        await updateSellerShop(existingShop.id, {
           shop_name: form.shop_name,
-          shop_slug: shopSlug,
-          category_id: form.category_id,
-          shop_logo_url: form.shop_logo_url || null,
           shop_description: form.shop_description || null,
-          is_active: true,
-          is_approved: true,
-          tier: 'basic',
-          commission_enabled: true,
-          monthly_fee: 50000,
-          next_payment_due: nextPaymentDue.toISOString(),
-        })
-        .select()
-        .single();
-      if (shopError) throw shopError;
-
-      // Back-link business to shop
-      await supabase.from('businesses').update({ shop_id: shop.id }).eq('id', business.id);
-
-      // Grant role
-      await supabase.from('user_roles').insert({ user_id: userId, role: 'business_owner', business_id: business.id }).catch(() => {});
-
-      toast({ title: 'Store created', description: 'Your store is ready. Add your first products next!' });
+          shop_logo_url: form.shop_logo_url || null,
+          category_id: form.category_id,
+        });
+        toast({ title: 'Store updated', description: 'Your store details have been saved. Add products next!' });
+      } else {
+        // If no shop exists, we cannot create businesses due to RLS; guide user
+        toast({
+          title: 'Shop not provisioned yet',
+          description: 'Your application is approved but the store is not provisioned. Please wait for admin to finalize approval.',
+          variant: 'destructive',
+        });
+        navigate('/sell');
+        return;
+      }
       navigate('/seller/dashboard');
     } catch (e: any) {
       console.error(e);
-      toast({ title: 'Failed to create store', description: e.message || 'Please try again', variant: 'destructive' });
+      toast({ title: 'Failed to save store', description: e.message || 'Please try again', variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
