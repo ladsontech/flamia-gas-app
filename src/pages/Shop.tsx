@@ -473,7 +473,8 @@ const Shop: React.FC = () => {
                       {allCategories.length > 0 && (
                         <div>
                           <h3 className="font-semibold text-xs mb-2 text-gray-800">Categories</h3>
-                          <div className="grid grid-cols-3 gap-2 max-h-[65vh] overflow-y-auto pr-1">
+                          <div className="relative">
+                            <div className="grid grid-cols-3 gap-2 max-h-[78vh] overflow-y-auto pr-1">
                             <Link to="/shop" onClick={() => { setSelectedCategory('all'); setFiltersOpen(false); }} className="block">
                               <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
                                 <div className="relative w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
@@ -487,6 +488,9 @@ const Shop: React.FC = () => {
                                 <CategoryCard slug={category.slug} name={category.name} src={category.src} />
                               </div>
                             ))}
+                          </div>
+                            {/* subtle bottom fade near the end */}
+                            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent" />
                           </div>
                         </div>
                       )}
@@ -560,18 +564,21 @@ const Shop: React.FC = () => {
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
               <h3 className="font-semibold text-sm text-gray-900 mb-4">Categories</h3>
-              <div className="grid grid-cols-2 gap-3 max-h-[70vh] overflow-y-auto pr-1">
-                <Link to="/shop" onClick={() => setSelectedCategory('all')} className="block">
-                  <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
-                    <div className="relative w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
-                      <img src="/images/category_logos/all.png" alt="All" className="w-18 h-18 object-contain" />
+              <div className="relative">
+                <div className="grid grid-cols-2 gap-3 max-h-[78vh] overflow-y-auto pr-1">
+                  <Link to="/shop" onClick={() => setSelectedCategory('all')} className="block">
+                    <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
+                      <div className="relative w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
+                        <img src="/images/category_logos/all.png" alt="All" className="w-18 h-18 object-contain" />
+                      </div>
+                      <span className="mt-2 text-center text-xs text-gray-800">All</span>
                     </div>
-                    <span className="mt-2 text-center text-xs text-gray-800">All</span>
-                  </div>
-                </Link>
-                {logoCategories.map((category, idx) => (
-                  <CategoryCard key={`${category.slug}-${idx}`} slug={category.slug} name={category.name} src={category.src} />
-                ))}
+                  </Link>
+                  {logoCategories.map((category, idx) => (
+                    <CategoryCard key={`${category.slug}-${idx}`} slug={category.slug} name={category.name} src={category.src} />
+                  ))}
+                </div>
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent" />
               </div>
             </div>
           </aside>
