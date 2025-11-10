@@ -64,6 +64,7 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
         )
       `)
       .eq('is_available', true)
+      .order('created_at', { ascending: false })
       .limit(500) // Limit to prevent loading too many products at once
   ]);
 
@@ -172,8 +173,8 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
       category: matchedCategory?.name || gadget.category || 'Other',
       category_id: matchedCategory?.id,
       source: 'flamia',
-      shop_name: undefined,
-      shop_slug: undefined,
+      shop_name: 'Flamia',
+      shop_slug: 'flamia',
       is_available: gadget.in_stock,
       featured: gadget.featured || false,
       viewCount: 0,
