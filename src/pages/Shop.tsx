@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,8 @@ const Shop: React.FC = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [gridShowCount, setGridShowCount] = useState(24);
+  const [isAutoLoading, setIsAutoLoading] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch all product categories (even without products)
   useEffect(() => {
@@ -531,6 +533,29 @@ const Shop: React.FC = () => {
                     }
                   });
 
+                // Infinite scroll setup
+                const total = products.length;
+
+                // Observer for bottom sentinel (runs when in filtered grid view)
+                useEffect(() => {
+                  if (selectedCategory === 'all') return;
+                  if (!sentinelRef.current || total === 0) return;
+                  const observer = new IntersectionObserver((entries) => {
+                    const first = entries[0];
+                    if (first.isIntersecting && gridShowCount < total) {
+                      setIsAutoLoading(true);
+                      setGridShowCount(prev => Math.min(total, prev + initialShowCount));
+                    }
+                  }, { root: null, rootMargin: '200px', threshold: 0.01 });
+                  observer.observe(sentinelRef.current);
+                  return () => observer.disconnect();
+                }, [selectedCategory, total, gridShowCount, initialShowCount]);
+
+                useEffect(() => {
+                  if (selectedCategory === 'all') return;
+                  setIsAutoLoading(false);
+                }, [gridShowCount, selectedCategory]);
+
                 return (
                   <>
                     <div className="flex items-center justify-between mb-4">
@@ -559,17 +584,10 @@ const Shop: React.FC = () => {
                         />
                       ))}
                     </div>
-                    {gridShowCount < products.length && (
-                      <div className="flex justify-center mt-6">
-                        <Button
-                          variant="outline"
-                          onClick={() => setGridShowCount(prev => Math.min(products.length, prev + initialShowCount))}
-                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-                        >
-                          Load More ({products.length - gridShowCount})
-                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
-                        </Button>
-                      </div>
+                    {/* Infinite scroll sentinel & lightweight loader */}
+                    <div ref={sentinelRef} className="h-8 w-full" />
+                    {isAutoLoading && (
+                      <div className="flex justify-center py-3 text-xs text-gray-500">Loading more...</div>
                     )}
                   </>
                 );
