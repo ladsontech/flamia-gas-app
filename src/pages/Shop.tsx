@@ -301,24 +301,25 @@ const Shop: React.FC = () => {
                       Filters
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="bottom" className="h-[85vh]">
+                  <SheetContent side="right" className="w-[280px] sm:w-[340px]">
                     <SheetHeader>
-                      <SheetTitle>Filters & Sort</SheetTitle>
+                      <SheetTitle className="text-sm">Filters & Sort</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 space-y-6 overflow-y-auto">
+                    <div className="py-3 space-y-5 overflow-y-auto">
                       {/* Categories */}
                       {allCategories.length > 0 && (
                         <div>
-                          <h3 className="font-semibold text-sm mb-3 text-gray-900">Categories</h3>
-                          <div className="grid grid-cols-2 gap-2">
+                          <h3 className="font-semibold text-xs mb-2 text-gray-800">Categories</h3>
+                          <div className="grid grid-cols-2 gap-1.5">
                             <Button
-                              variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                              variant={selectedCategory === 'all' ? 'secondary' : 'ghost'}
                               size="sm"
                               onClick={() => {
                                 setSelectedCategory('all');
+                                setFiltersOpen(false);
                                 navigate('/shop');
                               }}
-                              className={selectedCategory === 'all' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                              className="h-8"
                             >
                               All
                             </Button>
@@ -328,13 +329,14 @@ const Shop: React.FC = () => {
                               return (
                                 <Button
                                   key={category.id}
-                                  variant={selectedCategory === categorySlug ? 'default' : 'outline'}
+                                  variant={selectedCategory === categorySlug ? 'secondary' : 'ghost'}
                                   size="sm"
                                   onClick={() => {
                                     setSelectedCategory(categorySlug);
+                                    setFiltersOpen(false);
                                     navigate(`/shop?category=${categorySlug}`);
                                   }}
-                                  className={`${selectedCategory === categorySlug ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''} ${!hasProducts ? 'opacity-60' : ''}`}
+                                  className={`h-8 ${!hasProducts ? 'opacity-60' : ''}`}
                                 >
                                   {category.name}
                                 </Button>
@@ -346,49 +348,43 @@ const Shop: React.FC = () => {
 
                       {/* Sort */}
                       <div>
-                        <h3 className="font-semibold text-sm mb-3 text-gray-900">Sort By</h3>
-                        <div className="grid grid-cols-2 gap-2">
+                        <h3 className="font-semibold text-xs mb-2 text-gray-800">Sort By</h3>
+                        <div className="grid grid-cols-2 gap-1.5">
                           <Button
-                            variant={sortBy === 'newest' ? 'default' : 'outline'}
+                            variant={sortBy === 'newest' ? 'secondary' : 'outline'}
                             size="sm"
                             onClick={() => setSortBy('newest')}
-                            className={sortBy === 'newest' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                            className="h-8"
                           >
                             Newest
                           </Button>
                           <Button
-                            variant={sortBy === 'popular' ? 'default' : 'outline'}
+                            variant={sortBy === 'popular' ? 'secondary' : 'outline'}
                             size="sm"
                             onClick={() => setSortBy('popular')}
-                            className={sortBy === 'popular' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                            className="h-8"
                           >
                             Popular
                           </Button>
                           <Button
-                            variant={sortBy === 'price-low' ? 'default' : 'outline'}
+                            variant={sortBy === 'price-low' ? 'secondary' : 'outline'}
                             size="sm"
                             onClick={() => setSortBy('price-low')}
-                            className={sortBy === 'price-low' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                            className="h-8"
                           >
                             Price: Low-High
                           </Button>
                           <Button
-                            variant={sortBy === 'price-high' ? 'default' : 'outline'}
+                            variant={sortBy === 'price-high' ? 'secondary' : 'outline'}
                             size="sm"
                             onClick={() => setSortBy('price-high')}
-                            className={sortBy === 'price-high' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
+                            className="h-8"
                           >
                             Price: High-Low
                           </Button>
                         </div>
                       </div>
 
-                      <Button 
-                        onClick={() => setFiltersOpen(false)} 
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white mt-4"
-                      >
-                        Apply Filters
-                      </Button>
                     </div>
                   </SheetContent>
                 </Sheet>
