@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,6 +22,16 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setIsDesktop(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener('change', update);
+    return () => mediaQuery.removeEventListener('change', update);
+  }, []);
 
   const slides: OnboardingSlide[] = [
     {
@@ -190,9 +200,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                         I accept the{' '}
                         <Link
                           to="/terms-and-conditions"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary underline hover:text-primary/80 font-medium"
+                          target={isDesktop ? "_blank" : undefined}
+                          rel={isDesktop ? "noopener noreferrer" : undefined}
+                          className="text-blue-600 underline hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                         >
                           Terms and Conditions
                         </Link>
@@ -222,9 +232,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                         I accept the{' '}
                         <Link
                           to="/privacy-policy"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary underline hover:text-primary/80 font-medium"
+                          target={isDesktop ? "_blank" : undefined}
+                          rel={isDesktop ? "noopener noreferrer" : undefined}
+                          className="text-blue-600 underline hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                         >
                           Privacy Policy
                         </Link>
