@@ -44,8 +44,8 @@ export const useMarketplaceProducts = () => {
 };
 
 const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
-  // Fetch all data in parallel for better performance
-  const [categoriesResult, productsResult, gadgetsResult] = await Promise.all([
+  // Fetch categories and business products in parallel for better performance
+  const [categoriesResult, productsResult] = await Promise.all([
     // Fetch product categories
     supabase
       .from('product_categories')
@@ -64,24 +64,45 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
         )
       `)
       .eq('is_available', true)
-      .limit(500), // Limit to prevent loading too many products at once
-
-    // Fetch Flamia-owned gadgets (house products)
-    supabase
-      .from('gadgets')
-      .select('*')
-      .eq('in_stock', true)
-      .order('created_at', { ascending: false })
-      .limit(500),
+      .limit(500) // Limit to prevent loading too many products at once
   ]);
 
   if (categoriesResult.error) throw categoriesResult.error;
   if (productsResult.error) throw productsResult.error;
-  if (gadgetsResult.error) throw gadgetsResult.error;
+  // Try to fetch Flamia-owned products from 'flamia_products' (preferred).
+  // If the table doesn't exist, fallback to 'gadgets' (legacy), otherwise silently skip.
+  let allGadgets: any[] = [];
+  try {
+    // Preferred: flamia_products
+    const { data: flamiaData, error: flamiaError } = await supabase
+      .from('flamia_products')
+      .select('*')
+      .eq('in_stock', true)
+      .order('created_at', { ascending: false })
+      .limit(500);
+
+    if (!flamiaError && Array.isArray(flamiaData)) {
+      allGadgets = flamiaData;
+    } else {
+      // Fallback to legacy 'gadgets' table
+      const { data: gadgetsData, error: gadgetsError } = await supabase
+        .from('gadgets')
+        .select('*')
+        .eq('in_stock', true)
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      if (!gadgetsError && Array.isArray(gadgetsData)) {
+        allGadgets = gadgetsData;
+      }
+    }
+  } catch (_e) {
+    // Ignore if neither table is available
+    allGadgets = [];
+  }
 
   const productCategories = (categoriesResult.data || []) as any[];
   const allProducts = productsResult.data || [];
-  const allGadgets = gadgetsResult.data || [];
 
   // Fetch seller shops for mapping (only for non-Flamia products)
   const nonFlamiaProducts = allProducts.filter(p => p.business_id !== FLAMIA_BUSINESS_ID);
