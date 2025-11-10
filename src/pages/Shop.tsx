@@ -221,32 +221,66 @@ const Shop: React.FC = () => {
   }, [gridShowCount, selectedCategory]);
 
   // Helpers for category UI
-  const getCategoryLogoUrl = (slug: string) => `/images/category_logos/${slug}.png`;
+  const sanitize = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[\/\\]+/g, ' ')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
 
-  const CategoryCard = ({ slug, name, small = false }: { slug: string; name: string; small?: boolean }) => (
-    <Link to={`/shop/category/${slug}`} onClick={() => setSelectedCategory(slug)} className="block">
-      <div
-        className={`relative flex flex-col items-center justify-start rounded-xl border transition-colors ${
-          selectedCategory === slug ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200 hover:bg-gray-50'
-        } ${small ? 'p-2' : 'p-3'}`}
-      >
+  const buildLogoCandidates = (slug: string, name: string) => {
+    const baseSlug = sanitize(slug);
+    const baseName = sanitize(name);
+    const exts = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
+    const unique: string[] = [];
+    const push = (p: string) => {
+      if (!unique.includes(p)) unique.push(p);
+    };
+    exts.forEach(ext => push(`/images/category_logos/${baseSlug}.${ext}`));
+    if (baseName && baseName !== baseSlug) {
+      exts.forEach(ext => push(`/images/category_logos/${baseName}.${ext}`));
+    }
+    return unique;
+  };
+
+  const CategoryCard = ({ slug, name, small = false }: { slug: string; name: string; small?: boolean }) => {
+    const candidates = buildLogoCandidates(slug, name);
+    const [idx, setIdx] = React.useState(0);
+    const currentSrc = candidates[idx] || '/images/icon.png';
+    return (
+      <Link to={`/shop/category/${slug}`} onClick={() => setSelectedCategory(slug)} className="block">
         <div
-          className={`relative rounded-full bg-orange-100 flex items-center justify-center overflow-visible ${
-            small ? 'w-12 h-12' : 'w-14 h-14'
-          }`}
+          className={`relative flex flex-col items-center justify-start rounded-xl border transition-colors ${
+            selectedCategory === slug ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200 hover:bg-gray-50'
+          } ${small ? 'p-2' : 'p-3'}`}
         >
-          {/* Image intentionally slightly larger than circle */}
-          <img
-            src={getCategoryLogoUrl(slug)}
-            alt={name}
-            className={`${small ? 'w-14 h-14' : 'w-16 h-16'} object-contain`}
-            loading="lazy"
-          />
+          <div
+            className={`relative rounded-full bg-orange-100 flex items-center justify-center overflow-visible ${
+              small ? 'w-12 h-12' : 'w-14 h-14'
+            }`}
+          >
+            {/* Image intentionally slightly larger than circle */}
+            <img
+              src={currentSrc}
+              alt={name}
+              className={`${small ? 'w-14 h-14' : 'w-16 h-16'} object-contain`}
+              loading="lazy"
+              onError={(e) => {
+                if (idx < candidates.length - 1) {
+                  setIdx(prev => prev + 1);
+                } else {
+                  e.currentTarget.src = '/images/icon.png';
+                }
+              }}
+            />
+          </div>
+          <span className={`mt-2 text-center ${small ? 'text-[11px]' : 'text-xs'} text-gray-800 line-clamp-1`}>{name}</span>
         </div>
-        <span className={`mt-2 text-center ${small ? 'text-[11px]' : 'text-xs'} text-gray-800 line-clamp-1`}>{name}</span>
-      </div>
-    </Link>
-  );
+      </Link>
+    );
+  };
 
   if (loading) {
     return (
