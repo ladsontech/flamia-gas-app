@@ -166,6 +166,57 @@ const Shop: React.FC = () => {
     }))
     .filter(category => category.products.length > 0);
 
+  // Active category grid (for deep-linked category view)
+  const activeCategoryObj = selectedCategory !== 'all'
+    ? categories.find(c => c.slug === selectedCategory)
+    : undefined;
+  const filteredGridProducts = (() => {
+    if (selectedCategory === 'all') return [];
+    const base = (activeCategoryObj?.products || []);
+    const filtered = base.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    });
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'popular':
+          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        case 'newest':
+        default:
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          return 0;
+      }
+    });
+  })();
+
+  // Infinite scroll for filtered grid view (category page)
+  useEffect(() => {
+    if (selectedCategory === 'all') return;
+    const total = filteredGridProducts.length;
+    if (!sentinelRef.current || total === 0) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting && gridShowCount < total) {
+        setIsAutoLoading(true);
+        setGridShowCount(prev => Math.min(total, prev + initialShowCount));
+      }
+    }, { root: null, rootMargin: '200px', threshold: 0.01 });
+
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [selectedCategory, filteredGridProducts.length, gridShowCount, initialShowCount]);
+
+  useEffect(() => {
+    if (selectedCategory === 'all') return;
+    setIsAutoLoading(false);
+  }, [gridShowCount, selectedCategory]);
 
   if (loading) {
     return (
@@ -509,90 +560,37 @@ const Shop: React.FC = () => {
           {/* Products - Filtered Grid when a category is selected */}
           {selectedCategory !== 'all' ? (
             <div className="flex-1 min-w-0">
-              {(() => {
-                const activeCategory = categories.find(c => c.slug === selectedCategory);
-                const products = (activeCategory?.products || [])
-                  .filter(product => {
-                    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      product.description.toLowerCase().includes(searchTerm.toLowerCase());
-                    return matchesSearch;
-                  })
-                  .sort((a, b) => {
-                    switch (sortBy) {
-                      case 'price-low':
-                        return a.price - b.price;
-                      case 'price-high':
-                        return b.price - a.price;
-                      case 'popular':
-                        return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-                      case 'newest':
-                      default:
-                        // keep incoming order or feature first
-                        if (a.featured && !b.featured) return -1;
-                        if (!a.featured && b.featured) return 1;
-                        return 0;
-                    }
-                  });
-
-                // Infinite scroll setup
-                const total = products.length;
-
-                // Observer for bottom sentinel (runs when in filtered grid view)
-                useEffect(() => {
-                  if (selectedCategory === 'all') return;
-                  if (!sentinelRef.current || total === 0) return;
-                  const observer = new IntersectionObserver((entries) => {
-                    const first = entries[0];
-                    if (first.isIntersecting && gridShowCount < total) {
-                      setIsAutoLoading(true);
-                      setGridShowCount(prev => Math.min(total, prev + initialShowCount));
-                    }
-                  }, { root: null, rootMargin: '200px', threshold: 0.01 });
-                  observer.observe(sentinelRef.current);
-                  return () => observer.disconnect();
-                }, [selectedCategory, total, gridShowCount, initialShowCount]);
-
-                useEffect(() => {
-                  if (selectedCategory === 'all') return;
-                  setIsAutoLoading(false);
-                }, [gridShowCount, selectedCategory]);
-
-                return (
-                  <>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                        {activeCategory?.name || 'Products'}
-                      </h2>
-                      <div className="text-sm text-gray-600">{products.length} items</div>
-                    </div>
-                    <div className="grid gap-4 md:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                      {products.slice(0, gridShowCount).map(product => (
-                        <ProductCard
-                          key={product.id}
-                          id={product.id}
-                          name={product.name}
-                          description={product.description}
-                          price={product.price}
-                          originalPrice={product.original_price}
-                          imageUrl={product.image_url}
-                          featured={product.featured}
-                          shopName={product.shop_name}
-                          source={product.source}
-                          viewCount={product.viewCount}
-                          condition={product.condition}
-                          onAddToCart={() => handleAddToCart(product)}
-                          onQuickView={() => setQuickViewProduct(product)}
-                        />
-                      ))}
-                    </div>
-                    {/* Infinite scroll sentinel & lightweight loader */}
-                    <div ref={sentinelRef} className="h-8 w-full" />
-                    {isAutoLoading && (
-                      <div className="flex justify-center py-3 text-xs text-gray-500">Loading more...</div>
-                    )}
-                  </>
-                );
-              })()}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                  {activeCategoryObj?.name || 'Products'}
+                </h2>
+                <div className="text-sm text-gray-600">{filteredGridProducts.length} items</div>
+              </div>
+              <div className="grid gap-4 md:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {filteredGridProducts.slice(0, gridShowCount).map(product => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    description={product.description}
+                    price={product.price}
+                    originalPrice={product.original_price}
+                    imageUrl={product.image_url}
+                    featured={product.featured}
+                    shopName={product.shop_name}
+                    source={product.source}
+                    viewCount={product.viewCount}
+                    condition={product.condition}
+                    onAddToCart={() => handleAddToCart(product)}
+                    onQuickView={() => setQuickViewProduct(product)}
+                  />
+                ))}
+              </div>
+              {/* Infinite scroll sentinel & lightweight loader */}
+              <div ref={sentinelRef} className="h-8 w-full" />
+              {isAutoLoading && (
+                <div className="flex justify-center py-3 text-xs text-gray-500">Loading more...</div>
+              )}
             </div>
           ) : (
           /* Products by Category - Horizontal when not filtered */
