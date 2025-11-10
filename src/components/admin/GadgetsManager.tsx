@@ -60,6 +60,29 @@ const categories = [
 
 const brands = ['Apple', 'Samsung', 'Tecno', 'Infinix', 'Itel', 'Nokia', 'Xiaomi', 'OPPO', 'Vivo', 'Huawei', 'Realme', 'Google', 'Sony', 'LG', 'Hisense', 'TCL', 'HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Microsoft'];
 
+// Categories that behave like "gadgets" where Brand and Condition apply
+const gadgetCategorySet = new Set<string>([
+  'Phones',
+  'Tablets',
+  'Laptops & PCs',
+  'Monitors',
+  'Printers & Scanners',
+  'TVs',
+  'Audio',
+  'Home Theater',
+  'Wearables',
+  'Cameras',
+  'Drones',
+  'Gaming Consoles',
+  'Gaming Accessories',
+  'Phone Accessories',
+  'Computer Accessories',
+  'Storage & Memory',
+  'Network & Routers',
+  'Power & Lighting',
+]);
+const isGadgetCategory = (category?: string) => !!category && gadgetCategorySet.has(category);
+
 const GadgetsManager: React.FC = () => {
   const [gadgets, setGadgets] = useState<Gadget[]>([]);
   const [loading, setLoading] = useState(false);
@@ -181,10 +204,11 @@ const GadgetsManager: React.FC = () => {
     try {
       setLoading(true);
 
-      if (!formData.name || !formData.price || !formData.category || !formData.condition) {
+      const gadgetLike = isGadgetCategory(formData.category);
+      if (!formData.name || !formData.price || !formData.category || (gadgetLike && !formData.condition)) {
         toast({
           title: "Missing required fields",
-          description: "Name, Price, Category and Condition are required.",
+          description: gadgetLike ? "Name, Price, Category and Condition are required." : "Name, Price and Category are required.",
           variant: "destructive"
         });
         setLoading(false);
@@ -209,9 +233,9 @@ const GadgetsManager: React.FC = () => {
         price: parsedPrice,
         original_price: parsedOriginal,
         category: formData.category,
-        brand: !formData.brand || formData.brand === 'other' ? null : formData.brand,
+        brand: gadgetLike ? (!formData.brand || formData.brand === 'other' ? null : formData.brand) : null,
         image_url: formData.image_url || null,
-        condition: formData.condition,
+        condition: gadgetLike ? formData.condition : null,
         in_stock: formData.in_stock,
         featured: formData.featured
       };
@@ -306,7 +330,7 @@ const GadgetsManager: React.FC = () => {
   const groupKeys = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
 
   return (
-    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0 overflow-x-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-lg md:text-2xl font-bold">Flamia Products Management</h2>
         <div className="flex w-full sm:w-auto items-center gap-2">
@@ -397,36 +421,40 @@ const GadgetsManager: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                    {isGadgetCategory(formData.category) && (
+                      <div>
+                        <Label htmlFor="brand">Brand</Label>
+                        <Select value={formData.brand} onValueChange={(value) => setFormData({...formData, brand: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select brand" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
+                            {brands.map((brand) => (
+                              <SelectItem key={brand} value={brand}>
+                                {brand}
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="other">Other / Not Listed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+
+                  {isGadgetCategory(formData.category) && (
                     <div>
-                      <Label htmlFor="brand">Brand</Label>
-                      <Select value={formData.brand} onValueChange={(value) => setFormData({...formData, brand: value})}>
+                      <Label htmlFor="condition">Condition *</Label>
+                      <Select value={formData.condition} onValueChange={(value: 'brand_new' | 'used') => setFormData({...formData, condition: value})}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select brand" />
+                          <SelectValue placeholder="Select condition" />
                         </SelectTrigger>
                         <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
-                          {brands.map((brand) => (
-                            <SelectItem key={brand} value={brand}>
-                              {brand}
-                            </SelectItem>
-                          ))}
-                          <SelectItem value="other">Other / Not Listed</SelectItem>
+                          <SelectItem value="brand_new">Brand New</SelectItem>
+                          <SelectItem value="used">UK Used</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="condition">Condition *</Label>
-                    <Select value={formData.condition} onValueChange={(value: 'brand_new' | 'used') => setFormData({...formData, condition: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select condition" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-md">
-                        <SelectItem value="brand_new">Brand New</SelectItem>
-                        <SelectItem value="used">UK Used</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  )}
 
                   <div className="flex items-center space-x-2">
                     <Switch
