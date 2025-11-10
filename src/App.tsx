@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
@@ -10,12 +10,13 @@ import { LoadingIndicator } from './components/LoadingIndicator';
 import { supabase } from './integrations/supabase/client';
 import { CartProvider } from '@/contexts/CartContext';
 import { SellerCartProvider } from '@/contexts/SellerCartContext';
-import Admin from './pages/Admin';
 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import Account from './pages/Account';
-import Orders from './pages/Orders';
+// Lazily loaded pages for faster initial load; we'll prefetch them in background
+const Admin = lazy(() => import('./pages/Admin'));
+const Account = lazy(() => import('./pages/Account'));
+const Orders = lazy(() => import('./pages/Orders'));
 import Gadgets from './pages/Gadgets';
 // import Foods from './pages/Foods'; // Temporarily hidden
 import Shop from './pages/Shop';
@@ -103,6 +104,25 @@ const AppContent = () => {
     return <LoadingIndicator fullScreen message="Loading your experience..." />;
   }
 
+  // Prefetch heavy account/admin pages in the background so navigation feels instant
+  useEffect(() => {
+    const prefetch = () => {
+      import('./pages/Orders');
+      import('./pages/Account');
+      if (isAdmin) {
+        import('./pages/Admin');
+      }
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = (window as any).requestIdleCallback(prefetch, { timeout: 2000 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    }
+
+    const t = setTimeout(prefetch, 1500);
+    return () => clearTimeout(t);
+  }, [isAdmin]);
+
   return (
     <div className="flex flex-col min-h-screen">
       {!isStorefront && showOnboarding && !onboardingLoading && !isPolicyRoute && (
@@ -117,7 +137,8 @@ const AppContent = () => {
       <Toaster />
       
       <main className={isStorefront ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
-        <Routes>
+        <Suspense fallback={<LoadingIndicator fullScreen={false} message="Loading..." />}>
+          <Routes>
           {isStorefrontHost ? (
             <>
               <Route path="/product/:id" element={<StorefrontProductDetail />} />
@@ -178,7 +199,8 @@ const AppContent = () => {
           <Route path="/ultimate-gas-uganda" element={<UltimateGasUganda />} />
             </>
           )}
-        </Routes>
+          </Routes>
+        </Suspense>
       </main>
 
       {!isStorefront && <BottomNav isAdmin={isAdmin} />}
