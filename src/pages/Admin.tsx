@@ -130,7 +130,7 @@ const Admin = () => {
               
               <TabsContent value="gadgets" className="mt-0 space-y-2">
                 <Card className="mx-1">
-                  <CardContent className="pt-4">
+                  <CardContent className="p-2 sm:pt-4">
                     <GadgetsManager />
                   </CardContent>
                 </Card>
@@ -138,7 +138,7 @@ const Admin = () => {
 
               <TabsContent value="promotions" className="mt-0 space-y-2">
                 <Card className="mx-1">
-                  <CardContent className="pt-4">
+                  <CardContent className="p-2 sm:pt-4">
                     <PromotionsManager />
                   </CardContent>
                 </Card>
@@ -146,7 +146,7 @@ const Admin = () => {
 
               <TabsContent value="promo-codes" className="mt-0 space-y-2">
                 <Card className="mx-1">
-                  <CardContent className="pt-4">
+                  <CardContent className="p-2 sm:pt-4">
                     <PromoCodesManager />
                   </CardContent>
                 </Card>
@@ -154,7 +154,7 @@ const Admin = () => {
 
               <TabsContent value="carousel" className="mt-0 space-y-2">
                 <Card className="mx-1">
-                  <CardContent className="pt-4">
+                  <CardContent className="p-2 sm:pt-4">
                     <CarouselManager />
                   </CardContent>
                 </Card>
@@ -162,7 +162,7 @@ const Admin = () => {
 
               <TabsContent value="sellers" className="mt-0 space-y-2">
                 <Card className="mx-1">
-                  <CardContent className="pt-4">
+                  <CardContent className="p-2 sm:pt-4">
                     <SellerApplicationsManager />
                   </CardContent>
                 </Card>
@@ -171,7 +171,7 @@ const Admin = () => {
               {(isAdmin || canManageUsers) && (
                 <TabsContent value="users" className="mt-0 space-y-2">
                   <Card className="mx-1">
-                    <CardContent className="pt-4">
+                    <CardContent className="p-2 sm:pt-4">
                       <SubAdminManager />
                     </CardContent>
                   </Card>
@@ -192,7 +192,7 @@ const Admin = () => {
                 Flamia Products
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-4">
               <GadgetsManager />
             </CardContent>
           </Card>
@@ -209,7 +209,7 @@ const Admin = () => {
                 Promotional Products
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-4">
               <PromotionsManager />
             </CardContent>
           </Card>
@@ -223,7 +223,7 @@ const Admin = () => {
                 Promo Codes
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-4">
               <PromoCodesManager />
             </CardContent>
           </Card>
@@ -237,7 +237,7 @@ const Admin = () => {
                 Carousel Management
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-4">
               <CarouselManager />
             </CardContent>
           </Card>
@@ -251,7 +251,7 @@ const Admin = () => {
                 Seller Applications
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-4">
               <SellerApplicationsManager />
             </CardContent>
           </Card>
@@ -266,7 +266,7 @@ const Admin = () => {
                   Sub Admin Management
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-2 sm:p-4">
                 <SubAdminManager />
               </CardContent>
             </Card>
