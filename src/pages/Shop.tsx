@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Search, RefreshCw, AlertCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { useCart } from '@/contexts/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/components/shop/ProductCard';
@@ -27,7 +27,9 @@ const Shop: React.FC = () => {
   const [categoryShowCount, setCategoryShowCount] = useState<Record<string, number>>({});
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const [gridShowCount, setGridShowCount] = useState(24);
 
   // Fetch all product categories (even without products)
   useEffect(() => {
@@ -49,6 +51,22 @@ const Shop: React.FC = () => {
     
     fetchAllCategories();
   }, []);
+
+  // Read category from URL to support filtered "View All" pages
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    } else {
+      setSelectedCategory('all');
+    }
+  }, [location.search]);
+
+  // Reset grid pagination on filter/sort changes
+  useEffect(() => {
+    setGridShowCount(24);
+  }, [selectedCategory, searchTerm, sortBy]);
 
   // Calculate initial show count based on screen size - show more products
   useEffect(() => {
@@ -296,7 +314,10 @@ const Shop: React.FC = () => {
                             <Button
                               variant={selectedCategory === 'all' ? 'default' : 'outline'}
                               size="sm"
-                              onClick={() => setSelectedCategory('all')}
+                              onClick={() => {
+                                setSelectedCategory('all');
+                                navigate('/shop');
+                              }}
                               className={selectedCategory === 'all' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}
                             >
                               All
@@ -309,7 +330,10 @@ const Shop: React.FC = () => {
                                   key={category.id}
                                   variant={selectedCategory === categorySlug ? 'default' : 'outline'}
                                   size="sm"
-                                  onClick={() => setSelectedCategory(categorySlug)}
+                                  onClick={() => {
+                                    setSelectedCategory(categorySlug);
+                                    navigate(`/shop?category=${categorySlug}`);
+                                  }}
                                   className={`${selectedCategory === categorySlug ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''} ${!hasProducts ? 'opacity-60' : ''}`}
                                 >
                                   {category.name}
@@ -438,7 +462,10 @@ const Shop: React.FC = () => {
                 <Button
                   variant={selectedCategory === 'all' ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => setSelectedCategory('all')}
+                  onClick={() => {
+                    setSelectedCategory('all');
+                    navigate('/shop');
+                  }}
                   className={`w-full justify-start text-sm h-9 ${
                     selectedCategory === 'all'
                       ? 'bg-orange-500 hover:bg-orange-600 text-white'
@@ -455,7 +482,10 @@ const Shop: React.FC = () => {
                       key={category.id}
                       variant={selectedCategory === categorySlug ? 'default' : 'ghost'}
                       size="sm"
-                      onClick={() => setSelectedCategory(categorySlug)}
+                      onClick={() => {
+                        setSelectedCategory(categorySlug);
+                        navigate(`/shop?category=${categorySlug}`);
+                      }}
                       className={`w-full justify-start text-sm h-9 ${
                         selectedCategory === categorySlug
                           ? 'bg-orange-500 hover:bg-orange-600 text-white'
@@ -477,7 +507,80 @@ const Shop: React.FC = () => {
             </div>
           </aside>
 
-          {/* Products by Category */}
+          {/* Products - Filtered Grid when a category is selected */}
+          {selectedCategory !== 'all' ? (
+            <div className="flex-1 min-w-0">
+              {(() => {
+                const activeCategory = categories.find(c => c.slug === selectedCategory);
+                const products = (activeCategory?.products || [])
+                  .filter(product => {
+                    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+                    return matchesSearch;
+                  })
+                  .sort((a, b) => {
+                    switch (sortBy) {
+                      case 'price-low':
+                        return a.price - b.price;
+                      case 'price-high':
+                        return b.price - a.price;
+                      case 'popular':
+                        return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+                      case 'newest':
+                      default:
+                        // keep incoming order or feature first
+                        if (a.featured && !b.featured) return -1;
+                        if (!a.featured && b.featured) return 1;
+                        return 0;
+                    }
+                  });
+
+                return (
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                        {activeCategory?.name || 'Products'}
+                      </h2>
+                      <div className="text-sm text-gray-600">{products.length} items</div>
+                    </div>
+                    <div className="grid gap-4 md:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      {products.slice(0, gridShowCount).map(product => (
+                        <ProductCard
+                          key={product.id}
+                          id={product.id}
+                          name={product.name}
+                          description={product.description}
+                          price={product.price}
+                          originalPrice={product.original_price}
+                          imageUrl={product.image_url}
+                          featured={product.featured}
+                          shopName={product.shop_name}
+                          source={product.source}
+                          viewCount={product.viewCount}
+                          condition={product.condition}
+                          onAddToCart={() => handleAddToCart(product)}
+                          onQuickView={() => setQuickViewProduct(product)}
+                        />
+                      ))}
+                    </div>
+                    {gridShowCount < products.length && (
+                      <div className="flex justify-center mt-6">
+                        <Button
+                          variant="outline"
+                          onClick={() => setGridShowCount(prev => Math.min(products.length, prev + initialShowCount))}
+                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                        >
+                          Load More ({products.length - gridShowCount})
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          ) : (
+          /* Products by Category - Horizontal when not filtered */
           <div className="flex-1 min-w-0">
           {filteredCategories.length === 0 ? (
             <div className="text-center py-16 sm:py-20">
@@ -517,25 +620,15 @@ const Shop: React.FC = () => {
                             {featuredProducts.length} featured
                           </span>
                         )}
-                        {/* Desktop: View More Button on Top - Orange */}
-                        {hasMore ? (
-                          <Button
-                            variant="default"
-                            onClick={() => handleViewMore(category.slug, category.products.length)}
-                            className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600 text-white border-0"
-                          >
-                            View More ({category.products.length - showCount})
-                            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            onClick={() => toggleCategory(category.slug)}
-                            className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-                          >
-                            Show Less
-                          </Button>
-                        )}
+                        {/* Desktop: View All navigates to filtered grid page */}
+                        <Button
+                          variant="default"
+                          onClick={() => navigate(`/shop?category=${category.slug}`)}
+                          className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600 text-white border-0"
+                        >
+                          View All ({category.products.length})
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
                       </div>
                     </div>
 
@@ -567,26 +660,16 @@ const Shop: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Mobile: View More / Show Less Button at Bottom */}
+                    {/* Mobile: View All navigates to filtered grid page */}
                     <div className="flex justify-center pt-2 md:hidden">
-                      {hasMore ? (
-                        <Button
-                          variant="outline"
-                          onClick={() => handleViewMore(category.slug, category.products.length)}
-                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-                        >
-                          View More ({category.products.length - showCount})
-                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          onClick={() => toggleCategory(category.slug)}
-                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-                        >
-                          Show Less
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate(`/shop?category=${category.slug}`)}
+                        className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                      >
+                        View All ({category.products.length})
+                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
+                      </Button>
                     </div>
                   </section>
                 );
@@ -594,6 +677,7 @@ const Shop: React.FC = () => {
             </div>
           )}
           </div>
+          )}
         </div>
       </div>
 
