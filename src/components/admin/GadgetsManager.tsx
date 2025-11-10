@@ -39,6 +39,18 @@ const categories = [
   'Computer Accessories',
   'Storage & Memory',
   'Network & Routers',
+  // Fashion
+  'Fashion - Men',
+  'Fashion - Women',
+  'Fashion - Kids',
+  'Fashion - Shoes',
+  'Fashion - Bags & Accessories',
+  // Beauty & Health
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  // Home & Living
+  'Home & Kitchen',
+  'Furniture & Decor',
   // Power & Lighting
   'Power & Lighting',
   // Appliances
