@@ -45,14 +45,14 @@ export const useMarketplaceProducts = () => {
 
 const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
   // Fetch all data in parallel for better performance
-  const [categoriesResult, productsResult] = await Promise.all([
-      // Fetch product categories
+  const [categoriesResult, productsResult, gadgetsResult] = await Promise.all([
+    // Fetch product categories
     supabase
-        .from('product_categories')
-        .select('*')
-        .eq('is_active', true)
+      .from('product_categories')
+      .select('*')
+      .eq('is_active', true)
       .order('display_order'),
-    
+
     // Fetch all business products (Flamia + Sellers) with shop info in one query
     supabase
       .from('business_products')
@@ -64,14 +64,24 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
         )
       `)
       .eq('is_available', true)
-      .limit(500) // Limit to prevent loading too many products at once
+      .limit(500), // Limit to prevent loading too many products at once
+
+    // Fetch Flamia-owned gadgets (house products)
+    supabase
+      .from('gadgets')
+      .select('*')
+      .eq('in_stock', true)
+      .order('created_at', { ascending: false })
+      .limit(500),
   ]);
 
   if (categoriesResult.error) throw categoriesResult.error;
   if (productsResult.error) throw productsResult.error;
+  if (gadgetsResult.error) throw gadgetsResult.error;
 
-  const productCategories = categoriesResult.data || [];
+  const productCategories = (categoriesResult.data || []) as any[];
   const allProducts = productsResult.data || [];
+  const allGadgets = gadgetsResult.data || [];
 
   // Fetch seller shops for mapping (only for non-Flamia products)
   const nonFlamiaProducts = allProducts.filter(p => p.business_id !== FLAMIA_BUSINESS_ID);
@@ -93,34 +103,66 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
     }
   }
 
-  // Create category map for quick lookup
+  // Create category maps for quick lookup (by id and by name)
   const categoryLookup = new Map(
     productCategories.map(cat => [cat.id, cat])
   );
+  const categoryNameLookup = new Map(
+    productCategories.map(cat => [String(cat.name).toLowerCase(), cat])
+  );
 
-  // Map products to marketplace format
-  const mappedProducts: MarketplaceProduct[] = allProducts.map((product: any) => {
+  // Map business products to marketplace format
+  const mappedBusinessProducts: MarketplaceProduct[] = allProducts.map((product: any) => {
     const category = categoryLookup.get(product.category_id);
     const isFlamiaProduct = product.business_id === FLAMIA_BUSINESS_ID;
     const shop = !isFlamiaProduct ? sellerShopsMap.get(product.business_id) : null;
-        
-        return {
-          id: product.id,
-          name: product.name,
-          description: product.description || '',
-          price: product.price,
-          original_price: product.original_price,
-          image_url: product.image_url,
+
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description || '',
+      price: product.price,
+      original_price: product.original_price,
+      image_url: product.image_url,
       category: category?.name || 'Other',
-          category_id: product.category_id,
+      category_id: product.category_id,
       source: isFlamiaProduct ? 'flamia' : 'seller',
-          shop_name: shop?.shop_name,
-          shop_slug: shop?.shop_slug,
-          is_available: product.is_available,
+      shop_name: shop?.shop_name,
+      shop_slug: shop?.shop_slug,
+      is_available: product.is_available,
       featured: product.is_featured || false,
-      viewCount: 0 // Will be loaded lazily if needed
-        };
-      });
+      viewCount: 0, // Will be loaded lazily if needed
+    };
+  });
+
+  // Map Flamia gadgets to marketplace format
+  const mappedGadgets: MarketplaceProduct[] = allGadgets.map((gadget: any) => {
+    const matchedCategory = gadget.category
+      ? categoryNameLookup.get(String(gadget.category).toLowerCase())
+      : undefined;
+
+    return {
+      id: gadget.id,
+      name: gadget.name,
+      description: gadget.description || '',
+      price: gadget.price,
+      original_price: gadget.original_price,
+      image_url: gadget.image_url,
+      category: matchedCategory?.name || gadget.category || 'Other',
+      category_id: matchedCategory?.id,
+      source: 'flamia',
+      shop_name: undefined,
+      shop_slug: undefined,
+      is_available: gadget.in_stock,
+      featured: gadget.featured || false,
+      viewCount: 0,
+    };
+  });
+
+  const mappedProducts: MarketplaceProduct[] = [
+    ...mappedBusinessProducts,
+    ...mappedGadgets,
+  ];
 
   // Group products by category
       const categoryMap = new Map<string, CategoryGroup>();
@@ -139,16 +181,16 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
   mappedProducts.forEach(product => {
     if (product.category_id && categoryMap.has(product.category_id)) {
       categoryMap.get(product.category_id)!.products.push(product);
-        } else {
+    } else {
       // Fallback: try to find category by name
       const matchedCategory = Array.from(categoryMap.values()).find(
-        cat => cat.name.toLowerCase() === product.category.toLowerCase()
+        cat => cat.name.toLowerCase() === String(product.category).toLowerCase()
       );
-          if (matchedCategory) {
+      if (matchedCategory) {
         matchedCategory.products.push(product);
-          }
-        }
-      });
+      }
+    }
+  });
 
   // Convert to array and sort
       const categorizedProducts = Array.from(categoryMap.values())
