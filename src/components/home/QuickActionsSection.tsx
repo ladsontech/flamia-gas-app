@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { RotateCw, Flame } from 'lucide-react';
+import { RotateCw, Flame, Wrench } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const QuickActionsSection: React.FC = () => {
@@ -12,28 +12,40 @@ const QuickActionsSection: React.FC = () => {
         Quick Actions
       </h2>
       
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         <div 
-          className="bg-card rounded-lg border border-border p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          className="bg-card rounded-lg border border-border p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           onClick={() => navigate('/refill')}
         >
           <div className="flex flex-col items-center space-y-3 text-center">
-            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-              <RotateCw className="w-6 h-6 text-accent" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <RotateCw className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
             </div>
-            <span className="text-sm font-medium text-foreground">Order Gas Refill</span>
+            <span className="text-xs sm:text-sm font-medium text-foreground">Order Gas Refill</span>
           </div>
         </div>
 
         <div 
-          className="bg-card rounded-lg border border-border p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          className="bg-card rounded-lg border border-border p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           onClick={() => navigate('/gas-safety')}
         >
           <div className="flex flex-col items-center space-y-3 text-center">
-            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-              <Flame className="w-6 h-6 text-accent" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
             </div>
-            <span className="text-sm font-medium text-foreground">Gas Safety</span>
+            <span className="text-xs sm:text-sm font-medium text-foreground">Gas Safety</span>
+          </div>
+        </div>
+
+        <div 
+          className="bg-card rounded-lg border border-border p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          onClick={() => navigate('/accessories')}
+        >
+          <div className="flex flex-col items-center space-y-3 text-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Wrench className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
+            </div>
+            <span className="text-xs sm:text-sm font-medium text-foreground">Gas Accessories</span>
           </div>
         </div>
       </div>
