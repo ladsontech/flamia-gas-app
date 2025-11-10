@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Package, Star, Eye, Maximize2 } from 'lucide-react';
+import { ShoppingCart, Package, Eye, Maximize2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getProductViewCount } from '@/services/productViewsService';
@@ -41,6 +41,7 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const [viewCount, setViewCount] = useState<number>(initialViewCount || 0);
+  const conditionLabel = condition ? (String(condition).toLowerCase().includes('used') ? 'UK Used' : 'New') : undefined;
   
   const discountPercent = originalPrice && originalPrice > price
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
@@ -112,16 +113,10 @@ export const ProductCard = ({
         
         {/* Badges - Ensure they stay below sticky header (z-40) and AppBar (z-50) */}
         <div className="absolute top-2 left-2 flex flex-col gap-1" style={{ zIndex: 1 }}>
-          {featured && (
+          {/* Condition badge (replaces featured star badge) */}
+          {conditionLabel && (
             <Badge className="bg-orange-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
-              <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 fill-current" />
-              <span className="text-xs">New</span>
-            </Badge>
-          )}
-          {/* Flamia condition badge */}
-          {source === 'flamia' && condition && (
-            <Badge className="bg-blue-600 text-white border-0 shadow-sm text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">
-              {String(condition).toLowerCase().includes('used') ? 'Used' : 'New'}
+              <span className="text-xs">{conditionLabel}</span>
             </Badge>
           )}
         </div>
