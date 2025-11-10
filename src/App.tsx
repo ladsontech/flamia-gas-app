@@ -93,7 +93,8 @@ const AppContent = () => {
   
   // Routes that don't need loading screen (no redirects)
   const isHomeRoute = location.pathname === '/' || location.pathname === '/home';
-  const shouldShowLoading = !isStorefront && !isPolicyRoute && !isHomeRoute && roleLoading;
+  const isShopRoute = location.pathname.startsWith('/shop') || location.pathname.startsWith('/gadgets');
+  const shouldShowLoading = !isStorefront && !isPolicyRoute && !isHomeRoute && !isShopRoute && roleLoading;
 
   // Show loading screen only for routes that might redirect (not home page)
   if (shouldShowLoading) {
