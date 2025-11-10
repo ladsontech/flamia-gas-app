@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Gadget } from '@/types/gadget';
 import ImageUpload from './ImageUpload';
 import { Plus, Edit, Trash2, Star } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 
 // Expanded, ecommerce-style categories for Flamia products
 const categories = [
@@ -90,6 +91,8 @@ const GadgetsManager: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingPreviews, setPendingPreviews] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -240,33 +243,60 @@ const GadgetsManager: React.FC = () => {
         featured: formData.featured
       };
 
+      let productId = editingGadget?.id;
+
       if (editingGadget) {
         const { error } = await supabase
           .from('flamia_products')
           .update(gadgetData)
           .eq('id', editingGadget.id);
-
         if (error) throw error;
-
-        toast({
-          title: "Success",
-          description: "Gadget updated successfully!"
-        });
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('flamia_products')
-          .insert([gadgetData]);
-
+          .insert([gadgetData])
+          .select('id')
+          .single();
         if (error) throw error;
-
-        toast({
-          title: "Success",
-          description: "Gadget created successfully!"
-        });
+        productId = data?.id;
       }
+
+      // Upload gallery images to storage/products/<productId>/...
+      if (productId && pendingFiles.length > 0) {
+        const uploadedUrls: string[] = [];
+        for (const file of pendingFiles.slice(0, 4)) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+          const filePath = `products/${productId}/${fileName}`;
+          const { error: uploadError } = await supabase.storage
+            .from('gadgets')
+            .upload(filePath, file);
+          if (!uploadError) {
+            const { data } = supabase.storage.from('gadgets').getPublicUrl(filePath);
+            if (data?.publicUrl) uploadedUrls.push(data.publicUrl);
+          }
+        }
+        // Ensure primary image set
+        if (uploadedUrls.length > 0) {
+          const { error: updateError } = await supabase
+            .from('flamia_products')
+            .update({ image_url: gadgetData.image_url || uploadedUrls[0] })
+            .eq('id', productId);
+          if (updateError) {
+            console.warn('Failed to set primary image_url', updateError);
+          }
+        }
+      }
+
+      toast({
+        title: "Success",
+        description: editingGadget ? "Product updated successfully!" : "Product created successfully!"
+      });
 
       setIsDialogOpen(false);
       resetForm();
+      setPendingFiles([]);
+      setPendingPreviews([]);
       fetchGadgets();
     } catch (error) {
       toast({
@@ -466,15 +496,48 @@ const GadgetsManager: React.FC = () => {
                   </div>
                 </div>
 
-                <div>
-                  <ImageUpload
-                    bucket="gadgets"
-                    title="Product Image"
-                    currentImage={formData.image_url}
-                    onUploadComplete={(url) => setFormData({...formData, image_url: url})}
+                <div className="space-y-2">
+                  <Label>Product Images (Max 4)</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      const available = 4 - pendingFiles.length;
+                      const selected = files.slice(0, available);
+                      setPendingFiles(prev => [...prev, ...selected]);
+                      selected.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setPendingPreviews(prev => [...prev, String(ev.target?.result || '')]);
+                        reader.readAsDataURL(file);
+                      });
+                    }}
+                    disabled={pendingFiles.length >= 4}
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Recommended: Square image, at least 800x800 for best quality.
+                  {pendingPreviews.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                      {pendingPreviews.map((src, idx) => (
+                        <div key={idx} className="relative">
+                          <img src={src} alt={`Preview ${idx + 1}`} className="w-full aspect-square object-cover rounded" />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-1 right-1 h-6 w-6"
+                            onClick={() => {
+                              setPendingPreviews(prev => prev.filter((_, i) => i !== idx));
+                              setPendingFiles(prev => prev.filter((_, i) => i !== idx));
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Recommended: Square images, at least 800x800 for best quality. The first uploaded image becomes the main image.
                   </p>
                 </div>
               </div>

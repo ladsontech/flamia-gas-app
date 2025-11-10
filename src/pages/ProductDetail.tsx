@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ShoppingCart, Share2, Package, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { Loader2 } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
@@ -19,6 +20,8 @@ const ProductDetail = () => {
   const { categories, loading } = useMarketplaceProducts();
   const { addToCart } = useCart();
   const [viewCount, setViewCount] = useState<number>(0);
+  const [gallery, setGallery] = useState<string[]>([]);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
 
   // Find product across all categories
   const product = categories
@@ -47,6 +50,34 @@ const ProductDetail = () => {
       trackProductView(product.id, productType);
       getProductViewCount(product.id).then(count => setViewCount(count));
     }
+  }, [product]);
+
+  // Load gallery images for Flamia products from storage
+  useEffect(() => {
+    const loadGallery = async () => {
+      if (!product || product.source !== 'flamia') return;
+      try {
+        const folder = `products/${product.id}`;
+        const { data, error } = await supabase.storage.from('gadgets').list(folder);
+        if (error) {
+          console.warn('Gallery list error', error);
+          setGallery(product.image_url ? [product.image_url] : []);
+          setActiveImage(product.image_url || null);
+          return;
+        }
+        const urls = (data || [])
+          .filter(item => item && item.name)
+          .map(item => supabase.storage.from('gadgets').getPublicUrl(`${folder}/${item.name}`).data.publicUrl);
+        const unique = Array.from(new Set([...(product.image_url ? [product.image_url] : []), ...urls]));
+        setGallery(unique.slice(0, 4));
+        setActiveImage(unique[0] || null);
+      } catch (e) {
+        console.warn('Gallery load error', e);
+        setGallery(product.image_url ? [product.image_url] : []);
+        setActiveImage(product.image_url || null);
+      }
+    };
+    loadGallery();
   }, [product]);
 
   const handleAddToCart = () => {
@@ -181,22 +212,43 @@ const ProductDetail = () => {
 
         {/* Main Product Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 mb-8 lg:mb-12">
-          {/* Product Image */}
+          {/* Product Image / Gallery */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="lg:col-span-1"
           >
-            <div className="w-full max-w-sm mx-auto lg:max-w-none h-64 sm:h-80 lg:h-96 xl:h-[28rem] bg-white rounded-xl lg:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-              {product.image_url ? (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-3 lg:p-4"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                  <Package className="w-16 h-16 sm:w-20 sm:h-20 text-gray-300" />
+            <div className="w-full max-w-sm mx-auto lg:max-w-none bg-white rounded-xl lg:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+              <div className="h-64 sm:h-80 lg:h-96 xl:h-[28rem] relative">
+                {activeImage ? (
+                  <img
+                    src={activeImage}
+                    alt={product.name}
+                    className="absolute inset-0 w-full h-full object-contain p-3 lg:p-4"
+                  />
+                ) : product.image_url ? (
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="absolute inset-0 w-full h-full object-contain p-3 lg:p-4"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+                    <Package className="w-16 h-16 sm:w-20 sm:h-20 text-gray-300" />
+                  </div>
+                )}
+              </div>
+              {gallery.length > 1 && (
+                <div className="grid grid-cols-4 gap-2 p-2 border-t">
+                  {gallery.map((url) => (
+                    <button
+                      key={url}
+                      className={`border rounded-md overflow-hidden aspect-square ${activeImage === url ? 'ring-2 ring-orange-500' : ''}`}
+                      onClick={() => setActiveImage(url)}
+                    >
+                      <img src={url} alt="thumb" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
