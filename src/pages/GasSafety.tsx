@@ -102,7 +102,7 @@ const GasSafety = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 pt-16">
+    <div className="min-h-screen bg-background pt-16">
       <Helmet>
         <title>Gas Safety Tips Uganda | LPG Safety Guidelines | Flamia</title>
         <meta name="description" content="Essential gas safety tips for Uganda. Learn proper LPG cylinder storage, leak detection, safe cooking practices. Expert gas safety guidelines from Flamia." />
@@ -154,8 +154,8 @@ const GasSafety = () => {
                 <Card className="h-full hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${tip.color} flex items-center justify-center`}>
-                        <tip.icon className="w-5 h-5 text-white" />
+                      <div className={`w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center`}>
+                        <tip.icon className="w-5 h-5 text-accent" />
                       </div>
                       <div>
                         <CardTitle className="text-lg">{tip.title}</CardTitle>
@@ -169,7 +169,7 @@ const GasSafety = () => {
                           key={tipIndex}
                           className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg"
                         >
-                          <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                           <span className="text-sm text-gray-700">{tipText}</span>
                         </div>
                       ))}
@@ -187,7 +187,7 @@ const GasSafety = () => {
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Emergency Response Guide</h2>
           </div>
 
-          <Card className="p-6 bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
+          <Card className="p-6">
             <div className="space-y-4">
               {emergencySteps.map((step, index) => (
                 <div key={step.step} className="flex items-start gap-3">
@@ -250,7 +250,7 @@ const GasSafety = () => {
                     key={index}
                     className="flex flex-col sm:flex-row sm:items-center gap-2 p-2 bg-gray-50 rounded-lg"
                   >
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${item.color} w-fit`}>
+                    <span className="px-2 py-1 rounded text-xs font-semibold bg-accent/10 text-accent w-fit">
                       {item.frequency}
                     </span>
                     <span className="text-sm text-gray-700">{item.task}</span>
@@ -293,7 +293,7 @@ const GasSafety = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gradient-to-r from-accent/10 to-blue-50 rounded-2xl p-4 text-center border border-accent/20"
+          className="bg-accent/5 rounded-2xl p-4 text-center border border-accent/20"
         >
           <div className="max-w-3xl mx-auto">
             <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
