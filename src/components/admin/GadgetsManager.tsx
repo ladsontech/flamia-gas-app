@@ -83,8 +83,16 @@ const GadgetsManager: React.FC = () => {
       if (error) throw error;
       setGadgets((data || []).map(gadget => ({
         ...gadget,
-        condition: gadget.condition as 'brand_new' | 'used',
-        featured: gadget.featured || false
+        name: gadget.name || 'Unnamed Product',
+        description: gadget.description || '',
+        price: typeof gadget.price === 'number' ? gadget.price : Number(gadget.price) || 0,
+        original_price: gadget.original_price ?? null,
+        category: gadget.category || '',
+        brand: gadget.brand || '',
+        image_url: gadget.image_url || '',
+        condition: (gadget.condition as 'brand_new' | 'used') || 'brand_new',
+        in_stock: Boolean(gadget.in_stock),
+        featured: Boolean(gadget.featured)
       })));
     } catch (error) {
       toast({
@@ -160,11 +168,33 @@ const GadgetsManager: React.FC = () => {
     try {
       setLoading(true);
 
+      if (!formData.name || !formData.price || !formData.category || !formData.condition) {
+        toast({
+          title: "Missing required fields",
+          description: "Name, Price, Category and Condition are required.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      const parsedPrice = parseFloat(formData.price);
+      const parsedOriginal = formData.original_price ? parseFloat(formData.original_price) : null;
+      if (Number.isNaN(parsedPrice) || (formData.original_price && Number.isNaN(parsedOriginal as number))) {
+        toast({
+          title: "Invalid price",
+          description: "Please enter valid numeric values for price fields.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
       const gadgetData = {
         name: formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        original_price: formData.original_price ? parseFloat(formData.original_price) : null,
+        description: formData.description || '',
+        price: parsedPrice,
+        original_price: parsedOriginal,
         category: formData.category,
         brand: formData.brand || null,
         image_url: formData.image_url || null,
