@@ -341,6 +341,7 @@ const ProductDetail = () => {
                   shopName={relatedProduct.shop_name}
                   source={relatedProduct.source}
                   viewCount={relatedProduct.viewCount}
+                  condition={relatedProduct.condition}
                   onAddToCart={() => {
                     addToCart({
                       type: 'shop',
