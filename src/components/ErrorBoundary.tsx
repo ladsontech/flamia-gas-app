@@ -35,6 +35,8 @@ class ErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
+      const isAdminRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+      const errorMessage = this.state.error ? this.state.error.message : undefined;
       return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <Card className="max-w-lg w-full">
@@ -49,6 +51,13 @@ class ErrorBoundary extends React.Component<
                 We're sorry, but an unexpected error occurred. This might be due to a 
                 temporary issue with the app initialization.
               </p>
+
+              {isAdminRoute && errorMessage && (
+                <div className="text-xs text-left bg-muted/60 rounded-md p-3 border">
+                  <div className="font-medium mb-1">Error message</div>
+                  <div className="text-muted-foreground break-words">{errorMessage}</div>
+                </div>
+              )}
               
               <div className="flex flex-col gap-2">
                 <Button onClick={this.handleReset} className="w-full">
