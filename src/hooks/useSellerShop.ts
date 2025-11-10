@@ -51,6 +51,8 @@ export const useSellerShop = () => {
     isApproved: shop?.is_approved ?? false,
     isActive: shop?.is_active ?? false,
     hasPendingApplication: application?.status === 'pending',
+    applicationStatus: application?.status ?? null,
+    isApplicationApproved: application?.status === 'approved',
     loading,
     error,
     refetch: loadShop,

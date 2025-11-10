@@ -89,7 +89,9 @@ const Account = () => {
     application: sellerApplication,
     isSeller, 
     isApproved: sellerApproved,
-    hasPendingApplication 
+    hasPendingApplication,
+    isApplicationApproved,
+    refetch: refetchSellerShop
   } = useSellerShop();
 
   const {
@@ -146,6 +148,17 @@ const Account = () => {
     }, 200); // Short delay for smooth transition (reduced since we're prefetching)
     return () => clearTimeout(timer);
   }, [activeSection]);
+
+  // Refresh seller shop status when page becomes visible (captures approval changes)
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        refetchSellerShop?.();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [refetchSellerShop]);
 
   // Prefetch all sections in the background for instant switching
   useEffect(() => {
@@ -591,7 +604,7 @@ const Account = () => {
             )}
 
             {/* Start Selling - Unified Entry Point */}
-            {!isSeller && !isAffiliate && !hasPendingApplication && !isAdmin && (
+            {!isSeller && !isAffiliate && !hasPendingApplication && !isApplicationApproved && !isAdmin && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-primary/20">
                 <CardContent className="p-0">
                   <Link to="/seller-options">
@@ -603,6 +616,28 @@ const Account = () => {
                         <div>
                           <span className="font-medium text-foreground">Start Selling</span>
                           <p className="text-xs text-muted-foreground">Merchant or Affiliate shop</p>
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground">›</div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Seller Application Approved - Prompt Setup */}
+            {!isSeller && isApplicationApproved && (
+              <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-green-500/20">
+                <CardContent className="p-0">
+                  <Link to="/sell">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
+                          <Store className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">Set Up Your Store</span>
+                          <p className="text-xs text-muted-foreground">Your seller application is approved</p>
                         </div>
                       </div>
                       <div className="text-muted-foreground">›</div>
