@@ -496,60 +496,6 @@ const Shop: React.FC = () => {
                 </Sheet>
               </div>
 
-              {/* Mobile: Compact Sort Buttons */}
-              <div className="md:hidden -mx-1 px-1 pb-1">
-                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-                  <Button
-                    variant={sortBy === 'newest' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSortBy('newest')}
-                    className={`h-8 px-3 text-xs whitespace-nowrap ${
-                      sortBy === 'newest'
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    Newest
-                  </Button>
-                  <Button
-                    variant={sortBy === 'popular' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSortBy('popular')}
-                    className={`h-8 px-3 text-xs whitespace-nowrap ${
-                      sortBy === 'popular'
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    Popular
-                  </Button>
-                  <Button
-                    variant={sortBy === 'price-low' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSortBy('price-low')}
-                    className={`h-8 px-3 text-xs whitespace-nowrap ${
-                      sortBy === 'price-low'
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    Price: Low-High
-                  </Button>
-                  <Button
-                    variant={sortBy === 'price-high' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSortBy('price-high')}
-                    className={`h-8 px-3 text-xs whitespace-nowrap ${
-                      sortBy === 'price-high'
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
-                        : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    Price: High-Low
-                  </Button>
-                </div>
-              </div>
-
               {/* Desktop: Sort Controls - Compact (in header) */}
               <div className="hidden md:flex items-center gap-2">
                 <span className="text-xs text-gray-600 font-medium">Sort:</span>
