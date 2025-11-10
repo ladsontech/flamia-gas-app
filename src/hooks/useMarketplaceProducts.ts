@@ -70,37 +70,15 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
 
   if (categoriesResult.error) throw categoriesResult.error;
   if (productsResult.error) throw productsResult.error;
-  // Try to fetch Flamia-owned products from 'flamia_products' (preferred).
-  // If the table doesn't exist, fallback to 'gadgets' (legacy), otherwise silently skip.
-  let allGadgets: any[] = [];
-  try {
-    // Preferred: flamia_products
-    const { data: flamiaData, error: flamiaError } = await supabase
-      .from('flamia_products')
-      .select('*')
-      .eq('in_stock', true)
-      .order('created_at', { ascending: false })
-      .limit(500);
+  // Fetch Flamia products
+  const { data: flamiaProducts, error: flamiaError } = await supabase
+    .from('flamia_products')
+    .select('*')
+    .eq('in_stock', true)
+    .order('created_at', { ascending: false })
+    .limit(500);
 
-    if (!flamiaError && Array.isArray(flamiaData)) {
-      allGadgets = flamiaData;
-    } else {
-      // Fallback to legacy 'gadgets' table
-      const { data: gadgetsData, error: gadgetsError } = await supabase
-        .from('gadgets')
-        .select('*')
-        .eq('in_stock', true)
-        .order('created_at', { ascending: false })
-        .limit(500);
-
-      if (!gadgetsError && Array.isArray(gadgetsData)) {
-        allGadgets = gadgetsData;
-      }
-    }
-  } catch (_e) {
-    // Ignore if neither table is available
-    allGadgets = [];
-  }
+  const allGadgets = flamiaProducts || [];
 
   const productCategories = (categoriesResult.data || []) as any[];
   const allProducts = productsResult.data || [];
@@ -157,11 +135,11 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
     };
   });
 
-  // Map Flamia gadgets to marketplace format
+  // Map Flamia products to marketplace format with category matching
   const mappedGadgets: MarketplaceProduct[] = allGadgets.map((gadget: any) => {
-    const matchedCategory = gadget.category
-      ? categoryNameLookup.get(String(gadget.category).toLowerCase())
-      : undefined;
+    // Try to match category by name (case insensitive)
+    const categoryName = String(gadget.category || '').toLowerCase();
+    const matchedCategory = categoryNameLookup.get(categoryName);
 
     return {
       id: gadget.id,
@@ -199,17 +177,24 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
         });
       });
 
-  // Add products to their categories
+  // Add products to their categories (try both category_id and name matching)
   mappedProducts.forEach(product => {
+    let added = false;
+    
+    // First try by category_id
     if (product.category_id && categoryMap.has(product.category_id)) {
       categoryMap.get(product.category_id)!.products.push(product);
-    } else {
-      // Fallback: try to find category by name
+      added = true;
+    } 
+    
+    // Fallback: try to find category by name (case insensitive)
+    if (!added && product.category) {
       const matchedCategory = Array.from(categoryMap.values()).find(
         cat => cat.name.toLowerCase() === String(product.category).toLowerCase()
       );
       if (matchedCategory) {
         matchedCategory.products.push(product);
+        added = true;
       }
     }
   });
