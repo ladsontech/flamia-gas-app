@@ -117,7 +117,7 @@ const Admin = () => {
           <ScrollArea className="w-full">
             <Tabs defaultValue="gadgets" className="w-full">
               <TabsList className="inline-flex h-8 items-center justify-start rounded-md bg-muted p-0.5 text-muted-foreground w-max mb-2">
-                <TabsTrigger value="gadgets" className="text-xs px-2 h-7">📱 Gadgets</TabsTrigger>
+                <TabsTrigger value="gadgets" className="text-xs px-2 h-7">📦 Flamia Products</TabsTrigger>
                 <TabsTrigger value="promotions" className="text-xs px-2 h-7">📢 Ads</TabsTrigger>
                 <TabsTrigger value="promo-codes" className="text-xs px-2 h-7">🏷️ Promo</TabsTrigger>
                 <TabsTrigger value="carousel" className="text-xs px-2 h-7">🎠 Carousel</TabsTrigger>

@@ -250,18 +250,18 @@ const GadgetsManager: React.FC = () => {
   return (
     <div className="space-y-4 md:space-y-6 p-2 md:p-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-xl md:text-2xl font-bold">Gadgets Management</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Flamia Products Management</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
-              Add Gadget
+              Add Product
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-full sm:max-w-5xl max-h-[90vh] overflow-y-auto mx-2">
             <DialogHeader>
               <DialogTitle>
-                {editingGadget ? 'Edit Gadget' : 'Add New Gadget'}
+                {editingGadget ? 'Edit Product' : 'Add New Product'}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
@@ -423,7 +423,7 @@ const GadgetsManager: React.FC = () => {
                       : 'bg-yellow-500 text-white'
                   }`}
                 >
-                  {gadget.condition === 'brand_new' ? 'Brand New' : 'Used'}
+                  {gadget.condition === 'brand_new' ? 'Brand New' : 'UK Used'}
                 </Badge>
                 {gadget.featured && (
                   <Badge className="bg-orange-500 text-white">
@@ -472,7 +472,7 @@ const GadgetsManager: React.FC = () => {
 
       {gadgets.length === 0 && !loading && (
         <div className="text-center py-8 md:py-12">
-          <p className="text-gray-500">No gadgets found. Add your first gadget to get started!</p>
+          <p className="text-gray-500">No products found. Add your first product to get started!</p>
         </div>
       )}
     </div>
