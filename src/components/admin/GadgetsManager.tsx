@@ -196,7 +196,7 @@ const GadgetsManager: React.FC = () => {
         price: parsedPrice,
         original_price: parsedOriginal,
         category: formData.category,
-        brand: formData.brand || null,
+        brand: !formData.brand || formData.brand === 'other' ? null : formData.brand,
         image_url: formData.image_url || null,
         condition: formData.condition,
         in_stock: formData.in_stock,
@@ -374,7 +374,7 @@ const GadgetsManager: React.FC = () => {
                               {brand}
                             </SelectItem>
                           ))}
-                          <SelectItem value="">Other / Not Listed</SelectItem>
+                          <SelectItem value="other">Other / Not Listed</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
