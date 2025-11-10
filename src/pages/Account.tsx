@@ -629,7 +629,7 @@ const Account = () => {
             {!isSeller && isApplicationApproved && (
               <Card className="cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98] border-green-500/20">
                 <CardContent className="p-0">
-                  <Link to="/sell">
+                  <Link to="/seller/dashboard">
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">

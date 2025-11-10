@@ -49,9 +49,7 @@ const Sell = () => {
             if (shop) {
               setSellerSlug(shop.shop_slug);
             } else {
-              // Application is approved but shop doesn't exist - reset state
-              console.warn('Shop not found despite approved application');
-              setExistingApplication(null);
+              // Keep the application so the approved status card can guide user to dashboard setup
               setSellerSlug(null);
             }
           }
