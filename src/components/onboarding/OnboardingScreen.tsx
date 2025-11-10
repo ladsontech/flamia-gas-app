@@ -165,7 +165,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground px-2 sm:px-4 leading-tight"
+                className="text-[clamp(1.5rem,6vw,2.25rem)] font-bold text-foreground px-2 sm:px-4 leading-tight"
               >
                 {slides[currentSlide].title}
               </motion.h2>
@@ -175,7 +175,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25, duration: 0.3 }}
-                className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed px-3 sm:px-4 md:px-6 max-w-md mx-auto"
+                className="text-muted-foreground text-[clamp(1rem,4.5vw,1.25rem)] leading-relaxed px-3 sm:px-4 md:px-6 max-w-md mx-auto"
               >
                 {slides[currentSlide].description}
               </motion.p>
@@ -196,7 +196,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                       className="mt-0.5 sm:mt-1 h-5 w-5 sm:h-5 sm:w-5"
                     />
                     <div className="flex-1 pt-0.5">
-                      <label htmlFor="terms" className="text-xs sm:text-sm md:text-base text-foreground cursor-pointer leading-relaxed block">
+                      <label htmlFor="terms" className="text-[clamp(0.95rem,4.2vw,1.125rem)] text-foreground cursor-pointer leading-relaxed block">
                         I accept the{' '}
                         <Link
                           to="/terms-and-conditions"
@@ -228,7 +228,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                       className="mt-0.5 sm:mt-1 h-5 w-5 sm:h-5 sm:w-5"
                     />
                     <div className="flex-1 pt-0.5">
-                      <label htmlFor="privacy" className="text-xs sm:text-sm md:text-base text-foreground cursor-pointer leading-relaxed block">
+                      <label htmlFor="privacy" className="text-[clamp(0.95rem,4.2vw,1.125rem)] text-foreground cursor-pointer leading-relaxed block">
                         I accept the{' '}
                         <Link
                           to="/privacy-policy"
@@ -273,7 +273,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             (currentSlide === 5 && !termsAccepted) ||
             (currentSlide === 6 && !privacyAccepted)
           }
-          className="w-full max-w-md sm:max-w-lg mx-auto flex items-center justify-center gap-2 h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg font-semibold active:scale-[0.98] transition-transform touch-manipulation shadow-lg"
+          className="w-full max-w-md sm:max-w-lg mx-auto flex items-center justify-center gap-2 h-11 sm:h-12 md:h-14 text-[clamp(1rem,4.5vw,1.25rem)] font-semibold active:scale-[0.98] transition-transform touch-manipulation shadow-lg"
           size="lg"
         >
           {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
