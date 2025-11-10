@@ -308,7 +308,13 @@ const Shop: React.FC = () => {
       src: e.src,
     }));
     // Combine (we keep all extras as requested, even if they map to the same page)
-    return [...dbLogos, ...extra];
+    const combined = [...dbLogos, ...extra];
+    // Remove umbrella categories (electronics, fashion, home, etc.) that are subdivided
+    const isUmbrella = (n: string) => {
+      const s = sanitize(n);
+      return s === 'electronics' || s === 'fashion' || s === 'home' || s === 'home-appliances' || s === 'home-and-kitchen' || s === 'home-kitchen';
+    };
+    return combined.filter(item => !isUmbrella(item.name));
   }, [allCategories]);
 
   if (loading) {
@@ -467,7 +473,7 @@ const Shop: React.FC = () => {
                       {allCategories.length > 0 && (
                         <div>
                           <h3 className="font-semibold text-xs mb-2 text-gray-800">Categories</h3>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-3 gap-2 max-h-[65vh] overflow-y-auto pr-1">
                             <Link to="/shop" onClick={() => { setSelectedCategory('all'); setFiltersOpen(false); }} className="block">
                               <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
                                 <div className="relative w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
@@ -647,7 +653,7 @@ const Shop: React.FC = () => {
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
               <h3 className="font-semibold text-sm text-gray-900 mb-4">Categories</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 max-h-[70vh] overflow-y-auto pr-1">
                 <Link to="/shop" onClick={() => setSelectedCategory('all')} className="block">
                   <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
                     <div className="relative w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
