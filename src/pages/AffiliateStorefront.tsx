@@ -271,7 +271,14 @@ export default function AffiliateStorefront() {
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[80vh]">
                 <SheetHeader>
-                  <SheetTitle>Filters & Sort</SheetTitle>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+                      <Store className="w-4 h-4 text-white" />
+                    </div>
+                    <SheetTitle className="text-base sm:text-lg font-bold bg-gradient-to-r from-orange-600 to-amber-500 text-transparent bg-clip-text tracking-wide">
+                      Flamia Mall
+                    </SheetTitle>
+                  </div>
                 </SheetHeader>
                 <div className="py-4 space-y-6">
                   {/* Categories */}

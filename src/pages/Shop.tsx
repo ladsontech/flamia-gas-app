@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, RefreshCw, AlertCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { Search, RefreshCw, AlertCircle, ChevronRight, SlidersHorizontal, Store } from 'lucide-react';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { useCart } from '@/contexts/CartContext';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
@@ -466,7 +466,14 @@ const Shop: React.FC = () => {
                   </SheetTrigger>
                   <SheetContent side="right" className="w-[280px] sm:w-[340px]">
                     <SheetHeader>
-                      <SheetTitle className="text-sm">Filters & Sort</SheetTitle>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+                          <Store className="w-4 h-4 text-white" />
+                        </div>
+                        <SheetTitle className="text-base sm:text-lg font-bold bg-gradient-to-r from-orange-600 to-amber-500 text-transparent bg-clip-text tracking-wide">
+                          Flamia Mall
+                        </SheetTitle>
+                      </div>
                     </SheetHeader>
                     <div className="py-3 space-y-5 overflow-y-auto">
                       {/* Categories with logos */}
