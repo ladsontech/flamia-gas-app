@@ -493,15 +493,17 @@ const GadgetsManager: React.FC = () => {
                   {gadget.in_stock ? 'In Stock' : 'Out of Stock'}
                 </Badge>
                 <Badge variant="outline">{gadget.category}</Badge>
-                <Badge 
-                  className={`text-xs ${
-                    gadget.condition === 'brand_new' 
-                      ? 'bg-orange-500 text-white' 
-                      : 'bg-yellow-500 text-white'
-                  }`}
-                >
-                  {gadget.condition === 'brand_new' ? 'Brand New' : 'UK Used'}
-                </Badge>
+                {isGadgetCategory(gadget.category) && gadget.condition && (
+                  <Badge 
+                    className={`text-xs ${
+                      gadget.condition === 'brand_new' 
+                        ? 'bg-orange-500 text-white' 
+                        : 'bg-yellow-500 text-white'
+                    }`}
+                  >
+                    {gadget.condition === 'brand_new' ? 'Brand New' : 'UK Used'}
+                  </Badge>
+                )}
                 {gadget.featured && (
                   <Badge className="bg-orange-500 text-white">
                     <Star className="w-3 h-3 mr-1" />
