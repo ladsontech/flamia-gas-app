@@ -162,7 +162,7 @@ export const StorefrontHeader = ({
   }
 
   return (
-    <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 sticky top-0 z-50 shadow-md">
+    <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 sticky top-0 z-50 shadow-md">
       <div className="container max-w-7xl mx-auto px-3 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo/Shop Name */}

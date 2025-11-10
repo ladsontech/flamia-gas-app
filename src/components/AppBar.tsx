@@ -28,7 +28,7 @@ const AppBar = () => {
     }
   ];
 
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm outline-none focus:outline-none" style={{ outline: 'none' }}>
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm outline-none focus:outline-none" style={{ outline: 'none' }}>
       <div className="flex items-center justify-between h-16 md:h-20 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Logo */}
         <Link to="/" className="hover:text-accent transition-colors outline-none focus:outline-none" style={{ outline: 'none' }}>
