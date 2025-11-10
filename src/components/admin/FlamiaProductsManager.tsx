@@ -309,14 +309,14 @@ const FlamiaProductsManager: React.FC = () => {
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Product Name *</Label>
                     <Input
@@ -324,6 +324,7 @@ const FlamiaProductsManager: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                       required
+                      placeholder="e.g., Hisense 43\" Smart TV (Model XYZ)"
                     />
                   </div>
 
@@ -349,6 +350,7 @@ const FlamiaProductsManager: React.FC = () => {
                       value={formData.price}
                       onChange={(e) => setFormData({...formData, price: e.target.value})}
                       required
+                      placeholder="e.g., 450000"
                     />
                   </div>
 
@@ -359,6 +361,7 @@ const FlamiaProductsManager: React.FC = () => {
                       type="number"
                       value={formData.original_price}
                       onChange={(e) => setFormData({...formData, original_price: e.target.value})}
+                      placeholder="e.g., 550000"
                     />
                   </div>
                 </div>
@@ -370,6 +373,7 @@ const FlamiaProductsManager: React.FC = () => {
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     rows={3}
+                    placeholder="Highlight key features, dimensions, warranty, delivery details, etc."
                   />
                 </div>
 
@@ -450,15 +454,15 @@ const FlamiaProductsManager: React.FC = () => {
                     disabled={formData.image_urls.length >= 4}
                   />
                   {formData.image_urls.length > 0 && (
-                    <div className="grid grid-cols-4 gap-2 mt-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                       {formData.image_urls.map((url, index) => (
                         <div key={index} className="relative">
-                          <img src={url} alt={`Product ${index + 1}`} className="w-full h-20 object-cover rounded" />
+                          <img src={url} alt={`Product ${index + 1}`} className="w-full aspect-square object-cover rounded" />
                           <Button
                             type="button"
                             variant="destructive"
                             size="icon"
-                            className="absolute top-0 right-0 h-6 w-6"
+                            className="absolute top-1 right-1 h-6 w-6"
                             onClick={() => removeImage(index)}
                           >
                             <X className="h-3 w-3" />
@@ -467,6 +471,9 @@ const FlamiaProductsManager: React.FC = () => {
                       ))}
                     </div>
                   )}
+                  <p className="text-xs text-muted-foreground">
+                    Tip: Use clear, square images (min 800x800) for best presentation.
+                  </p>
                 </div>
 
                 <div className="flex items-center space-x-4">

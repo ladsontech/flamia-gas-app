@@ -14,8 +14,39 @@ import { Gadget } from '@/types/gadget';
 import ImageUpload from './ImageUpload';
 import { Plus, Edit, Trash2, Star } from 'lucide-react';
 
-const categories = ['Smartphones', 'Laptops', 'Tablets', 'Audio', 'Wearables', 'Gaming'];
-const brands = ['Apple', 'Samsung', 'Google', 'Dell', 'Sony', 'Microsoft', 'HP', 'Lenovo'];
+// Expanded, ecommerce-style categories for Flamia products
+const categories = [
+  // Phones & Tablets
+  'Phones',
+  'Tablets',
+  // Computers
+  'Laptops & PCs',
+  'Monitors',
+  'Printers & Scanners',
+  // TV & Audio
+  'TVs',
+  'Audio',
+  'Home Theater',
+  // Wearables & Cameras
+  'Wearables',
+  'Cameras',
+  'Drones',
+  // Gaming
+  'Gaming Consoles',
+  'Gaming Accessories',
+  // Accessories
+  'Phone Accessories',
+  'Computer Accessories',
+  'Storage & Memory',
+  'Network & Routers',
+  // Power & Lighting
+  'Power & Lighting',
+  // Appliances
+  'Small Appliances',
+  'Kitchen Appliances'
+];
+
+const brands = ['Apple', 'Samsung', 'Tecno', 'Infinix', 'Itel', 'Nokia', 'Xiaomi', 'OPPO', 'Vivo', 'Huawei', 'Realme', 'Google', 'Sony', 'LG', 'Hisense', 'TCL', 'HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Microsoft'];
 
 const GadgetsManager: React.FC = () => {
   const [gadgets, setGadgets] = useState<Gadget[]>([]);
@@ -227,7 +258,7 @@ const GadgetsManager: React.FC = () => {
               Add Gadget
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto mx-2">
+          <DialogContent className="max-w-full sm:max-w-5xl max-h-[90vh] overflow-y-auto mx-2">
             <DialogHeader>
               <DialogTitle>
                 {editingGadget ? 'Edit Gadget' : 'Add New Gadget'}
@@ -243,6 +274,7 @@ const GadgetsManager: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                       required
+                      placeholder="e.g., iPhone 13 Pro Max 256GB"
                     />
                   </div>
 
@@ -254,6 +286,7 @@ const GadgetsManager: React.FC = () => {
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
                       rows={3}
                       required
+                      placeholder="Key features, condition details, warranty, etc."
                     />
                   </div>
 
@@ -311,6 +344,7 @@ const GadgetsManager: React.FC = () => {
                               {brand}
                             </SelectItem>
                           ))}
+                          <SelectItem value="">Other / Not Listed</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -324,7 +358,7 @@ const GadgetsManager: React.FC = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="brand_new">Brand New</SelectItem>
-                        <SelectItem value="used">Used</SelectItem>
+                        <SelectItem value="used">UK Used</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -346,6 +380,9 @@ const GadgetsManager: React.FC = () => {
                     currentImage={formData.image_url}
                     onUploadComplete={(url) => setFormData({...formData, image_url: url})}
                   />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Recommended: Square image, at least 800x800 for best quality.
+                  </p>
                 </div>
               </div>
 
