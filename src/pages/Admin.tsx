@@ -14,7 +14,7 @@ import { SubAdminManager } from "@/components/admin/SubAdminManager";
 import PromotionsManager from "@/components/admin/PromotionsManager";
 import { PromoCodesManager } from "@/components/admin/PromoCodesManager";
 import SellerApplicationsManager from "@/components/admin/SellerApplicationsManager";
-import FlamiaProductsManager from "@/components/admin/FlamiaProductsManager";
+import GadgetsManager from "@/components/admin/GadgetsManager";
 import { AffiliateCommissionsManager } from "@/components/admin/AffiliateCommissionsManager";
 
 // Import services
@@ -131,7 +131,7 @@ const Admin = () => {
               <TabsContent value="gadgets" className="mt-0 space-y-2">
                 <Card className="mx-1">
                   <CardContent className="pt-4">
-                    <FlamiaProductsManager />
+                    <GadgetsManager />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -193,7 +193,7 @@ const Admin = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <FlamiaProductsManager />
+              <GadgetsManager />
             </CardContent>
           </Card>
 
