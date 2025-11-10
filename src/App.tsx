@@ -210,14 +210,14 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SellerCartProvider>
-        <CartProvider>
+      <CartProvider>
+        <SellerCartProvider>
           <Router>
             <AppContent />
             {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
           </Router>
-        </CartProvider>
-      </SellerCartProvider>
+        </SellerCartProvider>
+      </CartProvider>
     </QueryClientProvider>
   );
 }
