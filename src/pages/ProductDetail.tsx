@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ShoppingCart, Share2, Star, Package, Eye } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Share2, Package, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
 import { Loader2 } from 'lucide-react';
@@ -143,6 +143,11 @@ const ProductDetail = () => {
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : 0;
 
+  const conditionLabel =
+    product.condition
+      ? (String(product.condition).toLowerCase().includes('used') ? 'UK Used' : 'New')
+      : undefined;
+
   return (
     <>
       <Helmet>
@@ -207,10 +212,9 @@ const ProductDetail = () => {
                     {product.name}
                   </h1>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {product.featured && (
+                    {conditionLabel && (
                       <Badge className="bg-orange-500 text-white border-0">
-                        <Star className="w-3 h-3 mr-1 fill-current" />
-                        New
+                        {conditionLabel}
                       </Badge>
                     )}
                     {product.source === 'seller' && product.shop_name && (
