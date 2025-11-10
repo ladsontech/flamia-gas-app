@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { supabase } from '@/integrations/supabase/client';
 import type { ProductCategory } from '@/types/seller';
 import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
+import { EXTRA_CATEGORY_LOGOS } from '@/config/categoryLogos';
 
 const Shop: React.FC = () => {
   const { categories, loading, error, refetch } = useMarketplaceProducts();
@@ -245,8 +246,8 @@ const Shop: React.FC = () => {
     return unique;
   };
 
-  const CategoryCard = ({ slug, name, small = false }: { slug: string; name: string; small?: boolean }) => {
-    const candidates = buildLogoCandidates(slug, name);
+  const CategoryCard = ({ slug, name, small = false, src }: { slug: string; name: string; small?: boolean; src?: string }) => {
+    const candidates = src ? [src] : buildLogoCandidates(slug, name);
     const [idx, setIdx] = React.useState(0);
     const currentSrc = candidates[idx] || '/images/icon.png';
     return (
@@ -281,6 +282,34 @@ const Shop: React.FC = () => {
       </Link>
     );
   };
+
+  // Build a comprehensive category list for logos
+  const resolveCategorySlug = (displayName: string) => {
+    const target = sanitize(displayName);
+    // Try to find the best match inside DB categories
+    const match = allCategories.find(cat => {
+      const catName = sanitize(cat.name);
+      return catName === target || catName.includes(target) || target.includes(catName);
+    });
+    return match?.slug || target;
+  };
+
+  const logoCategories = React.useMemo(() => {
+    // Derive from DB first
+    const dbLogos = allCategories.map(c => ({
+      slug: c.slug,
+      name: c.name,
+      src: undefined as string | undefined,
+    }));
+    // Add all extras, mapping to DB slug if possible
+    const extra = EXTRA_CATEGORY_LOGOS.map(e => ({
+      slug: resolveCategorySlug(e.name),
+      name: e.name,
+      src: e.src,
+    }));
+    // Combine (we keep all extras as requested, even if they map to the same page)
+    return [...dbLogos, ...extra];
+  }, [allCategories]);
 
   if (loading) {
     return (
@@ -447,15 +476,11 @@ const Shop: React.FC = () => {
                                 <span className="mt-2 text-center text-xs text-gray-800">All</span>
                               </div>
                             </Link>
-                            {allCategories.map(category => {
-                              const categorySlug = category.slug;
-                              const hasProducts = categories.some(c => c.slug === categorySlug);
-                              return (
-                                <div key={category.id} onClick={() => setFiltersOpen(false)} className={`${!hasProducts ? 'opacity-70' : ''}`}>
-                                  <CategoryCard slug={categorySlug} name={category.name} />
-                                </div>
-                              );
-                            })}
+                            {logoCategories.map((category, idx) => (
+                              <div key={`${category.slug}-${idx}`} onClick={() => setFiltersOpen(false)}>
+                                <CategoryCard slug={category.slug} name={category.name} src={category.src} />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
@@ -631,8 +656,8 @@ const Shop: React.FC = () => {
                     <span className="mt-2 text-center text-xs text-gray-800">All</span>
                   </div>
                 </Link>
-                {allCategories.map(category => (
-                  <CategoryCard key={category.id} slug={category.slug} name={category.name} />
+                {logoCategories.map((category, idx) => (
+                  <CategoryCard key={`${category.slug}-${idx}`} slug={category.slug} name={category.name} src={category.src} />
                 ))}
               </div>
             </div>
@@ -685,8 +710,8 @@ const Shop: React.FC = () => {
               </div>
               {/* Category grid prompt */}
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
-                {allCategories.map(category => (
-                  <CategoryCard key={category.id} slug={category.slug} name={category.name} small />
+                {logoCategories.map((category, idx) => (
+                  <CategoryCard key={`${category.slug}-${idx}`} slug={category.slug} name={category.name} src={category.src} small />
                 ))}
               </div>
               {searchTerm && (
