@@ -179,17 +179,19 @@ const Shop: React.FC = () => {
       return matchesSearch;
     });
     return filtered.sort((a, b) => {
+      // Always prioritize featured products to the top
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
       switch (sortBy) {
         case 'price-low':
           return a.price - b.price;
         case 'price-high':
           return b.price - a.price;
         case 'popular':
-          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+          // Already handled by featured priority above; keep as secondary no-op
+          return 0;
         case 'newest':
         default:
-          if (a.featured && !b.featured) return -1;
-          if (!a.featured && b.featured) return 1;
           return 0;
       }
     });
