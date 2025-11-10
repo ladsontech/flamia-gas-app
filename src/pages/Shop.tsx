@@ -220,6 +220,34 @@ const Shop: React.FC = () => {
     setIsAutoLoading(false);
   }, [gridShowCount, selectedCategory]);
 
+  // Helpers for category UI
+  const getCategoryLogoUrl = (slug: string) => `/images/category_logos/${slug}.png`;
+
+  const CategoryCard = ({ slug, name, small = false }: { slug: string; name: string; small?: boolean }) => (
+    <Link to={`/shop/category/${slug}`} onClick={() => setSelectedCategory(slug)} className="block">
+      <div
+        className={`relative flex flex-col items-center justify-start rounded-xl border transition-colors ${
+          selectedCategory === slug ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200 hover:bg-gray-50'
+        } ${small ? 'p-2' : 'p-3'}`}
+      >
+        <div
+          className={`relative rounded-full bg-orange-100 flex items-center justify-center overflow-visible ${
+            small ? 'w-12 h-12' : 'w-14 h-14'
+          }`}
+        >
+          {/* Image intentionally slightly larger than circle */}
+          <img
+            src={getCategoryLogoUrl(slug)}
+            alt={name}
+            className={`${small ? 'w-14 h-14' : 'w-16 h-16'} object-contain`}
+            loading="lazy"
+          />
+        </div>
+        <span className={`mt-2 text-center ${small ? 'text-[11px]' : 'text-xs'} text-gray-800 line-clamp-1`}>{name}</span>
+      </div>
+    </Link>
+  );
+
   if (loading) {
     return (
       <>
@@ -372,33 +400,26 @@ const Shop: React.FC = () => {
                       <SheetTitle className="text-sm">Filters & Sort</SheetTitle>
                     </SheetHeader>
                     <div className="py-3 space-y-5 overflow-y-auto">
-                      {/* Categories */}
+                      {/* Categories with logos */}
                       {allCategories.length > 0 && (
                         <div>
                           <h3 className="font-semibold text-xs mb-2 text-gray-800">Categories</h3>
-                          <div className="grid grid-cols-2 gap-1.5">
-                            <Link to="/shop" onClick={() => { setSelectedCategory('all'); setFiltersOpen(false); }}>
-                              <Button
-                                variant={selectedCategory === 'all' ? 'secondary' : 'ghost'}
-                                size="sm"
-                                className="h-8"
-                              >
-                                All
-                              </Button>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Link to="/shop" onClick={() => { setSelectedCategory('all'); setFiltersOpen(false); }} className="block">
+                              <div className={`relative flex flex-col items-center justify-start rounded-xl border p-3 ${selectedCategory === 'all' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
+                                <div className="relative w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center overflow-visible">
+                                  <img src="/images/icon.png" alt="All" className="w-16 h-16 object-contain" />
+                                </div>
+                                <span className="mt-2 text-center text-xs text-gray-800">All</span>
+                              </div>
                             </Link>
                             {allCategories.map(category => {
                               const categorySlug = category.slug;
                               const hasProducts = categories.some(c => c.slug === categorySlug);
                               return (
-                                <Link key={category.id} to={`/shop/category/${categorySlug}`} onClick={() => { setSelectedCategory(categorySlug); setFiltersOpen(false); }}>
-                                  <Button
-                                    variant={selectedCategory === categorySlug ? 'secondary' : 'ghost'}
-                                    size="sm"
-                                    className={`h-8 ${!hasProducts ? 'opacity-60' : ''}`}
-                                  >
-                                    {category.name}
-                                  </Button>
-                                </Link>
+                                <div key={category.id} onClick={() => setFiltersOpen(false)} className={`${!hasProducts ? 'opacity-70' : ''}`}>
+                                  <CategoryCard slug={categorySlug} name={category.name} />
+                                </div>
                               );
                             })}
                           </div>
@@ -598,17 +619,28 @@ const Shop: React.FC = () => {
           /* Products by Category - Horizontal when not filtered */
           <div className="flex-1 min-w-0">
           {filteredCategories.length === 0 ? (
-            <div className="text-center py-16 sm:py-20">
-              <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mb-4 mx-auto" />
-              <p className="text-gray-700 text-sm sm:text-base">No products found matching your search.</p>
+            <div className="py-8 sm:py-12 w-full">
+              <div className="text-center mb-6">
+                <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mb-3 mx-auto" />
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">What would you like to shop?</h3>
+                <p className="text-xs sm:text-sm text-gray-600">Select a category to start exploring products</p>
+              </div>
+              {/* Category grid prompt */}
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+                {allCategories.map(category => (
+                  <CategoryCard key={category.id} slug={category.slug} name={category.name} small />
+                ))}
+              </div>
               {searchTerm && (
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSearchTerm('')}
-                  className="mt-4 bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                >
-                  Clear search
-                </Button>
+                <div className="flex justify-center mt-6">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSearchTerm('')}
+                    className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  >
+                    Clear search
+                  </Button>
+                </div>
               )}
             </div>
           ) : (
