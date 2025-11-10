@@ -115,8 +115,8 @@ export const ProductCard = ({
         <div className="absolute top-2 left-2 flex flex-col gap-1" style={{ zIndex: 1 }}>
           {/* Condition badge (replaces featured star badge) */}
           {conditionLabel && (
-            <Badge className="bg-orange-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
-              <span className="text-xs">{conditionLabel}</span>
+            <Badge className="bg-orange-500 text-white border-0 shadow-sm text-[10px] sm:text-xs px-1 sm:px-1.5 py-0">
+              {conditionLabel}
             </Badge>
           )}
         </div>

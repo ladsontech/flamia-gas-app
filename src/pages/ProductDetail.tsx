@@ -25,6 +25,11 @@ const ProductDetail = () => {
     .flatMap(cat => cat.products)
     .find(p => p.id === id);
 
+  // Scroll to top when navigating to a different product
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
+
   // Find related products (same category, different product)
   const relatedProducts = product
     ? categories
@@ -213,7 +218,7 @@ const ProductDetail = () => {
                   </h1>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {conditionLabel && (
-                      <Badge className="bg-orange-500 text-white border-0">
+                      <Badge className="bg-orange-500 text-white border-0 text-[10px] sm:text-xs px-1 sm:px-1.5 py-0">
                         {conditionLabel}
                       </Badge>
                     )}
