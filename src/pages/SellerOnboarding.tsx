@@ -94,14 +94,20 @@ export default function SellerOnboarding() {
         });
         toast({ title: 'Store updated', description: 'Your store details have been saved. Add products next!' });
       } else {
-        // If no shop exists, we cannot create businesses due to RLS; guide user
-        toast({
-          title: 'Shop not provisioned yet',
-          description: 'Your application is approved but the store is not provisioned. Please wait for admin to finalize approval.',
-          variant: 'destructive',
+        // Attempt to provision via Supabase Edge Function with service role
+        const { data, error } = await supabase.functions.invoke('provision-seller-shop', {
+          body: {
+            shopName: form.shop_name,
+            categoryId: form.category_id,
+            shopDescription: form.shop_description || null,
+            shopLogoUrl: form.shop_logo_url || null,
+          }
         });
-        navigate('/sell');
-        return;
+        if (error) {
+          throw error;
+        }
+        // After successful provision, go to dashboard
+        toast({ title: 'Store created', description: 'Your store is ready. Add your first products next!' });
       }
       navigate('/seller/dashboard');
     } catch (e: any) {
