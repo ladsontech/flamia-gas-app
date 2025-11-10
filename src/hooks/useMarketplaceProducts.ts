@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { getProductViewCounts } from '@/services/productViewsService';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface MarketplaceProduct {
@@ -16,6 +17,7 @@ export interface MarketplaceProduct {
   is_available?: boolean;
   featured?: boolean;
   viewCount?: number;
+  condition?: 'brand_new' | 'used' | string;
 }
 
 export interface CategoryGroup {
@@ -179,6 +181,7 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
       is_available: gadget.in_stock,
       featured: gadget.featured || false,
       viewCount: 0,
+      condition: gadget.condition,
     };
   });
 
@@ -186,6 +189,17 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
     ...mappedBusinessProducts,
     ...mappedGadgets,
   ];
+
+  // Attach view counts
+  try {
+    const productIds = mappedProducts.map(p => p.id);
+    const viewCounts = await getProductViewCounts(productIds);
+    mappedProducts.forEach(p => {
+      p.viewCount = viewCounts[p.id] || 0;
+    });
+  } catch (_e) {
+    // If view counts fail, keep defaults
+  }
 
   // Group products by category
       const categoryMap = new Map<string, CategoryGroup>();

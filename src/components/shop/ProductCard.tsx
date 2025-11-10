@@ -17,6 +17,7 @@ interface ProductCardProps {
   shopName?: string;
   source?: string;
   viewCount?: number;
+  condition?: string;
   onAddToCart: () => void;
   onQuickView?: () => void;
   detailsHref?: string;
@@ -33,6 +34,7 @@ export const ProductCard = ({
   shopName,
   source,
   viewCount: initialViewCount,
+  condition,
   onAddToCart,
   onQuickView,
   detailsHref,
@@ -114,6 +116,12 @@ export const ProductCard = ({
             <Badge className="bg-orange-500 text-white border-0 shadow-sm text-xs px-1.5 sm:px-2 py-0.5">
               <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 fill-current" />
               <span className="text-xs">New</span>
+            </Badge>
+          )}
+          {/* Flamia condition badge */}
+          {source === 'flamia' && condition && (
+            <Badge className="bg-blue-600 text-white border-0 shadow-sm text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">
+              {String(condition).toLowerCase().includes('used') ? 'Used' : 'New'}
             </Badge>
           )}
         </div>

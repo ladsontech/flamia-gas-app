@@ -24,6 +24,7 @@ const Shop: React.FC = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [allCategories, setAllCategories] = useState<ProductCategory[]>([]);
   const [quickViewProduct, setQuickViewProduct] = useState<MarketplaceProduct | null>(null);
+  const [categoryShowCount, setCategoryShowCount] = useState<Record<string, number>>({});
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -89,16 +90,22 @@ const Shop: React.FC = () => {
   };
 
   const toggleCategory = (categorySlug: string) => {
-    setExpandedCategories(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(categorySlug)) {
-        newSet.delete(categorySlug);
-      } else {
-        newSet.add(categorySlug);
-      }
-      return newSet;
+    // Reset to initial show count when toggling (acts as "Show less")
+    setCategoryShowCount(prev => ({
+      ...prev,
+      [categorySlug]: initialShowCount
+    }));
+  };
+
+  const handleViewMore = (categorySlug: string, total: number) => {
+    setCategoryShowCount(prev => {
+      const current = prev[categorySlug] ?? initialShowCount;
+      const next = Math.min(total, current + initialShowCount);
+      return { ...prev, [categorySlug]: next };
     });
   };
+
+  const getShowCount = (categorySlug: string) => categoryShowCount[categorySlug] ?? initialShowCount;
 
   // Filter products based on search and category, then apply sorting
   const filteredCategories = categories
@@ -489,17 +496,15 @@ const Shop: React.FC = () => {
           ) : (
             <div className="space-y-8 sm:space-y-10 md:space-y-12">
               {filteredCategories.map(category => {
-                const isExpanded = expandedCategories.has(category.slug);
+                const showCount = getShowCount(category.slug);
                 // Separate featured and regular products
                 const featuredProducts = category.products.filter(p => p.featured);
                 const regularProducts = category.products.filter(p => !p.featured);
                 
                 // Show featured first, then regular
                 const sortedProducts = [...featuredProducts, ...regularProducts];
-                const displayProducts = isExpanded 
-                  ? sortedProducts 
-                  : sortedProducts.slice(0, initialShowCount);
-                const hasMore = category.products.length > initialShowCount;
+                const displayProducts = sortedProducts.slice(0, showCount);
+                const hasMore = showCount < category.products.length;
 
                 return (
                   <section key={category.id} className="space-y-4 sm:space-y-5">
@@ -513,23 +518,22 @@ const Shop: React.FC = () => {
                           </span>
                         )}
                         {/* Desktop: View More Button on Top - Orange */}
-                        {hasMore && (
+                        {hasMore ? (
                           <Button
                             variant="default"
-                            onClick={() => toggleCategory(category.slug)}
+                            onClick={() => handleViewMore(category.slug, category.products.length)}
                             className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-orange-500 hover:bg-orange-600 text-white border-0"
                           >
-                            {isExpanded ? (
-                              <>
-                                Show Less
-                                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 rotate-90 transition-transform" />
-                              </>
-                            ) : (
-                              <>
-                                View All ({category.products.length})
-                                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
-                              </>
-                            )}
+                            View More ({category.products.length - showCount})
+                            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            onClick={() => toggleCategory(category.slug)}
+                            className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm h-8 sm:h-9 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                          >
+                            Show Less
                           </Button>
                         )}
                       </div>
@@ -553,6 +557,7 @@ const Shop: React.FC = () => {
                                 shopName={product.shop_name}
                                 source={product.source}
                                 viewCount={product.viewCount}
+                                condition={product.condition}
                                 onAddToCart={() => handleAddToCart(product)}
                                 onQuickView={() => setQuickViewProduct(product)}
                               />
@@ -562,28 +567,27 @@ const Shop: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Mobile: View More Button at Bottom */}
-                    {hasMore && (
-                      <div className="flex justify-center pt-2 md:hidden">
+                    {/* Mobile: View More / Show Less Button at Bottom */}
+                    <div className="flex justify-center pt-2 md:hidden">
+                      {hasMore ? (
+                        <Button
+                          variant="outline"
+                          onClick={() => handleViewMore(category.slug, category.products.length)}
+                          className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                        >
+                          View More ({category.products.length - showCount})
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                      ) : (
                         <Button
                           variant="outline"
                           onClick={() => toggleCategory(category.slug)}
                           className="group text-xs sm:text-sm h-9 sm:h-10 bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
                         >
-                          {isExpanded ? (
-                            <>
-                              Show Less
-                              <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 rotate-90 transition-transform" />
-                            </>
-                          ) : (
-                            <>
-                              View All ({category.products.length})
-                              <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
-                            </>
-                          )}
+                          Show Less
                         </Button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </section>
                 );
               })}
