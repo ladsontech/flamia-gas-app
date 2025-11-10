@@ -111,6 +111,25 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
     productCategories.map(cat => [String(cat.name).toLowerCase(), cat])
   );
 
+  // Category alias map to align Flamia categories with marketplace categories
+  const normalizeName = (name?: string) => String(name || '').trim().toLowerCase();
+  const categoryAlias = new Map<string, string>([
+    ['smartphones', 'phones'],
+    ['smartphone', 'phones'],
+    ['phone', 'phones'],
+    ['phones', 'phones'],
+    ['mobiles', 'phones'],
+
+    ['laptops', 'laptops & pcs'],
+    ['laptop', 'laptops & pcs'],
+    ['computers', 'laptops & pcs'],
+    ['pcs', 'laptops & pcs'],
+
+    ['wearables', 'electronics'],
+    ['electronics', 'electronics'],
+  ]);
+  const defaultElectronicsCategory = categoryNameLookup.get('electronics');
+
   // Map business products to marketplace format
   const mappedBusinessProducts: MarketplaceProduct[] = allProducts.map((product: any) => {
     const category = categoryLookup.get(product.category_id);
@@ -135,11 +154,15 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
     };
   });
 
-  // Map Flamia products to marketplace format with category matching
+  // Map Flamia products to marketplace format with category matching and aliases
   const mappedGadgets: MarketplaceProduct[] = allGadgets.map((gadget: any) => {
-    // Try to match category by name (case insensitive)
-    const categoryName = String(gadget.category || '').toLowerCase();
-    const matchedCategory = categoryNameLookup.get(categoryName);
+    const rawCat = String(gadget.category || '');
+    const normalized = normalizeName(rawCat);
+    const aliasedName = categoryAlias.get(normalized) || rawCat;
+    const matchedCategory = categoryNameLookup.get(normalizeName(aliasedName));
+
+    const resolvedCategoryId = matchedCategory?.id || defaultElectronicsCategory?.id;
+    const resolvedCategoryName = matchedCategory?.name || aliasedName || defaultElectronicsCategory?.name || 'Other';
 
     return {
       id: gadget.id,
@@ -148,8 +171,8 @@ const fetchAllProducts = async (): Promise<CategoryGroup[]> => {
       price: gadget.price,
       original_price: gadget.original_price,
       image_url: gadget.image_url,
-      category: matchedCategory?.name || gadget.category || 'Other',
-      category_id: matchedCategory?.id,
+      category: resolvedCategoryName,
+      category_id: resolvedCategoryId,
       source: 'flamia',
       shop_name: 'Flamia',
       shop_slug: 'flamia',
