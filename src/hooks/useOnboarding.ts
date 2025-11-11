@@ -60,30 +60,54 @@ export const useOnboarding = () => {
           // If not marked complete, auto-complete if user already has an affiliate shop
           // or has an approved seller shop
           try {
-            const [{ data: affShop }, { data: sellerShop }] = await Promise.all([
+            const [{ data: affShop, error: affError }, { data: sellerShop, error: sellerError }] = await Promise.all([
               supabase.from('affiliate_shops').select('id').eq('user_id', session.user.id).maybeSingle(),
               supabase.from('seller_shops').select('id, is_approved').eq('user_id', session.user.id).eq('is_approved', true).maybeSingle()
             ]);
+            
+            // Log errors but don't fail
+            if (affError) console.error('Error checking affiliate shop:', affError);
+            if (sellerError) console.error('Error checking seller shop:', sellerError);
+            
             const alreadySetUp = !!affShop || !!sellerShop;
             if (alreadySetUp && mounted) {
-              const nowIso = new Date().toISOString();
-              await supabase.from('profiles').upsert({
-                id: session.user.id,
-                onboarding_completed: true,
-                updated_at: nowIso
-              }, { onConflict: 'id' });
-              localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
-              setShowOnboarding(false);
-              setLoading(false);
+              try {
+                const nowIso = new Date().toISOString();
+                const { error: upsertError } = await supabase.from('profiles').upsert({
+                  id: session.user.id,
+                  onboarding_completed: true,
+                  updated_at: nowIso
+                }, { onConflict: 'id' });
+                
+                if (upsertError) {
+                  console.error('Error updating onboarding status:', upsertError);
+                } else {
+                  localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
+                }
+              } catch (upsertErr) {
+                console.error('Error upserting onboarding status:', upsertErr);
+              }
+              
+              if (mounted) {
+                setShowOnboarding(false);
+                setLoading(false);
+              }
               return;
             }
           } catch (autoErr) {
             console.error('Auto-complete onboarding check failed:', autoErr);
           }
           // Fallback to legacy localStorage if server doesn't have the flag yet
-          const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
-          if (mounted) {
-            setShowOnboarding(!localCompleted);
+          try {
+            const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
+            if (mounted) {
+              setShowOnboarding(!localCompleted);
+            }
+          } catch (localErr) {
+            console.error('Error accessing localStorage:', localErr);
+            if (mounted) {
+              setShowOnboarding(false);
+            }
           }
         }
       } catch (error) {
@@ -107,11 +131,17 @@ export const useOnboarding = () => {
     }, 200);
 
     // Re-check when auth state changes (fixes delayed account switch/init)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted && session?.user) {
-        checkOnboardingStatus();
-      }
-    });
+    let subscription: { unsubscribe: () => void } | null = null;
+    try {
+      const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (mounted && session?.user) {
+          checkOnboardingStatus();
+        }
+      });
+      subscription = authSubscription;
+    } catch (error) {
+      console.error('Error setting up auth state listener:', error);
+    }
 
     return () => {
       mounted = false;
