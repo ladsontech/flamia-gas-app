@@ -323,6 +323,14 @@ const Account = () => {
   const getDisplayName = () => {
     return profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || 'User';
   };
+  
+  // Handle redirect if not authenticated - must be before early returns
+  useEffect(() => {
+    if (!user && !loading && !roleLoading) {
+      navigateRouter('/signin');
+    }
+  }, [user, loading, roleLoading, navigateRouter]);
+  
   if (loading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -333,10 +341,15 @@ const Account = () => {
     );
   }
 
-  // If not authenticated, redirect to sign in
+  // If not authenticated, show loading while redirecting
   if (!user) {
-    navigate('/signin');
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <FlamiaLoader message="Redirecting to sign in..." />
+        </div>
+      </div>
+    );
   }
 
   // Authenticated user view

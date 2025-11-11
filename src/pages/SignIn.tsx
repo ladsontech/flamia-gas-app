@@ -13,29 +13,56 @@ const SignIn = () => {
   useEffect(() => {
     // Check if user is already authenticated and redirect based on role
     // Add a small delay to prevent blinking during initial load
+    let mounted = true;
+    
     const checkAuth = async () => {
-      // Wait a bit to ensure app has fully loaded
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const role = await getUserRole(user.id);
-        if (role === 'delivery_man') {
-          window.location.href = '/delivery';
-        } else {
+      try {
+        // Wait a bit to ensure app has fully loaded
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        if (!mounted) return;
+        
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.warn('Error getting user in SignIn:', userError);
+          return;
+        }
+        
+        if (user) {
+          try {
+            const role = await getUserRole(user.id);
+            if (mounted) {
+              if (role === 'delivery_man') {
+                window.location.href = '/delivery';
+              } else {
+                navigate('/account');
+              }
+            }
+          } catch (roleError) {
+            console.warn('Error getting user role:', roleError);
+            if (mounted) {
+              navigate('/account');
+            }
+          }
+          return;
+        }
+        
+        // Also check for phone verification
+        const phoneVerified = localStorage.getItem('phoneVerified');
+        if (phoneVerified && mounted) {
           navigate('/account');
         }
-        return;
-      }
-      
-      // Also check for phone verification
-      const phoneVerified = localStorage.getItem('phoneVerified');
-      if (phoneVerified) {
-        navigate('/account');
+      } catch (error) {
+        console.error('Error in checkAuth:', error);
       }
     };
     
     checkAuth();
+    
+    return () => {
+      mounted = false;
+    };
   }, [navigate]);
 
   return (
