@@ -113,7 +113,7 @@ const PromotionsSection: React.FC = () => {
                 </div>
                 
                 <div className="w-2/3 sm:w-full p-3">
-                  <div className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-md w-fit mb-2">
+                  <div className="bg-orange-500 text-white text-sm font-semibold px-2.5 py-1.5 rounded-md w-fit mb-2">
                     {offer.price || "Contact for price"}
                   </div>
                   
@@ -154,7 +154,7 @@ const PromotionsSection: React.FC = () => {
                 {/* Content Section */}
                 <div className="p-3 space-y-2">
                   {/* Price Badge */}
-                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-2 py-1 rounded text-xs font-semibold w-fit">
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded text-sm font-semibold w-fit">
                     {offer.price || "Contact for price"}
                   </div>
                   

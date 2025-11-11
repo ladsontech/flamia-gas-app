@@ -250,8 +250,20 @@ const Shop: React.FC = () => {
     const candidates = src ? [src] : buildLogoCandidates(slug, name);
     const [idx, setIdx] = React.useState(0);
     const currentSrc = candidates[idx] || '/images/icon.png';
+    const isGas = String(slug).toLowerCase() === 'gas' || String(name).toLowerCase() === 'gas';
+    const targetHref = isGas ? '/home' : `/shop/category/${slug}`;
     return (
-      <Link to={`/shop/category/${slug}`} onClick={() => setSelectedCategory(slug)} className="block">
+      <Link 
+        to={targetHref} 
+        onClick={(e) => {
+          if (isGas) {
+            // Do not alter selectedCategory; just navigate to home
+            return;
+          }
+          setSelectedCategory(slug);
+        }} 
+        className="block"
+      >
         <div
           className={`relative flex flex-col items-center justify-start rounded-xl border transition-colors ${
             selectedCategory === slug ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200 hover:bg-gray-50'

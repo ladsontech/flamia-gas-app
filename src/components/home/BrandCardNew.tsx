@@ -135,9 +135,8 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
           </p>
         </div>
         <div className="pt-1.5 lg:pt-1 border-t border-gray-100">
-          <div className="flex justify-between items-center mb-1.5 lg:mb-1">
-            <span className="text-xs lg:text-xs font-medium text-gray-600">Price</span>
-            <span className="text-xs sm:text-sm lg:text-xs font-semibold text-accent">{price}</span>
+          <div className="flex justify-end items-center mb-1.5 lg:mb-1">
+            <span className="text-sm sm:text-base lg:text-sm font-bold text-accent">{price}</span>
           </div>
             <Button
               onClick={handleOrder}
