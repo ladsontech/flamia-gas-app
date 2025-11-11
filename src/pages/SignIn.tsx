@@ -82,12 +82,30 @@ const SignIn = () => {
               variant="default"
               className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200"
               onClick={async () => {
-                await supabase.auth.signInWithOAuth({ 
-                  provider: 'google', 
-                  options: { 
-                    redirectTo: `${window.location.origin}/account`
+                try {
+                  const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                      redirectTo: `${window.location.origin}/account`,
+                      // Avoid internal redirect to prevent environment-specific crashes; redirect manually
+                      skipBrowserRedirect: true as any
+                    } as any
+                  });
+                  if (error) {
+                    console.error('OAuth error:', error);
+                    window.location.reload();
+                    return;
                   }
-                });
+                  if (data?.url) {
+                    window.location.assign(data.url);
+                  } else {
+                    // Fallback: reload to recover
+                    window.location.reload();
+                  }
+                } catch (e) {
+                  console.error('Sign-in error:', e);
+                  window.location.reload();
+                }
               }}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
