@@ -135,8 +135,8 @@ const BrandCardNew = ({ name, brand, image, size, price, description }: BrandCar
           </p>
         </div>
         <div className="pt-1.5 lg:pt-1 border-t border-gray-100">
-          <div className="flex justify-end items-center mb-1.5 lg:mb-1">
-            <span className="text-sm sm:text-base lg:text-sm font-bold text-accent">{price}</span>
+          <div className={`flex ${location.pathname.includes('refill') ? 'justify-end' : 'justify-start'} items-center mb-1.5 lg:mb-1`}>
+            <span className={`${location.pathname.includes('refill') ? 'text-sm sm:text-base lg:text-sm' : 'text-base sm:text-xl lg:text-lg'} font-extrabold text-accent`}>{price}</span>
           </div>
             <Button
               onClick={handleOrder}
