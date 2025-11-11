@@ -50,8 +50,11 @@ interface Business {
   image_url?: string;
 }
 const Account = () => {
+  // Initialize hooks unconditionally
   const navigateRouter = useNavigate();
   const queryClient = useQueryClient();
+  
+  // Initialize user state synchronously from session to prevent hook order changes
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isPhoneUser, setIsPhoneUser] = useState(false);
@@ -66,6 +69,8 @@ const Account = () => {
   
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [sectionLoading, setSectionLoading] = useState(false);
+  
+  // All custom hooks called unconditionally
   const { toast } = useToast();
   const {
     userRole,
@@ -102,6 +107,7 @@ const Account = () => {
 
 
   // Cached profile query - only fetch essential fields
+  // Always call useQuery unconditionally, but disable the query if no user
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
@@ -124,7 +130,7 @@ const Account = () => {
     refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
-  // Cached businesses query - only fetch when needed
+  // Cached businesses query - always call useQuery unconditionally
   const { data: businesses = [] } = useQuery({
     queryKey: ['userBusinesses', user?.id],
     queryFn: async () => {
@@ -136,11 +142,122 @@ const Account = () => {
     gcTime: 60 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  // Helper function - defined before useEffects
+  const ensureDisplayName = async (user: any) => {
+    try {
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('display_name, full_name')
+        .eq('id', user.id)
+        .single();
 
-  // Handle section loading animation
+      if (existingProfile && !existingProfile.display_name && user.user_metadata?.full_name) {
+        await supabase.from('profiles').update({
+          display_name: user.user_metadata.full_name,
+          full_name: user.user_metadata.full_name
+        }).eq('id', user.id);
+      }
+    } catch (error) {
+      console.error('Error ensuring display name:', error);
+    }
+  };
+  
+  // Check auth status on mount - use getSession() for faster refresh
+  useEffect(() => {
+    let mounted = true;
+    
+    const checkAuthStatus = async () => {
+      try {
+        // Use getSession() which is faster and more reliable on refresh
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        if (sessionError) {
+          console.warn('Error getting session:', sessionError);
+          // Check for phone-verified user as fallback
+          const phoneVerified = localStorage.getItem('phoneVerified');
+          const userName = localStorage.getItem('userName');
+          if (phoneVerified && userName && mounted) {
+            setIsPhoneUser(true);
+            setUser({
+              id: phoneVerified,
+              email: null,
+              phone: phoneVerified,
+              user_metadata: {
+                display_name: userName
+              }
+            });
+          }
+          if (mounted) setLoading(false);
+          return;
+        }
+        
+        if (session?.user) {
+          if (mounted) {
+            setUser(session.user);
+            setLoading(false);
+            // Auto-sync display name if missing (non-blocking)
+            ensureDisplayName(session.user).catch(err => console.error('Error syncing display name:', err));
+          }
+        } else {
+          // Check for phone-verified user
+          const phoneVerified = localStorage.getItem('phoneVerified');
+          const userName = localStorage.getItem('userName');
+          if (phoneVerified && userName && mounted) {
+            setIsPhoneUser(true);
+            setUser({
+              id: phoneVerified,
+              email: null,
+              phone: phoneVerified,
+              user_metadata: {
+                display_name: userName
+              }
+            });
+          }
+          if (mounted) setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        if (mounted) setLoading(false);
+      }
+    };
+    
+    checkAuthStatus();
+    
+    // Also listen for auth state changes (handles refresh scenarios)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      
+      if (session?.user) {
+        setUser(session.user);
+        setLoading(false);
+      } else {
+        // Check phone auth
+        const phoneVerified = localStorage.getItem('phoneVerified');
+        const userName = localStorage.getItem('userName');
+        if (phoneVerified && userName) {
+          setIsPhoneUser(true);
+          setUser({
+            id: phoneVerified,
+            email: null,
+            phone: phoneVerified,
+            user_metadata: {
+              display_name: userName
+            }
+          });
+        } else {
+          setUser(null);
+        }
+        setLoading(false);
+      }
+    });
+    
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
   useEffect(() => {
     setSectionLoading(true);
     const timer = setTimeout(() => {
@@ -202,60 +319,6 @@ const Account = () => {
     prefetchSections();
   }, [user?.id, isAdmin, canManageGasOrders, canManageShopOrders, canManageUsers, canManageCommissions, canManageMarketing]);
   
-  const checkAuthStatus = async () => {
-    try {
-      // First check for Supabase authenticated user
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-        setLoading(false); // Set loading false immediately
-
-        // Auto-sync display name if missing (non-blocking)
-        ensureDisplayName(user).catch(err => console.error('Error syncing display name:', err));
-      } else {
-        // Check for phone-verified user
-        const phoneVerified = localStorage.getItem('phoneVerified');
-        const userName = localStorage.getItem('userName');
-        if (phoneVerified && userName) {
-          setIsPhoneUser(true);
-          setUser({
-            id: phoneVerified,
-            email: null,
-            phone: phoneVerified,
-            user_metadata: {
-              display_name: userName
-            }
-          });
-        }
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-      setLoading(false);
-    }
-  };
-  const ensureDisplayName = async (user: any) => {
-    try {
-      // Check if profile exists and has display_name
-      const {
-        data: existingProfile
-      } = await supabase.from('profiles').select('display_name, full_name').eq('id', user.id).single();
-
-      // If no display name but we have user metadata, update profile
-      if (existingProfile && !existingProfile.display_name && user.user_metadata?.full_name) {
-        await supabase.from('profiles').update({
-          display_name: user.user_metadata.full_name,
-          full_name: user.user_metadata.full_name
-        }).eq('id', user.id);
-      }
-    } catch (error) {
-      console.error('Error ensuring display name:', error);
-    }
-  };
   const handleSignOut = async () => {
     try {
       if (isPhoneUser) {
