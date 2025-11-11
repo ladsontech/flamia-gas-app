@@ -133,13 +133,13 @@ export const ProductsList = ({ businessId, onEdit, refresh }: ProductsListProps)
                   {product.description}
                 </p>
               )}
-              <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold">
-                  {product.price?.toLocaleString()} UGX
+              <div className="flex justify-end items-baseline gap-2">
+                <span className="text-lg font-bold text-right">
+                  UGX {product.price?.toLocaleString()}
                 </span>
                 {product.original_price && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    {product.original_price?.toLocaleString()} UGX
+                  <span className="text-sm text-muted-foreground line-through text-right">
+                    UGX {product.original_price?.toLocaleString()}
                   </span>
                 )}
               </div>

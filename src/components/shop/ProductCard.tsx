@@ -140,18 +140,18 @@ export const ProductCard = ({
         </h3>
         {/* Price Section */}
         <div className="mt-auto">
-          <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap mb-2 sm:mb-3">
+          <div className="flex justify-end items-baseline gap-1.5 sm:gap-2 flex-wrap mb-2 sm:mb-3 text-right">
             {price && price > 0 ? (
-              <span className="text-base sm:text-lg font-semibold text-gray-900 leading-tight block">
+              <span className="text-base sm:text-lg font-semibold text-gray-900 leading-tight">
                 UGX {price.toLocaleString()}
               </span>
             ) : (
-              <span className="text-base sm:text-lg font-semibold text-gray-400 leading-tight block">
+              <span className="text-base sm:text-lg font-semibold text-gray-400 leading-tight">
                 Price on request
               </span>
             )}
             {originalPrice && originalPrice > 0 && price && originalPrice > price && (
-              <span className="text-xs sm:text-sm text-gray-500 line-through block">
+              <span className="text-xs sm:text-sm text-gray-500 line-through">
                 UGX {originalPrice.toLocaleString()}
               </span>
             )}
