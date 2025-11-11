@@ -86,26 +86,11 @@ const queryClient = new QueryClient({
 });
 
 const AppContent = () => {
+  // All hooks must be called before any conditional returns
   const location = useLocation();
   const { isAdmin, loading: roleLoading } = useUserRole();
   const { showOnboarding, loading: onboardingLoading, completeOnboarding, dismissOnboarding } = useOnboarding();
   
-  const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
-  const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
-  const isStorefrontHost = !!subdomainMatch;
-  // Only treat subdomain visits as storefronts, not /shop/slug routes from main store
-  const isStorefront = isStorefrontHost;
-  
-  // Routes that don't need loading screen (no redirects)
-  const isHomeRoute = location.pathname === '/' || location.pathname === '/home';
-  const isShopRoute = location.pathname.startsWith('/shop') || location.pathname.startsWith('/gadgets');
-  const shouldShowLoading = !isStorefront && !isPolicyRoute && !isHomeRoute && !isShopRoute && roleLoading;
-
-  // Show loading screen only for routes that might redirect (not home page)
-  if (shouldShowLoading) {
-    return <LoadingIndicator fullScreen message="Loading your experience..." />;
-  }
-
   // Prefetch heavy account/admin pages in the background so navigation feels instant
   useEffect(() => {
     const prefetch = () => {
@@ -124,6 +109,22 @@ const AppContent = () => {
     const t = setTimeout(prefetch, 1500);
     return () => clearTimeout(t);
   }, [isAdmin]);
+  
+  const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
+  const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
+  const isStorefrontHost = !!subdomainMatch;
+  // Only treat subdomain visits as storefronts, not /shop/slug routes from main store
+  const isStorefront = isStorefrontHost;
+  
+  // Routes that don't need loading screen (no redirects)
+  const isHomeRoute = location.pathname === '/' || location.pathname === '/home';
+  const isShopRoute = location.pathname.startsWith('/shop') || location.pathname.startsWith('/gadgets');
+  const shouldShowLoading = !isStorefront && !isPolicyRoute && !isHomeRoute && !isShopRoute && roleLoading;
+
+  // Show loading screen only for routes that might redirect (not home page)
+  if (shouldShowLoading) {
+    return <LoadingIndicator fullScreen message="Loading your experience..." />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
