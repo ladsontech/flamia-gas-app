@@ -24,8 +24,12 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log the error details
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // Log the error details with full stack
+    console.error('ErrorBoundary caught an error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Component stack:', errorInfo.componentStack);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
     this.setState({ error, errorInfo });
   }
 
@@ -52,10 +56,16 @@ class ErrorBoundary extends React.Component<
                 temporary issue with the app initialization.
               </p>
 
-              {isAdminRoute && errorMessage && (
+              {errorMessage && (
                 <div className="text-xs text-left bg-muted/60 rounded-md p-3 border">
                   <div className="font-medium mb-1">Error message</div>
                   <div className="text-muted-foreground break-words">{errorMessage}</div>
+                  {this.state.error?.stack && (
+                    <details className="mt-2">
+                      <summary className="cursor-pointer text-xs">Stack trace</summary>
+                      <pre className="mt-1 text-xs overflow-auto max-h-32">{this.state.error.stack}</pre>
+                    </details>
+                  )}
                 </div>
               )}
               
@@ -73,13 +83,17 @@ class ErrorBoundary extends React.Component<
                 </Button>
               </div>
               
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {this.state.error && (
                 <details className="mt-4 p-3 bg-muted rounded-md text-sm">
                   <summary className="cursor-pointer font-medium">
-                    Error Details (Development Only)
+                    Error Details (Click to expand)
                   </summary>
-                  <pre className="mt-2 whitespace-pre-wrap text-xs">
+                  <pre className="mt-2 whitespace-pre-wrap text-xs overflow-auto max-h-64">
                     {this.state.error.toString()}
+                    {'\n\n'}
+                    {this.state.error.stack}
+                    {'\n\n'}
+                    Component Stack:
                     {this.state.errorInfo?.componentStack}
                   </pre>
                 </details>

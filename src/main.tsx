@@ -269,6 +269,15 @@ const initializeApp = async () => {
       throw new Error("Root container not found");
     }
 
+    // Add global error handlers
+    window.addEventListener('error', (event) => {
+      console.error('Global error caught:', event.error, event.filename, event.lineno);
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled promise rejection:', event.reason);
+    });
+
     const root = createRoot(container);
     
     // Render with error boundary
@@ -290,6 +299,9 @@ const initializeApp = async () => {
         <div style="padding: 20px; text-align: center; color: #ef4444;">
           <h2>Loading Error</h2>
           <p>Please refresh the page to continue.</p>
+          <p style="font-size: 12px; margin-top: 10px; color: #666;">
+            Error: ${error instanceof Error ? error.message : String(error)}
+          </p>
           <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">
             Refresh Page
           </button>

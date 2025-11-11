@@ -128,7 +128,11 @@ const AppContent = () => {
       {!isStorefront && showOnboarding && !onboardingLoading && !isPolicyRoute && (
         <OnboardingScreen onComplete={completeOnboarding} onDismiss={dismissOnboarding} />
       )}
-      {!isStorefront && <AppBar />}
+      {!isStorefront && (
+        <ErrorSafeWrapper>
+          <AppBar />
+        </ErrorSafeWrapper>
+      )}
       {!isStorefront && (
         <ErrorSafeWrapper>
           <GoogleSignUpHandler />
