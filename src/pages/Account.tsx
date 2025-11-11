@@ -160,6 +160,13 @@ const Account = () => {
     return () => document.removeEventListener('visibilitychange', onVisibility);
   }, [refetchSellerShop]);
 
+  // Handle redirect if not authenticated - must be before early returns
+  useEffect(() => {
+    if (!user && !loading && !roleLoading) {
+      navigateRouter('/signin');
+    }
+  }, [user, loading, roleLoading, navigateRouter]);
+
   // Prefetch all sections in the background for instant switching
   useEffect(() => {
     if (!user?.id) return;
@@ -194,6 +201,7 @@ const Account = () => {
 
     prefetchSections();
   }, [user?.id, isAdmin, canManageGasOrders, canManageShopOrders, canManageUsers, canManageCommissions, canManageMarketing]);
+  
   const checkAuthStatus = async () => {
     try {
       // First check for Supabase authenticated user
@@ -320,16 +328,10 @@ const Account = () => {
   const navigate = (path: string) => {
     window.location.href = path;
   };
+  
   const getDisplayName = () => {
     return profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || 'User';
   };
-  
-  // Handle redirect if not authenticated - must be before early returns
-  useEffect(() => {
-    if (!user && !loading && !roleLoading) {
-      navigateRouter('/signin');
-    }
-  }, [user, loading, roleLoading, navigateRouter]);
   
   if (loading || roleLoading) {
     return (
