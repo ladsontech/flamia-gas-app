@@ -14,8 +14,13 @@ const AuthCallback = () => {
         const params = new URLSearchParams(location.search);
         const returnTo = params.get('return_to');
 
-        // Wait for session to be established
-        const { data: { session } } = await supabase.auth.getSession();
+        // Wait for session to be established (robust on slow networks)
+        let session = (await supabase.auth.getSession()).data.session;
+        const start = Date.now();
+        while (!session && Date.now() - start < 5000) {
+          await new Promise(r => setTimeout(r, 200));
+          session = (await supabase.auth.getSession()).data.session;
+        }
 
         if (returnTo) {
           // Redirect back to the storefront or original page
