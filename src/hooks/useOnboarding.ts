@@ -77,7 +77,17 @@ export const useOnboarding = () => {
       checkOnboardingStatus();
     }, 200);
 
-    return () => clearTimeout(timer);
+    // Re-check when auth state changes (fixes delayed account switch/init)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        checkOnboardingStatus();
+      }
+    });
+
+    return () => {
+      clearTimeout(timer);
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const completeOnboarding = async () => {
