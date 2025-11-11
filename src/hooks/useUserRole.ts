@@ -10,15 +10,30 @@ export const useUserRole = () => {
   useEffect(() => {
     const loadRole = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.warn('Error getting user in useUserRole:', userError);
+          setUserRole('user' as UserRole);
+          setLoading(false);
+          return;
+        }
+        
         if (!user) {
           setUserRole('user' as UserRole);
           setLoading(false);
           return;
         }
-        const role = await getUserRole(user.id);
-        setUserRole(role || ('user' as UserRole));
+        
+        try {
+          const role = await getUserRole(user.id);
+          setUserRole(role || ('user' as UserRole));
+        } catch (roleError) {
+          console.warn('Error getting user role:', roleError);
+          setUserRole('user' as UserRole);
+        }
       } catch (e) {
+        console.warn('Error in loadRole:', e);
         setUserRole('user' as UserRole);
       } finally {
         setLoading(false);

@@ -69,7 +69,7 @@ import { Navigate } from 'react-router-dom';
 import { CartButton } from './components/cart/CartButton';
 import OnboardingScreen from './components/onboarding/OnboardingScreen';
 import { useOnboarding } from './hooks/useOnboarding';
-import { DataPrefetcher } from './components/DataPrefetcher';
+import { ErrorSafeWrapper } from './components/ErrorSafeWrapper';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -129,11 +129,27 @@ const AppContent = () => {
         <OnboardingScreen onComplete={completeOnboarding} onDismiss={dismissOnboarding} />
       )}
       {!isStorefront && <AppBar />}
-      {!isStorefront && <GoogleSignUpHandler />}
+      {!isStorefront && (
+        <ErrorSafeWrapper>
+          <GoogleSignUpHandler />
+        </ErrorSafeWrapper>
+      )}
       {!isStorefront && <InstallPWA />}
-      {!isStorefront && <OccasionalSignInPopup />}
-      {!isStorefront && <PushNotificationPrompt />}
-      {!isStorefront && <DataPrefetcher />}
+      {!isStorefront && (
+        <ErrorSafeWrapper>
+          <OccasionalSignInPopup />
+        </ErrorSafeWrapper>
+      )}
+      {!isStorefront && (
+        <ErrorSafeWrapper>
+          <PushNotificationPrompt />
+        </ErrorSafeWrapper>
+      )}
+      {!isStorefront && (
+        <ErrorSafeWrapper>
+          <DataPrefetcher />
+        </ErrorSafeWrapper>
+      )}
       <Toaster />
       
       <main className={isStorefront ? "flex-1" : "flex-1 pb-24 md:pb-0"}>
