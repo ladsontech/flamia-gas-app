@@ -120,25 +120,26 @@ export const useOnboarding = () => {
       mounted = false;
       clearTimeout(timer);
     };
-  }, []);
+  }, [user, authLoading]);
 
   const completeOnboarding = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      if (!user) {
+        setShowOnboarding(false);
+        return;
+      }
       
-      if (session) {
-        const nowIso = new Date().toISOString();
-        await supabase.from('profiles').upsert({
-          id: session.user.id,
-          onboarding_completed: true,
-          updated_at: nowIso
-        }, { onConflict: 'id' });
+      const nowIso = new Date().toISOString();
+      await supabase.from('profiles').upsert({
+        id: user.id,
+        onboarding_completed: true,
+        updated_at: nowIso
+      }, { onConflict: 'id' });
 
-        try {
-          localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
-        } catch (e) {
-          // Ignore
-        }
+      try {
+        localStorage.setItem(`${ONBOARDING_KEY}_${user.id}`, 'true');
+      } catch (e) {
+        // Ignore
       }
       
       setShowOnboarding(false);
@@ -154,7 +155,7 @@ export const useOnboarding = () => {
 
   return {
     showOnboarding,
-    loading,
+    loading: authLoading || loading,
     completeOnboarding,
     dismissOnboarding
   };
