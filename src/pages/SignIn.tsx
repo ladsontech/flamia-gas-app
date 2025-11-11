@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,39 +14,24 @@ const SignIn = () => {
     // Check if user is already authenticated and redirect based on role
     // Add a small delay to prevent blinking during initial load
     const checkAuth = async () => {
-      try {
-        // Wait a bit to ensure app has fully loaded
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) {
-          console.error('Auth check error:', userError);
-          return;
-        }
-        
-        if (user) {
-          try {
-            const role = await getUserRole(user.id);
-            if (role === 'delivery_man') {
-              window.location.href = '/delivery';
-            } else {
-              navigate('/account');
-            }
-          } catch (roleError) {
-            console.error('Role check error:', roleError);
-            // Still redirect to account if role check fails
-            navigate('/account');
-          }
-          return;
-        }
-        
-        // Also check for phone verification
-        const phoneVerified = localStorage.getItem('phoneVerified');
-        if (phoneVerified) {
+      // Wait a bit to ensure app has fully loaded
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const role = await getUserRole(user.id);
+        if (role === 'delivery_man') {
+          window.location.href = '/delivery';
+        } else {
           navigate('/account');
         }
-      } catch (error) {
-        console.error('Auth check failed:', error);
+        return;
+      }
+      
+      // Also check for phone verification
+      const phoneVerified = localStorage.getItem('phoneVerified');
+      if (phoneVerified) {
+        navigate('/account');
       }
     };
     
@@ -97,18 +82,12 @@ const SignIn = () => {
               variant="default"
               className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200"
               onClick={async () => {
-                try {
-                  await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                      redirectTo: `${window.location.origin}/account`
-                    }
-                  });
-                } catch (error) {
-                  console.error('Sign-in error:', error);
-                  // If OAuth fails, show user-friendly message
-                  alert('Failed to sign in. Please try again.');
-                }
+                await supabase.auth.signInWithOAuth({ 
+                  provider: 'google', 
+                  options: { 
+                    redirectTo: `${window.location.origin}/account`
+                  }
+                });
               }}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

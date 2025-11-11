@@ -12,18 +12,9 @@ export const useAffiliateShop = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError) {
-        console.error('Auth error in useAffiliateShop:', authError);
-        setShop(null);
-        setLoading(false);
-        return;
-      }
-      
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setShop(null);
-        setLoading(false);
         return;
       }
 
@@ -31,7 +22,6 @@ export const useAffiliateShop = () => {
       setShop(affiliateShop);
     } catch (err: any) {
       console.error('Error loading affiliate shop:', err);
-      console.error('Error stack:', err.stack);
       setError(err.message);
       setShop(null);
     } finally {
@@ -40,15 +30,7 @@ export const useAffiliateShop = () => {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    
-    if (mounted) {
-      loadShop();
-    }
-    
-    return () => {
-      mounted = false;
-    };
+    loadShop();
   }, [loadShop]);
 
   return {

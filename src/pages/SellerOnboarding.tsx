@@ -104,19 +104,7 @@ export default function SellerOnboarding() {
           }
         });
         if (error) {
-          // Fallback: if function network fails, try to update an existing approved shop record
-          console.warn('Edge function error, attempting fallback:', error);
-          const fallbackShop = await fetchSellerShopByUser(userId);
-          if (fallbackShop) {
-            await updateSellerShop(fallbackShop.id, {
-              shop_name: form.shop_name,
-              shop_description: form.shop_description || null,
-              shop_logo_url: form.shop_logo_url || null,
-              category_id: form.category_id,
-            });
-          } else {
-            throw error;
-          }
+          throw error;
         }
         // After successful provision, go to dashboard
         toast({ title: 'Store created', description: 'Your store is ready. Add your first products next!' });

@@ -24,12 +24,8 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log the error details with full stack
-    console.error('ErrorBoundary caught an error:', error);
-    console.error('Error stack:', error.stack);
-    console.error('Component stack:', errorInfo.componentStack);
-    console.error('Error name:', error.name);
-    console.error('Error message:', error.message);
+    // Log the error details
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({ error, errorInfo });
   }
 

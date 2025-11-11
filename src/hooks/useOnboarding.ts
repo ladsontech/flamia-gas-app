@@ -8,25 +8,15 @@ export const useOnboarding = () => {
   const [loading, setLoading] = useState(false); // Start as false to not block initial render
 
   useEffect(() => {
-    let mounted = true;
-    
     // Check onboarding status asynchronously without blocking initial render
     const checkOnboardingStatus = async () => {
-      if (!mounted) return;
-      
       setLoading(true);
       try {
         // Check if user is authenticated
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Error getting session in useOnboarding:', sessionError);
-          if (mounted) setLoading(false);
-          return;
-        }
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          if (mounted) setLoading(false);
+          setLoading(false);
           return;
         }
 
@@ -39,12 +29,6 @@ export const useOnboarding = () => {
 
         if (error) {
           console.error('Error fetching onboarding status:', error);
-          // Don't fail completely, just skip onboarding check
-          if (mounted) {
-            setShowOnboarding(false);
-            setLoading(false);
-          }
-          return;
         }
 
         const serverCompleted = profile?.onboarding_completed === true;
@@ -52,102 +36,48 @@ export const useOnboarding = () => {
         if (serverCompleted) {
           // Mirror to localStorage for legacy/fallback behavior
           localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
-          if (mounted) {
-            setShowOnboarding(false);
-            setLoading(false);
-          }
+          setShowOnboarding(false);
         } else {
           // If not marked complete, auto-complete if user already has an affiliate shop
           // or has an approved seller shop
           try {
-            const [{ data: affShop, error: affError }, { data: sellerShop, error: sellerError }] = await Promise.all([
+            const [{ data: affShop }, { data: sellerShop }] = await Promise.all([
               supabase.from('affiliate_shops').select('id').eq('user_id', session.user.id).maybeSingle(),
               supabase.from('seller_shops').select('id, is_approved').eq('user_id', session.user.id).eq('is_approved', true).maybeSingle()
             ]);
-            
-            // Log errors but don't fail
-            if (affError) console.error('Error checking affiliate shop:', affError);
-            if (sellerError) console.error('Error checking seller shop:', sellerError);
-            
             const alreadySetUp = !!affShop || !!sellerShop;
-            if (alreadySetUp && mounted) {
-              try {
-                const nowIso = new Date().toISOString();
-                const { error: upsertError } = await supabase.from('profiles').upsert({
-                  id: session.user.id,
-                  onboarding_completed: true,
-                  updated_at: nowIso
-                }, { onConflict: 'id' });
-                
-                if (upsertError) {
-                  console.error('Error updating onboarding status:', upsertError);
-                } else {
-                  localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
-                }
-              } catch (upsertErr) {
-                console.error('Error upserting onboarding status:', upsertErr);
-              }
-              
-              if (mounted) {
-                setShowOnboarding(false);
-                setLoading(false);
-              }
+            if (alreadySetUp) {
+              const nowIso = new Date().toISOString();
+              await supabase.from('profiles').upsert({
+                id: session.user.id,
+                onboarding_completed: true,
+                updated_at: nowIso
+              }, { onConflict: 'id' });
+              localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
+              setShowOnboarding(false);
+              setLoading(false);
               return;
             }
           } catch (autoErr) {
             console.error('Auto-complete onboarding check failed:', autoErr);
           }
           // Fallback to legacy localStorage if server doesn't have the flag yet
-          try {
-            const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
-            if (mounted) {
-              setShowOnboarding(!localCompleted);
-            }
-          } catch (localErr) {
-            console.error('Error accessing localStorage:', localErr);
-            if (mounted) {
-              setShowOnboarding(false);
-            }
-          }
+          const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
+          setShowOnboarding(!localCompleted);
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
-        // Don't fail completely, just hide onboarding
-        if (mounted) {
-          setShowOnboarding(false);
-        }
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     // Small delay to ensure app has rendered first
     const timer = setTimeout(() => {
-      if (mounted) {
-        checkOnboardingStatus();
-      }
+      checkOnboardingStatus();
     }, 200);
 
-    // Re-check when auth state changes (fixes delayed account switch/init)
-    let subscription: { unsubscribe: () => void } | null = null;
-    try {
-      const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (mounted && session?.user) {
-          checkOnboardingStatus();
-        }
-      });
-      subscription = authSubscription;
-    } catch (error) {
-      console.error('Error setting up auth state listener:', error);
-    }
-
-    return () => {
-      mounted = false;
-      clearTimeout(timer);
-      subscription?.unsubscribe();
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   const completeOnboarding = async () => {

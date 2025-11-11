@@ -13,20 +13,10 @@ export const useSellerShop = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError) {
-        console.error('Auth error in useSellerShop:', authError);
-        setShop(null);
-        setApplication(null);
-        setLoading(false);
-        return;
-      }
-      
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setShop(null);
         setApplication(null);
-        setLoading(false);
         return;
       }
 
@@ -42,7 +32,6 @@ export const useSellerShop = () => {
       }
     } catch (err: any) {
       console.error('Error loading seller shop:', err);
-      console.error('Error stack:', err.stack);
       setError(err.message);
       setShop(null);
       setApplication(null);
@@ -52,15 +41,7 @@ export const useSellerShop = () => {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    
-    if (mounted) {
-      loadShop();
-    }
-    
-    return () => {
-      mounted = false;
-    };
+    loadShop();
   }, [loadShop]);
 
   return {

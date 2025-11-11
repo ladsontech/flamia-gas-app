@@ -8,57 +8,24 @@ export const useUserRole = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    
     const loadRole = async () => {
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) {
-          console.error('Error getting user in useUserRole:', userError);
-          if (mounted) {
-            setUserRole('user' as UserRole);
-            setLoading(false);
-          }
-          return;
-        }
-        
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          if (mounted) {
-            setUserRole('user' as UserRole);
-            setLoading(false);
-          }
+          setUserRole('user' as UserRole);
+          setLoading(false);
           return;
         }
-        
-        try {
-          const role = await getUserRole(user.id);
-          if (mounted) {
-            setUserRole(role || ('user' as UserRole));
-          }
-        } catch (roleError) {
-          console.error('Error getting user role:', roleError);
-          if (mounted) {
-            setUserRole('user' as UserRole);
-          }
-        }
+        const role = await getUserRole(user.id);
+        setUserRole(role || ('user' as UserRole));
       } catch (e) {
-        console.error('Error in loadRole:', e);
-        if (mounted) {
-          setUserRole('user' as UserRole);
-        }
+        setUserRole('user' as UserRole);
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     loadRole();
-    
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   return { 

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronRight, Flame, Package, Wrench, Smartphone, ShoppingBag, X, FileText, Shield } from 'lucide-react';
+import { ChevronRight, Flame, Package, Wrench, Smartphone, ShoppingBag, X, FileText, Shield, Store, Handshake } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface OnboardingSlide {
   id: number;
@@ -27,6 +29,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, onDismi
   const navigate = useNavigate();
   const [isDesktop, setIsDesktop] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [selectedTrack, setSelectedTrack] = useState<'affiliate' | 'seller' | null>(null);
 
   // Rapid appear/disappear transitions (no sliding)
   const slideVariants = {
@@ -138,6 +141,12 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, onDismi
       icon: <Shield className="w-full h-full" />,
       title: "Privacy Policy",
       description: "Please review and accept our privacy policy to continue."
+    },
+    {
+      id: 8,
+      icon: <Handshake className="w-full h-full" />,
+      title: "Choose Your Path",
+      description: "Start affiliate marketing immediately or apply to become a seller."
     }
   ];
 
@@ -154,9 +163,16 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, onDismi
       }
       setCurrentSlide(currentSlide + 1);
     } else {
-      // Final slide - complete onboarding and navigate home
-      onComplete();
-      navigate('/');
+      // Final slide - route based on selected track
+      if (selectedTrack === 'affiliate') {
+        onDismiss();
+        navigate('/affiliate/dashboard');
+      } else if (selectedTrack === 'seller') {
+        onDismiss();
+        navigate('/sell');
+      } else {
+        // If no selection, keep user on the slide (button will be disabled in UI)
+      }
     }
   };
 
@@ -344,6 +360,43 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, onDismi
                 </motion.div>
               )}
 
+              {/* Track selection on final slide */}
+              {currentSlide === slides.length - 1 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.3 }}
+                  className="max-w-md mx-auto mt-2 sm:mt-4 md:mt-6 space-y-3"
+                >
+                  <RadioGroup value={selectedTrack || ''} onValueChange={(v) => setSelectedTrack(v as any)}>
+                    <div className="flex items-start space-x-3 p-3 sm:p-4 border rounded-xl hover:bg-muted/40 transition-colors">
+                      <RadioGroupItem id="affiliate" value="affiliate" className="mt-0.5 sm:mt-1" />
+                      <Label htmlFor="affiliate" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Handshake className="w-4 h-4 text-primary" />
+                          <span className="font-semibold">Affiliate Marketing</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Create your affiliate shop now. No approval needed. Earn by promoting products.
+                        </p>
+                      </Label>
+                    </div>
+
+                    <div className="flex items-start space-x-3 p-3 sm:p-4 border rounded-xl hover:bg-muted/40 transition-colors mt-2">
+                      <RadioGroupItem id="seller" value="seller" className="mt-0.5 sm:mt-1" />
+                      <Label htmlFor="seller" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Store className="w-4 h-4 text-primary" />
+                          <span className="font-semibold">Seller Application</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Apply to open a seller shop. We’ll review and approve. Then set up your storefront.
+                        </p>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </motion.div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -375,12 +428,13 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, onDismi
           onClick={handleNext}
           disabled={
             (currentSlide === 5 && !termsAccepted) ||
-            (currentSlide === 6 && !privacyAccepted)
+            (currentSlide === 6 && !privacyAccepted) ||
+            (currentSlide === slides.length - 1 && !selectedTrack)
           }
           className="w-full max-w-md sm:max-w-lg mx-auto flex items-center justify-center gap-2 h-11 sm:h-12 md:h-14 text-[clamp(1rem,4.5vw,1.25rem)] font-semibold active:scale-[0.98] transition-transform touch-manipulation shadow-lg"
           size="lg"
         >
-          {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
+          {currentSlide === slides.length - 1 ? (selectedTrack ? 'Continue' : 'Choose an option') : 'Next'}
           <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </Button>
       </div>

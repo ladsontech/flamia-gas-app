@@ -324,7 +324,7 @@ const FlamiaProductsManager: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                       required
-                      placeholder="e.g., Hisense 43 inch Smart TV (Model XYZ)"
+                      placeholder="e.g., Hisense 43\" Smart TV (Model XYZ)"
                     />
                   </div>
 
