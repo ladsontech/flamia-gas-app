@@ -70,6 +70,7 @@ import { CartButton } from './components/cart/CartButton';
 import OnboardingScreen from './components/onboarding/OnboardingScreen';
 import { useOnboarding } from './hooks/useOnboarding';
 import { ErrorSafeWrapper } from './components/ErrorSafeWrapper';
+import { DataPrefetcher } from './components/DataPrefetcher';
 
 const queryClient = new QueryClient({
   defaultOptions: {
