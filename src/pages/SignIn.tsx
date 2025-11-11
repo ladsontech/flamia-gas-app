@@ -85,8 +85,7 @@ const SignIn = () => {
                 await supabase.auth.signInWithOAuth({ 
                   provider: 'google', 
                   options: { 
-                    // Use auth callback route to reliably establish session before redirecting
-                    redirectTo: `${window.location.origin}/auth/callback`
+                    redirectTo: `${window.location.origin}/account`
                   }
                 });
               }}
