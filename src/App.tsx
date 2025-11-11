@@ -10,6 +10,7 @@ import { LoadingIndicator } from './components/LoadingIndicator';
 import { supabase } from './integrations/supabase/client';
 import { CartProvider } from '@/contexts/CartContext';
 import { SellerCartProvider } from '@/contexts/SellerCartContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
