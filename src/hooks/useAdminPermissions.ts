@@ -1,17 +1,22 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { AdminPermission, getUserPermissions, hasPermission } from "@/services/permissionsService";
 import { useUserRole } from "./useUserRole";
 
 export const useAdminPermissions = () => {
+  const { user, loading: authLoading } = useAuth();
   const [permissions, setPermissions] = useState<AdminPermission[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAdmin, userRole } = useUserRole();
+  const { isAdmin, userRole, loading: roleLoading } = useUserRole();
 
   useEffect(() => {
     const loadPermissions = async () => {
+      // Wait for auth and role to finish loading
+      if (authLoading || roleLoading) {
+        return;
+      }
+
       try {
-        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           setPermissions([]);
           setLoading(false);
@@ -48,12 +53,10 @@ export const useAdminPermissions = () => {
     };
 
     loadPermissions();
-  }, [isAdmin, userRole]);
+  }, [user, isAdmin, userRole, authLoading, roleLoading]);
 
   const checkPermission = async (permission: AdminPermission): Promise<boolean> => {
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return false;
-    
     return hasPermission(user.id, permission);
   };
 
@@ -63,7 +66,7 @@ export const useAdminPermissions = () => {
 
   return {
     permissions,
-    loading,
+    loading: authLoading || roleLoading || loading,
     checkPermission,
     hasPermission: hasPermissionSync,
     canManageGasOrders: hasPermissionSync('manage_gas_orders'),

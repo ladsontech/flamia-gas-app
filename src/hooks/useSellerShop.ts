@@ -1,22 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { fetchSellerShopByUser, fetchSellerApplicationByUser } from '@/services/sellerService';
 import type { SellerShop, SellerApplication } from '@/types/seller';
 
 export const useSellerShop = () => {
+  const { user, loading: authLoading } = useAuth();
   const [shop, setShop] = useState<SellerShop | null>(null);
   const [application, setApplication] = useState<SellerApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadShop = useCallback(async () => {
+    // Wait for auth to finish loading
+    if (authLoading) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
         setShop(null);
         setApplication(null);
+        setLoading(false);
         return;
       }
 
@@ -38,7 +45,7 @@ export const useSellerShop = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user, authLoading]);
 
   useEffect(() => {
     loadShop();
@@ -53,7 +60,7 @@ export const useSellerShop = () => {
     hasPendingApplication: application?.status === 'pending',
     applicationStatus: application?.status ?? null,
     isApplicationApproved: application?.status === 'approved',
-    loading,
+    loading: authLoading || loading,
     error,
     refetch: loadShop,
   };

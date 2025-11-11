@@ -1,24 +1,21 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { getUserRole, type UserRole } from "@/services/adminService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useUserRole = () => {
+  const { user, loading: authLoading } = useAuth();
   const [userRole, setUserRole] = useState<UserRole>('user' as UserRole);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadRole = async () => {
+      // Wait for auth to finish loading
+      if (authLoading) {
+        return;
+      }
+
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) {
-          console.warn('Error getting user in useUserRole:', userError);
-          setUserRole('user' as UserRole);
-          setLoading(false);
-          return;
-        }
-        
         if (!user) {
           setUserRole('user' as UserRole);
           setLoading(false);
@@ -41,7 +38,7 @@ export const useUserRole = () => {
     };
 
     loadRole();
-  }, []);
+  }, [user, authLoading]);
 
   return { 
     userRole,
@@ -49,6 +46,6 @@ export const useUserRole = () => {
     isBusinessOwner: userRole === 'business_owner',
     isDeliveryMan: userRole === 'delivery_man',
     isSeller: userRole === 'business_owner' || userRole === 'super_admin',
-    loading 
+    loading: authLoading || loading
   };
 };

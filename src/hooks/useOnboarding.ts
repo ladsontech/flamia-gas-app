@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ONBOARDING_KEY = 'flamia_onboarding_completed';
 
 export const useOnboarding = () => {
   // All hooks called unconditionally
+  const { user, loading: authLoading } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -14,11 +16,14 @@ export const useOnboarding = () => {
     const checkOnboardingStatus = async () => {
       if (!mounted) return;
       
+      // Wait for auth to finish loading
+      if (authLoading) {
+        return;
+      }
+      
       setLoading(true);
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session) {
+        if (!user) {
           if (mounted) setLoading(false);
           return;
         }
@@ -26,7 +31,7 @@ export const useOnboarding = () => {
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('onboarding_completed')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .maybeSingle();
 
         if (error) {
@@ -37,7 +42,7 @@ export const useOnboarding = () => {
 
         if (serverCompleted) {
           try {
-            localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
+            localStorage.setItem(`${ONBOARDING_KEY}_${user.id}`, 'true');
           } catch (e) {
             // Ignore localStorage errors
           }
@@ -51,8 +56,8 @@ export const useOnboarding = () => {
         // Check if user already has shop setup
         try {
           const [{ data: affShop }, { data: sellerShop }] = await Promise.all([
-            supabase.from('affiliate_shops').select('id').eq('user_id', session.user.id).maybeSingle(),
-            supabase.from('seller_shops').select('id, is_approved').eq('user_id', session.user.id).eq('is_approved', true).maybeSingle()
+            supabase.from('affiliate_shops').select('id').eq('user_id', user.id).maybeSingle(),
+            supabase.from('seller_shops').select('id, is_approved').eq('user_id', user.id).eq('is_approved', true).maybeSingle()
           ]);
           
           const alreadySetUp = !!affShop || !!sellerShop;
@@ -60,13 +65,13 @@ export const useOnboarding = () => {
             try {
               const nowIso = new Date().toISOString();
               await supabase.from('profiles').upsert({
-                id: session.user.id,
+                id: user.id,
                 onboarding_completed: true,
                 updated_at: nowIso
               }, { onConflict: 'id' });
               
               try {
-                localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
+                localStorage.setItem(`${ONBOARDING_KEY}_${user.id}`, 'true');
               } catch (e) {
                 // Ignore
               }
@@ -86,7 +91,7 @@ export const useOnboarding = () => {
 
         // Fallback to localStorage
         try {
-          const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
+          const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${user.id}`);
           if (mounted) {
             setShowOnboarding(!localCompleted);
           }
