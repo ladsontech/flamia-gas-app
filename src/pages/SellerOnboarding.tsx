@@ -109,6 +109,13 @@ export default function SellerOnboarding() {
         // After successful provision, go to dashboard
         toast({ title: 'Store created', description: 'Your store is ready. Add your first products next!' });
       }
+      // Mark onboarding completed after store is created or updated post-approval
+      const nowIso = new Date().toISOString();
+      await supabase.from('profiles').upsert({
+        id: userId,
+        onboarding_completed: true,
+        updated_at: nowIso
+      }, { onConflict: 'id' });
       navigate('/seller/dashboard');
     } catch (e: any) {
       console.error(e);

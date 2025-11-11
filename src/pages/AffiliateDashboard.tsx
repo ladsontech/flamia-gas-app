@@ -126,6 +126,14 @@ export default function AffiliateDashboard() {
         monthly_fee: 0,
       });
 
+      // Mark onboarding completed once affiliate shop is created
+      const nowIso = new Date().toISOString();
+      await supabase.from('profiles').upsert({
+        id: user.id,
+        onboarding_completed: true,
+        updated_at: nowIso
+      }, { onConflict: 'id' });
+
       toast.success('Affiliate shop created successfully!');
       window.location.reload();
     } catch (error: any) {

@@ -705,6 +705,7 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          onboarding_completed: boolean
           phone_number: string | null
           referral_code: string | null
           updated_at: string
@@ -715,6 +716,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
+          onboarding_completed?: boolean
           phone_number?: string | null
           referral_code?: string | null
           updated_at?: string
@@ -725,6 +727,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          onboarding_completed?: boolean
           phone_number?: string | null
           referral_code?: string | null
           updated_at?: string

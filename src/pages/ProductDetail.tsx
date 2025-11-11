@@ -5,13 +5,15 @@ import { motion } from 'framer-motion';
 import { useMarketplaceProducts, MarketplaceProduct } from '@/hooks/useMarketplaceProducts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ShoppingCart, Share2, Package, Eye } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Share2, Package, Eye, Share } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { Loader2 } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { trackProductView, getProductViewCount } from '@/services/productViewsService';
+import { useAffiliateShop } from '@/hooks/useAffiliateShop';
+import { addProductToAffiliateShop } from '@/services/affiliateService';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +24,10 @@ const ProductDetail = () => {
   const [viewCount, setViewCount] = useState<number>(0);
   const [gallery, setGallery] = useState<string[]>([]);
   const [activeImage, setActiveImage] = useState<string | null>(null);
+  const { shop: affiliateShop } = useAffiliateShop();
+  const [affiliateEligible, setAffiliateEligible] = useState<boolean>(false);
+  const [addingToAffiliate, setAddingToAffiliate] = useState<boolean>(false);
+  const [commissionRate, setCommissionRate] = useState<number>(10);
 
   // Find product across all categories
   const product = categories
@@ -50,6 +56,32 @@ const ProductDetail = () => {
       trackProductView(product.id, productType);
       getProductViewCount(product.id).then(count => setViewCount(count));
     }
+  }, [product]);
+
+  // Check affiliate reshare eligibility for seller products
+  useEffect(() => {
+    const checkAffiliateEligibility = async () => {
+      if (!product || product.source !== 'seller') {
+        setAffiliateEligible(false);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('business_products')
+          .select('affiliate_enabled, commission_rate')
+          .eq('id', product.id)
+          .maybeSingle();
+        if (!error && data) {
+          setAffiliateEligible(!!data.affiliate_enabled);
+          if (typeof data.commission_rate === 'number') {
+            setCommissionRate(data.commission_rate);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    checkAffiliateEligibility();
   }, [product]);
 
   // Load gallery images for Flamia products from storage
@@ -124,6 +156,48 @@ const ProductDetail = () => {
         title: "Link Copied",
         description: "Product link copied to clipboard",
       });
+    }
+  };
+
+  const handleAddToAffiliateShop = async () => {
+    if (!product || !affiliateShop) return;
+    setAddingToAffiliate(true);
+    try {
+      // Prevent duplicates
+      const { data: existing } = await supabase
+        .from('affiliate_shop_products')
+        .select('id')
+        .eq('affiliate_shop_id', affiliateShop.id)
+        .eq('business_product_id', product.id)
+        .maybeSingle();
+
+      if (existing) {
+        toast({
+          title: 'Already Added',
+          description: 'This product is already in your affiliate shop.',
+        });
+        setAddingToAffiliate(false);
+        return;
+      }
+
+      await addProductToAffiliateShop(
+        affiliateShop.id,
+        product.id,
+        commissionRate || 10,
+        'percentage'
+      );
+      toast({
+        title: 'Added to Affiliate Shop',
+        description: 'You can manage it from your Affiliate Dashboard.',
+      });
+    } catch (e: any) {
+      toast({
+        title: 'Failed to Add',
+        description: e?.message || 'Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setAddingToAffiliate(false);
     }
   };
 
@@ -354,6 +428,18 @@ const ProductDetail = () => {
                   <Share2 className="w-5 h-5 mr-2" />
                   Share
                 </Button>
+                {product.source === 'seller' && affiliateShop && affiliateEligible && (
+                  <Button
+                    onClick={handleAddToAffiliateShop}
+                    variant="outline"
+                    className="sm:w-auto border-gray-300 hover:bg-gray-50"
+                    size="lg"
+                    disabled={addingToAffiliate}
+                  >
+                    <Share className="w-5 h-5 mr-2" />
+                    {addingToAffiliate ? 'Adding...' : 'Add to Affiliate Shop'}
+                  </Button>
+                )}
               </div>
 
               {/* Product Info */}

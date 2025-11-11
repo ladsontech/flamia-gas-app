@@ -86,7 +86,7 @@ const queryClient = new QueryClient({
 const AppContent = () => {
   const location = useLocation();
   const { isAdmin, loading: roleLoading } = useUserRole();
-  const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
+  const { showOnboarding, loading: onboardingLoading, completeOnboarding, dismissOnboarding } = useOnboarding();
   
   const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
   const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
@@ -126,7 +126,7 @@ const AppContent = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {!isStorefront && showOnboarding && !onboardingLoading && !isPolicyRoute && (
-        <OnboardingScreen onComplete={completeOnboarding} />
+        <OnboardingScreen onComplete={completeOnboarding} onDismiss={dismissOnboarding} />
       )}
       {!isStorefront && <AppBar />}
       {!isStorefront && <GoogleSignUpHandler />}
