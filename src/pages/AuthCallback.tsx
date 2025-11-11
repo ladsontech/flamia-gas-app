@@ -14,6 +14,20 @@ const AuthCallback = () => {
         const params = new URLSearchParams(location.search);
         const returnTo = params.get('return_to');
 
+        // Perform OAuth code exchange if needed (supports both APIs)
+        try {
+          // Try string signature
+          // @ts-ignore - runtime availability depends on SDK version
+          const ex1 = await (supabase.auth as any).exchangeCodeForSession?.(window.location.href);
+          if (ex1?.error) {
+            // Try object signature
+            // @ts-ignore
+            await (supabase.auth as any).exchangeCodeForSession?.({ currentUrl: window.location.href });
+          }
+        } catch (_e) {
+          // Ignore; we'll poll session below either way
+        }
+
         // Wait for session to be established (robust on slow networks)
         let session = (await supabase.auth.getSession()).data.session;
         const start = Date.now();
