@@ -281,6 +281,82 @@ export const CommissionsWithdrawalsManager = () => {
   const totalPendingWithdrawals = pendingWithdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
   const totalCompletedWithdrawals = completedWithdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
 
+  // Group commissions by referrer (to show referrer and total demanded/unpaid)
+  type ReferrerTotals = {
+    referrerId: string;
+    name: string;
+    phone?: string;
+    totalAll: number;
+    totalPending: number;
+    totalApproved: number;
+    totalPaid: number; // completed withdrawals
+    totalUnpaidApproved: number; // totalApproved - totalPaid, clamped at 0
+  };
+
+  const withdrawalsByUser = withdrawals.reduce<Record<string, { pending: number; completed: number }>>((acc, w) => {
+    const key = w.user_id;
+    if (!key) return acc;
+    if (!acc[key]) acc[key] = { pending: 0, completed: 0 };
+    if (w.status === 'completed') acc[key].completed += Number(w.amount);
+    if (w.status === 'pending') acc[key].pending += Number(w.amount);
+    return acc;
+  }, {});
+
+  const referrerTotalsList: ReferrerTotals[] = (() => {
+    const map = new Map<string, ReferrerTotals>();
+    for (const c of commissions) {
+      const referrerId = c.referral?.referrer_id;
+      if (!referrerId) continue;
+      const name = c.referrer_profile?.display_name || c.referrer_profile?.full_name || 'Unknown Referrer';
+      const phone = c.referrer_profile?.phone_number || undefined;
+      const current = map.get(referrerId) || {
+        referrerId,
+        name,
+        phone,
+        totalAll: 0,
+        totalPending: 0,
+        totalApproved: 0,
+        totalPaid: 0,
+        totalUnpaidApproved: 0
+      };
+      current.totalAll += Number(c.amount);
+      if (c.status === 'pending') current.totalPending += Number(c.amount);
+      if (c.status === 'approved') current.totalApproved += Number(c.amount);
+      map.set(referrerId, current);
+    }
+
+    // Attach paid (completed withdrawals) per referrer
+    for (const [userId, sums] of Object.entries(withdrawalsByUser)) {
+      const existing = map.get(userId);
+      if (existing) {
+        existing.totalPaid = sums.completed;
+      } else {
+        // If a user has withdrawals but no commissions in view, include minimal row
+        map.set(userId, {
+          referrerId: userId,
+          name: 'Unknown Referrer',
+          phone: undefined,
+          totalAll: 0,
+          totalPending: 0,
+          totalApproved: 0,
+          totalPaid: sums.completed,
+          totalUnpaidApproved: 0
+        });
+      }
+    }
+
+    const list = Array.from(map.values()).map((r) => ({
+      ...r,
+      totalUnpaidApproved: Math.max(0, Number(r.totalApproved) - Number(r.totalPaid))
+    }));
+
+    // Sort by highest unpaid first for admin planning
+    list.sort((a, b) => b.totalUnpaidApproved - a.totalUnpaidApproved);
+    return list;
+  })();
+
+  const totalUnpaidApprovedAll = referrerTotalsList.reduce((sum, r) => sum + r.totalUnpaidApproved, 0);
+
   // Loading is now handled by parent Account page
   if (loading || permissionsLoading) {
     return null;
@@ -319,6 +395,19 @@ export const CommissionsWithdrawalsManager = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
+                <p className="text-xs text-muted-foreground">Unpaid Approved (Payable)</p>
+                <p className="text-lg font-bold text-orange-700">{formatCurrency(totalUnpaidApprovedAll)}</p>
+                <p className="text-xs text-muted-foreground">Approved minus paid</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-orange-700 opacity-50" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
                 <p className="text-xs text-muted-foreground">Pending Withdrawals</p>
                 <p className="text-lg font-bold text-orange-600">{formatCurrency(totalPendingWithdrawals)}</p>
                 <p className="text-xs text-muted-foreground">{pendingWithdrawals.length} requests</p>
@@ -341,6 +430,49 @@ export const CommissionsWithdrawalsManager = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Referrer rollup to show who referred and total demanded/unpaid */}
+      {referrerTotalsList.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Referrers Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {referrerTotalsList.map((r) => (
+                <div key={r.referrerId} className="p-3 border rounded-lg bg-white">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="font-semibold text-sm">{r.name}</div>
+                    <div className="text-xs text-muted-foreground">{r.phone || ''}</div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span>Total</span>
+                      <span className="font-medium text-gray-800">{formatCurrency(r.totalAll)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Pending</span>
+                      <span className="font-medium">{formatCurrency(r.totalPending)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Approved</span>
+                      <span className="font-medium">{formatCurrency(r.totalApproved)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Paid</span>
+                      <span className="font-medium">{formatCurrency(r.totalPaid)}</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-xs">Unpaid Approved</span>
+                    <span className="text-sm font-bold text-orange-700">{formatCurrency(r.totalUnpaidApproved)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tabs for different views */}
       <Tabs defaultValue="commissions" className="w-full">
@@ -444,6 +576,19 @@ export const CommissionsWithdrawalsManager = () => {
                           <span>{withdrawal.contact}</span>
                         </div>
                       )}
+                      {/* Available to pay info based on unpaid approved commissions */}
+                      <div className="text-xs">
+                        {(() => {
+                          const userId = withdrawal.user_id;
+                          const totals = referrerTotalsList.find(r => r.referrerId === userId);
+                          const available = totals ? totals.totalUnpaidApproved : 0;
+                          return (
+                            <span className={`${available >= Number(withdrawal.amount) ? 'text-green-600' : 'text-red-600'}`}>
+                              Available to pay: {formatCurrency(available)}
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <div className="text-right text-sm text-muted-foreground">
                       <p>{format(new Date(withdrawal.created_at), 'MMM d, yyyy')}</p>
@@ -465,10 +610,20 @@ export const CommissionsWithdrawalsManager = () => {
                       <Button
                         size="sm"
                         onClick={() => handleProcessWithdrawal(withdrawal.id, 'completed')}
-                        disabled={processing.has(withdrawal.id)}
+                        disabled={(() => {
+                          if (processing.has(withdrawal.id)) return true;
+                          const totals = referrerTotalsList.find(r => r.referrerId === withdrawal.user_id);
+                          const available = totals ? totals.totalUnpaidApproved : 0;
+                          return Number(withdrawal.amount) > available;
+                        })()}
                         className="bg-orange-500 hover:bg-orange-600"
                       >
-                        {processing.has(withdrawal.id) ? 'Processing...' : 'Mark as Paid'}
+                        {(() => {
+                          if (processing.has(withdrawal.id)) return 'Processing...';
+                          const totals = referrerTotalsList.find(r => r.referrerId === withdrawal.user_id);
+                          const available = totals ? totals.totalUnpaidApproved : 0;
+                          return Number(withdrawal.amount) > available ? 'Exceeds Unpaid' : 'Mark as Paid';
+                        })()}
                       </Button>
                       <Button
                         size="sm"
