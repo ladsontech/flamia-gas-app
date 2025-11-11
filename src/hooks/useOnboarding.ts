@@ -8,15 +8,25 @@ export const useOnboarding = () => {
   const [loading, setLoading] = useState(false); // Start as false to not block initial render
 
   useEffect(() => {
+    let mounted = true;
+    
     // Check onboarding status asynchronously without blocking initial render
     const checkOnboardingStatus = async () => {
+      if (!mounted) return;
+      
       setLoading(true);
       try {
         // Check if user is authenticated
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Error getting session in useOnboarding:', sessionError);
+          if (mounted) setLoading(false);
+          return;
+        }
         
         if (!session) {
-          setLoading(false);
+          if (mounted) setLoading(false);
           return;
         }
 
@@ -29,6 +39,12 @@ export const useOnboarding = () => {
 
         if (error) {
           console.error('Error fetching onboarding status:', error);
+          // Don't fail completely, just skip onboarding check
+          if (mounted) {
+            setShowOnboarding(false);
+            setLoading(false);
+          }
+          return;
         }
 
         const serverCompleted = profile?.onboarding_completed === true;
@@ -36,7 +52,10 @@ export const useOnboarding = () => {
         if (serverCompleted) {
           // Mirror to localStorage for legacy/fallback behavior
           localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
-          setShowOnboarding(false);
+          if (mounted) {
+            setShowOnboarding(false);
+            setLoading(false);
+          }
         } else {
           // If not marked complete, auto-complete if user already has an affiliate shop
           // or has an approved seller shop
@@ -46,7 +65,7 @@ export const useOnboarding = () => {
               supabase.from('seller_shops').select('id, is_approved').eq('user_id', session.user.id).eq('is_approved', true).maybeSingle()
             ]);
             const alreadySetUp = !!affShop || !!sellerShop;
-            if (alreadySetUp) {
+            if (alreadySetUp && mounted) {
               const nowIso = new Date().toISOString();
               await supabase.from('profiles').upsert({
                 id: session.user.id,
@@ -63,28 +82,39 @@ export const useOnboarding = () => {
           }
           // Fallback to legacy localStorage if server doesn't have the flag yet
           const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
-          setShowOnboarding(!localCompleted);
+          if (mounted) {
+            setShowOnboarding(!localCompleted);
+          }
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
+        // Don't fail completely, just hide onboarding
+        if (mounted) {
+          setShowOnboarding(false);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     // Small delay to ensure app has rendered first
     const timer = setTimeout(() => {
-      checkOnboardingStatus();
+      if (mounted) {
+        checkOnboardingStatus();
+      }
     }, 200);
 
     // Re-check when auth state changes (fixes delayed account switch/init)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
+      if (mounted && session?.user) {
         checkOnboardingStatus();
       }
     });
 
     return () => {
+      mounted = false;
       clearTimeout(timer);
       subscription?.unsubscribe();
     };

@@ -34,7 +34,6 @@ import Sell from './pages/Sell';
 import SellerOptions from './pages/SellerOptions';
 import SellerDashboard from './pages/SellerDashboard';
 import SellerOnboarding from './pages/SellerOnboarding';
-import Shop from './pages/Shop';
 import SellerStorefront from './pages/SellerStorefront';
 import StorefrontProductDetail from './pages/StorefrontProductDetail';
 import AffiliateDashboard from './pages/AffiliateDashboard';
