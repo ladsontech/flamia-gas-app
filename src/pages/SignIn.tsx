@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
 import { getUserRole } from "@/services/adminService";
 
 const SignIn = () => {
@@ -99,12 +99,15 @@ const SignIn = () => {
                   if (data?.url) {
                     window.location.assign(data.url);
                   } else {
-                    // Fallback: reload to recover
-                    window.location.reload();
+                    // Fallback: construct the authorize URL manually
+                    const authorizeUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(`${window.location.origin}/account`)}`;
+                    window.location.assign(authorizeUrl);
                   }
                 } catch (e) {
                   console.error('Sign-in error:', e);
-                  window.location.reload();
+                  // Last-resort fallback manual authorize
+                  const authorizeUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(`${window.location.origin}/account`)}`;
+                  window.location.assign(authorizeUrl);
                 }
               }}
             >
