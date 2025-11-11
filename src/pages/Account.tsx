@@ -13,6 +13,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { useSellerShop } from "@/hooks/useSellerShop";
 import { useAffiliateShop } from "@/hooks/useAffiliateShop";
+import { useAuth } from "@/contexts/AuthContext";
 import { getUserBusinesses } from "@/services/adminService";
 import { User, LogOut, Settings, Store, BarChart3, TrendingUp, DollarSign, Users, Truck, Package, ShoppingBag, Send, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -54,10 +55,8 @@ const Account = () => {
   const navigateRouter = useNavigate();
   const queryClient = useQueryClient();
   
-  // Initialize user state synchronously from session to prevent hook order changes
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [isPhoneUser, setIsPhoneUser] = useState(false);
+  // Get auth state from context (centralized)
+  const { user, loading, isPhoneUser } = useAuth();
   
   const [activeSection, setActiveSection] = useState<string | null>(null);
   
@@ -142,122 +141,6 @@ const Account = () => {
     gcTime: 60 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  // Helper function - defined before useEffects
-  const ensureDisplayName = async (user: any) => {
-    try {
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('display_name, full_name')
-        .eq('id', user.id)
-        .single();
-
-      if (existingProfile && !existingProfile.display_name && user.user_metadata?.full_name) {
-        await supabase.from('profiles').update({
-          display_name: user.user_metadata.full_name,
-          full_name: user.user_metadata.full_name
-        }).eq('id', user.id);
-      }
-    } catch (error) {
-      console.error('Error ensuring display name:', error);
-    }
-  };
-  
-  // Check auth status on mount - use getSession() for faster refresh
-  useEffect(() => {
-    let mounted = true;
-    
-    const checkAuthStatus = async () => {
-      try {
-        // Use getSession() which is faster and more reliable on refresh
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
-        if (sessionError) {
-          console.warn('Error getting session:', sessionError);
-          // Check for phone-verified user as fallback
-          const phoneVerified = localStorage.getItem('phoneVerified');
-          const userName = localStorage.getItem('userName');
-          if (phoneVerified && userName && mounted) {
-            setIsPhoneUser(true);
-            setUser({
-              id: phoneVerified,
-              email: null,
-              phone: phoneVerified,
-              user_metadata: {
-                display_name: userName
-              }
-            });
-          }
-          if (mounted) setLoading(false);
-          return;
-        }
-        
-        if (session?.user) {
-          if (mounted) {
-            setUser(session.user);
-            setLoading(false);
-            // Auto-sync display name if missing (non-blocking)
-            ensureDisplayName(session.user).catch(err => console.error('Error syncing display name:', err));
-          }
-        } else {
-          // Check for phone-verified user
-          const phoneVerified = localStorage.getItem('phoneVerified');
-          const userName = localStorage.getItem('userName');
-          if (phoneVerified && userName && mounted) {
-            setIsPhoneUser(true);
-            setUser({
-              id: phoneVerified,
-              email: null,
-              phone: phoneVerified,
-              user_metadata: {
-                display_name: userName
-              }
-            });
-          }
-          if (mounted) setLoading(false);
-        }
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        if (mounted) setLoading(false);
-      }
-    };
-    
-    checkAuthStatus();
-    
-    // Also listen for auth state changes (handles refresh scenarios)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) return;
-      
-      if (session?.user) {
-        setUser(session.user);
-        setLoading(false);
-      } else {
-        // Check phone auth
-        const phoneVerified = localStorage.getItem('phoneVerified');
-        const userName = localStorage.getItem('userName');
-        if (phoneVerified && userName) {
-          setIsPhoneUser(true);
-          setUser({
-            id: phoneVerified,
-            email: null,
-            phone: phoneVerified,
-            user_metadata: {
-              display_name: userName
-            }
-          });
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
-      }
-    });
-    
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
   useEffect(() => {
     setSectionLoading(true);
     const timer = setTimeout(() => {
@@ -328,17 +211,15 @@ const Account = () => {
           title: "Signed out successfully",
           description: "You have been signed out of your account."
         });
-        navigate('/');
+        navigateRouter('/');
       } else {
-        const {
-          error
-        } = await supabase.auth.signOut();
+        const { error } = await supabase.auth.signOut();
         if (error) throw error;
         toast({
           title: "Signed out successfully",
           description: "You have been signed out of your account."
         });
-        navigate('/');
+        navigateRouter('/');
       }
     } catch (error: any) {
       toast({
@@ -386,10 +267,6 @@ const Account = () => {
     } finally {
       setNotifLoading(false);
     }
-  };
-  
-  const navigate = (path: string) => {
-    window.location.href = path;
   };
   
   const getDisplayName = () => {
@@ -880,7 +757,7 @@ const Account = () => {
                   <p className="text-sm text-muted-foreground mb-4">
                     Click the button below to view your order history
                   </p>
-                  <Button onClick={() => navigate('/orders')}>
+                  <Button onClick={() => navigateRouter('/orders')}>
                     View Orders
                   </Button>
                 </Card>

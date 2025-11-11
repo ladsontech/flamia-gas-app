@@ -259,14 +259,16 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <SellerCartProvider>
-          <Router>
-            <AppContent />
-            {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
-          </Router>
-        </SellerCartProvider>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <SellerCartProvider>
+            <Router>
+              <AppContent />
+              {isUpdateAvailable && <UpdateNotification onUpdate={handleUpdate} />}
+            </Router>
+          </SellerCartProvider>
+        </CartProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
