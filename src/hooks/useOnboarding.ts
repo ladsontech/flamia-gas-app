@@ -4,29 +4,25 @@ import { supabase } from '@/integrations/supabase/client';
 const ONBOARDING_KEY = 'flamia_onboarding_completed';
 
 export const useOnboarding = () => {
+  // All hooks called unconditionally
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [loading, setLoading] = useState(false); // Start as false to not block initial render
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check onboarding status asynchronously without blocking initial render
+    let mounted = true;
+    
     const checkOnboardingStatus = async () => {
+      if (!mounted) return;
+      
       setLoading(true);
       try {
-        // Check if user is authenticated
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.warn('Error getting session in useOnboarding:', sessionError);
-          setLoading(false);
-          return;
-        }
-        
-        if (!session) {
-          setLoading(false);
+        if (sessionError || !session) {
+          if (mounted) setLoading(false);
           return;
         }
 
-        // Prefer server-side flag for cross-device consistency
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('onboarding_completed')
@@ -34,83 +30,91 @@ export const useOnboarding = () => {
           .maybeSingle();
 
         if (error) {
-          console.error('Error fetching onboarding status:', error);
+          console.warn('Error fetching onboarding:', error);
         }
 
         const serverCompleted = profile?.onboarding_completed === true;
 
         if (serverCompleted) {
-          // Mirror to localStorage for legacy/fallback behavior
           try {
             localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
           } catch (e) {
-            console.warn('Failed to write to localStorage:', e);
+            // Ignore localStorage errors
           }
-          setShowOnboarding(false);
-        } else {
-          // If not marked complete, auto-complete if user already has an affiliate shop
-          // or has an approved seller shop
-          try {
-            const [{ data: affShop, error: affError }, { data: sellerShop, error: sellerError }] = await Promise.all([
-              supabase.from('affiliate_shops').select('id').eq('user_id', session.user.id).maybeSingle(),
-              supabase.from('seller_shops').select('id, is_approved').eq('user_id', session.user.id).eq('is_approved', true).maybeSingle()
-            ]);
-            
-            // Log errors but continue
-            if (affError) console.warn('Error checking affiliate shop:', affError);
-            if (sellerError) console.warn('Error checking seller shop:', sellerError);
-            
-            const alreadySetUp = !!affShop || !!sellerShop;
-            if (alreadySetUp) {
+          if (mounted) {
+            setShowOnboarding(false);
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Check if user already has shop setup
+        try {
+          const [{ data: affShop }, { data: sellerShop }] = await Promise.all([
+            supabase.from('affiliate_shops').select('id').eq('user_id', session.user.id).maybeSingle(),
+            supabase.from('seller_shops').select('id, is_approved').eq('user_id', session.user.id).eq('is_approved', true).maybeSingle()
+          ]);
+          
+          const alreadySetUp = !!affShop || !!sellerShop;
+          if (alreadySetUp && mounted) {
+            try {
+              const nowIso = new Date().toISOString();
+              await supabase.from('profiles').upsert({
+                id: session.user.id,
+                onboarding_completed: true,
+                updated_at: nowIso
+              }, { onConflict: 'id' });
+              
               try {
-                const nowIso = new Date().toISOString();
-                const { error: upsertError } = await supabase.from('profiles').upsert({
-                  id: session.user.id,
-                  onboarding_completed: true,
-                  updated_at: nowIso
-                }, { onConflict: 'id' });
-                
-                if (upsertError) {
-                  console.warn('Error updating onboarding status:', upsertError);
-                } else {
-                  try {
-                    localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
-                  } catch (e) {
-                    console.warn('Failed to write to localStorage:', e);
-                  }
-                }
-              } catch (upsertErr) {
-                console.warn('Error upserting onboarding status:', upsertErr);
+                localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
+              } catch (e) {
+                // Ignore
               }
+            } catch (upsertErr) {
+              console.warn('Error updating onboarding:', upsertErr);
+            }
+            
+            if (mounted) {
               setShowOnboarding(false);
               setLoading(false);
-              return;
             }
-          } catch (autoErr) {
-            console.warn('Auto-complete onboarding check failed:', autoErr);
+            return;
           }
-          // Fallback to legacy localStorage if server doesn't have the flag yet
-          try {
-            const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
+        } catch (autoErr) {
+          console.warn('Auto-complete check failed:', autoErr);
+        }
+
+        // Fallback to localStorage
+        try {
+          const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${session.user.id}`);
+          if (mounted) {
             setShowOnboarding(!localCompleted);
-          } catch (e) {
-            console.warn('Failed to read from localStorage:', e);
+          }
+        } catch (e) {
+          if (mounted) {
             setShowOnboarding(false);
           }
         }
       } catch (error) {
-        console.error('Error checking onboarding status:', error);
+        console.error('Onboarding check error:', error);
+        if (mounted) {
+          setShowOnboarding(false);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    // Small delay to ensure app has rendered first
     const timer = setTimeout(() => {
       checkOnboardingStatus();
     }, 200);
 
-    return () => clearTimeout(timer);
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   const completeOnboarding = async () => {
@@ -118,36 +122,28 @@ export const useOnboarding = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
-        // Persist on server for cross-device skip
         const nowIso = new Date().toISOString();
-        const { error } = await supabase
-          .from('profiles')
-          .upsert({
-            id: session.user.id,
-            onboarding_completed: true,
-            updated_at: nowIso
-          }, { onConflict: 'id' });
+        await supabase.from('profiles').upsert({
+          id: session.user.id,
+          onboarding_completed: true,
+          updated_at: nowIso
+        }, { onConflict: 'id' });
 
-        if (error) {
-          console.error('Error updating onboarding status:', error);
-        }
-
-        // Mirror to localStorage for immediate UX
         try {
           localStorage.setItem(`${ONBOARDING_KEY}_${session.user.id}`, 'true');
         } catch (e) {
-          console.warn('Failed to write to localStorage:', e);
+          // Ignore
         }
       }
       
       setShowOnboarding(false);
     } catch (error) {
       console.error('Error completing onboarding:', error);
+      setShowOnboarding(false);
     }
   };
 
   const dismissOnboarding = () => {
-    // Hide onboarding for current session without marking complete on server
     setShowOnboarding(false);
   };
 

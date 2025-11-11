@@ -1,21 +1,18 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
-import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 const SignUp = () => {
-  const [referralCode, setReferralCode] = useState('');
+  // All hooks called unconditionally at the top
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { toast } = useToast();
+  const [referralCode, setReferralCode] = useState('');
 
   useEffect(() => {
-    // Auto-fill referral code from URL parameter
     const refParam = searchParams.get('ref');
     if (refParam) {
       setReferralCode(refParam);
@@ -23,17 +20,20 @@ const SignUp = () => {
   }, [searchParams]);
 
   const handleGoogleSignUp = async () => {
-    // Store referral code in localStorage temporarily
-    if (referralCode.trim()) {
-      localStorage.setItem('tempReferralCode', referralCode.trim().toUpperCase());
+    try {
+      if (referralCode.trim()) {
+        localStorage.setItem('tempReferralCode', referralCode.trim().toUpperCase());
+      }
+      
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+    } catch (error) {
+      console.error('Sign up error:', error);
     }
-    
-    await supabase.auth.signInWithOAuth({ 
-      provider: 'google', 
-      options: { 
-        redirectTo: `${window.location.origin}/`
-      } 
-    });
   };
 
   return (

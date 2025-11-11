@@ -1,35 +1,31 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { LionFlameLogo } from "@/components/ui/LionFlameLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { getUserRole } from "@/services/adminService";
 
 const SignIn = () => {
   const navigate = useNavigate();
 
+  // All hooks must be called unconditionally before any returns
   useEffect(() => {
-    // Check if user is already authenticated and redirect based on role
-    // Add a small delay to prevent blinking during initial load
     let mounted = true;
     
     const checkAuth = async () => {
       try {
-        // Wait a bit to ensure app has fully loaded
         await new Promise(resolve => setTimeout(resolve, 300));
-        
         if (!mounted) return;
         
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
-          console.warn('Error getting user in SignIn:', userError);
+          console.warn('Error getting user:', userError);
           return;
         }
         
-        if (user) {
+        if (user && mounted) {
           try {
             const role = await getUserRole(user.id);
             if (mounted) {
@@ -40,7 +36,7 @@ const SignIn = () => {
               }
             }
           } catch (roleError) {
-            console.warn('Error getting user role:', roleError);
+            console.warn('Error getting role:', roleError);
             if (mounted) {
               navigate('/account');
             }
@@ -48,13 +44,12 @@ const SignIn = () => {
           return;
         }
         
-        // Also check for phone verification
         const phoneVerified = localStorage.getItem('phoneVerified');
         if (phoneVerified && mounted) {
           navigate('/account');
         }
       } catch (error) {
-        console.error('Error in checkAuth:', error);
+        console.error('Auth check error:', error);
       }
     };
     
@@ -64,6 +59,19 @@ const SignIn = () => {
       mounted = false;
     };
   }, [navigate]);
+
+  const handleSignIn = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/account`
+        }
+      });
+    } catch (error) {
+      console.error('Sign in error:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-accent/10 via-background to-accent/5 p-4">
@@ -108,14 +116,7 @@ const SignIn = () => {
             <Button
               variant="default"
               className="w-full bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200"
-              onClick={async () => {
-                await supabase.auth.signInWithOAuth({ 
-                  provider: 'google', 
-                  options: { 
-                    redirectTo: `${window.location.origin}/account`
-                  }
-                });
-              }}
+              onClick={handleSignIn}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
