@@ -2,15 +2,32 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Send } from "lucide-react";
+import { Upload, Send, Phone } from "lucide-react";
 
 export const BulkSmsMarketing = () => {
   const [contacts, setContacts] = useState<string[]>([]);
+  const [manualNumbers, setManualNumbers] = useState<string>("");
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
   const { toast } = useToast();
+
+  const uniqueNormalized = (list: string[]) => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const raw of list) {
+      const normalized = raw.replace(/[^\d+]/g, '').trim();
+      if (!normalized) continue;
+      if (normalized.length < 10) continue;
+      if (!seen.has(normalized)) {
+        seen.add(normalized);
+        out.push(normalized);
+      }
+    }
+    return out;
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -61,10 +78,11 @@ export const BulkSmsMarketing = () => {
           });
       }
 
-      setContacts(phoneNumbers);
+      const combined = uniqueNormalized([...contacts, ...phoneNumbers]);
+      setContacts(combined);
       toast({
         title: "Success",
-        description: `Loaded ${phoneNumbers.length} contacts from ${isCSV ? 'CSV' : 'Excel'} file`
+        description: `Loaded ${phoneNumbers.length} contacts. Total: ${combined.length}`
       });
     } catch (error) {
       console.error('Error reading file:', error);
@@ -75,14 +93,46 @@ export const BulkSmsMarketing = () => {
       });
     } finally {
       setUploading(false);
+      // allow reselecting the same file
+      event.currentTarget.value = "";
     }
+  };
+
+  const handleAddManualNumbers = () => {
+    if (!manualNumbers.trim()) {
+      toast({
+        title: "No numbers provided",
+        description: "Enter comma-separated or line-separated phone numbers to add.",
+        variant: "destructive"
+      });
+      return;
+    }
+    const pieces = manualNumbers.split(/[\s,;]+/g).map(p => p.trim()).filter(Boolean);
+    const valid = pieces
+      .map(p => p.replace(/[^\d+]/g, ''))
+      .filter(p => p.length >= 10);
+    if (valid.length === 0) {
+      toast({
+        title: "No valid numbers",
+        description: "Please check the format and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    const combined = uniqueNormalized([...contacts, ...valid]);
+    setContacts(combined);
+    setManualNumbers("");
+    toast({
+      title: "Numbers added",
+      description: `Added ${valid.length} numbers. Total: ${combined.length}`
+    });
   };
 
   const handleSendBulkSms = async () => {
     if (contacts.length === 0) {
       toast({
         title: "No contacts",
-        description: "Please upload a CSV file with contacts first",
+        description: "Please upload or add contacts first",
         variant: "destructive"
       });
       return;
@@ -145,6 +195,11 @@ export const BulkSmsMarketing = () => {
 
   return (
     <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <Phone className="h-4 w-4 text-accent" />
+        <p className="text-sm text-muted-foreground">Send bulk SMS to your audience</p>
+      </div>
+
       {/* Upload CSV */}
       <div>
         <label htmlFor="csv-upload" className="block text-sm font-medium mb-1.5">
@@ -170,6 +225,34 @@ export const BulkSmsMarketing = () => {
         <p className="text-xs text-muted-foreground mt-1">
           CSV or Excel file with phone numbers in first column
         </p>
+      </div>
+
+      {/* Manual add */}
+      <div className="space-y-1.5">
+        <Label htmlFor="manual-numbers" className="text-sm">Add numbers (comma or line separated)</Label>
+        <Textarea
+          id="manual-numbers"
+          placeholder="+2567..., 2567..., 07..."
+          value={manualNumbers}
+          onChange={(e) => setManualNumbers(e.target.value)}
+          rows={2}
+          className="resize-none text-sm"
+        />
+        <div className="flex justify-between items-center">
+          <p className="text-xs text-muted-foreground">
+            {contacts.length > 0 ? `${contacts.length} contacts ready` : 'No contacts added yet'}
+          </p>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleAddManualNumbers}>
+              Add numbers
+            </Button>
+            {contacts.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={() => setContacts([])}>
+                Clear
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Show loaded contacts count */}

@@ -32,6 +32,7 @@ const DeliveryOrdersSection = lazy(() => import("@/components/account/DeliveryOr
 const CustomerOrdersSection = lazy(() => import("@/components/account/CustomerOrdersSection").then(m => ({ default: m.CustomerOrdersSection })));
 const AdminOrdersDashboard = lazy(() => import("@/components/admin/AdminOrdersDashboard").then(m => ({ default: m.AdminOrdersDashboard })));
 const BulkSmsMarketing = lazy(() => import("@/components/admin/BulkSmsMarketing").then(m => ({ default: m.BulkSmsMarketing })));
+const BulkEmailMarketing = lazy(() => import("@/components/admin/BulkEmailMarketing").then(m => ({ default: m.BulkEmailMarketing })));
 const CommissionsWithdrawalsManager = lazy(() => import("@/components/admin/CommissionsWithdrawalsManager").then(m => ({ default: m.CommissionsWithdrawalsManager })));
 const UserManagement = lazy(() => import("@/components/admin/UserManagement").then(m => ({ default: m.UserManagement })));
 
@@ -188,6 +189,7 @@ const Account = () => {
         (prefetchPromises as any[]).push(
           import("@/components/admin/AdminOrdersDashboard"),
           import("@/components/admin/BulkSmsMarketing"),
+          import("@/components/admin/BulkEmailMarketing"),
           import("@/components/admin/CommissionsWithdrawalsManager"),
           import("@/components/admin/UserManagement")
         );
@@ -415,7 +417,7 @@ const Account = () => {
                       </div>
                       <div>
                         <span className="font-medium text-foreground">Marketing</span>
-                        <p className="text-xs text-muted-foreground">Bulk SMS & Push</p>
+                        <p className="text-xs text-muted-foreground">SMS, Email & Push</p>
                       </div>
                     </div>
                     <div className="text-muted-foreground">›</div>
@@ -792,6 +794,15 @@ const Account = () => {
                     </CardHeader>
                     <CardContent>
                       <BulkSmsMarketing />
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Bulk Email Marketing</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <BulkEmailMarketing />
                     </CardContent>
                   </Card>
                   
