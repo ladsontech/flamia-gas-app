@@ -268,15 +268,13 @@ const SellerStorefront = () => {
             )}
           </Helmet>
           
-          {/* Storefront Header with Auth - Only show on subdomain visits */}
-          {isIndependentStorefront && (
+          {/* Storefront Header with Auth - Always show */}
           <StorefrontHeader
             shopName={shop.shop_name}
             shopLogoUrl={shop.shop_logo_url}
             isOwner={isOwner}
             shopType="seller"
-            />
-          )}
+          />
 
           {/* Shop Info Banner - Only show when accessed via main store */}
           {!isIndependentStorefront && (

@@ -229,6 +229,14 @@ export default function AffiliateStorefront() {
             )}
           </Helmet>
 
+          {/* Storefront Header with Auth - Always show */}
+          <StorefrontHeader
+            shopName={shop.shop_name}
+            shopLogoUrl={shop.shop_logo_url}
+            isOwner={isOwner}
+            shopType="affiliate"
+          />
+
           {/* Shop Info Banner */}
           <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 py-4 sm:py-6">
             <div className="container max-w-7xl mx-auto px-4">
