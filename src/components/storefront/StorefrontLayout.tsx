@@ -57,6 +57,7 @@ export const StorefrontLayout = ({
       {/* Header - Always visible */}
       <StorefrontHeader
         shopName={shopName}
+        shopSlug={shopSlug}
         shopLogoUrl={shopLogoUrl}
         isOwner={isOwner}
         shopType={shopType}
