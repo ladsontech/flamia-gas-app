@@ -140,13 +140,25 @@ export const StorefrontHeader = ({
   };
 
   const handleSignIn = () => {
-    // Navigate to storefront auth page
-    const returnTo = encodeURIComponent(window.location.href);
-    if (shopSlug) {
-      navigate(`/store/${shopSlug}/auth?return_to=${returnTo}`);
-    } else {
-      // Fallback to Google OAuth
-      handleGoogleSignIn();
+    try {
+      // Navigate to storefront auth page
+      const returnTo = encodeURIComponent(window.location.href);
+      if (shopSlug) {
+        const authUrl = `/store/${shopSlug}/auth?return_to=${returnTo}`;
+        console.log('Navigating to:', authUrl);
+        window.location.href = authUrl;
+      } else {
+        // Fallback to Google OAuth
+        console.log('No shopSlug, using Google OAuth');
+        handleGoogleSignIn();
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to navigate to sign in page',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -171,8 +183,26 @@ export const StorefrontHeader = ({
   };
 
   const handleDashboard = () => {
-    if (shopSlug) {
-      navigate(`/store/${shopSlug}/dashboard`);
+    try {
+      if (shopSlug) {
+        const dashboardUrl = `/store/${shopSlug}/dashboard`;
+        console.log('Navigating to dashboard:', dashboardUrl);
+        window.location.href = dashboardUrl;
+      } else {
+        console.warn('No shopSlug available for dashboard navigation');
+        toast({
+          title: 'Error',
+          description: 'Unable to navigate to dashboard',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Dashboard navigation error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to navigate to dashboard',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -309,7 +339,8 @@ export const StorefrontHeader = ({
                 <Button 
                   variant="default" 
                   size="sm" 
-                  className="text-xs sm:text-sm h-8 sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-md"
+                  type="button"
+                  className="text-xs sm:text-sm h-8 sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-md cursor-pointer"
                   onClick={handleSignIn}
                 >
                   <LogIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />

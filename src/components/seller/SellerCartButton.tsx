@@ -53,30 +53,56 @@ export const SellerCartButton = () => {
   }, [slug]);
 
   const handleCheckout = () => {
-    if (!whatsappNumber) {
-      toast.error('Shop WhatsApp number not configured. Please contact the shop owner.');
-      return;
+    try {
+      console.log('Checkout clicked. WhatsApp:', whatsappNumber, 'Items:', items.length);
+      
+      if (!whatsappNumber) {
+        console.error('No WhatsApp number configured');
+        toast.error('Shop WhatsApp number not configured. Please contact the shop owner.');
+        return;
+      }
+
+      if (items.length === 0) {
+        console.error('Cart is empty');
+        toast.error('Your cart is empty. Add items before checking out.');
+        return;
+      }
+
+      // Create order message
+      let message = `*New Order from ${shopName || 'Store'}*\n\n`;
+      message += `*Order Details:*\n`;
+      items.forEach((item, index) => {
+        message += `${index + 1}. ${item.name}\n`;
+        message += `   Quantity: ${item.quantity}\n`;
+        message += `   Price: UGX ${item.price.toLocaleString()}\n`;
+        message += `   Subtotal: UGX ${(item.price * item.quantity).toLocaleString()}\n\n`;
+      });
+      message += `*Total: UGX ${totalPrice.toLocaleString()}*\n\n`;
+      message += `Please confirm this order and provide delivery details.`;
+
+      // Clean phone number and create WhatsApp URL
+      const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
+      console.log('Clean WhatsApp number:', cleanNumber);
+      
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+      
+      console.log('Opening WhatsApp URL:', whatsappUrl);
+      
+      // Open WhatsApp in new tab
+      const newWindow = window.open(whatsappUrl, '_blank');
+      
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        console.warn('Popup blocked, trying direct navigation');
+        window.location.href = whatsappUrl;
+      }
+      
+      toast.success('Opening WhatsApp to complete your order!');
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to open WhatsApp. Please try again.');
     }
-
-    // Create order message
-    let message = `*New Order from ${shopName}*\n\n`;
-    message += `*Order Details:*\n`;
-    items.forEach((item, index) => {
-      message += `${index + 1}. ${item.name}\n`;
-      message += `   Quantity: ${item.quantity}\n`;
-      message += `   Price: UGX ${item.price.toLocaleString()}\n`;
-      message += `   Subtotal: UGX ${(item.price * item.quantity).toLocaleString()}\n\n`;
-    });
-    message += `*Total: UGX ${totalPrice.toLocaleString()}*\n\n`;
-    message += `Please confirm this order and provide delivery details.`;
-
-    // Open WhatsApp
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-    
-    toast.success('Opening WhatsApp to complete your order!');
-    setIsOpen(false);
   };
 
   return (
@@ -183,14 +209,18 @@ export const SellerCartButton = () => {
               <div className="space-y-2">
                 <Button 
                   onClick={handleCheckout}
-                  className="w-full h-12 text-base font-semibold bg-green-600 hover:bg-green-700"
+                  disabled={items.length === 0}
+                  className="w-full h-12 text-base font-semibold bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   size="lg"
+                  type="button"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Order via WhatsApp
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  Complete your order through WhatsApp
+                  {whatsappNumber 
+                    ? 'Complete your order through WhatsApp' 
+                    : 'WhatsApp checkout not configured'}
                 </p>
                 <Button
                   onClick={clearCart}
