@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -253,7 +253,7 @@ const SellerStorefront = () => {
             {/* Dynamic PWA Manifest with store logo */}
             <link 
               rel="manifest" 
-              href={`${supabase.functions.getUrl('generate-manifest')}?slug=${shop.shop_slug}&type=seller`}
+              href={`${SUPABASE_URL}/functions/v1/generate-manifest?slug=${shop.shop_slug}&type=seller`}
             />
             <meta name="theme-color" content="#00b341" />
             <meta name="apple-mobile-web-app-capable" content="yes" />

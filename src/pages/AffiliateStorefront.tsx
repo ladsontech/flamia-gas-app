@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL } from '@/integrations/supabase/client';
 import { fetchAffiliateShopBySlug, fetchAffiliateShopProducts } from '@/services/affiliateService';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -214,7 +214,7 @@ export default function AffiliateStorefront() {
             {/* Dynamic PWA Manifest with store logo */}
             <link 
               rel="manifest" 
-              href={`${supabase.functions.getUrl('generate-manifest')}?slug=${shop.shop_slug}&type=affiliate`}
+              href={`${SUPABASE_URL}/functions/v1/generate-manifest?slug=${shop.shop_slug}&type=affiliate`}
             />
             <meta name="theme-color" content="#00b341" />
             <meta name="apple-mobile-web-app-capable" content="yes" />
