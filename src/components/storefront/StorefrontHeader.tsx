@@ -74,6 +74,7 @@ export const StorefrontHeader = ({
       } else {
         setUserProfile(null);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();

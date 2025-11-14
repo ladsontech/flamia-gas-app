@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,43 +23,49 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Submitting checkout settings...', {
+      shopId: shop.id,
+      whatsappNumber,
+      checkoutType
+    });
+    
     // Validate WhatsApp number (required for now)
-    if (!whatsappNumber) {
+    if (!whatsappNumber || !whatsappNumber.trim()) {
       toast.error('Please enter your WhatsApp number.');
       return;
     }
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      console.log('Updating seller_shops table...');
+      const { data, error } = await supabase
         .from('seller_shops')
         .update({
           checkout_type: 'whatsapp', // Force WhatsApp for now
-          whatsapp_number: whatsappNumber,
+          whatsapp_number: whatsappNumber.trim(),
         })
-        .eq('id', shop.id);
+        .eq('id', shop.id)
+        .select();
 
-      if (error) throw error;
+      console.log('Update result:', { data, error });
 
-      toast.success('Your WhatsApp number has been saved.');
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('WhatsApp number saved successfully');
+      toast.success('Your WhatsApp number has been saved successfully!');
       onUpdate();
     } catch (error: any) {
       console.error('Error updating checkout settings:', error);
-      toast.error(error.message || 'Failed to update checkout settings.');
+      toast.error(error.message || 'Failed to update checkout settings. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Checkout Settings</CardTitle>
-        <CardDescription>
-          Configure how customers can purchase from your store
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Checkout Type */}
           <div className="space-y-3">
@@ -135,8 +140,6 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
             Save Checkout Settings
           </Button>
         </form>
-      </CardContent>
-    </Card>
   );
 };
 
