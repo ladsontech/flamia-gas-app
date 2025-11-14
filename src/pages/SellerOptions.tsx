@@ -21,6 +21,31 @@ export default function SellerOptions() {
           <p className="text-sm sm:text-base md:text-xl text-muted-foreground">Choose the model that works best for you</p>
         </div>
 
+        {/* Segmented toggle */}
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center rounded-lg border bg-background shadow-sm overflow-hidden">
+            <Button
+              variant={selection === 'merchant' ? 'default' : 'ghost'}
+              size="sm"
+              className={`rounded-none px-4 sm:px-6 ${selection === 'merchant' ? '' : 'text-foreground'}`}
+              aria-pressed={selection === 'merchant'}
+              onClick={() => setSelection('merchant')}
+            >
+              Merchant
+            </Button>
+            <div className="h-6 w-px bg-border" />
+            <Button
+              variant={selection === 'affiliate' ? 'default' : 'ghost'}
+              size="sm"
+              className={`rounded-none px-4 sm:px-6 ${selection === 'affiliate' ? '' : 'text-foreground'}`}
+              aria-pressed={selection === 'affiliate'}
+              onClick={() => setSelection('affiliate')}
+            >
+              Affiliate
+            </Button>
+          </div>
+        </div>
+
         {/* Single-choice selection */}
         <Card className="p-5 sm:p-8 max-w-4xl mx-auto">
           <RadioGroup
@@ -37,7 +62,7 @@ export default function SellerOptions() {
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelection('merchant'); }}
             >
               <div className="flex items-start gap-4">
-                <RadioGroupItem id="merchant" value="merchant" className="mt-1" />
+                <RadioGroupItem id="merchant" value="merchant" className="mt-1 h-5 w-5" />
                 <div className="flex-1">
                   <Label htmlFor="merchant" className="flex items-center gap-3 text-base sm:text-lg font-semibold">
                     <span className="inline-flex w-10 h-10 bg-primary/10 rounded-xl items-center justify-center">
@@ -83,6 +108,12 @@ export default function SellerOptions() {
                     <p className="text-lg sm:text-xl font-bold text-primary">UGX 50,000</p>
                     <p className="text-xs text-muted-foreground mt-1">Requires approval</p>
                   </div>
+
+                  <div className="mt-3">
+                    <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelection('merchant'); }}>
+                      Select Merchant
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -96,7 +127,7 @@ export default function SellerOptions() {
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelection('affiliate'); }}
             >
               <div className="flex items-start gap-4">
-                <RadioGroupItem id="affiliate" value="affiliate" className="mt-1" />
+                <RadioGroupItem id="affiliate" value="affiliate" className="mt-1 h-5 w-5" />
                 <div className="flex-1">
                   <Label htmlFor="affiliate" className="flex items-center gap-3 text-base sm:text-lg font-semibold">
                     <span className="inline-flex w-10 h-10 bg-primary/10 rounded-xl items-center justify-center">
@@ -150,25 +181,16 @@ export default function SellerOptions() {
                       </div>
                     </div>
                   </div>
+
+                  <div className="mt-3">
+                    <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelection('affiliate'); }}>
+                      Select Affiliate
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
           </RadioGroup>
-
-          <div className="mt-6 sm:mt-8 flex justify-end">
-            <Button
-              className="h-11 sm:h-12 text-sm sm:text-base"
-              size="lg"
-              disabled={!selection}
-              onClick={() => {
-                if (selection === 'merchant') navigate('/sell');
-                if (selection === 'affiliate') navigate('/affiliate/dashboard');
-              }}
-            >
-              Continue
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
         </Card>
 
         {/* Comparison Note */}
@@ -177,6 +199,26 @@ export default function SellerOptions() {
             <strong className="text-foreground">Not sure which to choose?</strong> Merchant shops are ideal if you have your own products to sell. 
             Affiliate shops are perfect if you want to earn by promoting existing products without managing inventory.
           </p>
+        </div>
+      </div>
+
+      {/* Sticky action bar */}
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-3">
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {selection ? `Selected: ${selection === 'merchant' ? 'Merchant Shop' : 'Affiliate Shop'}` : 'Choose one option to continue'}
+          </p>
+          <Button
+            className="h-10 sm:h-11 text-sm"
+            disabled={!selection}
+            onClick={() => {
+              if (selection === 'merchant') navigate('/sell');
+              if (selection === 'affiliate') navigate('/affiliate/dashboard');
+            }}
+          >
+            Continue
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
       </div>
     </div>
