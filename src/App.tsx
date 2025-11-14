@@ -115,8 +115,9 @@ const AppContent = () => {
   const isPolicyRoute = location.pathname.startsWith('/terms-and-conditions') || location.pathname.startsWith('/privacy-policy');
   const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
   const isStorefrontHost = !!subdomainMatch;
-  // Only treat subdomain visits as storefronts, not /shop/slug routes from main store
-  const isStorefront = isStorefrontHost;
+  // Treat both subdomain visits AND /shop/:slug and /affiliate/:slug routes as storefronts
+  const isStorefrontRoute = location.pathname.startsWith('/shop/') || location.pathname.startsWith('/affiliate/');
+  const isStorefront = isStorefrontHost || isStorefrontRoute;
   
   // Routes that don't need loading screen (no redirects)
   const isHomeRoute = location.pathname === '/' || location.pathname === '/home';

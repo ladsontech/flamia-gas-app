@@ -27,6 +27,7 @@ export default function SellerOnboarding() {
     shop_description: '',
     delivery_terms: '',
     category_id: '',
+    whatsapp_number: '',
   });
   const [existingShop, setExistingShop] = useState<any | null>(null);
 
@@ -66,6 +67,7 @@ export default function SellerOnboarding() {
             shop_logo_url: shop.shop_logo_url || prev.shop_logo_url,
             shop_description: shop.shop_description || prev.shop_description,
             category_id: shop.category_id || prev.category_id,
+            whatsapp_number: shop.whatsapp_number || prev.whatsapp_number,
           }));
         }
       } catch (e) {
@@ -107,6 +109,10 @@ export default function SellerOnboarding() {
       toast.error('Please provide shop name and category.');
       return;
     }
+    if (!form.whatsapp_number) {
+      toast.error('WhatsApp number is required for customer orders.');
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -117,6 +123,7 @@ export default function SellerOnboarding() {
           shop_description: form.shop_description || null,
           shop_logo_url: form.shop_logo_url || null,
           category_id: form.category_id,
+          whatsapp_number: form.whatsapp_number,
         });
         toast.success('Your store details have been saved!');
       } else {
@@ -127,6 +134,7 @@ export default function SellerOnboarding() {
             categoryId: form.category_id,
             shopDescription: form.shop_description || null,
             shopLogoUrl: form.shop_logo_url || null,
+            whatsappNumber: form.whatsapp_number || null,
           }
         });
         if (error) {
@@ -197,7 +205,7 @@ export default function SellerOnboarding() {
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                 <Image className="w-4 h-4" />
               </div>
-              <span className="hidden sm:inline text-sm font-medium">Category</span>
+              <span className="hidden sm:inline text-sm font-medium">Details</span>
             </div>
           </div>
         </div>
@@ -207,7 +215,7 @@ export default function SellerOnboarding() {
             <CardTitle>
               {step === 1 && 'Store Name & Logo'}
               {step === 2 && 'Store Description'}
-              {step === 3 && 'Store Category'}
+              {step === 3 && 'Store Details'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -285,7 +293,7 @@ export default function SellerOnboarding() {
               </div>
             )}
 
-            {/* Step 3: Category */}
+            {/* Step 3: Category & WhatsApp */}
             {step === 3 && (
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -304,6 +312,23 @@ export default function SellerOnboarding() {
                   </Select>
                   <p className="text-sm text-muted-foreground">
                     Choose the category that best describes your business. You'll select specific subcategories when adding products.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp_number" className="text-base font-semibold">
+                    WhatsApp Number <span className="text-destructive">*</span>
+                  </Label>
+                  <Input 
+                    id="whatsapp_number" 
+                    type="tel"
+                    value={form.whatsapp_number} 
+                    onChange={(e) => setForm({ ...form, whatsapp_number: e.target.value })}
+                    placeholder="+256XXXXXXXXX"
+                    className="h-11 text-base"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Include country code (e.g., +256 for Uganda). Customers will contact you via WhatsApp to complete orders.
                   </p>
                 </div>
 
@@ -350,7 +375,7 @@ export default function SellerOnboarding() {
               ) : (
                 <Button 
                   onClick={handleComplete} 
-                  disabled={submitting || !form.category_id}
+                  disabled={submitting || !form.category_id || !form.whatsapp_number}
                   className="gap-2"
                 >
                   {submitting ? 'Setting up...' : 'Complete Setup'}

@@ -33,6 +33,7 @@ serve(async (req) => {
       categoryId?: string;
       shopDescription?: string | null;
       shopLogoUrl?: string | null;
+      whatsappNumber?: string | null;
     };
 
     const { data: auth } = await anon.auth.getUser();
@@ -75,6 +76,7 @@ serve(async (req) => {
           shop_description: body.shopDescription || null,
           shop_logo_url: body.shopLogoUrl || null,
           category_id: categoryId,
+          whatsapp_number: body.whatsappNumber || null,
           is_active: true,
           is_approved: true,
         })
@@ -125,6 +127,7 @@ serve(async (req) => {
         category_id: categoryId,
         shop_logo_url: body.shopLogoUrl || null,
         shop_description: body.shopDescription || null,
+        whatsapp_number: body.whatsappNumber || null,
         is_active: true,
         is_approved: true,
         tier: "basic",
