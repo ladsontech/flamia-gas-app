@@ -206,10 +206,6 @@ export const StorefrontHeader = ({
     }
   };
 
-  if (loading) {
-    return null;
-  }
-
   return (
     <header className="bg-gradient-to-r from-orange-50 via-white to-orange-50 sticky top-0 z-[100] shadow-md border-b border-orange-100">
       <div className="container max-w-7xl mx-auto px-3 sm:px-4">
@@ -234,7 +230,9 @@ export const StorefrontHeader = ({
 
           {/* Right Side - Auth & Account */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {user ? (
+            {loading ? (
+              <div className="h-8 w-20 bg-muted animate-pulse rounded"></div>
+            ) : user ? (
               <>
                 {/* Owner Analytics Button */}
                 {isOwner && onShowAnalytics && (
