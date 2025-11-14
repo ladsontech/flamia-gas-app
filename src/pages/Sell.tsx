@@ -9,11 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Store, Upload, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { createSellerApplication, fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser } from '@/services/sellerService';
+import { Store, Upload, CheckCircle, Clock, XCircle, Trash2, Check, X, Loader2 as LoaderIcon } from 'lucide-react';
+import { createSellerApplication, fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser, cancelSellerApplication, checkShopNameAvailability } from '@/services/sellerService';
 import type { ProductCategory, SellerApplication } from '@/types/seller';
 import { getImagesLimit } from '@/services/adminService';
 import { BackButton } from '@/components/BackButton';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -25,6 +26,9 @@ const Sell = () => {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [existingApplication, setExistingApplication] = useState<SellerApplication | null>(null);
   const [sellerSlug, setSellerSlug] = useState<string | null>(null);
+  const [canceling, setCanceling] = useState(false);
+  const [checkingName, setCheckingName] = useState(false);
+  const [nameAvailable, setNameAvailable] = useState<boolean | null>(null);
   const [form, setForm] = useState({
     shop_name: '',
     category_id: '',
@@ -73,6 +77,28 @@ const Sell = () => {
 
     loadData();
   }, []);
+
+  // Check shop name availability with debounce
+  useEffect(() => {
+    if (!form.shop_name || form.shop_name.length < 3) {
+      setNameAvailable(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setCheckingName(true);
+      try {
+        const available = await checkShopNameAvailability(form.shop_name);
+        setNameAvailable(available);
+      } catch (error) {
+        console.error('Error checking name:', error);
+      } finally {
+        setCheckingName(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [form.shop_name]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const filesList = e.target.files;
@@ -155,6 +181,30 @@ const Sell = () => {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'your-shop';
+
+  const handleCancelApplication = async () => {
+    if (!existingApplication?.id) return;
+    
+    setCanceling(true);
+    try {
+      await cancelSellerApplication(existingApplication.id);
+      toast({
+        title: "Application canceled",
+        description: "Your seller application has been canceled successfully."
+      });
+      // Reload to show fresh state
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Error canceling application:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel application",
+        variant: "destructive"
+      });
+    } finally {
+      setCanceling(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -254,6 +304,34 @@ const Sell = () => {
                 >
                   Go to My Account
                 </Button>
+                {status === 'pending' && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="destructive" 
+                        className="sm:flex-1 h-11 sm:h-12 text-sm sm:text-base"
+                        disabled={canceling}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {canceling ? 'Canceling...' : 'Cancel Application'}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Cancel Application?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to cancel your seller application? This action cannot be undone. You can reapply later if needed.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Keep Application</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleCancelApplication} className="bg-destructive hover:bg-destructive/90">
+                          Yes, Cancel Application
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
                 {status === 'approved' && (
                   <>
                     <Button 
@@ -303,28 +381,44 @@ const Sell = () => {
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="shop_name" className="text-sm sm:text-base font-semibold">Shop Name *</Label>
-                <Input 
-                  id="shop_name" 
-                  value={form.shop_name} 
-                  onChange={(e) => setForm({ ...form, shop_name: e.target.value })} 
-                  placeholder="Enter your shop name"
-                  className="h-11 sm:h-12 text-sm sm:text-base"
-                  required 
-                />
+                <div className="relative">
+                  <Input 
+                    id="shop_name" 
+                    value={form.shop_name} 
+                    onChange={(e) => setForm({ ...form, shop_name: e.target.value })} 
+                    placeholder="Enter your shop name"
+                    className={`h-11 sm:h-12 text-sm sm:text-base pr-10 ${
+                      nameAvailable === false ? 'border-red-500 focus-visible:ring-red-500' : 
+                      nameAvailable === true ? 'border-green-500 focus-visible:ring-green-500' : ''
+                    }`}
+                    required 
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {checkingName && <LoaderIcon className="w-4 h-4 animate-spin text-muted-foreground" />}
+                    {!checkingName && nameAvailable === true && <Check className="w-4 h-4 text-green-600" />}
+                    {!checkingName && nameAvailable === false && <X className="w-4 h-4 text-red-600" />}
+                  </div>
+                </div>
+                {nameAvailable === false && (
+                  <p className="text-xs text-red-600">This shop name is already taken. Please choose another name.</p>
+                )}
+                {nameAvailable === true && (
+                  <p className="text-xs text-green-600">✓ This shop name is available!</p>
+                )}
                 <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">
                   Your shop will be: <span className="font-mono font-semibold text-primary">{shopSlugPreview}.flamia.store</span>
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category" className="text-sm sm:text-base font-semibold">Shop Category *</Label>
+                <Label htmlFor="category" className="text-sm sm:text-base font-semibold">Main Shop Category *</Label>
                 <Select 
                   value={form.category_id} 
                   onValueChange={(value) => setForm({ ...form, category_id: value })}
                   required
                 >
                   <SelectTrigger className="h-11 sm:h-12 text-sm sm:text-base">
-                    <SelectValue placeholder="Select your shop category" />
+                    <SelectValue placeholder="Select your main category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((cat) => (
@@ -335,7 +429,7 @@ const Sell = () => {
                   </SelectContent>
                 </Select>
                 <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">
-                  Choose one main category for your shop
+                  Choose the main category that best describes your business. You'll select specific subcategories when adding products.
                 </p>
               </div>
 
@@ -410,7 +504,7 @@ const Sell = () => {
                 </div>
                 <Button 
                   type="submit" 
-                  disabled={loading} 
+                  disabled={loading || nameAvailable === false || checkingName || !form.shop_name || !form.category_id} 
                   className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg"
                 >
                   {loading ? (

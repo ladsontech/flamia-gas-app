@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Trash2, Save, LayoutGrid, LayoutList } from 'lucide-react';
 import type { AffiliateShop } from '@/types/affiliate';
+import { deleteAffiliateShop } from '@/services/affiliateService';
 
 interface AffiliateShopSettingsProps {
   shop: AffiliateShop;
@@ -55,24 +56,9 @@ export const AffiliateShopSettings = ({ shop, onUpdate }: AffiliateShopSettingsP
     setIsDeleting(true);
 
     try {
-      // Delete affiliate shop products first
-      const { error: productsError } = await supabase
-        .from('affiliate_shop_products')
-        .delete()
-        .eq('affiliate_shop_id', shop.id);
-
-      if (productsError) throw productsError;
-
-      // Delete the shop
-      const { error } = await supabase
-        .from('affiliate_shops')
-        .delete()
-        .eq('id', shop.id);
-
-      if (error) throw error;
-
+      await deleteAffiliateShop(shop.id);
       toast.success('Shop deleted successfully');
-      window.location.href = '/affiliate/dashboard';
+      window.location.href = '/seller-options';
     } catch (error: any) {
       console.error('Error deleting shop:', error);
       toast.error('Failed to delete shop');

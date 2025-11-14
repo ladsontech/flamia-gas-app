@@ -39,10 +39,49 @@ export const fetchSubcategories = async (parentId: string): Promise<ProductCateg
   return data || [];
 };
 
+// Check if shop name is available (for both sellers and affiliates)
+export const checkShopNameAvailability = async (shopName: string): Promise<boolean> => {
+  // Check in seller shops
+  const { data: sellerShops } = await supabase
+    .from('seller_shops')
+    .select('id')
+    .ilike('shop_name', shopName)
+    .limit(1);
+
+  if (sellerShops && sellerShops.length > 0) return false;
+
+  // Check in affiliate shops
+  const { data: affiliateShops } = await supabase
+    .from('affiliate_shops')
+    .select('id')
+    .ilike('shop_name', shopName)
+    .limit(1);
+
+  if (affiliateShops && affiliateShops.length > 0) return false;
+
+  // Check in pending applications
+  const { data: applications } = await supabase
+    .from('seller_applications')
+    .select('id')
+    .ilike('shop_name', shopName)
+    .eq('status', 'pending')
+    .limit(1);
+
+  if (applications && applications.length > 0) return false;
+
+  return true;
+};
+
 // Create seller application
 export const createSellerApplication = async (
   application: Omit<SellerApplication, 'id' | 'created_at' | 'updated_at' | 'status' | 'reviewed_by' | 'reviewed_at'>
 ): Promise<any> => {
+  // Check name availability first
+  const isAvailable = await checkShopNameAvailability(application.shop_name);
+  if (!isAvailable) {
+    throw new Error('This shop name is already taken. Please choose another name.');
+  }
+
   const { data, error } = await supabase
     .from('seller_applications')
     .insert(application)
@@ -218,6 +257,68 @@ export const rejectSellerApplication = async (
       message: `Unfortunately, your application for "${application.shop_name}" was not approved. ${reviewNotes}`,
       data: { application_id: applicationId }
     });
+};
+
+// Cancel seller application (user can cancel their own pending application)
+export const cancelSellerApplication = async (applicationId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('seller_applications')
+    .delete()
+    .eq('id', applicationId)
+    .eq('status', 'pending'); // Only allow canceling pending applications
+
+  if (error) throw error;
+};
+
+// Delete seller shop (user can delete their own shop)
+export const deleteSellerShop = async (shopId: string): Promise<void> => {
+  // First get the shop details to find business_id
+  const { data: shop, error: shopError } = await supabase
+    .from('seller_shops')
+    .select('business_id, user_id')
+    .eq('id', shopId)
+    .single();
+
+  if (shopError) throw shopError;
+  if (!shop) throw new Error('Shop not found');
+
+  // Delete shop products first
+  if (shop.business_id) {
+    await supabase
+      .from('business_products')
+      .delete()
+      .eq('business_id', shop.business_id);
+  }
+
+  // Delete the shop
+  const { error: deleteShopError } = await supabase
+    .from('seller_shops')
+    .delete()
+    .eq('id', shopId);
+
+  if (deleteShopError) throw deleteShopError;
+
+  // Delete the associated business
+  if (shop.business_id) {
+    await supabase
+      .from('businesses')
+      .delete()
+      .eq('id', shop.business_id);
+  }
+
+  // Remove business_owner role if user has no other shops
+  const { data: otherShops } = await supabase
+    .from('seller_shops')
+    .select('id')
+    .eq('user_id', shop.user_id);
+
+  if (!otherShops || otherShops.length === 0) {
+    await supabase
+      .from('user_roles')
+      .delete()
+      .eq('user_id', shop.user_id)
+      .eq('role', 'business_owner');
+  }
 };
 
 // Fetch seller shop by user

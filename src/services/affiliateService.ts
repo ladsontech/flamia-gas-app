@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { AffiliateShop, AffiliateShopProduct } from '@/types/affiliate';
+import { checkShopNameAvailability } from './sellerService';
 
 export const generateAffiliateShopSlug = async (shopName: string): Promise<string> => {
   let slug = shopName
@@ -35,6 +36,12 @@ export const generateAffiliateShopSlug = async (shopName: string): Promise<strin
 export const createAffiliateShop = async (
   shopData: Omit<AffiliateShop, 'id' | 'created_at' | 'updated_at' | 'shop_slug'>
 ): Promise<AffiliateShop> => {
+  // Check name availability first
+  const isAvailable = await checkShopNameAvailability(shopData.shop_name);
+  if (!isAvailable) {
+    throw new Error('This shop name is already taken. Please choose another name.');
+  }
+
   const slug = await generateAffiliateShopSlug(shopData.shop_name);
 
   const { data, error } = await supabase
@@ -136,4 +143,21 @@ export const countAffiliateShopProducts = async (affiliateShopId: string): Promi
 
   if (error) throw error;
   return count || 0;
+};
+
+// Delete affiliate shop
+export const deleteAffiliateShop = async (shopId: string): Promise<void> => {
+  // Delete all shop products first (cascade should handle this, but being explicit)
+  await supabase
+    .from('affiliate_shop_products')
+    .delete()
+    .eq('affiliate_shop_id', shopId);
+
+  // Delete the shop
+  const { error } = await supabase
+    .from('affiliate_shops')
+    .delete()
+    .eq('id', shopId);
+
+  if (error) throw error;
 };

@@ -230,23 +230,32 @@ export const ProductForm = ({ businessId, categoryId, onSuccess, onCancel, editP
       </div>
 
       <div>
-        <Label htmlFor="category">Subcategory *</Label>
+        <Label htmlFor="category">Product Category *</Label>
         <Select 
           value={formData.category_id} 
           onValueChange={(value) => setFormData({ ...formData, category_id: value })}
           required
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select subcategory" />
+            <SelectValue placeholder="Select product category" />
           </SelectTrigger>
           <SelectContent>
-            {subcategories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
-                {cat.name}
+            {subcategories.length > 0 ? (
+              subcategories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.name}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="none" disabled>
+                No categories available
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
+        <p className="text-xs text-muted-foreground mt-1.5">
+          Categories are filtered based on your shop's main category
+        </p>
       </div>
 
       <div className="space-y-3 p-4 bg-muted rounded-lg">

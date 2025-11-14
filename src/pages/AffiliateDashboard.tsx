@@ -10,6 +10,7 @@ import {
   fetchAffiliateShopProducts,
   countAffiliateShopProducts
 } from '@/services/affiliateService';
+import { checkShopNameAvailability } from '@/services/sellerService';
 import { AffiliateShopSettings } from '@/components/affiliate/AffiliateShopSettings';
 import { AffiliateEarningsComponent } from '@/components/affiliate/AffiliateEarnings';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Package, Store, DollarSign, BarChart3, Plus, TrendingUp, Loader2, Trash2, ExternalLink, Copy, Crown, Eye } from 'lucide-react';
+import { Package, Store, DollarSign, BarChart3, Plus, TrendingUp, Loader2, Trash2, ExternalLink, Copy, Crown, Eye, Check, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -36,6 +37,8 @@ export default function AffiliateDashboard() {
   const [shopName, setShopName] = useState('');
   const [shopDescription, setShopDescription] = useState('');
   const [shopLogoUrl, setShopLogoUrl] = useState('');
+  const [checkingName, setCheckingName] = useState(false);
+  const [nameAvailable, setNameAvailable] = useState<boolean | null>(null);
   const [availableProducts, setAvailableProducts] = useState<BusinessProduct[]>([]);
   const [affiliateProducts, setAffiliateProducts] = useState<AffiliateShopProduct[]>([]);
   const [productsCount, setProductsCount] = useState(0);
@@ -58,6 +61,28 @@ export default function AffiliateDashboard() {
       loadShopData();
     }
   }, [shop, shopLoading]);
+
+  // Check shop name availability with debounce
+  useEffect(() => {
+    if (!shopName || shopName.length < 3) {
+      setNameAvailable(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setCheckingName(true);
+      try {
+        const available = await checkShopNameAvailability(shopName);
+        setNameAvailable(available);
+      } catch (error) {
+        console.error('Error checking name:', error);
+      } finally {
+        setCheckingName(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [shopName]);
 
   const loadShopData = async () => {
     if (!shop) return;
@@ -229,14 +254,30 @@ export default function AffiliateDashboard() {
               <form onSubmit={handleCreateShop} className="space-y-4 sm:space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="shopName" className="text-sm sm:text-base font-semibold">Shop Name *</Label>
-                  <Input
-                    id="shopName"
-                    value={shopName}
-                    onChange={(e) => setShopName(e.target.value)}
-                    placeholder="My Affiliate Store"
-                    className="h-11 sm:h-12 text-sm sm:text-base"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="shopName"
+                      value={shopName}
+                      onChange={(e) => setShopName(e.target.value)}
+                      placeholder="My Affiliate Store"
+                      className={`h-11 sm:h-12 text-sm sm:text-base pr-10 ${
+                        nameAvailable === false ? 'border-red-500 focus-visible:ring-red-500' : 
+                        nameAvailable === true ? 'border-green-500 focus-visible:ring-green-500' : ''
+                      }`}
+                      required
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {checkingName && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+                      {!checkingName && nameAvailable === true && <Check className="w-4 h-4 text-green-600" />}
+                      {!checkingName && nameAvailable === false && <X className="w-4 h-4 text-red-600" />}
+                    </div>
+                  </div>
+                  {nameAvailable === false && (
+                    <p className="text-xs text-red-600">This shop name is already taken. Please choose another name.</p>
+                  )}
+                  {nameAvailable === true && (
+                    <p className="text-xs text-green-600">✓ This shop name is available!</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -283,7 +324,7 @@ export default function AffiliateDashboard() {
                 <Button 
                   type="submit" 
                   className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg" 
-                  disabled={isCreating}
+                  disabled={isCreating || nameAvailable === false || checkingName || !shopName.trim()}
                 >
                   {isCreating ? (
                     <>

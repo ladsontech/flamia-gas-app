@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Trash2, Save, LayoutGrid, LayoutList } from 'lucide-react';
 import type { SellerShop } from '@/types/seller';
+import { deleteSellerShop } from '@/services/sellerService';
 
 interface ShopSettingsFormProps {
   shop: SellerShop;
@@ -55,26 +56,9 @@ export const ShopSettingsForm = ({ shop, onUpdate }: ShopSettingsFormProps) => {
     setIsDeleting(true);
 
     try {
-      // Delete shop products first
-      if (shop.business_id) {
-        const { error: productsError } = await supabase
-          .from('business_products')
-          .delete()
-          .eq('business_id', shop.business_id);
-
-        if (productsError) throw productsError;
-      }
-
-      // Delete the shop
-      const { error } = await supabase
-        .from('seller_shops')
-        .delete()
-        .eq('id', shop.id);
-
-      if (error) throw error;
-
+      await deleteSellerShop(shop.id);
       toast.success('Shop deleted successfully');
-      window.location.href = '/sell';
+      window.location.href = '/seller-options';
     } catch (error: any) {
       console.error('Error deleting shop:', error);
       toast.error('Failed to delete shop');
