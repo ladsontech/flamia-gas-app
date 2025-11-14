@@ -13,6 +13,7 @@ import { Store, Upload, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { createSellerApplication, fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser } from '@/services/sellerService';
 import type { ProductCategory, SellerApplication } from '@/types/seller';
 import { getImagesLimit } from '@/services/adminService';
+import { BackButton } from '@/components/BackButton';
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -201,6 +202,7 @@ const Sell = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-orange-50/20 to-background pt-16 sm:pt-20 pb-20">
+        <BackButton />
         <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-2xl">
           <Card className="border-2 shadow-lg overflow-hidden">
             <div className={`${config.bgColor} ${config.borderColor} border-b-2 px-4 sm:px-6 py-4 sm:py-6`}>
@@ -280,6 +282,7 @@ const Sell = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-orange-50/20 to-background pt-16 sm:pt-20 pb-20">
+      <BackButton />
       <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-2xl">
         <Card className="border-2 shadow-lg overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-primary/20 p-4 sm:p-6">
@@ -288,9 +291,9 @@ const Sell = () => {
                 <Store className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-xl sm:text-2xl md:text-3xl">Become a Seller on Flamia</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl">Merchant Application</CardTitle>
                 <CardDescription className="text-xs sm:text-sm mt-1">
-                  Apply to sell on Flamia marketplace - Monthly fee: 50,000 UGX
+                  Complete your application to start selling on Flamia - Monthly fee: 50,000 UGX
                 </CardDescription>
               </div>
             </div>

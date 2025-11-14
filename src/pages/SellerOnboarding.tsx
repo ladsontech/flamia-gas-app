@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser, updateSellerShop } from '@/services/sellerService';
+import { BackButton } from '@/components/BackButton';
 
 export default function SellerOnboarding() {
   const navigate = useNavigate();
@@ -138,10 +139,12 @@ export default function SellerOnboarding() {
 
   return (
     <div className="min-h-screen bg-background pt-16 pb-20">
+      <BackButton />
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         <Card className="overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-xl">Seller Onboarding</CardTitle>
+            <CardTitle className="text-xl">Complete Your Shop Setup</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Step {step} of 4 - Set up your merchant store</p>
           </CardHeader>
           <CardContent className="space-y-6">
             {step === 1 && (
