@@ -77,6 +77,16 @@ const SellerDashboard = () => {
           return;
         }
 
+        // Check if shop setup is incomplete (missing description)
+        if (!sellerShop.shop_description || sellerShop.shop_description.trim() === '') {
+          toast({
+            title: 'Complete your store setup',
+            description: 'Please finish setting up your store before accessing the dashboard.',
+          });
+          navigate('/seller/onboarding');
+          return;
+        }
+
         setShop(sellerShop);
 
         // Load products count

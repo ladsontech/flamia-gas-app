@@ -8,15 +8,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { fetchParentCategories, fetchSellerApplicationByUser, fetchSellerShopByUser, updateSellerShop } from '@/services/sellerService';
 import { BackButton } from '@/components/BackButton';
+import { Store, Image, FileText, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 export default function SellerOnboarding() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [userId, setUserId] = useState<string | null>(null);
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
@@ -28,6 +29,8 @@ export default function SellerOnboarding() {
     category_id: '',
   });
   const [existingShop, setExistingShop] = useState<any | null>(null);
+
+  const progress = (step / 3) * 100;
 
   useEffect(() => {
     const init = async () => {
@@ -67,19 +70,41 @@ export default function SellerOnboarding() {
         }
       } catch (e) {
         console.error(e);
-        toast({ title: 'Error', description: 'Failed to load onboarding.', variant: 'destructive' });
+        toast.error('Failed to load onboarding.');
         navigate('/sell');
       } finally {
         setLoading(false);
       }
     };
     init();
-  }, [navigate, toast]);
+  }, [navigate]);
 
-  const handleCreateStore = async () => {
+  const handleNext = () => {
+    if (step === 1) {
+      if (!form.shop_name.trim()) {
+        toast.error('Please enter a shop name');
+        return;
+      }
+      setStep(2);
+    } else if (step === 2) {
+      if (!form.shop_description.trim()) {
+        toast.error('Please add a shop description');
+        return;
+      }
+      setStep(3);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep((step - 1) as 1 | 2 | 3);
+    }
+  };
+
+  const handleComplete = async () => {
     if (!userId) return;
     if (!form.shop_name || !form.category_id) {
-      toast({ title: 'Missing info', description: 'Please provide shop name and category.', variant: 'destructive' });
+      toast.error('Please provide shop name and category.');
       return;
     }
 
@@ -93,7 +118,7 @@ export default function SellerOnboarding() {
           shop_logo_url: form.shop_logo_url || null,
           category_id: form.category_id,
         });
-        toast({ title: 'Store updated', description: 'Your store details have been saved. Add products next!' });
+        toast.success('Your store details have been saved!');
       } else {
         // Attempt to provision via Supabase Edge Function with service role
         const { data, error } = await supabase.functions.invoke('provision-seller-shop', {
@@ -107,8 +132,7 @@ export default function SellerOnboarding() {
         if (error) {
           throw error;
         }
-        // After successful provision, go to dashboard
-        toast({ title: 'Store created', description: 'Your store is ready. Add your first products next!' });
+        toast.success('Your store is ready!');
       }
       // Mark onboarding completed after store is created or updated post-approval
       const nowIso = new Date().toISOString();
@@ -120,7 +144,7 @@ export default function SellerOnboarding() {
       navigate('/seller/dashboard');
     } catch (e: any) {
       console.error(e);
-      toast({ title: 'Failed to save store', description: e.message || 'Please try again', variant: 'destructive' });
+      toast.error(e.message || 'Failed to save store. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -140,53 +164,137 @@ export default function SellerOnboarding() {
   return (
     <div className="min-h-screen bg-background pt-16 pb-20">
       <BackButton />
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
-        <Card className="overflow-hidden">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-3xl">
+        {/* Progress Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl sm:text-2xl font-bold">Set Up Your Store</h1>
+            <span className="text-sm text-muted-foreground">Step {step} of 3</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+          
+          {/* Step Indicators */}
+          <div className="flex items-center justify-between mt-4 sm:mt-6">
+            <div className={`flex items-center gap-2 ${step >= 1 ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                {step > 1 ? <CheckCircle className="w-5 h-5" /> : <Store className="w-4 h-4" />}
+              </div>
+              <span className="hidden sm:inline text-sm font-medium">Basic Info</span>
+            </div>
+            
+            <div className="flex-1 h-0.5 bg-muted mx-2" />
+            
+            <div className={`flex items-center gap-2 ${step >= 2 ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                {step > 2 ? <CheckCircle className="w-5 h-5" /> : <FileText className="w-4 h-4" />}
+              </div>
+              <span className="hidden sm:inline text-sm font-medium">Description</span>
+            </div>
+            
+            <div className="flex-1 h-0.5 bg-muted mx-2" />
+            
+            <div className={`flex items-center gap-2 ${step >= 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                <Image className="w-4 h-4" />
+              </div>
+              <span className="hidden sm:inline text-sm font-medium">Category</span>
+            </div>
+          </div>
+        </div>
+
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Complete Your Shop Setup</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">Step {step} of 4 - Set up your merchant store</p>
+            <CardTitle>
+              {step === 1 && 'Store Name & Logo'}
+              {step === 2 && 'Store Description'}
+              {step === 3 && 'Store Category'}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Step 1: Basic Info */}
             {step === 1 && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="shop_name">Shop Name *</Label>
-                  <Input id="shop_name" value={form.shop_name} onChange={(e) => setForm({ ...form, shop_name: e.target.value })} />
+                  <Label htmlFor="shop_name" className="text-base font-semibold">
+                    Shop Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input 
+                    id="shop_name" 
+                    value={form.shop_name} 
+                    onChange={(e) => setForm({ ...form, shop_name: e.target.value })}
+                    placeholder="Enter your shop name"
+                    className="h-11 text-base"
+                    autoFocus
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    This will be your store's display name
+                  </p>
                 </div>
+                
                 <div className="space-y-2">
-                  <Label>Shop Logo</Label>
-                  <ShopImageUpload bucket="shop-logos" onUploadComplete={(url) => setForm({ ...form, shop_logo_url: url })} currentImage={form.shop_logo_url} />
-                </div>
-                <div className="flex justify-end">
-                  <Button onClick={() => setStep(2)}>Next</Button>
+                  <Label className="text-base font-semibold">Shop Logo (Optional)</Label>
+                  <ShopImageUpload 
+                    bucket="shop-logos" 
+                    onUploadComplete={(url) => setForm({ ...form, shop_logo_url: url })} 
+                    currentImage={form.shop_logo_url} 
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Add a logo to make your store more recognizable
+                  </p>
                 </div>
               </div>
             )}
 
+            {/* Step 2: Description */}
             {step === 2 && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="shop_description">Shop Description</Label>
-                  <Textarea id="shop_description" rows={4} value={form.shop_description} onChange={(e) => setForm({ ...form, shop_description: e.target.value })} />
+                  <Label htmlFor="shop_description" className="text-base font-semibold">
+                    Shop Description <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea 
+                    id="shop_description" 
+                    rows={5} 
+                    value={form.shop_description} 
+                    onChange={(e) => setForm({ ...form, shop_description: e.target.value })}
+                    placeholder="Tell customers about your store, what you sell, and what makes you unique..."
+                    className="text-base resize-none"
+                    autoFocus
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    A good description helps customers understand what you offer
+                  </p>
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="delivery_terms">Delivery Terms (optional)</Label>
-                  <Textarea id="delivery_terms" rows={3} value={form.delivery_terms} onChange={(e) => setForm({ ...form, delivery_terms: e.target.value })} />
-                </div>
-                <div className="flex justify-between">
-                  <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                  <Button onClick={() => setStep(3)}>Next</Button>
+                  <Label htmlFor="delivery_terms" className="text-base font-semibold">
+                    Delivery Terms (Optional)
+                  </Label>
+                  <Textarea 
+                    id="delivery_terms" 
+                    rows={3} 
+                    value={form.delivery_terms} 
+                    onChange={(e) => setForm({ ...form, delivery_terms: e.target.value })}
+                    placeholder="e.g., Free delivery within Kampala, 2-3 business days..."
+                    className="text-base resize-none"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Let customers know your delivery policy
+                  </p>
                 </div>
               </div>
             )}
 
+            {/* Step 3: Category */}
             {step === 3 && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label>Primary Category *</Label>
+                  <Label className="text-base font-semibold">
+                    Main Store Category <span className="text-destructive">*</span>
+                  </Label>
                   <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select primary category" />
+                    <SelectTrigger className="h-11 text-base">
+                      <SelectValue placeholder="Select your main category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((cat) => (
@@ -194,15 +302,62 @@ export default function SellerOnboarding() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-sm text-muted-foreground">
+                    Choose the category that best describes your business. You'll select specific subcategories when adding products.
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
-                  <Button onClick={handleCreateStore} disabled={submitting}>
-                    {submitting ? 'Creating...' : 'Create Store'}
-                  </Button>
-                </div>
+
+                {/* Summary Preview */}
+                {form.shop_name && form.shop_description && (
+                  <div className="p-4 bg-muted rounded-lg space-y-3">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase">Preview</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        {form.shop_logo_url && (
+                          <img src={form.shop_logo_url} alt="Logo" className="w-12 h-12 rounded-lg object-cover" />
+                        )}
+                        <div>
+                          <p className="font-bold">{form.shop_name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {categories.find(c => c.id === form.category_id)?.name || 'Category not selected'}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sm line-clamp-2">{form.shop_description}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between pt-4 border-t">
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+                disabled={step === 1 || submitting}
+                className="gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              
+              {step < 3 ? (
+                <Button onClick={handleNext} className="gap-2">
+                  Next
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleComplete} 
+                  disabled={submitting || !form.category_id}
+                  className="gap-2"
+                >
+                  {submitting ? 'Setting up...' : 'Complete Setup'}
+                  <CheckCircle className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

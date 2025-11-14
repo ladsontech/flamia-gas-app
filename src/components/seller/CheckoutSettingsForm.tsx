@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { SellerShop } from '@/types/seller';
 import { MessageCircle, ShoppingCart, Loader2 } from 'lucide-react';
@@ -15,7 +15,6 @@ interface CheckoutSettingsFormProps {
 }
 
 export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormProps) => {
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [checkoutType, setCheckoutType] = useState<'flamia' | 'whatsapp' | 'both'>(
     shop.checkout_type || 'flamia'
@@ -27,11 +26,7 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
     
     // Validate WhatsApp number if WhatsApp checkout is enabled
     if ((checkoutType === 'whatsapp' || checkoutType === 'both') && !whatsappNumber) {
-      toast({
-        title: 'WhatsApp number required',
-        description: 'Please enter your WhatsApp number to enable WhatsApp checkout.',
-        variant: 'destructive',
-      });
+      toast.error('Please enter your WhatsApp number to enable WhatsApp checkout.');
       return;
     }
 
@@ -47,18 +42,11 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
 
       if (error) throw error;
 
-      toast({
-        title: 'Settings updated',
-        description: 'Your checkout preferences have been saved.',
-      });
+      toast.success('Your checkout preferences have been saved.');
       onUpdate();
     } catch (error: any) {
       console.error('Error updating checkout settings:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update checkout settings.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Failed to update checkout settings.');
     } finally {
       setLoading(false);
     }
