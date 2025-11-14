@@ -12,10 +12,9 @@ import type { BusinessProduct } from '@/types/business';
 import { useCart } from '@/contexts/CartContext';
 import { useSellerCart } from '@/contexts/SellerCartContext';
 import { SellerCartButton } from '@/components/seller/SellerCartButton';
-import { Helmet } from 'react-helmet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
+import { StorefrontLayout } from '@/components/storefront/StorefrontLayout';
 import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
 import { getProductViewCounts } from '@/services/productViewsService';
 import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
@@ -245,36 +244,14 @@ const SellerStorefront = () => {
   }
 
       return (
-        <div className="min-h-screen bg-white">
-          <Helmet>
-            <title>{shop.shop_name} – Storefront | Flamia</title>
-            <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
-            <link rel="canonical" href={`https://${shop.shop_slug}.flamia.store/`} />
-            {/* Dynamic PWA Manifest with store logo */}
-            <link 
-              rel="manifest" 
-              href={`${SUPABASE_URL}/functions/v1/generate-manifest?slug=${shop.shop_slug}&type=seller`}
-            />
-            <meta name="theme-color" content="#00b341" />
-            <meta name="apple-mobile-web-app-capable" content="yes" />
-            <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-            <meta name="apple-mobile-web-app-title" content={shop.shop_name} />
-            {shop.shop_logo_url && (
-              <>
-                <link rel="apple-touch-icon" href={shop.shop_logo_url} />
-                <link rel="icon" type="image/png" sizes="192x192" href={shop.shop_logo_url} />
-                <link rel="icon" type="image/png" sizes="512x512" href={shop.shop_logo_url} />
-              </>
-            )}
-          </Helmet>
-          
-          {/* Storefront Header with Auth - Always show */}
-          <StorefrontHeader
-            shopName={shop.shop_name}
-            shopLogoUrl={shop.shop_logo_url}
-            isOwner={isOwner}
-            shopType="seller"
-          />
+        <StorefrontLayout
+          shopName={shop.shop_name}
+          shopSlug={shop.shop_slug}
+          shopDescription={shop.shop_description}
+          shopLogoUrl={shop.shop_logo_url}
+          isOwner={isOwner}
+          shopType="seller"
+        >
 
           {/* Shop Info Banner - Only show when accessed via main store */}
           {!isIndependentStorefront && (
@@ -315,11 +292,9 @@ const SellerStorefront = () => {
             </div>
           )}
 
-          {/* Compact Header - App Style */}
-          <header className={`bg-white border-b border-gray-200 sticky z-40 shadow-sm ${isIndependentStorefront ? 'top-16' : 'top-14'}`}>
+          {/* Search and Filters Bar */}
+          <div className="bg-white border-b border-gray-200 sticky top-14 z-40 shadow-sm py-3">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4">
-          {/* Top Bar removed to avoid duplication with StorefrontHeader */}
-
           {/* Search Bar */}
           <div className="relative mb-2 sm:mb-3">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
@@ -463,7 +438,7 @@ const SellerStorefront = () => {
             )}
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Inline Analytics for Owners - Only show on subdomain visits */}
       {isIndependentStorefront && isOwner && (
@@ -670,7 +645,7 @@ const SellerStorefront = () => {
           }
         }}
       />
-    </div>
+        </StorefrontLayout>
   );
 };
 

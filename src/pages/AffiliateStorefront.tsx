@@ -12,9 +12,8 @@ import type { AffiliateShop } from '@/types/affiliate';
 import type { BusinessProduct } from '@/types/business';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { StorefrontHeader } from '@/components/storefront/StorefrontHeader';
+import { StorefrontLayout } from '@/components/storefront/StorefrontLayout';
 import { StorefrontAnalytics } from '@/components/storefront/StorefrontAnalytics';
-import { Helmet } from 'react-helmet';
 import { getProductViewCounts } from '@/services/productViewsService';
 import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
 import { StorePerformance } from '@/components/storefront/StorePerformance';
@@ -206,36 +205,14 @@ export default function AffiliateStorefront() {
   }
 
       return (
-        <div className="min-h-screen bg-white">
-          <Helmet>
-            <title>{shop.shop_name} – Affiliate Store | Flamia</title>
-            <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
-            <link rel="canonical" href={`https://flamia.store/affiliate/${shop.shop_slug}`} />
-            {/* Dynamic PWA Manifest with store logo */}
-            <link 
-              rel="manifest" 
-              href={`${SUPABASE_URL}/functions/v1/generate-manifest?slug=${shop.shop_slug}&type=affiliate`}
-            />
-            <meta name="theme-color" content="#00b341" />
-            <meta name="apple-mobile-web-app-capable" content="yes" />
-            <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-            <meta name="apple-mobile-web-app-title" content={shop.shop_name} />
-            {shop.shop_logo_url && (
-              <>
-                <link rel="apple-touch-icon" href={shop.shop_logo_url} />
-                <link rel="icon" type="image/png" sizes="192x192" href={shop.shop_logo_url} />
-                <link rel="icon" type="image/png" sizes="512x512" href={shop.shop_logo_url} />
-              </>
-            )}
-          </Helmet>
-
-          {/* Storefront Header with Auth - Always show */}
-          <StorefrontHeader
-            shopName={shop.shop_name}
-            shopLogoUrl={shop.shop_logo_url}
-            isOwner={isOwner}
-            shopType="affiliate"
-          />
+        <StorefrontLayout
+          shopName={shop.shop_name}
+          shopSlug={shop.shop_slug}
+          shopDescription={shop.shop_description}
+          shopLogoUrl={shop.shop_logo_url}
+          isOwner={isOwner}
+          shopType="affiliate"
+        >
 
           {/* Shop Info Banner */}
           <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 py-4 sm:py-6">
@@ -605,6 +582,6 @@ export default function AffiliateStorefront() {
           }
         }}
       />
-    </div>
+        </StorefrontLayout>
   );
 }
