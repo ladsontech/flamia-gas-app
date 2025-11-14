@@ -29,6 +29,7 @@ export interface BusinessProduct {
   fixed_commission?: number;
   min_commission?: number;
   affiliate_enabled?: boolean;
+  price_model?: 'fixed' | 'flexible';
   created_at: string;
   updated_at: string;
 }

@@ -24,6 +24,7 @@ export const AffiliateShopSettings = ({ shop, onUpdate }: AffiliateShopSettingsP
   const [shopName, setShopName] = useState(shop.shop_name);
   const [shopDescription, setShopDescription] = useState(shop.shop_description || '');
   const [shopLogoUrl, setShopLogoUrl] = useState(shop.shop_logo_url || '');
+  const [preferredPriceModel, setPreferredPriceModel] = useState<'fixed' | 'flexible' | 'both'>(shop.preferred_price_model || 'both');
   const [mobileGridLayout, setMobileGridLayout] = useState<'single' | 'double'>('double');
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -37,6 +38,7 @@ export const AffiliateShopSettings = ({ shop, onUpdate }: AffiliateShopSettingsP
           shop_name: shopName,
           shop_description: shopDescription || null,
           shop_logo_url: shopLogoUrl || null,
+          preferred_price_model: preferredPriceModel,
         })
         .eq('id', shop.id);
 
@@ -103,6 +105,39 @@ export const AffiliateShopSettings = ({ shop, onUpdate }: AffiliateShopSettingsP
               currentImage={shopLogoUrl}
               title="Shop Logo"
             />
+
+            <div>
+              <Label>Product Price Model Preference</Label>
+              <RadioGroup value={preferredPriceModel} onValueChange={(value) => setPreferredPriceModel(value as 'fixed' | 'flexible' | 'both')} className="mt-2">
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="both" id="both" />
+                  <Label htmlFor="both" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <div>
+                      <p className="font-medium">All Products</p>
+                      <p className="text-xs text-muted-foreground">Show both fixed and flexible pricing products</p>
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="fixed" id="fixed-only" />
+                  <Label htmlFor="fixed-only" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <div>
+                      <p className="font-medium">Fixed Price Only</p>
+                      <p className="text-xs text-muted-foreground">Only products with merchant-set prices and commissions</p>
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="flexible" id="flexible-only" />
+                  <Label htmlFor="flexible-only" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <div>
+                      <p className="font-medium">Flexible Price Only</p>
+                      <p className="text-xs text-muted-foreground">Only products where you set your own prices</p>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
 
             <div>
               <Label>Mobile Product Grid Layout</Label>

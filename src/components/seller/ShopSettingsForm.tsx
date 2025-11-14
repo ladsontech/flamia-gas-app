@@ -6,10 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
 import { ShopImageUpload } from '@/components/shop/ShopImageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Trash2, Save, LayoutGrid, LayoutList } from 'lucide-react';
+import { Loader2, Trash2, Save, LayoutGrid, LayoutList, Users } from 'lucide-react';
 import type { SellerShop } from '@/types/seller';
 import { deleteSellerShop } from '@/services/sellerService';
 
@@ -24,6 +25,7 @@ export const ShopSettingsForm = ({ shop, onUpdate }: ShopSettingsFormProps) => {
   const [shopName, setShopName] = useState(shop.shop_name);
   const [shopDescription, setShopDescription] = useState(shop.shop_description || '');
   const [shopLogoUrl, setShopLogoUrl] = useState(shop.shop_logo_url || '');
+  const [allowAffiliates, setAllowAffiliates] = useState(shop.allow_affiliates ?? true);
   const [mobileGridLayout, setMobileGridLayout] = useState<'single' | 'double'>('double');
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -37,6 +39,7 @@ export const ShopSettingsForm = ({ shop, onUpdate }: ShopSettingsFormProps) => {
           shop_name: shopName,
           shop_description: shopDescription || null,
           shop_logo_url: shopLogoUrl || null,
+          allow_affiliates: allowAffiliates,
         })
         .eq('id', shop.id);
 
@@ -103,6 +106,25 @@ export const ShopSettingsForm = ({ shop, onUpdate }: ShopSettingsFormProps) => {
               currentImage={shopLogoUrl}
               title="Shop Logo"
             />
+
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-primary" />
+                <div>
+                  <Label htmlFor="allow_affiliates" className="font-semibold cursor-pointer">
+                    Allow Affiliate Resellers
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Let affiliates promote and sell your products for commission
+                  </p>
+                </div>
+              </div>
+              <Switch
+                id="allow_affiliates"
+                checked={allowAffiliates}
+                onCheckedChange={setAllowAffiliates}
+              />
+            </div>
 
             <div>
               <Label>Mobile Product Grid Layout</Label>

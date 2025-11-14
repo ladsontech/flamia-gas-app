@@ -38,6 +38,7 @@ export const ProductForm = ({ businessId, categoryId, onSuccess, onCancel, editP
     fixed_commission: editProduct?.fixed_commission || '',
     min_commission: editProduct?.min_commission || '',
     affiliate_enabled: editProduct?.affiliate_enabled ?? true,
+    price_model: (editProduct?.price_model || 'flexible') as 'fixed' | 'flexible',
     is_available: editProduct?.is_available ?? true,
     is_featured: editProduct?.is_featured ?? false,
     image_urls: (editProduct?.image_url ? [editProduct.image_url] : []) as string[],
@@ -139,6 +140,7 @@ export const ProductForm = ({ businessId, categoryId, onSuccess, onCancel, editP
         fixed_commission: formData.commission_type === 'fixed' && formData.fixed_commission ? parseFloat(formData.fixed_commission.toString()) : null,
         min_commission: formData.min_commission ? parseFloat(formData.min_commission.toString()) : 0,
         affiliate_enabled: formData.affiliate_enabled,
+        price_model: formData.price_model,
         is_available: formData.is_available,
         is_featured: formData.is_featured,
       };
@@ -272,60 +274,103 @@ export const ProductForm = ({ businessId, categoryId, onSuccess, onCancel, editP
 
         {formData.affiliate_enabled && (
           <>
-            <div>
-              <Label>Commission Type</Label>
+            <div className="space-y-2">
+              <Label>Price Model</Label>
               <Select 
-                value={formData.commission_type} 
-                onValueChange={(value: 'percentage' | 'fixed') => setFormData({ ...formData, commission_type: value })}
+                value={formData.price_model} 
+                onValueChange={(value: 'fixed' | 'flexible') => setFormData({ ...formData, price_model: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="percentage">Percentage (%)</SelectItem>
-                  <SelectItem value="fixed">Fixed Amount (UGX)</SelectItem>
+                  <SelectItem value="fixed">
+                    <div className="flex flex-col">
+                      <span className="font-medium">Fixed Price</span>
+                      <span className="text-xs text-muted-foreground">You set commission, affiliates can't change price</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="flexible">
+                    <div className="flex flex-col">
+                      <span className="font-medium">Flexible Price</span>
+                      <span className="text-xs text-muted-foreground">Affiliates set their own price and commission</span>
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                {formData.price_model === 'fixed' 
+                  ? 'Price consistency: All affiliates sell at the same price you set' 
+                  : 'Price flexibility: Affiliates can set their own prices and margins'}
+              </p>
             </div>
 
-            {formData.commission_type === 'percentage' ? (
+            {formData.price_model === 'fixed' && (
               <div>
-                <Label htmlFor="commission_rate">Commission Rate (%)</Label>
-                <Input
-                  id="commission_rate"
-                  type="number"
-                  min="0"
-                  max="50"
-                  value={formData.commission_rate}
-                  onChange={(e) => setFormData({ ...formData, commission_rate: parseFloat(e.target.value) })}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Affiliates will earn {formData.commission_rate}% commission on each sale
-                </p>
-              </div>
-            ) : (
-              <div>
-                <Label htmlFor="fixed_commission">Fixed Commission (UGX)</Label>
-                <Input
-                  id="fixed_commission"
-                  type="number"
-                  value={formData.fixed_commission}
-                  onChange={(e) => setFormData({ ...formData, fixed_commission: e.target.value })}
-                  placeholder="Enter fixed amount"
-                />
+                <Label>Commission Type</Label>
+                <Select 
+                  value={formData.commission_type} 
+                  onValueChange={(value: 'percentage' | 'fixed') => setFormData({ ...formData, commission_type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="percentage">Percentage (%)</SelectItem>
+                    <SelectItem value="fixed">Fixed Amount (UGX)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
-            <div>
-              <Label htmlFor="min_commission">Minimum Commission (UGX)</Label>
-              <Input
-                id="min_commission"
-                type="number"
-                value={formData.min_commission}
-                onChange={(e) => setFormData({ ...formData, min_commission: e.target.value })}
-                placeholder="Optional"
-              />
-            </div>
+            {formData.price_model === 'fixed' && (
+              <>
+                {formData.commission_type === 'percentage' ? (
+                  <div>
+                    <Label htmlFor="commission_rate">Commission Rate (%)</Label>
+                    <Input
+                      id="commission_rate"
+                      type="number"
+                      min="0"
+                      max="50"
+                      value={formData.commission_rate}
+                      onChange={(e) => setFormData({ ...formData, commission_rate: parseFloat(e.target.value) })}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Affiliates will earn {formData.commission_rate}% commission on each sale
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <Label htmlFor="fixed_commission">Fixed Commission (UGX)</Label>
+                    <Input
+                      id="fixed_commission"
+                      type="number"
+                      value={formData.fixed_commission}
+                      onChange={(e) => setFormData({ ...formData, fixed_commission: e.target.value })}
+                      placeholder="Enter fixed amount"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <Label htmlFor="min_commission">Minimum Commission (UGX)</Label>
+                  <Input
+                    id="min_commission"
+                    type="number"
+                    value={formData.min_commission}
+                    onChange={(e) => setFormData({ ...formData, min_commission: e.target.value })}
+                    placeholder="Optional"
+                  />
+                </div>
+              </>
+            )}
+
+            {formData.price_model === 'flexible' && (
+              <p className="text-sm text-muted-foreground p-3 bg-background rounded border">
+                ℹ️ With flexible pricing, affiliates will set their own prices and commission rates when adding this product to their stores.
+              </p>
+            )}
           </>
         )}
       </div>

@@ -88,12 +88,28 @@ export default function AffiliateDashboard() {
     if (!shop) return;
 
     try {
-      // Load available products from sellers
-      const { data: products, error: productsError } = await supabase
+      // Load available products from sellers with proper filtering
+      // Join with seller_shops to check allow_affiliates flag
+      let query = supabase
         .from('business_products')
-        .select('*, businesses(name)')
+        .select(`
+          *,
+          businesses!inner(
+            name,
+            seller_shops!inner(allow_affiliates, category_id)
+          )
+        `)
         .eq('is_available', true)
-        .eq('affiliate_enabled', true);
+        .eq('affiliate_enabled', true)
+        .eq('businesses.seller_shops.allow_affiliates', true);
+
+      // Filter by price model preference if set
+      const preferredModel = shop.preferred_price_model || 'both';
+      if (preferredModel !== 'both') {
+        query = query.eq('price_model', preferredModel);
+      }
+
+      const { data: products, error: productsError } = await query;
 
       if (productsError) throw productsError;
       setAvailableProducts((products || []) as BusinessProduct[]);

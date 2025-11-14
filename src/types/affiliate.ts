@@ -11,6 +11,7 @@ export interface AffiliateShop {
   monthly_fee: number;
   last_payment_date?: string;
   next_payment_due?: string;
+  preferred_price_model?: 'fixed' | 'flexible' | 'both';
   created_at: string;
   updated_at: string;
 }
