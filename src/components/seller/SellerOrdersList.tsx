@@ -86,10 +86,11 @@ export const SellerOrdersList = ({ shopId }: SellerOrdersListProps) => {
     );
   };
 
-  const getCheckoutBadge = (checkoutMethod?: string) => {
-    if (checkoutMethod === 'whatsapp') {
+  const getCheckoutBadge = (order: SellerOrderWithDetails) => {
+    // Check if it's a WhatsApp order
+    if (order.whatsapp_order_data || order.order?.checkout_method === 'whatsapp') {
       return (
-        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400">
           <MessageCircle className="w-3 h-3 mr-1" />
           WhatsApp
         </Badge>
@@ -106,9 +107,11 @@ export const SellerOrdersList = ({ shopId }: SellerOrdersListProps) => {
   const filterOrders = (filter: 'all' | 'whatsapp' | 'flamia') => {
     if (filter === 'all') return orders;
     if (filter === 'whatsapp') {
-      return orders.filter(o => o.order?.checkout_method === 'whatsapp');
+      // WhatsApp orders have whatsapp_order_data field
+      return orders.filter(o => o.whatsapp_order_data || o.order?.checkout_method === 'whatsapp');
     }
-    return orders.filter(o => o.order?.checkout_method === 'flamia');
+    // Flamia orders (coming soon)
+    return orders.filter(o => !o.whatsapp_order_data && o.order?.checkout_method === 'flamia');
   };
 
   if (loading) {
@@ -145,7 +148,7 @@ export const SellerOrdersList = ({ shopId }: SellerOrdersListProps) => {
               </div>
               <div className="flex flex-col gap-1 items-end">
                 {getStatusBadge(order.status)}
-                {getCheckoutBadge(order.order?.checkout_method)}
+                {getCheckoutBadge(order)}
               </div>
             </div>
 
@@ -227,6 +230,9 @@ export const SellerOrdersList = ({ shopId }: SellerOrdersListProps) => {
         <CardDescription>Manage your shop orders from all channels</CardDescription>
       </CardHeader>
       <CardContent>
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800 text-sm">
+          ℹ️ <strong>All orders are currently via WhatsApp.</strong> Flamia Pay checkout is coming soon!
+        </div>
         <Tabs defaultValue="all">
           <TabsList className="mb-4">
             <TabsTrigger value="all">All ({orders.length})</TabsTrigger>
@@ -234,9 +240,9 @@ export const SellerOrdersList = ({ shopId }: SellerOrdersListProps) => {
               <MessageCircle className="w-4 h-4 mr-1" />
               WhatsApp ({filterOrders('whatsapp').length})
             </TabsTrigger>
-            <TabsTrigger value="flamia">
+            <TabsTrigger value="flamia" disabled>
               <Package className="w-4 h-4 mr-1" />
-              Flamia ({filterOrders('flamia').length})
+              Flamia (Coming Soon)
             </TabsTrigger>
           </TabsList>
 

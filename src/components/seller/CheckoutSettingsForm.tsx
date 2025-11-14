@@ -17,16 +17,16 @@ interface CheckoutSettingsFormProps {
 export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormProps) => {
   const [loading, setLoading] = useState(false);
   const [checkoutType, setCheckoutType] = useState<'flamia' | 'whatsapp' | 'both'>(
-    shop.checkout_type || 'flamia'
+    shop.checkout_type || 'whatsapp'
   );
   const [whatsappNumber, setWhatsappNumber] = useState(shop.whatsapp_number || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate WhatsApp number if WhatsApp checkout is enabled
-    if ((checkoutType === 'whatsapp' || checkoutType === 'both') && !whatsappNumber) {
-      toast.error('Please enter your WhatsApp number to enable WhatsApp checkout.');
+    // Validate WhatsApp number (required for now)
+    if (!whatsappNumber) {
+      toast.error('Please enter your WhatsApp number.');
       return;
     }
 
@@ -35,14 +35,14 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
       const { error } = await supabase
         .from('seller_shops')
         .update({
-          checkout_type: checkoutType,
-          whatsapp_number: whatsappNumber || null,
+          checkout_type: 'whatsapp', // Force WhatsApp for now
+          whatsapp_number: whatsappNumber,
         })
         .eq('id', shop.id);
 
       if (error) throw error;
 
-      toast.success('Your checkout preferences have been saved.');
+      toast.success('Your WhatsApp number has been saved.');
       onUpdate();
     } catch (error: any) {
       console.error('Error updating checkout settings:', error);
@@ -66,25 +66,27 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
           <div className="space-y-3">
             <Label>Checkout Method</Label>
             <RadioGroup value={checkoutType} onValueChange={(value: any) => setCheckoutType(value)}>
-              <div className="flex items-center space-x-2 border rounded-lg p-4">
-                <RadioGroupItem value="flamia" id="flamia" />
-                <Label htmlFor="flamia" className="flex-1 cursor-pointer">
+              <div className="flex items-center space-x-2 border rounded-lg p-4 opacity-50 bg-muted/30 relative">
+                <RadioGroupItem value="flamia" id="flamia" disabled />
+                <Label htmlFor="flamia" className="flex-1">
                   <div className="flex items-center gap-2">
                     <ShoppingCart className="w-4 h-4 text-orange-500" />
                     <span className="font-medium">Flamia Checkout</span>
+                    <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Coming Soon</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Customers checkout through Flamia's secure payment system. You receive payouts automatically.
+                    Secure payment system with automatic payouts. Launching soon!
                   </p>
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-2 border rounded-lg p-4">
+              <div className="flex items-center space-x-2 border rounded-lg p-4 border-primary/50 bg-primary/5">
                 <RadioGroupItem value="whatsapp" id="whatsapp" />
                 <Label htmlFor="whatsapp" className="flex-1 cursor-pointer">
                   <div className="flex items-center gap-2">
                     <MessageCircle className="w-4 h-4 text-green-500" />
-                    <span className="font-medium">WhatsApp Only</span>
+                    <span className="font-medium">WhatsApp Checkout</span>
+                    <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">Active</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     Customers order directly via WhatsApp. You handle payment and delivery yourself.
@@ -92,39 +94,41 @@ export const CheckoutSettingsForm = ({ shop, onUpdate }: CheckoutSettingsFormPro
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-2 border rounded-lg p-4">
-                <RadioGroupItem value="both" id="both" />
-                <Label htmlFor="both" className="flex-1 cursor-pointer">
+              <div className="flex items-center space-x-2 border rounded-lg p-4 opacity-50 bg-muted/30">
+                <RadioGroupItem value="both" id="both" disabled />
+                <Label htmlFor="both" className="flex-1">
                   <div className="flex items-center gap-2">
                     <ShoppingCart className="w-4 h-4 text-orange-500" />
                     <MessageCircle className="w-4 h-4 text-green-500" />
                     <span className="font-medium">Both Options</span>
+                    <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Coming Soon</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Give customers the choice between Flamia checkout or WhatsApp.
+                    Will be available when Flamia Pay launches.
                   </p>
                 </Label>
               </div>
             </RadioGroup>
+            <p className="text-sm text-muted-foreground p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              ℹ️ <strong>Flamia Pay is coming soon!</strong> For now, all orders will be processed through WhatsApp. You'll be notified when Flamia Pay launches.
+            </p>
           </div>
 
           {/* WhatsApp Number */}
-          {(checkoutType === 'whatsapp' || checkoutType === 'both') && (
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp">WhatsApp Number *</Label>
-              <Input
-                id="whatsapp"
-                type="tel"
-                placeholder="+256XXXXXXXXX"
-                value={whatsappNumber}
-                onChange={(e) => setWhatsappNumber(e.target.value)}
-                required={checkoutType === 'whatsapp' || checkoutType === 'both'}
-              />
-              <p className="text-sm text-muted-foreground">
-                Include country code (e.g., +256 for Uganda). WhatsApp orders don't require customer accounts.
-              </p>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="whatsapp">WhatsApp Number *</Label>
+            <Input
+              id="whatsapp"
+              type="tel"
+              placeholder="+256XXXXXXXXX"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              required
+            />
+            <p className="text-sm text-muted-foreground">
+              Include country code (e.g., +256 for Uganda). Customers will contact you directly via WhatsApp to complete their orders.
+            </p>
+          </div>
 
           <Button type="submit" disabled={loading} className="w-full">
             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

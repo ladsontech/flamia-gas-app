@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ShoppingCart, X, Minus, Plus, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingCart, X, Minus, Plus, Trash2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -7,16 +7,76 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useSellerCart } from '@/contexts/SellerCartContext';
 import { Card, CardContent } from '@/components/ui/card';
+import { useParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const SellerCartButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState<string>('');
+  const [shopName, setShopName] = useState<string>('');
+  const { slug } = useParams<{ slug: string }>();
   const { items, removeFromCart, updateQuantity, getTotalPrice, getItemCount, clearCart } = useSellerCart();
   const itemCount = getItemCount();
   const totalPrice = getTotalPrice();
 
+  useEffect(() => {
+    const loadShopDetails = async () => {
+      if (!slug) {
+        // Try to get from subdomain
+        const match = window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i);
+        if (match) {
+          const subdomain = match[1];
+          const { data } = await supabase
+            .from('seller_shops')
+            .select('whatsapp_number, shop_name')
+            .eq('shop_slug', subdomain)
+            .single();
+          if (data) {
+            setWhatsappNumber(data.whatsapp_number || '');
+            setShopName(data.shop_name || '');
+          }
+        }
+      } else {
+        const { data } = await supabase
+          .from('seller_shops')
+          .select('whatsapp_number, shop_name')
+          .eq('shop_slug', slug)
+          .single();
+        if (data) {
+          setWhatsappNumber(data.whatsapp_number || '');
+          setShopName(data.shop_name || '');
+        }
+      }
+    };
+    loadShopDetails();
+  }, [slug]);
+
   const handleCheckout = () => {
-    // For now, just show a message - you can integrate with order system later
-    alert('Checkout feature coming soon! Contact the shop owner to complete your order.');
+    if (!whatsappNumber) {
+      toast.error('Shop WhatsApp number not configured. Please contact the shop owner.');
+      return;
+    }
+
+    // Create order message
+    let message = `*New Order from ${shopName}*\n\n`;
+    message += `*Order Details:*\n`;
+    items.forEach((item, index) => {
+      message += `${index + 1}. ${item.name}\n`;
+      message += `   Quantity: ${item.quantity}\n`;
+      message += `   Price: UGX ${item.price.toLocaleString()}\n`;
+      message += `   Subtotal: UGX ${(item.price * item.quantity).toLocaleString()}\n\n`;
+    });
+    message += `*Total: UGX ${totalPrice.toLocaleString()}*\n\n`;
+    message += `Please confirm this order and provide delivery details.`;
+
+    // Open WhatsApp
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+    
+    toast.success('Opening WhatsApp to complete your order!');
+    setIsOpen(false);
   };
 
   return (
@@ -123,11 +183,15 @@ export const SellerCartButton = () => {
               <div className="space-y-2">
                 <Button 
                   onClick={handleCheckout}
-                  className="w-full h-12 text-base font-semibold"
+                  className="w-full h-12 text-base font-semibold bg-green-600 hover:bg-green-700"
                   size="lg"
                 >
-                  Proceed to Checkout
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Order via WhatsApp
                 </Button>
+                <p className="text-xs text-center text-muted-foreground">
+                  Complete your order through WhatsApp
+                </p>
                 <Button
                   onClick={clearCart}
                   variant="outline"
