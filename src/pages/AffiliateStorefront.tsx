@@ -211,6 +211,22 @@ export default function AffiliateStorefront() {
             <title>{shop.shop_name} – Affiliate Store | Flamia</title>
             <meta name="description" content={`Shop ${shop.shop_name}: ${shop.shop_description || 'Discover quality products'}`} />
             <link rel="canonical" href={`https://flamia.store/affiliate/${shop.shop_slug}`} />
+            {/* Dynamic PWA Manifest with store logo */}
+            <link 
+              rel="manifest" 
+              href={`${supabase.functions.getUrl('generate-manifest')}?slug=${shop.shop_slug}&type=affiliate`}
+            />
+            <meta name="theme-color" content="#00b341" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+            <meta name="apple-mobile-web-app-title" content={shop.shop_name} />
+            {shop.shop_logo_url && (
+              <>
+                <link rel="apple-touch-icon" href={shop.shop_logo_url} />
+                <link rel="icon" type="image/png" sizes="192x192" href={shop.shop_logo_url} />
+                <link rel="icon" type="image/png" sizes="512x512" href={shop.shop_logo_url} />
+              </>
+            )}
           </Helmet>
 
           {/* Shop Info Banner */}

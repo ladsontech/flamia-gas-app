@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.send-bulk-email]
 verify_jwt = true
+
+[functions.generate-manifest]
+verify_jwt = false
