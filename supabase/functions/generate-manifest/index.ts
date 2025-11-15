@@ -14,8 +14,17 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url)
-    const slug = url.searchParams.get('slug')
-    const type = url.searchParams.get('type') || 'affiliate' // 'affiliate' or 'seller'
+    let slug = url.searchParams.get('slug')
+    let type = url.searchParams.get('type') || 'seller' // 'affiliate' or 'seller'
+    
+    // Check if request is from subdomain
+    const hostname = url.hostname
+    const subdomainMatch = hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i)
+    
+    if (subdomainMatch && !['www', 'app', 'admin', 'api'].includes(subdomainMatch[1].toLowerCase())) {
+      slug = subdomainMatch[1]
+      type = 'seller' // Subdomains are for sellers
+    }
 
     if (!slug) {
       return new Response(
@@ -34,18 +43,18 @@ serve(async (req) => {
     )
 
     // Fetch shop data
-    let shopData
+    let shopData: any
     if (type === 'affiliate') {
       const { data, error } = await supabaseClient
         .from('affiliate_shops')
-        .select('shop_name, shop_description, shop_logo_url, shop_slug')
-        .eq('shop_slug', slug)
+        .select('shop_name, description, logo_url, slug, theme_color')
+        .eq('slug', slug)
         .eq('is_active', true)
         .single()
 
       if (error || !data) {
         return new Response(
-          JSON.stringify({ error: 'Shop not found' }),
+          JSON.stringify({ error: 'Affiliate shop not found' }),
           { 
             status: 404, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -56,14 +65,14 @@ serve(async (req) => {
     } else {
       const { data, error } = await supabaseClient
         .from('seller_shops')
-        .select('shop_name, shop_description, shop_logo_url, shop_slug')
-        .eq('shop_slug', slug)
+        .select('shop_name, description, logo_url, slug, theme_color')
+        .eq('slug', slug)
         .eq('is_active', true)
         .single()
 
       if (error || !data) {
         return new Response(
-          JSON.stringify({ error: 'Shop not found' }),
+          JSON.stringify({ error: 'Seller shop not found' }),
           { 
             status: 404, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -73,41 +82,47 @@ serve(async (req) => {
       shopData = data
     }
 
+    // Determine if this is a subdomain request
+    const isSubdomain = !!subdomainMatch
+    const baseUrl = isSubdomain ? '/' : (type === 'affiliate' ? `/affiliate/${slug}` : `/shop/${slug}`)
+    
     // Generate dynamic manifest
+    const storeName = shopData.shop_name || 'My Store'
+    const storeDescription = shopData.description || `Shop at ${storeName}`
+    const themeColor = shopData.theme_color || '#FF4D00'
+    
     const manifest = {
-      name: shopData.shop_name || 'My Store',
-      short_name: shopData.shop_name?.substring(0, 12) || 'Store',
-      description: shopData.shop_description || `Shop at ${shopData.shop_name}`,
-      start_url: type === 'affiliate' 
-        ? `/affiliate/${slug}?source=pwa`
-        : `/shop/${slug}?source=pwa`,
+      name: `${storeName} - ${type === 'affiliate' ? 'Affiliate' : 'Online'} Store`,
+      short_name: storeName.substring(0, 12),
+      description: storeDescription,
+      start_url: `${baseUrl}?source=pwa`,
       display: 'standalone',
-      display_override: ['standalone', 'minimal-ui'],
+      display_override: ['tabbed', 'window-controls-overlay', 'standalone', 'minimal-ui'],
       background_color: '#FFFFFF',
-      theme_color: '#00b341',
+      theme_color: themeColor,
       orientation: 'portrait-primary',
-      categories: ['shopping', 'business'],
-      icons: shopData.shop_logo_url ? [
+      categories: ['shopping', 'business', 'utilities'],
+      icons: shopData.logo_url ? [
         {
-          src: shopData.shop_logo_url,
+          src: shopData.logo_url,
           sizes: '192x192',
           type: 'image/png',
           purpose: 'any'
         },
         {
-          src: shopData.shop_logo_url,
+          src: shopData.logo_url,
           sizes: '512x512',
           type: 'image/png',
           purpose: 'any'
         },
         {
-          src: shopData.shop_logo_url,
+          src: shopData.logo_url,
           sizes: '192x192',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: shopData.shop_logo_url,
+          src: shopData.logo_url,
           sizes: '512x512',
           type: 'image/png',
           purpose: 'maskable'
@@ -126,10 +141,17 @@ serve(async (req) => {
           purpose: 'any'
         }
       ],
-      scope: type === 'affiliate' ? `/affiliate/${slug}/` : `/shop/${slug}/`,
-      id: `${type}-${slug}-pwa`,
+      scope: isSubdomain ? '/' : `${baseUrl}/`,
+      id: isSubdomain ? `${slug}-store-pwa` : `${type}-${slug}-pwa`,
       lang: 'en',
-      dir: 'ltr'
+      dir: 'ltr',
+      shortcuts: [
+        {
+          name: 'View Products',
+          url: baseUrl,
+          icons: [{ src: shopData.logo_url || '/images/icon.png', sizes: '96x96' }]
+        }
+      ]
     }
 
     return new Response(

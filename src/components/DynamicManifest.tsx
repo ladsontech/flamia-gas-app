@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 
 interface ManifestData {
   name: string;
@@ -25,9 +24,13 @@ export const DynamicManifest = () => {
 
   useEffect(() => {
     const updateManifest = async () => {
-      let manifestData: ManifestData = DEFAULT_MANIFEST;
+      // Default to Flamia manifest
+      let manifestUrl = '/manifest.json';
+      let themeColor = DEFAULT_MANIFEST.theme_color;
+      let appTitle = DEFAULT_MANIFEST.short_name;
+      let serviceWorkerUrl = '/sw.js';
       
-      // Check if we're on a seller storefront
+      // Check if we're on a seller storefront or affiliate storefront
       const isSellerStorefront = /^\/shop\/[^/]+$/.test(location.pathname) && 
                                  !location.pathname.startsWith('/shop/category/');
       const isAffiliateStorefront = /^\/affiliate\/[^/]+$/.test(location.pathname);
@@ -39,101 +42,28 @@ export const DynamicManifest = () => {
       const isSubdomain = !!subdomainMatch;
       const subdomainSlug = subdomainMatch?.[1];
 
+      // If on a storefront, use dynamic manifest from API
       if (isSellerStorefront || isAffiliateStorefront || isSubdomain) {
+        const slug = params.slug || subdomainSlug;
+        const type = isAffiliateStorefront ? 'affiliate' : 'seller';
+        
+        // Use Supabase function to generate manifest
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jxepxcttyhzlyljfqjgz.supabase.co';
+        manifestUrl = `${supabaseUrl}/functions/v1/generate-manifest?slug=${slug}&type=${type}`;
+        serviceWorkerUrl = `${supabaseUrl}/functions/v1/generate-sw?slug=${slug}&type=${type}`;
+        
+        // Fetch manifest to get theme color and title for meta tags
         try {
-          const slug = params.slug || subdomainSlug;
-          
-          if (isSellerStorefront || isSubdomain) {
-            // Fetch seller shop data
-            const { data: shopData, error } = await supabase
-              .from('seller_shops')
-              .select('shop_name, description, logo_url, theme_color, slug')
-              .eq('slug', slug)
-              .eq('is_active', true)
-              .single();
-
-            if (!error && shopData) {
-              manifestData = {
-                name: `${shopData.shop_name} - Online Store`,
-                short_name: shopData.shop_name,
-                description: shopData.description || `Shop at ${shopData.shop_name}`,
-                start_url: isSubdomain ? `/?source=pwa` : `/shop/${shopData.slug}?source=pwa`,
-                icon_url: shopData.logo_url || undefined,
-                theme_color: shopData.theme_color || "#FF4D00"
-              };
-            }
-          } else if (isAffiliateStorefront) {
-            // Fetch affiliate shop data
-            const { data: shopData, error } = await supabase
-              .from('affiliate_shops')
-              .select('shop_name, description, logo_url, theme_color, slug')
-              .eq('slug', slug)
-              .eq('is_active', true)
-              .single();
-
-            if (!error && shopData) {
-              manifestData = {
-                name: `${shopData.shop_name} - Affiliate Store`,
-                short_name: shopData.shop_name,
-                description: shopData.description || `Shop at ${shopData.shop_name}`,
-                start_url: `/affiliate/${shopData.slug}?source=pwa`,
-                icon_url: shopData.logo_url || undefined,
-                theme_color: shopData.theme_color || "#FF4D00"
-              };
-            }
+          const response = await fetch(manifestUrl);
+          if (response.ok) {
+            const manifest = await response.json();
+            themeColor = manifest.theme_color || DEFAULT_MANIFEST.theme_color;
+            appTitle = manifest.short_name || DEFAULT_MANIFEST.short_name;
           }
         } catch (error) {
-          console.error('Error fetching shop data for manifest:', error);
+          console.error('Error fetching manifest:', error);
         }
       }
-
-      // Generate manifest object
-      const manifest = {
-        name: manifestData.name,
-        short_name: manifestData.short_name,
-        description: manifestData.description,
-        start_url: manifestData.start_url,
-        display: "standalone",
-        display_override: ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
-        background_color: "#FFFFFF",
-        theme_color: manifestData.theme_color,
-        orientation: "portrait-primary",
-        categories: ["shopping", "business"],
-        icons: [
-          {
-            src: manifestData.icon_url || "/images/icon.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: manifestData.icon_url || "/images/icon.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: manifestData.icon_url || "/images/icon.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable"
-          },
-          {
-            src: manifestData.icon_url || "/images/icon.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable"
-          }
-        ],
-        scope: "/",
-        id: manifestData.short_name.toLowerCase().replace(/\s+/g, '-') + "-pwa",
-        lang: "en",
-        dir: "ltr"
-      };
-
-      // Convert manifest to blob URL
-      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-      const manifestURL = URL.createObjectURL(manifestBlob);
 
       // Update manifest link tag
       let manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
@@ -142,7 +72,7 @@ export const DynamicManifest = () => {
         manifestLink.rel = 'manifest';
         document.head.appendChild(manifestLink);
       }
-      manifestLink.href = manifestURL;
+      manifestLink.href = manifestUrl;
 
       // Update theme color meta tag
       let themeColorMeta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement;
@@ -151,7 +81,7 @@ export const DynamicManifest = () => {
         themeColorMeta.name = 'theme-color';
         document.head.appendChild(themeColorMeta);
       }
-      themeColorMeta.content = manifestData.theme_color;
+      themeColorMeta.content = themeColor;
 
       // Update apple mobile web app title
       let appleTitleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]') as HTMLMetaElement;
@@ -160,17 +90,27 @@ export const DynamicManifest = () => {
         appleTitleMeta.name = 'apple-mobile-web-app-title';
         document.head.appendChild(appleTitleMeta);
       }
-      appleTitleMeta.content = manifestData.short_name;
+      appleTitleMeta.content = appTitle;
 
-      // Update document title for storefronts
-      if (isSellerStorefront || isAffiliateStorefront || isSubdomain) {
-        document.title = manifestData.name;
+      // Register service worker for storefronts
+      if ((isSellerStorefront || isAffiliateStorefront || isSubdomain) && 'serviceWorker' in navigator) {
+        try {
+          // Unregister any existing service workers first
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+          }
+          
+          // Register the storefront-specific service worker
+          const registration = await navigator.serviceWorker.register(serviceWorkerUrl, {
+            scope: isSubdomain ? '/' : (isAffiliateStorefront ? `/affiliate/${params.slug}/` : `/shop/${params.slug}/`)
+          });
+          
+          console.log('Service Worker registered:', registration);
+        } catch (error) {
+          console.error('Service Worker registration failed:', error);
+        }
       }
-
-      // Cleanup: revoke old blob URLs when component unmounts or updates
-      return () => {
-        URL.revokeObjectURL(manifestURL);
-      };
     };
 
     updateManifest();

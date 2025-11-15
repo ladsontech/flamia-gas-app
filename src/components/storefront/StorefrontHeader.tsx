@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { InstallButton } from './InstallButton';
 
 interface StorefrontHeaderProps {
   shopName: string;
@@ -231,6 +232,22 @@ export const StorefrontHeader = ({
 
           {/* Right Side - Auth & Account */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Install App Button - Always visible */}
+            <InstallButton 
+              storeName={shopName}
+              variant="outline"
+              size="sm"
+              className="text-xs h-8 border-orange-300 hover:bg-orange-50 hover:text-orange-600 hidden sm:flex"
+              showText={true}
+            />
+            <InstallButton 
+              storeName={shopName}
+              variant="outline"
+              size="sm"
+              className="text-xs h-8 w-8 p-0 border-orange-300 hover:bg-orange-50 hover:text-orange-600 sm:hidden"
+              showText={false}
+            />
+            
             {loading ? (
               <div className="h-8 w-20 bg-muted animate-pulse rounded"></div>
             ) : user ? (
