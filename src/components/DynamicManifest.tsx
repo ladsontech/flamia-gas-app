@@ -50,7 +50,9 @@ export const DynamicManifest = () => {
         // Use Supabase function to generate manifest
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jxepxcttyhzlyljfqjgz.supabase.co';
         manifestUrl = `${supabaseUrl}/functions/v1/generate-manifest?slug=${slug}&type=${type}`;
-        serviceWorkerUrl = `${supabaseUrl}/functions/v1/generate-sw?slug=${slug}&type=${type}`;
+        
+        // Use local service worker that auto-detects storefront
+        serviceWorkerUrl = '/storefront-sw.js';
         
         // Fetch manifest to get theme color and title for meta tags
         try {
@@ -59,6 +61,9 @@ export const DynamicManifest = () => {
             const manifest = await response.json();
             themeColor = manifest.theme_color || DEFAULT_MANIFEST.theme_color;
             appTitle = manifest.short_name || DEFAULT_MANIFEST.short_name;
+            
+            // Update document title
+            document.title = manifest.name || appTitle;
           }
         } catch (error) {
           console.error('Error fetching manifest:', error);
@@ -95,18 +100,29 @@ export const DynamicManifest = () => {
       // Register service worker for storefronts
       if ((isSellerStorefront || isAffiliateStorefront || isSubdomain) && 'serviceWorker' in navigator) {
         try {
-          // Unregister any existing service workers first
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          for (const registration of registrations) {
-            await registration.unregister();
+          // Check if there's already a registration
+          const existingRegistration = await navigator.serviceWorker.getRegistration();
+          
+          // Only register if not already registered with this SW
+          if (!existingRegistration || existingRegistration.active?.scriptURL !== new URL(serviceWorkerUrl, window.location.origin).href) {
+            // Unregister old service workers
+            if (existingRegistration) {
+              await existingRegistration.unregister();
+            }
+            
+            // Register the storefront service worker
+            const registration = await navigator.serviceWorker.register(serviceWorkerUrl, {
+              scope: isSubdomain ? '/' : (isAffiliateStorefront ? `/affiliate/${params.slug}/` : `/shop/${params.slug}/`)
+            });
+            
+            console.log('Service Worker registered:', registration);
+            
+            // Wait for the service worker to be ready
+            await navigator.serviceWorker.ready;
+            console.log('Service Worker ready');
+          } else {
+            console.log('Service Worker already registered');
           }
-          
-          // Register the storefront-specific service worker
-          const registration = await navigator.serviceWorker.register(serviceWorkerUrl, {
-            scope: isSubdomain ? '/' : (isAffiliateStorefront ? `/affiliate/${params.slug}/` : `/shop/${params.slug}/`)
-          });
-          
-          console.log('Service Worker registered:', registration);
         } catch (error) {
           console.error('Service Worker registration failed:', error);
         }

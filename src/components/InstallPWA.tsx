@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
@@ -16,12 +17,30 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 const InstallPWA = () => {
+  const location = useLocation();
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [appName, setAppName] = useState("Flamia");
   const [appDescription, setAppDescription] = useState("Install our app for a better experience with offline support and quick access!");
 
+  // Check if we're on a storefront (they have their own install button)
+  const isStorefront = React.useMemo(() => {
+    const isSellerStorefront = /^\/shop\/[^/]+$/.test(location.pathname) && 
+                               !location.pathname.startsWith('/shop/category/');
+    const isAffiliateStorefront = /^\/affiliate\/[^/]+$/.test(location.pathname);
+    const subdomainMatch = typeof window !== 'undefined' 
+      ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) 
+      : null;
+    const isSubdomain = !!subdomainMatch && !['www', 'app', 'admin', 'api'].includes(subdomainMatch[1].toLowerCase());
+    
+    return isSellerStorefront || isAffiliateStorefront || isSubdomain;
+  }, [location.pathname]);
+
   useEffect(() => {
+    // Don't show on storefronts - they have their own InstallButton
+    if (isStorefront) {
+      return;
+    }
     const isAppInstalled = () => {
       return window.matchMedia('(display-mode: standalone)').matches;
     };
@@ -78,7 +97,7 @@ const InstallPWA = () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       observer.disconnect();
     };
-  }, []);
+  }, [isStorefront]);
 
   const handleInstallClick = async () => {
     if (!installPrompt) {
@@ -102,7 +121,8 @@ const InstallPWA = () => {
     setShowInstallDialog(false);
   };
 
-  if (!installPrompt) return null;
+  // Don't show on storefronts or if no install prompt
+  if (isStorefront || !installPrompt) return null;
 
   return (
     <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
