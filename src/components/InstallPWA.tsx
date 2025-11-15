@@ -18,6 +18,8 @@ type BeforeInstallPromptEvent = Event & {
 const InstallPWA = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [appName, setAppName] = useState("Flamia");
+  const [appDescription, setAppDescription] = useState("Install our app for a better experience with offline support and quick access!");
 
   useEffect(() => {
     const isAppInstalled = () => {
@@ -28,9 +30,45 @@ const InstallPWA = () => {
       return;
     }
 
+    // Update app name and description from manifest
+    const updateAppInfo = () => {
+      const manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
+      if (manifestLink?.href) {
+        fetch(manifestLink.href)
+          .then(response => response.json())
+          .then(manifest => {
+            if (manifest.name) {
+              setAppName(manifest.short_name || manifest.name);
+            }
+            if (manifest.description) {
+              setAppDescription(`Install ${manifest.short_name || manifest.name} for a better experience with offline support and quick access!`);
+            }
+          })
+          .catch(() => {
+            // Keep defaults if fetch fails
+          });
+      }
+    };
+
+    updateAppInfo();
+    // Update when manifest might change
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'href') {
+          updateAppInfo();
+        }
+      });
+    });
+
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+      observer.observe(manifestLink, { attributes: true });
+    }
+
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setInstallPrompt(event as BeforeInstallPromptEvent);
+      updateAppInfo(); // Update app info when prompt is triggered
       setShowInstallDialog(true);
     };
 
@@ -38,6 +76,7 @@ const InstallPWA = () => {
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      observer.disconnect();
     };
   }, []);
 
@@ -51,7 +90,7 @@ const InstallPWA = () => {
       const choiceResult = await installPrompt.userChoice;
       
       if (choiceResult.outcome === 'accepted') {
-        toast.success("Installing Flamia app");
+        toast.success(`Installing ${appName} app`);
       }
       
       setInstallPrompt(null);
@@ -69,9 +108,9 @@ const InstallPWA = () => {
     <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Install Flamia App</DialogTitle>
+          <DialogTitle>Install {appName} App</DialogTitle>
           <DialogDescription>
-            Install our app for a better experience with offline support and quick access!
+            {appDescription}
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2 mt-4">

@@ -74,6 +74,7 @@ import OnboardingScreen from './components/onboarding/OnboardingScreen';
 import { useOnboarding } from './hooks/useOnboarding';
 import { ErrorSafeWrapper } from './components/ErrorSafeWrapper';
 import { DataPrefetcher } from './components/DataPrefetcher';
+import { DynamicManifest } from './components/DynamicManifest';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -149,6 +150,7 @@ const AppContent = () => {
         </ErrorSafeWrapper>
       )}
       <InstallPWA />
+      <DynamicManifest />
       {!isStorefront && (
         <ErrorSafeWrapper>
           <OccasionalSignInPopup />
