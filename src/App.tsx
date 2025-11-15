@@ -116,7 +116,11 @@ const AppContent = () => {
   const subdomainMatch = typeof window !== 'undefined' ? window.location.hostname.match(/^([a-z0-9-]+)\.flamia\.store$/i) : null;
   const isStorefrontHost = !!subdomainMatch;
   // Treat both subdomain visits AND /shop/:slug and /affiliate/:slug routes as storefronts
-  const isStorefrontRoute = location.pathname.startsWith('/shop/') || location.pathname.startsWith('/affiliate/');
+  // BUT exclude /shop/category/:slug which is the marketplace category view
+  const isSellerStorefrontRoute = /^\/shop\/[^/]+$/.test(location.pathname) && !location.pathname.startsWith('/shop/category/');
+  const isAffiliateStorefrontRoute = /^\/affiliate\/[^/]+$/.test(location.pathname);
+  const isStorefrontProductRoute = location.pathname.match(/^\/(shop|affiliate)\/[^/]+\/product\/[^/]+$/);
+  const isStorefrontRoute = isSellerStorefrontRoute || isAffiliateStorefrontRoute || isStorefrontProductRoute;
   const isStorefront = isStorefrontHost || isStorefrontRoute;
   
   // Routes that don't need loading screen (no redirects)

@@ -52,20 +52,15 @@ const SellerDashboard = () => {
         const sellerShop = await fetchSellerShopByUser(user.id);
         
         if (!sellerShop) {
-          // Check if application exists and is approved, then guide to onboarding
-          const application = await fetchSellerApplicationByUser(user.id);
-          if (application?.status === 'approved') {
-            navigate('/seller/onboarding');
-            return;
-          } else {
-            toast({
-              title: 'No seller shop found',
-              description: 'Your shop may have been removed. Please apply to become a seller.',
-              variant: 'destructive',
-            });
-            navigate('/sell');
-            return;
-          }
+          // If no shop exists (for example, it was deleted), always send the user
+          // back to the seller application page so they can re-apply.
+          toast({
+            title: 'No seller shop found',
+            description: 'Your shop may have been removed. Please apply again to become a seller.',
+            variant: 'destructive',
+          });
+          navigate('/sell');
+          return;
         }
 
         if (!sellerShop.is_approved) {

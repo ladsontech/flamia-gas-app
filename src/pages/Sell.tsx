@@ -46,17 +46,21 @@ const Sell = () => {
           
           // Always fetch fresh data from database to avoid stale cache
           const application = await fetchSellerApplicationByUser(user.id);
-          setExistingApplication(application);
           
-          // Fetch shop if application is approved
+          // If the latest application is approved but the shop was deleted,
+          // treat it as no active application so the user must re-apply.
           if (application?.status === 'approved') {
             const shop = await fetchSellerShopByUser(user.id);
             if (shop) {
+              setExistingApplication(application);
               setSellerSlug(shop.shop_slug);
             } else {
-              // Keep the application so the approved status card can guide user to dashboard setup
+              // Shop no longer exists – allow user to submit a fresh application
+              setExistingApplication(null);
               setSellerSlug(null);
             }
+          } else {
+            setExistingApplication(application);
           }
         }
         
