@@ -255,22 +255,22 @@ const SellerStorefront = () => {
 
           {/* Shop Info Banner - Only show when accessed via main store */}
           {!isIndependentStorefront && (
-            <div className="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200 py-4 sm:py-6">
-              <div className="container max-w-7xl mx-auto px-4">
-                <div className="flex items-center gap-4">
+            <div className="bg-white border-b border-gray-200 py-6 sm:py-8">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center gap-4 sm:gap-6">
                   {shop.shop_logo_url && (
                     <img
                       src={shop.shop_logo_url}
                       alt={shop.shop_name}
-                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-orange-200"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover border border-gray-200"
                     />
                   )}
                   <div className="flex-1">
-                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 text-transparent bg-clip-text">
+                    <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
                       {shop.shop_name}
                     </h1>
                     {shop.shop_description && (
-                      <p className="text-sm sm:text-base text-gray-600 mt-1">{shop.shop_description}</p>
+                      <p className="text-sm sm:text-base text-gray-600 mt-2">{shop.shop_description}</p>
                     )}
                   </div>
                 </div>
@@ -280,8 +280,8 @@ const SellerStorefront = () => {
 
           {/* Owner Analytics - Show inline when accessed via main store */}
           {!isIndependentStorefront && isOwner && shop && (
-            <div className="bg-gray-50 py-6">
-              <div className="container max-w-7xl mx-auto px-4 space-y-6">
+            <div className="bg-gray-50 py-8 border-b border-gray-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <StorePerformance shopId={shop.id} shopType="seller" />
                   <StorefrontAnalytics
                     shopId={shop.id}
@@ -292,17 +292,17 @@ const SellerStorefront = () => {
             </div>
           )}
 
-          {/* Search and Filters Bar */}
-          <div className="bg-white border-b border-gray-200 sticky top-14 z-40 shadow-sm py-3">
-        <div className="container max-w-7xl mx-auto px-3 sm:px-4">
+          {/* Search and Filters Bar - Shopify Style */}
+          <div className="bg-gray-50 border-b border-gray-200 sticky top-16 z-40 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Search Bar */}
-          <div className="relative mb-2 sm:mb-3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
             <Input
-              placeholder="Search products"
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 sm:pl-10 h-9 sm:h-10 text-sm bg-white border border-gray-300 rounded-full focus:bg-white"
+              className="pl-10 h-10 text-sm bg-white border border-gray-300 rounded-md focus:border-[#008060] focus:ring-1 focus:ring-[#008060]"
             />
           </div>
 
@@ -318,11 +318,11 @@ const SellerStorefront = () => {
               <SheetContent side="bottom" className="h-[80vh]">
                 <SheetHeader>
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-[#008060] flex items-center justify-center">
                       <Store className="w-4 h-4 text-white" />
                     </div>
-                    <SheetTitle className="text-base sm:text-lg font-bold bg-gradient-to-r from-orange-600 to-amber-500 text-transparent bg-clip-text tracking-wide">
-                      Flamia Mall
+                    <SheetTitle className="text-base sm:text-lg font-semibold text-gray-900">
+                      {shop.shop_name}
                     </SheetTitle>
                   </div>
                 </SheetHeader>
@@ -332,25 +332,25 @@ const SellerStorefront = () => {
                     <div>
                       <h3 className="font-semibold text-sm mb-3">Categories</h3>
                       <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedCategory('all')}
+                        className={selectedCategory === 'all' ? 'bg-[#008060] hover:bg-[#006e52]' : 'hover:bg-gray-50'}
+                      >
+                        All
+                      </Button>
+                      {categories.map(category => (
                         <Button
-                          variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                          key={category}
+                          variant={selectedCategory === category ? 'default' : 'outline'}
                           size="sm"
-                          onClick={() => setSelectedCategory('all')}
-                          className={selectedCategory === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                          onClick={() => setSelectedCategory(category)}
+                          className={selectedCategory === category ? 'bg-[#008060] hover:bg-[#006e52]' : 'hover:bg-gray-50'}
                         >
-                          All
+                          {category}
                         </Button>
-                        {categories.map(category => (
-                          <Button
-                            key={category}
-                            variant={selectedCategory === category ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => setSelectedCategory(category)}
-                            className={selectedCategory === category ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                          >
-                            {category}
-                          </Button>
-                        ))}
+                      ))}
                       </div>
                     </div>
                   )}
@@ -363,7 +363,7 @@ const SellerStorefront = () => {
                         variant={sortBy === 'newest' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setSortBy('newest')}
-                        className={sortBy === 'newest' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                        className={sortBy === 'newest' ? 'bg-[#008060] hover:bg-[#006e52]' : 'hover:bg-gray-50'}
                       >
                         Newest
                       </Button>
@@ -371,7 +371,7 @@ const SellerStorefront = () => {
                         variant={sortBy === 'popular' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setSortBy('popular')}
-                        className={sortBy === 'popular' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                        className={sortBy === 'popular' ? 'bg-[#008060] hover:bg-[#006e52]' : 'hover:bg-gray-50'}
                       >
                         Popular
                       </Button>
@@ -379,7 +379,7 @@ const SellerStorefront = () => {
                         variant={sortBy === 'price-low' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setSortBy('price-low')}
-                        className={sortBy === 'price-low' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                        className={sortBy === 'price-low' ? 'bg-[#008060] hover:bg-[#006e52]' : 'hover:bg-gray-50'}
                       >
                         Price: Low-High
                       </Button>
@@ -387,14 +387,14 @@ const SellerStorefront = () => {
                         variant={sortBy === 'price-high' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setSortBy('price-high')}
-                        className={sortBy === 'price-high' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                        className={sortBy === 'price-high' ? 'bg-[#008060] hover:bg-[#006e52]' : 'hover:bg-gray-50'}
                       >
                         Price: High-Low
                       </Button>
                     </div>
                   </div>
 
-                  <Button onClick={() => setFiltersOpen(false)} className="w-full bg-orange-500 hover:bg-orange-600">
+                  <Button onClick={() => setFiltersOpen(false)} className="w-full bg-[#008060] hover:bg-[#006e52]">
                     Apply Filters
                   </Button>
                 </div>
@@ -413,7 +413,7 @@ const SellerStorefront = () => {
                   onClick={() => setSelectedCategory('all')}
                   className={`flex-shrink-0 text-sm h-9 px-4 ${
                     selectedCategory === 'all'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      ? 'bg-[#008060] hover:bg-[#006e52] text-white border-0'
                       : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                   }`}
                 >
@@ -427,7 +427,7 @@ const SellerStorefront = () => {
                     onClick={() => setSelectedCategory(category)}
                     className={`flex-shrink-0 text-sm h-9 px-4 whitespace-nowrap ${
                       selectedCategory === category
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                        ? 'bg-[#008060] hover:bg-[#006e52] text-white border-0'
                         : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                     }`}
                   >
@@ -514,7 +514,7 @@ const SellerStorefront = () => {
                   onClick={() => setSortBy('newest')}
                   className={`flex-shrink-0 text-xs h-8 px-3 ${
                     sortBy === 'newest'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      ? 'bg-[#008060] hover:bg-[#006e52] text-white border-0'
                       : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                   }`}
                 >
@@ -526,7 +526,7 @@ const SellerStorefront = () => {
                   onClick={() => setSortBy('popular')}
                   className={`flex-shrink-0 text-xs h-8 px-3 ${
                     sortBy === 'popular'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      ? 'bg-[#008060] hover:bg-[#006e52] text-white border-0'
                       : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                   }`}
                 >
@@ -538,7 +538,7 @@ const SellerStorefront = () => {
                   onClick={() => setSortBy('price-low')}
                   className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
                     sortBy === 'price-low'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      ? 'bg-[#008060] hover:bg-[#006e52] text-white border-0'
                       : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                   }`}
                 >
@@ -550,7 +550,7 @@ const SellerStorefront = () => {
                   onClick={() => setSortBy('price-high')}
                   className={`flex-shrink-0 text-xs h-8 px-3 whitespace-nowrap ${
                     sortBy === 'price-high'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white border-0'
+                      ? 'bg-[#008060] hover:bg-[#006e52] text-white border-0'
                       : 'bg-white hover:bg-gray-50 border-gray-300 text-gray-700'
                   }`}
                 >
@@ -622,7 +622,7 @@ const SellerStorefront = () => {
             © {new Date().getFullYear()} {shop.shop_name}. All rights reserved.
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            Powered by <span className="font-semibold text-orange-600">Flamia</span>
+            Powered by <span className="font-semibold text-[#008060]">Flamia</span>
           </p>
         </div>
       </footer>

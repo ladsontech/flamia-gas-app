@@ -8,7 +8,8 @@ import {
   LogOut, 
   ShoppingBag, 
   Settings,
-  BarChart3
+  BarChart3,
+  Store
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -211,91 +212,73 @@ export const StorefrontHeader = ({
   };
 
   return (
-    <header className="bg-gradient-to-r from-orange-50 via-white to-orange-50 sticky top-0 z-[100] shadow-md border-b border-orange-100">
-      <div className="container max-w-7xl mx-auto px-3 sm:px-4">
-        <div className="flex items-center justify-between h-14 sm:h-16">
+    <header className="bg-white sticky top-0 z-[100] border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Logo/Shop Name */}
-          <div className="flex items-center gap-1.5 sm:gap-3 flex-1 min-w-0">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {shopLogoUrl ? (
               <img 
                 src={shopLogoUrl} 
                 alt={shopName}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover border-2 border-orange-200"
+                className="w-10 h-10 rounded-md object-cover"
               />
             ) : (
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-sm">
-                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <div className="w-10 h-10 rounded-md bg-[#008060] flex items-center justify-center">
+                <Store className="w-5 h-5 text-white" />
               </div>
             )}
-            <h1 className="text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent truncate">
+            <h1 className="text-lg font-semibold text-gray-900 truncate max-w-xs">
               {shopName}
             </h1>
           </div>
 
           {/* Right Side - Auth & Account */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Install App Button - Always visible */}
+          <div className="flex items-center gap-3">
+            {/* Install App Button */}
             <InstallButton 
               storeName={shopName}
               variant="outline"
               size="sm"
-              className="text-xs h-8 border-orange-300 hover:bg-orange-50 hover:text-orange-600 hidden sm:flex"
+              className="hidden md:flex h-9 text-sm border-gray-300 hover:bg-gray-50 text-gray-700"
               showText={true}
-            />
-            <InstallButton 
-              storeName={shopName}
-              variant="outline"
-              size="sm"
-              className="text-xs h-8 w-8 p-0 border-orange-300 hover:bg-orange-50 hover:text-orange-600 sm:hidden"
-              showText={false}
             />
             
             {loading ? (
-              <div className="h-8 w-20 bg-muted animate-pulse rounded"></div>
+              <div className="h-9 w-24 bg-gray-100 animate-pulse rounded-md"></div>
             ) : user ? (
               <>
-                {/* Owner Analytics Button */}
-                {isOwner && onShowAnalytics && (
+                {/* Desktop Navigation */}
+                <div className="hidden md:flex items-center gap-2">
+                  {isOwner && onShowAnalytics && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={onShowAnalytics}
+                      className="h-9 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      Analytics
+                    </Button>
+                  )}
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    onClick={onShowAnalytics}
-                    className="hidden sm:flex items-center gap-1.5 text-xs h-8"
+                    className="h-9 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={handleNavigateToAccount}
                   >
-                    <BarChart3 className="w-3 h-3" />
-                    Analytics
+                    <User className="w-4 h-4 mr-2" />
+                    Account
                   </Button>
-                )}
+                </div>
 
-                {/* Visible Account Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs h-8 px-2 sm:px-3 border-orange-300 hover:bg-orange-50 hover:text-orange-600"
-                  onClick={handleNavigateToAccount}
-                >
-                  <User className="w-3 h-3 mr-1" />
-                  <span className="hidden sm:inline">Account</span>
-                </Button>
-
-                {/* Visible Orders Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs h-8 px-2 sm:px-3 border-orange-300 hover:bg-orange-50 hover:text-orange-600"
-                  onClick={handleNavigateToOrders}
-                >
-                  <ShoppingBag className="w-3 h-3 mr-1" />
-                  <span className="hidden sm:inline">Orders</span>
-                </Button>
-
-                {/* Account Menu - Compact on mobile */}
+                {/* Account Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-9 sm:w-9 p-0 rounded-full">
-                      <Avatar className="h-7 w-7 sm:h-9 sm:w-9">
+                    <Button variant="ghost" size="sm" className="h-9 w-9 p-0 rounded-full hover:bg-gray-100">
+                      <Avatar className="h-8 w-8">
                         <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name || user?.email} />
-                        <AvatarFallback className="bg-orange-500 text-white text-[10px] sm:text-xs font-semibold">
+                        <AvatarFallback className="bg-[#008060] text-white text-xs font-medium">
                           {userProfile?.full_name 
                             ? userProfile.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
                             : getInitials(user?.email || 'U')}
@@ -303,19 +286,18 @@ export const StorefrontHeader = ({
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <div className="px-2 py-1.5">
-                      <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-3 py-2">
+                      <p className="text-sm font-medium text-gray-900 truncate">
                         {user.email}
                       </p>
                     </div>
                     <DropdownMenuSeparator />
-                    {/* Show in dropdown on desktop, hidden on mobile since buttons are visible */}
-                    <DropdownMenuItem onClick={handleNavigateToAccount} className="hidden sm:flex">
+                    <DropdownMenuItem onClick={handleNavigateToAccount}>
                       <User className="w-4 h-4 mr-2" />
                       Account
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleNavigateToOrders} className="hidden sm:flex">
+                    <DropdownMenuItem onClick={handleNavigateToOrders}>
                       <ShoppingBag className="w-4 h-4 mr-2" />
                       My Orders
                     </DropdownMenuItem>
@@ -353,15 +335,14 @@ export const StorefrontHeader = ({
               </>
             ) : (
               <>
-                {/* Sign In Button */}
+                {/* Sign In Button - Shopify style */}
                 <Button 
                   variant="default" 
                   size="sm" 
                   type="button"
-                  className="text-xs sm:text-sm h-8 sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-md cursor-pointer"
+                  className="h-9 px-4 bg-[#008060] hover:bg-[#006e52] text-white font-medium text-sm"
                   onClick={handleSignIn}
                 >
-                  <LogIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Sign In
                 </Button>
               </>
