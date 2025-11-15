@@ -148,7 +148,7 @@ const AppContent = () => {
           <GoogleSignUpHandler />
         </ErrorSafeWrapper>
       )}
-      {!isStorefront && <InstallPWA />}
+      <InstallPWA />
       {!isStorefront && (
         <ErrorSafeWrapper>
           <OccasionalSignInPopup />
