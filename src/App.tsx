@@ -40,6 +40,7 @@ import SellerStorefront from './pages/SellerStorefront';
 import StorefrontProductDetail from './pages/StorefrontProductDetail';
 import StorefrontAuth from './pages/StorefrontAuth';
 import StorefrontDashboard from './pages/StorefrontDashboard';
+import StorefrontLogin from './pages/StorefrontLogin';
 import AffiliateDashboard from './pages/AffiliateDashboard';
 import AffiliateStorefront from './pages/AffiliateStorefront';
 import AuthCallback from './pages/AuthCallback';
@@ -208,11 +209,13 @@ const AppContent = () => {
           <Route path="/seller/onboarding" element={<SellerOnboarding />} />
           <Route path="/shop/:slug" element={<SellerStorefront />} />
           <Route path="/shop/:slug/product/:id" element={<StorefrontProductDetail />} />
+          <Route path="/shop/:slug/login" element={<StorefrontLogin />} />
           <Route path="/store/:slug/auth" element={<StorefrontAuth />} />
           <Route path="/store/:slug/dashboard" element={<StorefrontDashboard />} />
         <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
           <Route path="/affiliate/:slug" element={<AffiliateStorefront />} />
           <Route path="/affiliate/:slug/product/:id" element={<StorefrontProductDetail />} />
+          <Route path="/affiliate/:slug/login" element={<StorefrontLogin />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           

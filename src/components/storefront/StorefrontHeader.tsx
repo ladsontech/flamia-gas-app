@@ -143,12 +143,14 @@ export const StorefrontHeader = ({
 
   const handleSignIn = () => {
     try {
-      // Navigate to storefront auth page
+      // Navigate to direct storefront login page
       const returnTo = encodeURIComponent(window.location.href);
       if (shopSlug) {
-        const authUrl = `/store/${shopSlug}/auth?return_to=${returnTo}`;
-        console.log('Navigating to:', authUrl);
-        window.location.href = authUrl;
+        const loginUrl = shopType === 'affiliate'
+          ? `/affiliate/${shopSlug}/login?return_to=${returnTo}&type=affiliate`
+          : `/shop/${shopSlug}/login?return_to=${returnTo}&type=seller`;
+        console.log('Navigating to:', loginUrl);
+        navigate(loginUrl);
       } else {
         // Fallback to Google OAuth
         console.log('No shopSlug, using Google OAuth');
