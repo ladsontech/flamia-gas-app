@@ -75,6 +75,7 @@ import { useOnboarding } from './hooks/useOnboarding';
 import { ErrorSafeWrapper } from './components/ErrorSafeWrapper';
 import { DataPrefetcher } from './components/DataPrefetcher';
 import { DynamicManifest } from './components/DynamicManifest';
+import { PWADebugger } from './components/PWADebugger';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -151,6 +152,7 @@ const AppContent = () => {
       )}
       <InstallPWA />
       <DynamicManifest />
+      <PWADebugger />
       {!isStorefront && (
         <ErrorSafeWrapper>
           <OccasionalSignInPopup />
